@@ -5,4 +5,5 @@
 Servers
 build
 !/build/
+/build/artifacts
 bin

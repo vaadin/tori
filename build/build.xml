@@ -1,5 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Tori" default="default">
-    <target name="default">
+	
+	<property name="dir.project" value=".."/>
+	<property name="dir.common" value="${dir.project}/common" />
+	<property name="dir.webapp" value="${dir.project}/webapp" />
+	<property name="dir.ds.test" value="${dir.project}/ds-test" />
+	<property name="dir.ds.liferay" value="${dir.project}/ds-liferay" />
+	
+	<property name="dir.build-artifacts" value="artifacts" />
+	<property name="dir.build-artifacts.common" value="${dir.build-artifacts}/common" />
+	
+	<property name="common.jar" value="${dir.build-artifacts}/common.jar" />
+
+	<path id="common-libraries">
+		<fileset dir="${dir.common}/lib">
+		    <include name="*.jar" />
+		</fileset>
+	</path>
+	
+	
+    <target name="default" depends="clean, -package-common"/>
+	 
+	<target name="clean">
+		<delete dir="${dir.build-artifacts}"/>
+	</target>
+	
+	
+	<target name="-package-common">
+		<mkdir dir="${dir.build-artifacts.common}"/>
+    	<javac srcdir="${dir.common}"
+         	destdir="${dir.build-artifacts.common}"
+    		classpathref="common-libraries"
+         	debug="on"
+		/>
+		<jar destfile="${common.jar}"
+			basedir="${dir.build-artifacts.common}"
+		/>
+	</target>
+	
+	
+    <target name="-package-webapp">
+		<fail message="build webapp not implemented"/>
     </target>
+	
+    <target name="-package-ds-liferay">
+		<fail message="build ds liferay not implemented"/>
+    </target>
+
+    <target name="-package-ds-test">
+		<fail message="build ds test not implemented"/>
+    </target>
+	
+	<target name="-build-widgetset">
+		<fail message="build widgetset not implemented"/>
+	</target>
 </project>
