@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Tori" default="default">
 	
+	<loadproperties srcfile="build.properties"/>
+	
 	<property name="dir.project" value=".."/>
 	<property name="dir.common" value="${dir.project}/common" />
 	<property name="dir.webapp" value="${dir.project}/webapp" />
@@ -9,14 +11,20 @@
 	
 	<property name="dir.build-artifacts" value="artifacts" />
 	<property name="dir.build-artifacts.common" value="${dir.build-artifacts}/common" />
+	<property name="dir.build-artifacts.webapps" value="${dir.build-artifacts}/webapps" />
+	<property name="dir.build-artifacts.widgetsets" value="${dir.build-artifacts}/widgetsets" />
 	
-	<property name="common.jar" value="${dir.build-artifacts}/common.jar" />
+	<property name="dir.web-inf-lib" value="${dir.webapp}/src/main/webapp/WEB-INF/lib" />
+	
+	<property name="path.vaadin.jar" value="${dir.web-inf-lib}/${vaadin.jar}" />
+	<property name="path.common.jar" value="${dir.build-artifacts}/common.jar" />
 
 	<path id="common-libraries">
 		<fileset dir="${dir.common}/lib">
 		    <include name="*.jar" />
 		</fileset>
 	</path>
+
 	
 	
     <target name="default" depends="clean, -package-common"/>
@@ -33,7 +41,7 @@
     		classpathref="common-libraries"
          	debug="on"
 		/>
-		<jar destfile="${common.jar}"
+		<jar destfile="${path.common.jar}"
 			basedir="${dir.build-artifacts.common}"
 		/>
 	</target>
@@ -51,7 +59,150 @@
 		<fail message="build ds test not implemented"/>
     </target>
 	
-	<target name="-build-widgetset">
-		<fail message="build widgetset not implemented"/>
+	
+	
+	
+	
+	
+	
+	<!-- WIDGETSET COMPILATION STUFF! -->
+	<!-- Ignore, mostly.              -->
+	
+	<!-- 
+		Update based on your project structure, by default this buildfile assumes that you 
+		1. use WebContent under your project's root directory
+		2. WebContent/WEB-INF/lib/vaadin-@version@.jar exists
+		3. WebContent/WEB-INF/src contains your project source files
+		4. gwt directory contains extracted GWT distribution
+	-->
+	<target name="-configure">
+		
+		<!-- Path from this file to the project root -->
+		<property name="base" 
+			      value="${dir.webapp}" />
+		
+		<!-- Location of GWT distribution -->
+		<property name="gwt-location" 
+			      value="gwt-libs" />
+		
+		<!-- Location of Vaadin JAR -->
+		<property name="vaadin-jar-location" 
+			      value="${path.vaadin.jar}" />
+		
+		<!-- Location of project source code -->
+		<property name="src-location" 
+			      value="${dir.webapp}" />
+
+		<!-- Target where to compile server-side classes -->
+		<property name="server-side-destination" 
+			      value="${dir.build-artifacts.webapps}"/>
+		
+		<!-- Target where to compile the widget set -->
+		<property name="client-side-destination" 
+			      value="${dir.build-artifacts.widgetsets}" />
 	</target>
+		
+    <!-- NOTE: Modify this example to compile your own widgetset -->
+    <target name="-configure-widgetset">
+        <echo>Modify this example Ant script to compile your own widget sets.</echo>
+
+        <!-- Name of the widget set -->
+        <property name="widgetset" value="org.vaadin.tori.ToriWidgetset"/>
+
+        <!-- Define if the widget set be generated automatically -->
+        <!-- from all widget sets included in the class path.    -->
+        <!-- <property name="generate.widgetset" value="1"/>     --> 
+        
+        <!-- Path to the widgetset directory. Required only for --> 
+    	<!-- generated widget sets. Must be relative to         --> 
+    	<!-- $src-location, that is, under the first entry in   --> 
+    	<!--  class path.                                       --> 
+        <property name="widgetset-path" value="org/vaadin/tori/widgetset"/>
+    </target>
+
+	<!-- ================================================== -->
+	<!-- Build Targets                                      -->
+    <!-- ================================================== -->
+	
+	<target name="-init" depends="-configure">
+
+		<echo>Requirements for classpath:</echo>
+		<echo>  ${gwt-location}/gwt-dev.jar</echo>
+		<echo>  ${gwt-location}/gwt-user.jar</echo>
+		<echo>  ${vaadin-jar-location}</echo>
+		<echo>  ${src-location}</echo>
+		<echo>Output will be written into ${client-side-destination}</echo>
+
+		<!-- Check that files exist -->
+		<fail message="Some of the required files (listed above) are missing.">
+			<condition><not><resourcecount count="3">
+				<filelist files="${gwt-location}/gwt-dev.jar,${gwt-location}/gwt-user.jar,${vaadin-jar-location}"/>
+			</resourcecount></not></condition>
+		</fail>
+
+		<!-- Construct and check classpath -->
+		<!-- Includes paths required for both server and client-side compilation -->
+		<path id="compile.classpath">
+			<!-- The source location must be first, as required by generate-widgetset. -->
+            <pathelement path="${src-location}" />
+			<pathelement path="${server-side-destination}" />
+			<pathelement path="${vaadin-jar-location}" />
+			<pathelement path="${gwt-location}/gwt-user.jar" />
+			<pathelement path="${gwt-location}/gwt-dev.jar" />
+		    <fileset dir="${dir.web-inf-lib}">
+		    	<include name="*.jar"/>
+		     </fileset>
+		</path>
+	</target>
+
+	<!-- Compiled server-side components are needed for building the client-side -->
+	<target name="-compile-server-side" depends="-init">
+		<mkdir dir="${server-side-destination}"/>
+		<javac srcdir="${src-location}" destdir="${server-side-destination}">
+			<classpath>
+				<path refid="compile.classpath"/>
+			</classpath>
+		</javac>
+	</target>
+
+    <!-- Generates a combined widget set from all widget    -->
+    <!-- sets in the class path, including project sources. -->
+    <!-- Updates the configuration if it already exists.    -->
+    <target name="-generate-widgetset"
+            depends="-compile-server-side, -configure-widgetset"
+            if="generate.widgetset">
+        
+        <!-- Create the directory if it does not already exist. -->
+        <mkdir dir="${src-location}/${widgetset-path}"/>
+        
+        <java classname="com.vaadin.terminal.gwt.widgetsetutils.WidgetSetBuilder"
+              failonerror="yes" fork="yes" maxmemory="256m">
+            <arg value="${widgetset}"/>
+            <jvmarg value="-Xss1024k"/>
+            <jvmarg value="-Djava.awt.headless=true"/>
+            <classpath>
+                <path refid="compile.classpath"/>
+            </classpath>
+        </java>
+    </target>
+
+	<!-- Build the widget set. -->
+	<target name="compile-widgetset"
+            depends="-compile-server-side, -generate-widgetset">
+		<echo >Compiling ${widgetset}...</echo>
+		
+		<java classname="com.google.gwt.dev.Compiler"
+			  failonerror="yes" fork="yes" maxmemory="256m">
+			<arg value="-war" />
+			<arg value="${client-side-destination}" />
+			<arg value="${widgetset}" />
+            <jvmarg value="-Xss1024k"/>
+            <jvmarg value="-Djava.awt.headless=true"/>
+			<classpath>
+				<path refid="compile.classpath"/>
+			</classpath>
+		</java>
+	</target>
+	
+	
 </project>
