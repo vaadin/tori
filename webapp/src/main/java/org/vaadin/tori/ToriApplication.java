@@ -1,10 +1,14 @@
 package org.vaadin.tori;
 
+import org.vaadin.navigator.Navigator;
+import org.vaadin.navigator.Navigator.NavigableApplication;
+
 import com.vaadin.Application;
 import com.vaadin.ui.Window;
 
 @SuppressWarnings("serial")
-public class ToriApplication extends Application {
+public class ToriApplication extends Application implements
+        NavigableApplication {
 
     @Override
     public void init() {
@@ -14,15 +18,13 @@ public class ToriApplication extends Application {
 
     @Override
     public Window getWindow(final String name) {
-        Window w = super.getWindow(name);
-        if (w == null) {
-            // User has opened a new browser window/tab -> create a new
-            // ToriWindow for this window/tab.
-            w = new ToriWindow();
-            w.setName(name);
-            addWindow(w);
-        }
-        return w;
+        // Delegate the multiple browser window/tab handling to Navigator
+        return Navigator.getWindow(this, name, super.getWindow(name));
+    }
+
+    @Override
+    public Window createNewWindow() {
+        return new ToriWindow();
     }
 
 }

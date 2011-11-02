@@ -1,6 +1,6 @@
 package org.vaadin.tori;
 
-import org.vaadin.tori.dashboard.category.CategoryViewImpl;
+import org.vaadin.navigator.Navigator;
 
 import com.vaadin.ui.Window;
 
@@ -12,10 +12,10 @@ import com.vaadin.ui.Window;
 @SuppressWarnings("serial")
 public class ToriWindow extends Window {
 
+    private final Navigator navigator = new ToriNavigator();
+
     public ToriWindow() {
         super("Tori");
-
-        // TODO actual view management
-        addComponent(new CategoryViewImpl());
+        addComponent(navigator);
     }
 }

@@ -1,15 +1,15 @@
-package org.vaadin.tori.dashboard.category;
+package org.vaadin.tori.dashboard;
 
 import org.vaadin.tori.data.DataSource;
 
 import com.github.peholmst.mvp4vaadin.Presenter;
 
 @SuppressWarnings("serial")
-public class CategoryPresenter extends Presenter<CategoryView> {
+public class DashboardPresenter extends Presenter<DashboardView> {
 
     private final DataSource toriDataSource;
 
-    public CategoryPresenter(final CategoryView view,
+    public DashboardPresenter(final DashboardView view,
             final DataSource toriDataSource) {
         super(view);
         this.toriDataSource = toriDataSource;
