@@ -1,5 +1,6 @@
 package org.vaadin.tori.view;
 
+import org.apache.log4j.Logger;
 import org.vaadin.navigator.Navigator;
 
 import com.github.peholmst.mvp4vaadin.AbstractViewComponent;
@@ -12,6 +13,8 @@ public abstract class AbstractToriView<V extends View, P extends Presenter<V>>
         extends AbstractViewComponent<V, P> implements
         org.vaadin.navigator.Navigator.View {
 
+    protected Logger log = Logger.getLogger(getClass());
+
     public AbstractToriView() {
         // Call the init() here as we are not running in a container that would
         // support the @PostConstruct annotation.
@@ -20,8 +23,9 @@ public abstract class AbstractToriView<V extends View, P extends Presenter<V>>
 
     @Override
     public void init(final Navigator navigator, final Application application) {
-        // TODO replace with better logging
-        System.out.println("Initializing view: " + getClass().getName());
+        if (log.isDebugEnabled()) {
+            log.debug("Initializing view: " + getClass().getName());
+        }
     }
 
     @Override
