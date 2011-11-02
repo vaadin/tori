@@ -1,6 +1,7 @@
 package org.vaadin.tori;
 
-import com.vaadin.ui.Label;
+import org.vaadin.tori.dashboard.category.CategoryViewImpl;
+
 import com.vaadin.ui.Window;
 
 /**
@@ -14,6 +15,7 @@ public class ToriWindow extends Window {
     public ToriWindow() {
         super("Tori");
 
-        addComponent(new Label("Hello Tori user"));
+        // TODO actual view management
+        addComponent(new CategoryViewImpl());
     }
 }
