@@ -11,59 +11,122 @@
 	
 	<property name="dir.build-artifacts" value="artifacts" />
 	<property name="dir.build-artifacts.common" value="${dir.build-artifacts}/common" />
-	<property name="dir.build-artifacts.webapps" value="${dir.build-artifacts}/webapps" />
+	<property name="dir.build-artifacts.webapp" value="${dir.build-artifacts}/webapp" />
 	<property name="dir.build-artifacts.widgetsets" value="${dir.build-artifacts}/widgetsets" />
+	<property name="dir.build-artifacts.ds.liferay" value="${dir.build-artifacts}/ds-liferay" />
+	<property name="dir.build-artifacts.ds.test" value="${dir.build-artifacts}/ds-test" />
 	
-	<property name="dir.web-inf-lib" value="${dir.webapp}/src/main/webapp/WEB-INF/lib" />
+	<property name="dir.meta-inf" value="${dir.webapp}/src/main/webapp/META-INF" />
+	<property name="dir.web-inf" value="${dir.webapp}/src/main/webapp/WEB-INF" />
+	<property name="dir.web-inf.lib" value="${dir.web-inf}/lib" />
 	
-	<property name="path.vaadin.jar" value="${dir.web-inf-lib}/${vaadin.jar}" />
-	<property name="path.common.jar" value="${dir.build-artifacts}/common.jar" />
+	<property name="file.vaadin.jar" value="${dir.web-inf.lib}/${vaadin.jar}" />
+	<property name="file.common.jar" value="${dir.build-artifacts}/common.jar" />
+	<property name="file.webapp.jar" value="${dir.build-artifacts}/webapp.jar" />
+	<property name="file.ds.liferay.jar" value="${dir.build-artifacts}/ds-liferay.jar" />
+	<property name="file.ds.test.jar" value="${dir.build-artifacts}/ds-test.jar" />
+	
+	<property name="file.tori.liferay.war" value="${dir.build-artifacts}/tori-liferay.war" />
+	<property name="file.tori.test.war" value="${dir.build-artifacts}/tori-test.war" />
 
-	<path id="common-libraries">
+	<path id="common-classpath">
 		<fileset dir="${dir.common}/lib">
 		    <include name="*.jar" />
 		</fileset>
 	</path>
+	
+	<path id="webapp-classpath">
+		<path refid="common-classpath"/>
+		<pathelement location="${file.common.jar}"/>
+		<fileset dir="${dir.web-inf.lib}" includes="**/*.jar"/>
+	</path>
 
-	
-	
-    <target name="default" depends="clean, -package-common"/>
+	<path id="ds-liferay-classpath">
+		<path refid="common-classpath"/>
+		<pathelement location="${file.common.jar}"/>
+	</path>
+
+	<path id="ds-test-classpath">
+		<path refid="common-classpath"/>
+		<pathelement location="${file.common.jar}"/>
+	</path>
+
+    <target name="default" depends="clean, -package-webapp-jar"/>
 	 
 	<target name="clean">
 		<delete dir="${dir.build-artifacts}"/>
 	</target>
 	
 	
-	<target name="-package-common">
+	<target name="-package-common-jar" depends="clean">
 		<mkdir dir="${dir.build-artifacts.common}"/>
     	<javac srcdir="${dir.common}"
          	destdir="${dir.build-artifacts.common}"
-    		classpathref="common-libraries"
+    		classpathref="common-classpath"
          	debug="on"
 		/>
-		<jar destfile="${path.common.jar}"
+		<jar destfile="${file.common.jar}"
 			basedir="${dir.build-artifacts.common}"
 		/>
 	</target>
 	
 	
-    <target name="-package-webapp">
-		<fail message="build webapp not implemented"/>
+    <target name="-package-webapp-jar" depends="clean, -package-common-jar">
+    	<mkdir dir="${dir.build-artifacts.webapp}"/>
+    	<javac srcdir="${dir.webapp}"
+         	destdir="${dir.build-artifacts.webapp}"
+    		classpathref="webapp-classpath"
+         	debug="on"
+		/>
+		<jar destfile="${file.webapp.jar}"
+			basedir="${dir.build-artifacts.webapp}"
+		/>
     </target>
 	
-    <target name="-package-ds-liferay">
-		<fail message="build ds liferay not implemented"/>
+    <target name="-package-ds-liferay" depends="clean, -package-common-jar">
+    	<mkdir dir="${dir.build-artifacts.ds.liferay}"/>
+    	<javac srcdir="${dir.ds.liferay}"
+         	destdir="${dir.build-artifacts.ds.liferay}"
+    		classpathref="ds-liferay-classpath"
+         	debug="on"
+		/>
+		<jar destfile="${file.ds.liferay.jar}"
+			basedir="${dir.build-artifacts.ds.liferay}"
+		/>
     </target>
 
-    <target name="-package-ds-test">
-		<fail message="build ds test not implemented"/>
+    <target name="-package-ds-test" depends="clean, -package-common-jar">
+    	<mkdir dir="${dir.build-artifacts.ds.test}"/>
+    	<javac srcdir="${dir.ds.test}"
+         	destdir="${dir.build-artifacts.ds.test}"
+    		classpathref="ds-test-classpath"
+         	debug="on"
+		/>
+		<jar destfile="${file.ds.test.jar}"
+			basedir="${dir.build-artifacts.ds.test}"
+		/>
     </target>
+
+	<target name="package-liferay-war" depends="clean, -package-webapp-jar, -package-ds-liferay">
+		<war destfile="${file.tori.liferay.war}" webxml="${dir.web-inf}/web.xml" manifest="${dir.meta-inf}/MANIFEST.MF">
+			<webinf dir="${dir.web-inf}"/>
+			<metainf dir="${dir.meta-inf}"/>
+			<lib dir="${dir.web-inf.lib}" includes="*.jar"/>
+			<lib dir="${dir.build-artifacts}" includes="*.jar"/>
+		</war>
+	</target>
 	
-	
-	
-	
-	
-	
+	<target name="package-test-war" depends="clean, -package-webapp-jar, -package-ds-test">
+		<war destfile="${file.tori.test.war}" webxml="${dir.web-inf}/web.xml" manifest="${dir.meta-inf}/MANIFEST.MF">
+			<webinf 
+				dir="${dir.web-inf}"
+				excludes="liferay-*, portlet.xml"
+			/>
+			<metainf dir="${dir.meta-inf}"/>
+			<lib dir="${dir.web-inf.lib}" includes="*.jar"/>
+			<lib dir="${dir.build-artifacts}" includes="*.jar"/>
+		</war>
+	</target>
 	
 	<!-- WIDGETSET COMPILATION STUFF! -->
 	<!-- Ignore, mostly.              -->
@@ -87,7 +150,7 @@
 		
 		<!-- Location of Vaadin JAR -->
 		<property name="vaadin-jar-location" 
-			      value="${path.vaadin.jar}" />
+			      value="${file.vaadin.jar}" />
 		
 		<!-- Location of project source code -->
 		<property name="src-location" 
@@ -95,7 +158,7 @@
 
 		<!-- Target where to compile server-side classes -->
 		<property name="server-side-destination" 
-			      value="${dir.build-artifacts.webapps}"/>
+			      value="${dir.build-artifacts.webapp}"/>
 		
 		<!-- Target where to compile the widget set -->
 		<property name="client-side-destination" 
@@ -149,7 +212,7 @@
 			<pathelement path="${vaadin-jar-location}" />
 			<pathelement path="${gwt-location}/gwt-user.jar" />
 			<pathelement path="${gwt-location}/gwt-dev.jar" />
-		    <fileset dir="${dir.web-inf-lib}">
+		    <fileset dir="${dir.web-inf.lib}">
 		    	<include name="*.jar"/>
 		     </fileset>
 		</path>
@@ -187,7 +250,7 @@
     </target>
 
 	<!-- Build the widget set. -->
-	<target name="compile-widgetset"
+	<target name="-compile-widgetset"
             depends="-compile-server-side, -generate-widgetset">
 		<echo >Compiling ${widgetset}...</echo>
 		
