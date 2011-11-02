@@ -56,11 +56,11 @@
 	<target name="clean">
 		<delete dir="${dir.build-artifacts}"/>
 	</target>
-	
+
 	
 	<target name="-package-common-jar" depends="clean">
 		<mkdir dir="${dir.build-artifacts.common}"/>
-    	<javac srcdir="${dir.common}"
+    	<javac srcdir="${dir.common}/src/main"
          	destdir="${dir.build-artifacts.common}"
     		classpathref="common-classpath"
          	debug="on"
@@ -73,7 +73,7 @@
 	
     <target name="-package-webapp-jar" depends="clean, -package-common-jar">
     	<mkdir dir="${dir.build-artifacts.webapp}"/>
-    	<javac srcdir="${dir.webapp}"
+    	<javac srcdir="${dir.webapp}/src/main"
          	destdir="${dir.build-artifacts.webapp}"
     		classpathref="webapp-classpath"
          	debug="on"
@@ -85,7 +85,7 @@
 	
     <target name="-package-ds-liferay" depends="clean, -package-common-jar">
     	<mkdir dir="${dir.build-artifacts.ds.liferay}"/>
-    	<javac srcdir="${dir.ds.liferay}"
+    	<javac srcdir="${dir.ds.liferay}/src/main"
          	destdir="${dir.build-artifacts.ds.liferay}"
     		classpathref="ds-liferay-classpath"
          	debug="on"
@@ -97,7 +97,7 @@
 
     <target name="-package-ds-test" depends="clean, -package-common-jar">
     	<mkdir dir="${dir.build-artifacts.ds.test}"/>
-    	<javac srcdir="${dir.ds.test}"
+    	<javac srcdir="${dir.ds.test}/src/main"
          	destdir="${dir.build-artifacts.ds.test}"
     		classpathref="ds-test-classpath"
          	debug="on"
