@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="Tori" default="default">
+<project name="Tori">
 	
 	<loadproperties srcfile="build.properties"/>
 	
@@ -58,14 +58,12 @@
 		<pathelement location="${file.common.jar}"/>
 	</path>
 
-    <target name="default" depends="clean, -package-webapp-jar"/>
-	 
 	<target name="clean">
 		<delete dir="${dir.build-artifacts}"/>
 	</target>
 
 	
-	<target name="-package-common-jar" depends="clean">
+	<target name="-package-common-jar">
 		<mkdir dir="${dir.build-artifacts.common}"/>
     	<javac srcdir="${dir.common}/src/main"
          	destdir="${dir.build-artifacts.common}"
@@ -78,7 +76,7 @@
 	</target>
 	
 	
-    <target name="-package-webapp-jar" depends="clean, -package-common-jar, -package-ds-test-jar">
+    <target name="-package-webapp-jar" depends="-package-common-jar, -package-ds-test-jar">
     	<mkdir dir="${dir.build-artifacts.webapp}"/>
     	<javac srcdir="${dir.webapp}/src/main"
          	destdir="${dir.build-artifacts.webapp}"
@@ -90,7 +88,7 @@
 		/>
     </target>
 	
-    <target name="-package-ds-liferay-jar" depends="clean, -package-common-jar">
+    <target name="-package-ds-liferay-jar" depends="-package-common-jar">
     	<mkdir dir="${dir.build-artifacts.ds.liferay}"/>
     	<javac srcdir="${dir.ds.liferay}/src/main"
          	destdir="${dir.build-artifacts.ds.liferay}"
@@ -102,7 +100,7 @@
 		/>
     </target>
 
-    <target name="-package-ds-test-jar" depends="clean, -package-common-jar">
+    <target name="-package-ds-test-jar" depends="-package-common-jar">
     	<mkdir dir="${dir.build-artifacts.ds.test}"/>
     	<javac srcdir="${dir.ds.test}/src/main"
          	destdir="${dir.build-artifacts.ds.test}"
@@ -114,7 +112,7 @@
 		/>
     </target>
 
-	<target name="package-liferay-war" depends="clean, -package-webapp-jar, -package-ds-liferay-jar, compile-widgetset">
+	<target name="package-liferay-war" depends="-check-widgetset-dependency, -package-webapp-jar, -package-ds-liferay-jar">
 		<war destfile="${file.tori.liferay.war}" webxml="${dir.web-inf}/web.xml" manifest="${dir.meta-inf}/MANIFEST.MF">
 			<webinf dir="${dir.web-inf}"/>
 			<metainf dir="${dir.meta-inf}"/>
@@ -127,7 +125,7 @@
 		</war>
 	</target>
 	
-	<target name="package-test-war" depends="clean, -package-webapp-jar, -package-ds-test-jar, compile-widgetset">
+	<target name="package-test-war" depends="-check-widgetset-dependency, -package-webapp-jar, -package-ds-test-jar">
 		<war destfile="${file.tori.test.war}" webxml="${dir.web-inf}/web.xml" manifest="${dir.meta-inf}/MANIFEST.MF">
 			<webinf 
 				dir="${dir.web-inf}"
@@ -141,6 +139,14 @@
 				prefix="VAADIN/widgetsets"
 			/>
 		</war>
+	</target>
+	
+	<target name="-check-widgetset-dependency">
+		<available file="${dir.build-artifacts.widgetsets}" property="widgetsetIsPresent" />
+		<fail 
+			unless="widgetsetIsPresent"
+			message="No compiled widgetset artifact was found in ${dir.build-artifacts.widgetsets}. Try running 'compile-widgetset' first."
+		/>
 	</target>
 	
 	<!-- WIDGETSET COMPILATION STUFF! -->
