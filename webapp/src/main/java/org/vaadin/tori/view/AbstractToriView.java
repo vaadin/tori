@@ -1,7 +1,5 @@
 package org.vaadin.tori.view;
 
-import javax.inject.Inject;
-
 import org.apache.log4j.Logger;
 import org.vaadin.navigator.Navigator;
 
@@ -35,11 +33,4 @@ public abstract class AbstractToriView<V extends View, P extends Presenter<V>>
         return null;
     }
 
-    @Inject
-    @Override
-    @SuppressWarnings("unchecked")
-    public void setPresenter(final P presenter) {
-        super.setPresenter(presenter);
-        presenter.setView((V) this);
-    }
 }
