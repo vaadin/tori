@@ -2,7 +2,6 @@ package org.vaadin.tori.dashboard;
 
 import java.util.List;
 
-import org.vaadin.tori.data.TestDataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.view.AbstractToriView;
 
@@ -17,12 +16,6 @@ public class DashboardViewImpl extends
 
     private VerticalLayout layout;
     private CategoryListing categoryListing;
-
-    @Override
-    public DashboardPresenter createPresenter() {
-        // TODO better way to inject the correct DataSource implementation
-        return new DashboardPresenter(this, new TestDataSource());
-    }
 
     @Override
     protected Component createCompositionRoot() {

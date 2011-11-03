@@ -2,6 +2,7 @@ package org.vaadin.tori;
 
 import org.vaadin.navigator.Navigator;
 import org.vaadin.tori.dashboard.DashboardViewImpl;
+import org.vaadin.tori.view.AbstractToriView;
 
 @SuppressWarnings("serial")
 public class ToriNavigator extends Navigator {
@@ -37,6 +38,24 @@ public class ToriNavigator extends Navigator {
         }
 
         setMainView(ApplicationView.getDefault().getUrl());
+    }
+
+    /**
+     * Instantiate the views with Guice to enable dependency injection.
+     */
+    @Override
+    protected View getOrCreateView(final String uri) {
+        @SuppressWarnings("unchecked")
+        final Class<? extends View> newViewClass = uriToClass.get(uri);
+        if (!classToView.containsKey(newViewClass)) {
+            @SuppressWarnings("rawtypes")
+            final AbstractToriView view = (AbstractToriView) GuiceInjector
+                    .getInstance().getInstance(newViewClass);
+            view.init(this, getApplication());
+            classToView.put(newViewClass, view);
+        }
+        final View v = classToView.get(newViewClass);
+        return v;
     }
 
 }
