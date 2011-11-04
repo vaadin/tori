@@ -25,6 +25,7 @@
 	<property name="file.webapp.jar" value="${dir.build-artifacts}/webapp.jar" />
 	<property name="file.ds.liferay.jar" value="${dir.build-artifacts}/ds-liferay.jar" />
 	<property name="file.ds.test.jar" value="${dir.build-artifacts}/ds-test.jar" />
+	<property name="file.servlet-api.jar" value="build-libs/servlet-api.jar" />
 	
 	<property name="file.tori.liferay.war" value="${dir.build-artifacts}/tori-liferay.war" />
 	<property name="file.tori.test.war" value="${dir.build-artifacts}/tori-test.war" />
@@ -38,13 +39,7 @@
 	<path id="webapp-classpath">
 		<path refid="common-classpath"/>
 		<pathelement location="${file.common.jar}"/>
-		<fileset dir="${dir.web-inf.lib}" includes="**/*.jar"/>
-	</path>
-
-	<path id="webapp-classpath-with-test-ds">
-		<path refid="common-classpath"/>
-		<pathelement location="${file.common.jar}"/>
-		<pathelement location="${file.ds.test.jar}"/>
+		<pathelement location="${file.servlet-api.jar}"/>
 		<fileset dir="${dir.web-inf.lib}" includes="**/*.jar"/>
 	</path>
 
@@ -69,6 +64,7 @@
          	destdir="${dir.build-artifacts.common}"
     		classpathref="common-classpath"
          	debug="on"
+    		includeantruntime="false"
 		/>
 		<jar destfile="${file.common.jar}"
 			basedir="${dir.build-artifacts.common}"
@@ -80,8 +76,9 @@
     	<mkdir dir="${dir.build-artifacts.webapp}"/>
     	<javac srcdir="${dir.webapp}/src/main"
          	destdir="${dir.build-artifacts.webapp}"
-    		classpathref="webapp-classpath-with-test-ds"
+    		classpathref="webapp-classpath"
          	debug="on"
+			includeantruntime="false"
 		/>
 		<jar destfile="${file.webapp.jar}"
 			basedir="${dir.build-artifacts.webapp}"
@@ -94,6 +91,7 @@
          	destdir="${dir.build-artifacts.ds.liferay}"
     		classpathref="ds-liferay-classpath"
          	debug="on"
+    		includeantruntime="false"
 		/>
 		<jar destfile="${file.ds.liferay.jar}"
 			basedir="${dir.build-artifacts.ds.liferay}"
@@ -106,6 +104,7 @@
          	destdir="${dir.build-artifacts.ds.test}"
     		classpathref="ds-test-classpath"
          	debug="on"
+    		includeantruntime="false"
 		/>
 		<jar destfile="${file.ds.test.jar}"
 			basedir="${dir.build-artifacts.ds.test}"
@@ -160,7 +159,7 @@
 		
 		<!-- Location of GWT distribution -->
 		<property name="gwt-location" 
-			      value="gwt-libs" />
+			      value="build-libs" />
 		
 		<!-- Location of Vaadin JAR -->
 		<property name="vaadin-jar-location" 
@@ -218,9 +217,10 @@
             <pathelement path="${src-location}" />
 			<pathelement path="${server-side-destination}" />
 			<pathelement path="${vaadin-jar-location}" />
-			<fileset dir="${gwt-location}">
-				<include name="*.jar"/>
-			</fileset>
+			<pathelement path="${gwt-location}/gwt-dev.jar"/>
+			<pathelement path="${gwt-location}/gwt-user.jar"/>
+			<pathelement path="${gwt-location}/validation-api-1.0.0.GA.jar"/>
+			<pathelement path="${gwt-location}/validation-api-1.0.0.GA-sources.jar"/>
 		    <fileset dir="${dir.web-inf.lib}">
 		    	<include name="*.jar"/>
 		     </fileset>
