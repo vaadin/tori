@@ -31,11 +31,22 @@ public class ToriApplication extends Application implements
 
     @Override
     public void init() {
+        checkThatCommonIsLoaded();
         resolveDataSource();
         setCurrentInstance();
 
         final Window mainWindow = new ToriWindow();
         setMainWindow(mainWindow);
+    }
+
+    private void checkThatCommonIsLoaded() {
+        try {
+            Class.forName("org.vaadin.tori.data.spi.DataSourceProvider");
+        } catch (final ClassNotFoundException e) {
+            log.error("Your project was apparently deployed without "
+                    + "the Common project (common.jar) in its classpath");
+            throw new RuntimeException(e);
+        }
     }
 
     private void resolveDataSource() {
@@ -45,10 +56,17 @@ public class ToriApplication extends Application implements
                     .newInstance();
             ds = dsFactory.createDataSource();
         } catch (final InstantiationException e) {
+            log.error("Can't use the constructor for the current datasource's "
+                    + DataSourceProvider.IMPLEMENTATION_CLASSNAME + ".");
+            log.error("Make sure it is a non-abstract class with a public no-argument constructor.");
             throw new RuntimeException(e);
         } catch (final IllegalAccessException e) {
+            log.error("DataSource's no-argument constructor seems non-public. It needs to be publicly accessible.");
             throw new RuntimeException(e);
         } catch (final ClassNotFoundException e) {
+            log.error("It seems you don't have a DataSource in your classpath, "
+                    + "or the added data source is misconfigured (see JavaDoc for "
+                    + DataSourceProvider.class.getName() + ")");
             throw new RuntimeException(e);
         }
         log.info("Using DataSource implementation: " + ds.getClass().getName());
