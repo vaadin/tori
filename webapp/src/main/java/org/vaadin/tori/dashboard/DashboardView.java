@@ -3,8 +3,7 @@ package org.vaadin.tori.dashboard;
 import java.util.List;
 
 import org.vaadin.tori.data.entity.Category;
-
-import com.github.peholmst.mvp4vaadin.View;
+import org.vaadin.tori.mvp.View;
 
 public interface DashboardView extends View {
 

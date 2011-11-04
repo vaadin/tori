@@ -13,10 +13,10 @@ public class ToriNavigator extends Navigator {
         DASHBOARD("dashboard", DashboardViewImpl.class);
 
         private String url;
-        private Class<? extends View> viewClass;
+        private Class<? extends org.vaadin.tori.mvp.View> viewClass;
 
         private ApplicationView(final String url,
-                final Class<? extends View> viewClass) {
+                final Class<? extends org.vaadin.tori.mvp.View> viewClass) {
             this.url = url;
             this.viewClass = viewClass;
         }

@@ -2,8 +2,9 @@ package org.vaadin.tori.dashboard;
 
 import java.util.List;
 
+import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.data.entity.Category;
-import org.vaadin.tori.view.AbstractToriView;
+import org.vaadin.tori.mvp.AbstractView;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
@@ -11,7 +12,7 @@ import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
 public class DashboardViewImpl extends
-        AbstractToriView<DashboardView, DashboardPresenter> implements
+        AbstractView<DashboardView, DashboardPresenter> implements
         DashboardView {
 
     private VerticalLayout layout;
@@ -34,6 +35,12 @@ public class DashboardViewImpl extends
     @Override
     public void displayCategories(final List<Category> categories) {
         categoryListing.setCategories(categories);
+    }
+
+    @Override
+    protected DashboardPresenter createPresenter() {
+        return new DashboardPresenter(ToriApplication.getCurrent()
+                .getDataSource());
     }
 
 }
