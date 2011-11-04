@@ -13,7 +13,7 @@ public class DashboardPresenter extends Presenter<DashboardView> {
 
     @Override
     public void init() {
-        getView().displayCategories(dataSource.getAllCategories());
+        getView().displayCategories(dataSource.getRootCategories());
     }
 
 }

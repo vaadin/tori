@@ -4,6 +4,7 @@ public class Category {
 
     private String name;
     private String description;
+    private long id;
 
     public String getName() {
         return name;
@@ -19,6 +20,14 @@ public class Category {
 
     public void setDescription(final String description) {
         this.description = description;
+    }
+
+    public void setId(final long id) {
+        this.id = id;
+    }
+
+    public long getId() {
+        return id;
     }
 
 }

@@ -3,6 +3,7 @@ package org.vaadin.tori.dashboard;
 import java.util.List;
 
 import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.component.CategoryListing;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.AbstractView;
 

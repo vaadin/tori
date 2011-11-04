@@ -1,4 +1,4 @@
-package org.vaadin.tori.dashboard;
+package org.vaadin.tori.component;
 
 import java.util.List;
 
@@ -20,11 +20,17 @@ public class CategoryListing extends CustomComponent {
 
     public void setCategories(final List<Category> categories) {
         layout.removeAllComponents();
+
+        int i = 0;
         for (final Category category : categories) {
-            layout.addComponent(new Label(
-                    "<h3>" + category.getName() + "</h3>", Label.CONTENT_XHTML));
+            final long id = category.getId();
+            final String name = category.getName();
+
+            layout.addComponent(new Label(String.format(
+                    "<h3><a href=\"#category/%s\">%s</a></h3>", id, name),
+                    Label.CONTENT_XHTML));
             layout.addComponent(new Label(category.getDescription()));
+            i++;
         }
     }
-
 }
