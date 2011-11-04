@@ -69,6 +69,7 @@
          	destdir="${dir.build-artifacts.common}"
     		classpathref="common-classpath"
          	debug="on"
+    		includeantruntime="false"
 		/>
 		<jar destfile="${file.common.jar}"
 			basedir="${dir.build-artifacts.common}"
@@ -82,6 +83,7 @@
          	destdir="${dir.build-artifacts.webapp}"
     		classpathref="webapp-classpath-with-test-ds"
          	debug="on"
+			includeantruntime="false"
 		/>
 		<jar destfile="${file.webapp.jar}"
 			basedir="${dir.build-artifacts.webapp}"
@@ -94,6 +96,7 @@
          	destdir="${dir.build-artifacts.ds.liferay}"
     		classpathref="ds-liferay-classpath"
          	debug="on"
+    		includeantruntime="false"
 		/>
 		<jar destfile="${file.ds.liferay.jar}"
 			basedir="${dir.build-artifacts.ds.liferay}"
@@ -106,6 +109,7 @@
          	destdir="${dir.build-artifacts.ds.test}"
     		classpathref="ds-test-classpath"
          	debug="on"
+    		includeantruntime="false"
 		/>
 		<jar destfile="${file.ds.test.jar}"
 			basedir="${dir.build-artifacts.ds.test}"
