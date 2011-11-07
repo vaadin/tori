@@ -3,6 +3,7 @@ package org.vaadin.tori;
 import org.vaadin.navigator.Navigator;
 import org.vaadin.tori.category.CategoryViewImpl;
 import org.vaadin.tori.dashboard.DashboardViewImpl;
+import org.vaadin.tori.thread.ThreadViewImpl;
 
 @SuppressWarnings("serial")
 public class ToriNavigator extends Navigator {
@@ -13,7 +14,9 @@ public class ToriNavigator extends Navigator {
     public enum ApplicationView {
         DASHBOARD("!dashboard", DashboardViewImpl.class), CATEGORIES(
                 "!category",
-                CategoryViewImpl.class);
+                CategoryViewImpl.class), THREADS(
+                "!thread",
+                ThreadViewImpl.class);
 
         private String url;
         private Class<? extends org.vaadin.tori.mvp.View> viewClass;
