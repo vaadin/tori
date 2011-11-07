@@ -12,11 +12,12 @@ public class ToriNavigator extends Navigator {
      * All the views of Tori application that can be navigated to.
      */
     public enum ApplicationView {
-        DASHBOARD("!dashboard", DashboardViewImpl.class), CATEGORIES(
-                "!category",
-                CategoryViewImpl.class), THREADS(
-                "!thread",
-                ThreadViewImpl.class);
+        // @formatter:off
+        DASHBOARD("!dashboard", DashboardViewImpl.class),
+        CATEGORIES("!category", CategoryViewImpl.class),
+        THREADS("!thread", ThreadViewImpl.class)
+        ;
+        // @formatter:on
 
         private String url;
         private Class<? extends org.vaadin.tori.mvp.View> viewClass;
