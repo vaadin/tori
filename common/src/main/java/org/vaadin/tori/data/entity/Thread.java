@@ -1,9 +1,16 @@
 package org.vaadin.tori.data.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class Thread {
 
-    private String topic;
+    @Id
+    @GeneratedValue
     private long id;
+    private String topic;
 
     public Thread() {
     }
