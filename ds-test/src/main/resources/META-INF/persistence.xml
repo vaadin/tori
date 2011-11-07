@@ -7,6 +7,8 @@
 		<!-- list of entities -->
 		<class>org.vaadin.tori.data.entity.Category</class>
 		<class>org.vaadin.tori.data.entity.Thread</class>
+		<class>org.vaadin.tori.data.entity.User</class>
+		<class>org.vaadin.tori.data.entity.Post</class>
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />

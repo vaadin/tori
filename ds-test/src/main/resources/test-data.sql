@@ -13,3 +13,17 @@ insert into THREAD set ID = 1, TOPIC = "Tori alpha 1 released";
 insert into THREAD set ID = 2, TOPIC = "Writing new messages";
 insert into THREAD set ID = 3, TOPIC = "Issues with widgetset compilation";
 insert into THREAD set ID = 4, TOPIC = "What does 'git rebase' actually do";
+
+## Users
+insert into `USER` set ID = 1, DISPLAYEDNAME = "John Doe";
+insert into `USER` set ID = 2, DISPLAYEDNAME = "Molly Townsend";
+
+## Posts
+insert into POST set ID = 1, `TIME` = "2011-10-1 12:00:00", THREAD_ID = 1, AUTHOR_ID = 1;
+insert into POST set ID = 2, `TIME` = "2011-10-2 12:00:00", THREAD_ID = 1, AUTHOR_ID = 2;
+insert into POST set ID = 3, `TIME` = "2011-10-1 12:00:00", THREAD_ID = 2, AUTHOR_ID = 1;
+insert into POST set ID = 4, `TIME` = "2011-10-2 12:00:00", THREAD_ID = 2, AUTHOR_ID = 2;
+insert into POST set ID = 5, `TIME` = "2011-10-1 12:00:00", THREAD_ID = 3, AUTHOR_ID = 1;
+insert into POST set ID = 6, `TIME` = "2011-10-2 12:00:00", THREAD_ID = 3, AUTHOR_ID = 2;
+insert into POST set ID = 7, `TIME` = "2011-10-1 12:00:00", THREAD_ID = 4, AUTHOR_ID = 1;
+insert into POST set ID = 8, `TIME` = "2011-10-2 12:00:00", THREAD_ID = 4, AUTHOR_ID = 2;

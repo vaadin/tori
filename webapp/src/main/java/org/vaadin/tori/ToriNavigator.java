@@ -3,6 +3,7 @@ package org.vaadin.tori;
 import org.vaadin.navigator.Navigator;
 import org.vaadin.tori.category.CategoryViewImpl;
 import org.vaadin.tori.dashboard.DashboardViewImpl;
+import org.vaadin.tori.mvp.NullViewImpl;
 import org.vaadin.tori.thread.ThreadViewImpl;
 
 @SuppressWarnings("serial")
@@ -15,7 +16,8 @@ public class ToriNavigator extends Navigator {
         // @formatter:off
         DASHBOARD("!dashboard", DashboardViewImpl.class),
         CATEGORIES("!category", CategoryViewImpl.class),
-        THREADS("!thread", ThreadViewImpl.class)
+        THREADS("!thread", ThreadViewImpl.class),
+        USERS("!user", NullViewImpl.class)
         ;
         // @formatter:on
 
