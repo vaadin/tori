@@ -27,7 +27,7 @@ public class CategoryListing extends CustomComponent {
             final String name = category.getName();
 
             layout.addComponent(new Label(String.format(
-                    "<h3><a href=\"#category/%s\">%s</a></h3>", id, name),
+                    "<h3><a href=\"#!category/%s\">%s</a></h3>", id, name),
                     Label.CONTENT_XHTML));
             layout.addComponent(new Label(category.getDescription()));
             i++;

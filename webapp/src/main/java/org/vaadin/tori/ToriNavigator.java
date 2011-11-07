@@ -11,8 +11,8 @@ public class ToriNavigator extends Navigator {
      * All the views of Tori application that can be navigated to.
      */
     public enum ApplicationView {
-        DASHBOARD("dashboard", DashboardViewImpl.class), CATEGORIES(
-                "category",
+        DASHBOARD("!dashboard", DashboardViewImpl.class), CATEGORIES(
+                "!category",
                 CategoryViewImpl.class);
 
         private String url;
