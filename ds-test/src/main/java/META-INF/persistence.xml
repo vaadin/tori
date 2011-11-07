@@ -17,7 +17,7 @@
 			<property name="eclipselink.ddl-generation" value="create-tables" />
 			
 			<!-- use InnoDB to support transactions -->
-			<property name="eclipselink.ddl.default-table-suffix" value="engine=InnoDB"/>
+			<property name="eclipselink.ddl-generation.table-creation-suffix" value="engine=InnoDB"/>
 		</properties>
 	</persistence-unit>
 </persistence>
