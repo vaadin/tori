@@ -35,10 +35,18 @@ public class ToriApplication extends Application implements
         resolveDataSource();
         setCurrentInstance();
 
+        setTheme("tori");
+
         final Window mainWindow = new ToriWindow();
         setMainWindow(mainWindow);
     }
 
+    /**
+     * Verifies that the common project is in the classpath
+     * 
+     * @throws RuntimeException
+     *             if Common is not in the classpath
+     */
     private void checkThatCommonIsLoaded() {
         try {
             Class.forName("org.vaadin.tori.data.spi.DataSourceProvider");
