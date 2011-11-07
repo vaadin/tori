@@ -23,7 +23,7 @@ public class PersistenceUtil {
      * 
      * @return a new EntityManager instance.
      */
-    public static EntityManager getEntityManager() {
+    public static EntityManager createEntityManager() {
         return emf.createEntityManager();
     }
 }

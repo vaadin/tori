@@ -27,7 +27,7 @@ public class TestDataSource implements DataSource {
         final BufferedReader reader = new BufferedReader(new InputStreamReader(
                 getClass().getClassLoader()
                         .getResourceAsStream("test-data.sql")));
-        final EntityManager entityManager = PersistenceUtil.getEntityManager();
+        final EntityManager entityManager = PersistenceUtil.createEntityManager();
         try {
             String sqlLine;
             while ((sqlLine = reader.readLine()) != null) {
@@ -60,17 +60,27 @@ public class TestDataSource implements DataSource {
     }
 
     private boolean isEmptyDatabase() {
-        final TypedQuery<Long> q = PersistenceUtil.getEntityManager()
-                .createQuery("select count(c) from Category c", Long.class);
-        final Long categoryCount = q.getSingleResult();
-        return categoryCount == 0;
+        final EntityManager em = PersistenceUtil.createEntityManager();
+        try {
+            final TypedQuery<Long> q = em.createQuery(
+                    "select count(c) from Category c", Long.class);
+            final Long categoryCount = q.getSingleResult();
+            return categoryCount == 0;
+        } finally {
+            em.close();
+        }
     }
 
     @Override
     public List<Category> getRootCategories() {
-        return PersistenceUtil.getEntityManager()
-                .createQuery("select c from Category c", Category.class)
-                .getResultList();
+        final EntityManager em = PersistenceUtil.createEntityManager();
+        try {
+            return em.createQuery("select c from Category c", Category.class)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+
     }
 
     @Override
@@ -90,14 +100,22 @@ public class TestDataSource implements DataSource {
 
     @Override
     public List<Thread> getThreads(final Category category) {
-        return PersistenceUtil.getEntityManager()
-                .createQuery("select t from Thread t", Thread.class)
-                .getResultList();
+        final EntityManager em = PersistenceUtil.createEntityManager();
+        try {
+            return em.createQuery("select t from Thread t", Thread.class)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
     }
 
     @Override
     public Category getCategory(final String categoryId) {
-        return PersistenceUtil.getEntityManager().find(Category.class,
-                Long.parseLong(categoryId));
+        final EntityManager em = PersistenceUtil.createEntityManager();
+        try {
+            return em.find(Category.class, Long.parseLong(categoryId));
+        } finally {
+            em.close();
+        }
     }
 }
