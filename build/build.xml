@@ -26,10 +26,20 @@
 	<property name="file.ds.liferay.jar" value="${dir.build-artifacts}/ds-liferay.jar" />
 	<property name="file.ds.test.jar" value="${dir.build-artifacts}/ds-test.jar" />
 	<property name="file.servlet-api.jar" value="build-libs/servlet-api.jar" />
+	<property name="file.findbugs-ant.jar" value="build-libs/findbugs/findbugs-ant.jar" />
+	
+	<property name="file.gwt-user.jar" value="build-libs/gwt-user.jar" />
+	<property name="file.gwt-dev.jar" value="build-libs/gwt-dev.jar" />
 	
 	<property name="file.tori.liferay.war" value="${dir.build-artifacts}/tori-liferay.war" />
 	<property name="file.tori.test.war" value="${dir.build-artifacts}/tori-test.war" />
 
+	<!-- FINDBUGS -->
+	<property name="findbugs.home" value="build-libs/findbugs"/>
+	<taskdef name="findbugs" classname="edu.umd.cs.findbugs.anttask.FindBugsTask"
+		classpath="${file.findbugs-ant.jar}"
+	/>
+	
 	<path id="common-classpath">
 		<fileset dir="${dir.common}/lib">
 		    <include name="*.jar" />
@@ -57,7 +67,6 @@
 		<delete dir="${dir.build-artifacts}"/>
 	</target>
 
-	
 	<target name="-package-common-jar">
 		<mkdir dir="${dir.build-artifacts.common}"/>
     	<javac srcdir="${dir.common}/src/main"
@@ -245,5 +254,58 @@
 		</java>
 	</target>
 	
+	
+	<!-- FINDBUGS -->
+		
+	<target name="findbugs" depends="clean">
+		<antcall target="-findbugs-common" inheritall="no"/>
+		<antcall target="-findbugs-ds-liferay" inheritall="no"/>
+		<antcall target="-findbugs-ds-test" inheritall="no"/>
+		<antcall target="-findbugs-webapp" inheritall="no"/>
+	</target>
+	
+	<target name="-findbugs-common" depends="-package-common-jar">
+		<property name="findbugs.outputfile" value="findbugs-common.xml"/>
+		<property name="findbugs.acp.refid" value="common-classpath"/>
+		<property name="findbugs.sourcepath" value="${dir.common}/src"/>
+		<property name="findbugs.target" value="${file.common.jar}"/>
+		<antcall target="-findbugs-shared-target" inheritall="yes"/>
+	</target>
+	
+	<target name="-findbugs-ds-liferay" depends="-package-ds-liferay-jar">
+		<property name="findbugs.outputfile" value="findbugs-ds-liferay.xml"/>
+		<property name="findbugs.acp.refid" value="ds-liferay-classpath"/>
+		<property name="findbugs.sourcepath" value="${dir.ds.liferay}/src"/>
+		<property name="findbugs.target" value="${file.ds.liferay.jar}"/>
+		<antcall target="-findbugs-shared-target" inheritall="yes"/>
+	</target>
+	
+	<target name="-findbugs-ds-test" depends="-package-ds-test-jar">
+		<property name="findbugs.outputfile" value="findbugs-ds-test.xml"/>
+		<property name="findbugs.acp.refid" value="ds-test-classpath"/>
+		<property name="findbugs.sourcepath" value="${dir.ds.test}/src"/>
+		<property name="findbugs.target" value="${file.ds.test.jar}}"/>
+		<antcall target="-findbugs-shared-target" inheritall="yes"/>
+	</target>
+	
+	<target name="-findbugs-webapp" depends="-package-webapp-jar">
+		<property name="findbugs.outputfile" value="findbugs-webapp.xml"/>
+		<property name="findbugs.acp.refid" value="webapp-classpath"/>
+		<property name="findbugs.sourcepath" value="${dir.webapp}/src"/>
+		<property name="findbugs.target" value="${file.webapp.jar}"/>
+		<antcall target="-findbugs-shared-target" inheritall="yes"/>
+	</target>
+	
+	<target name="-findbugs-shared-target">
+		<findbugs home="${findbugs.home}" output="xml" outputfile="${dir.build-artifacts}/${findbugs.outputfile}">
+			<auxclasspath refid="${findbugs.acp.refid}"/>
+			<auxclasspath path="${file.gwt-dev.jar}"/>
+			<auxclasspath path="${file.gwt-user.jar}"/>
+			<sourcepath path="${findbugs.sourcepath}"/>
+		 	<class location="${findbugs.target}"/>
+		</findbugs>
+	</target>
+	
+
 	
 </project>
