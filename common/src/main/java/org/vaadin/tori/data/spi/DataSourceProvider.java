@@ -9,7 +9,7 @@ import org.vaadin.tori.data.DataSource;
  */
 public interface DataSourceProvider {
 
-    public static final String IMPLEMENTATION_CLASSNAME = "org.vaadin.tori.data.DataSourceProvider";
+    public static final String IMPLEMENTATION_CLASSNAME = "org.vaadin.tori.data.DataSourceProviderImpl";
 
     /**
      * Returns a new DataSource instance.

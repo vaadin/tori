@@ -1,7 +1,8 @@
 package org.vaadin.tori.data;
 
-public class DataSourceProvider implements
-        org.vaadin.tori.data.spi.DataSourceProvider {
+import org.vaadin.tori.data.spi.DataSourceProvider;
+
+public class DataSourceProviderImpl implements DataSourceProvider {
 
     @Override
     public DataSource createDataSource() {
