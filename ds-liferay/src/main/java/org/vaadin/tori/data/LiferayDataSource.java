@@ -23,7 +23,7 @@ public class LiferayDataSource implements DataSource {
     }
 
     @Override
-    public Category getCategory(final String categoryId) {
+    public Category getCategory(final long categoryId) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 

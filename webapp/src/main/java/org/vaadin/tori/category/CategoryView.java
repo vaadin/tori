@@ -10,4 +10,6 @@ public interface CategoryView extends View {
     void displaySubCategories(List<Category> subCategories);
 
     void displayThreads(List<Thread> threadsInCategory);
+
+    void displayCategoryNotFoundError(String requestedCategoryId);
 }

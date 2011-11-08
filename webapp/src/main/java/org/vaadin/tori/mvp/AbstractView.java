@@ -14,7 +14,7 @@ import com.vaadin.ui.CustomComponent;
 public abstract class AbstractView<V extends View, P extends Presenter<V>>
         extends CustomComponent implements View {
 
-    protected static final Logger log = Logger.getLogger(AbstractView.class);
+    protected final Logger log = Logger.getLogger(getClass());
 
     private P presenter;
     private Class<V> viewClass;

@@ -13,8 +13,20 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         this.dataSource = dataSource;
     }
 
-    public void setCurrentCategoryById(final String requestedDataId) {
-        currentCategory = dataSource.getCategory(requestedDataId);
+    public void setCurrentCategoryById(final String categoryIdString) {
+        Category requestedCategory = null;
+        try {
+            final long categoryId = Long.valueOf(categoryIdString);
+            requestedCategory = dataSource.getCategory(categoryId);
+        } catch (final NumberFormatException e) {
+            log.error("Invalid category id format: " + categoryIdString);
+        }
+
+        if (requestedCategory != null) {
+            currentCategory = requestedCategory;
+        } else {
+            getView().displayCategoryNotFoundError(categoryIdString);
+        }
     }
 
     @Override

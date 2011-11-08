@@ -31,7 +31,8 @@ public interface DataSource {
     List<Thread> getThreads(Category category);
 
     /**
-     * Retrieves the Category corresponding to the id.
+     * Returns the Category corresponding to the id or {@code null} if no such
+     * Category exist.
      */
-    Category getCategory(String categoryId);
+    Category getCategory(long categoryId);
 }

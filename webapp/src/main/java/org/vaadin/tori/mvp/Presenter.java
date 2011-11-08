@@ -1,7 +1,10 @@
 package org.vaadin.tori.mvp;
 
+import org.apache.log4j.Logger;
+
 public abstract class Presenter<V extends View> {
 
+    protected final Logger log = Logger.getLogger(getClass());
     private V view;
 
     public void setView(final V view) {

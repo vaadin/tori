@@ -12,6 +12,7 @@ import org.vaadin.tori.mvp.AbstractView;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window.Notification;
 
 @SuppressWarnings("serial")
 public class CategoryViewImpl extends
@@ -54,6 +55,13 @@ public class CategoryViewImpl extends
     public void navigateTo(final String requestedDataId) {
         super.navigateTo(requestedDataId);
         super.getPresenter().setCurrentCategoryById(requestedDataId);
+    }
+
+    @Override
+    public void displayCategoryNotFoundError(final String requestedCategoryId) {
+        getWindow().showNotification(
+                "No category found for " + requestedCategoryId,
+                Notification.TYPE_ERROR_MESSAGE);
     }
 
 }

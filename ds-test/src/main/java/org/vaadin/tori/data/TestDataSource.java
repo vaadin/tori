@@ -113,11 +113,11 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public Category getCategory(final String categoryId) {
+    public Category getCategory(final long categoryId) {
         return executeWithEntityManager(new Command<Category>() {
             @Override
             public final Category execute(final EntityManager em) {
-                return em.find(Category.class, Long.parseLong(categoryId));
+                return em.find(Category.class, categoryId);
             }
         });
     }
