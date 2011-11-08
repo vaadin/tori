@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 
-public class TestCategoryPresenter {
+public class CategoryPresenterTest {
 
     private CategoryPresenter presenter;
 
