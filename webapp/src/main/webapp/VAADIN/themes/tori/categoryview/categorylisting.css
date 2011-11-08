@@ -1,0 +1,22 @@
+/* Styles for the CategoryListing component. */
+
+.v-link-categoryLink {
+	font-size: 120%;
+	font-weight: bold;
+}
+
+.categoryTree .v-table-row td,
+.categoryTree .v-table-row-odd td {
+	background: #fff;
+	border-bottom: 1px solid #dfdfdf;
+	-moz-transition: background 0.2s;
+	-webkit-transition: background 0.2s;
+	transition: background 0.2s;
+}
+.categoryTree .v-table-row:hover td,
+.categoryTree .v-table-row-odd:hover td {
+	background: #f6f6f6;	
+}
+.categoryTree .v-treetable-treespacer {
+	float: left;
+} 
