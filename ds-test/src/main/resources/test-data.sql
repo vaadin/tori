@@ -8,6 +8,10 @@ insert into CATEGORY set ID = 2, NAME = "Using the Forums", DESCRIPTION = "Guide
 insert into CATEGORY set ID = 3, NAME = "Vaadin Discussion", DESCRIPTION = "All Vaadin related discussion.";
 insert into CATEGORY set ID = 4, NAME = "Git Discussion", DESCRIPTION = "All Git related discussion.";
 
+# SubCategories
+insert into CATEGORY set ID = 5, PARENTCATEGORY_ID = 1, NAME = "News", DESCRIPTION = "All news.";
+insert into CATEGORY set ID = 6, PARENTCATEGORY_ID = 1, NAME = "Announcements", DESCRIPTION = "All announcements.";
+
 # Threads
 insert into THREAD set ID = 1, TOPIC = "Tori alpha 1 released";
 insert into THREAD set ID = 2, TOPIC = "Writing new messages";

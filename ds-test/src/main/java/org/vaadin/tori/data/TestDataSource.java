@@ -12,8 +12,6 @@ import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.Thread;
 import org.vaadin.tori.data.util.PersistenceUtil;
 
-import com.google.common.collect.Lists;
-
 public class TestDataSource implements DataSource {
 
     public TestDataSource() {
@@ -80,7 +78,9 @@ public class TestDataSource implements DataSource {
         return executeWithEntityManager(new Command<List<Category>>() {
             @Override
             public final List<Category> execute(final EntityManager em) {
-                return em.createQuery("select c from Category c",
+                return em.createQuery(
+                        "select c from Category c "
+                                + "where c.parentCategory is null",
                         Category.class).getResultList();
             }
         });
@@ -88,17 +88,16 @@ public class TestDataSource implements DataSource {
 
     @Override
     public List<Category> getSubCategories(final Category category) {
-        final Category sub1 = new Category();
-        sub1.setId(101);
-        sub1.setName("SubCategory 1");
-        sub1.setDescription("A sub-category that pops up everywhere");
-
-        final Category sub2 = new Category();
-        sub2.setId(102);
-        sub2.setName("SubCategory 2");
-        sub2.setDescription("Another sub-category that pops up everywhere");
-
-        return Lists.newArrayList(sub1, sub2);
+        return executeWithEntityManager(new Command<List<Category>>() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public List<Category> execute(final EntityManager em) {
+                return em
+                        .createQuery(
+                                "select c from Category c where c.parentCategory = :parent")
+                        .setParameter("parent", category).getResultList();
+            }
+        });
     }
 
     @Override

@@ -54,7 +54,8 @@ public class CategoryViewImpl extends
     @Override
     public void navigateTo(final String requestedDataId) {
         super.navigateTo(requestedDataId);
-        super.getPresenter().setCurrentCategoryById(requestedDataId);
+        super.getPresenter().setCurrentCategoryById(
+                Long.parseLong(requestedDataId));
     }
 
     @Override
