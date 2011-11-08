@@ -29,6 +29,10 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         }
     }
 
+    public Category getCurrentCategory() {
+        return currentCategory;
+    }
+
     @Override
     public void init() {
         final CategoryView view = getView();
