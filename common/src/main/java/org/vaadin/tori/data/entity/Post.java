@@ -26,11 +26,11 @@ public class Post extends AbstractEntity {
     }
 
     public void setTime(final Date time) {
-        this.time = time;
+        this.time = (Date) time.clone();
     }
 
     public Date getTime() {
-        return time;
+        return (Date) time.clone();
     }
 
     public void setThread(final Thread thread) {
