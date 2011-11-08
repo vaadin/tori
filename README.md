@@ -10,6 +10,5 @@ Tori is a forum project built upon Vaadin.
 
 ## 3rd Party Libraries
 
-[PrettyTime](http://ocpsoft.com/prettytime/) -- LGPL3
-...  among others  
-
+[PrettyTime](http://ocpsoft.com/prettytime/) -- LGPL3  
+...  among others 
