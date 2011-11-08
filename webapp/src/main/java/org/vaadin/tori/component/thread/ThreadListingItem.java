@@ -1,11 +1,11 @@
 package org.vaadin.tori.component.thread;
 
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.Thread;
 import org.vaadin.tori.data.entity.User;
 
+import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 
@@ -52,8 +52,7 @@ public class ThreadListingItem extends CustomComponent {
 
     private static final String getLatestPostXhtml(final Thread thread) {
         final Post latestPost = thread.getLatestPost();
-        final String time = ToriUtil
-                .getRelativeTimeString(latestPost.getTime());
+        final String time = new PrettyTime().format(latestPost.getTime());
         final String authorName = latestPost.getAuthor().getDisplayedName();
         return String.format("<div class=\"latest-post\">" //
                 + "<div class=\"time\">%s</div>" //
