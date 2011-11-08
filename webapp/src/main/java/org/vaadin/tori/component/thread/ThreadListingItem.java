@@ -14,9 +14,9 @@ public class ThreadListingItem extends CustomComponent {
 
     public ThreadListingItem(final Thread thread) {
 
-        final String topicXhtml = getTopicXtml(thread);
-        final String startedByXhtml = getStartedByXtml(thread);
-        final String postsXhtml = getPostsXtml(thread);
+        final String topicXhtml = getTopicXhtml(thread);
+        final String startedByXhtml = getStartedByXhtml(thread);
+        final String postsXhtml = getPostsXhtml(thread);
         final String latestPostXhtml = getLatestPostXhtml(thread);
 
         final String rowXhtml = "<div class=\"thread-listing-item\">"
@@ -26,7 +26,7 @@ public class ThreadListingItem extends CustomComponent {
         setCompositionRoot(new Label(rowXhtml, Label.CONTENT_XHTML));
     }
 
-    private static final String getTopicXtml(final Thread thread) {
+    private static final String getTopicXhtml(final Thread thread) {
         final String threadUrl = ToriNavigator.ApplicationView.THREADS.getUrl();
         final long id = thread.getId();
         final String topic = thread.getTopic();
@@ -35,7 +35,7 @@ public class ThreadListingItem extends CustomComponent {
                 threadUrl, id, topic);
     }
 
-    private static final String getStartedByXtml(final Thread thread) {
+    private static final String getStartedByXhtml(final Thread thread) {
         final User op = thread.getOriginalPoster();
         final String url = ToriNavigator.ApplicationView.USERS.getUrl();
         final long posterId = op.getId();
@@ -45,7 +45,7 @@ public class ThreadListingItem extends CustomComponent {
                 url, posterId, name);
     }
 
-    private static final String getPostsXtml(final Thread thread) {
+    private static final String getPostsXhtml(final Thread thread) {
         return String.format("<div class=\"posts\">%s</div>",
                 thread.getPostCount());
     }
