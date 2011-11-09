@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
@@ -14,6 +15,9 @@ public class DiscussionThread extends AbstractEntity {
 
     @OneToMany(mappedBy = "thread")
     private List<Post> posts;
+
+    @ManyToOne
+    private Category category;
 
     public DiscussionThread() {
     }
@@ -73,6 +77,14 @@ public class DiscussionThread extends AbstractEntity {
         } else {
             return null;
         }
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(final Category category) {
+        this.category = category;
     }
 
 }

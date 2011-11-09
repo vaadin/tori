@@ -13,10 +13,10 @@ insert into CATEGORY set ID = 5, PARENTCATEGORY_ID = 1, NAME = "News", DESCRIPTI
 insert into CATEGORY set ID = 6, PARENTCATEGORY_ID = 1, NAME = "Announcements", DESCRIPTION = "All announcements.";
 
 # Threads
-insert into DISCUSSIONTHREAD set ID = 1, TOPIC = "Tori alpha 1 released";
-insert into DISCUSSIONTHREAD set ID = 2, TOPIC = "Writing new messages";
-insert into DISCUSSIONTHREAD set ID = 3, TOPIC = "Issues with widgetset compilation";
-insert into DISCUSSIONTHREAD set ID = 4, TOPIC = "What does 'git rebase' actually do";
+insert into DISCUSSIONTHREAD set ID = 1, CATEGORY_ID = 5, TOPIC = "Tori alpha 1 released";
+insert into DISCUSSIONTHREAD set ID = 2, CATEGORY_ID = 2, TOPIC = "Writing new messages";
+insert into DISCUSSIONTHREAD set ID = 3, CATEGORY_ID = 3, TOPIC = "Issues with widgetset compilation";
+insert into DISCUSSIONTHREAD set ID = 4, CATEGORY_ID = 4, TOPIC = "What does 'git rebase' actually do";
 
 ## Users
 insert into `USER` set ID = 1, DISPLAYEDNAME = "John Doe";
