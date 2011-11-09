@@ -22,6 +22,7 @@ public class CategoryViewImpl extends
     private VerticalLayout layout;
     private ThreadListing threadListing;
     private CategoryListing categoryListing;
+    private VerticalLayout categoryLayout;
 
     @Override
     protected Component createCompositionRoot() {
@@ -30,9 +31,12 @@ public class CategoryViewImpl extends
 
     @Override
     public void initView() {
-        layout.addComponent(new HeadingLabel("Contained Categories",
+        categoryLayout = new VerticalLayout();
+        categoryLayout.addComponent(new HeadingLabel("Contained Categories",
                 HeadingLevel.H2));
-        layout.addComponent(categoryListing = new CategoryListing());
+        categoryLayout.addComponent(categoryListing = new CategoryListing());
+        layout.addComponent(categoryLayout);
+
         layout.addComponent(new HeadingLabel("Threads", HeadingLevel.H2));
         layout.addComponent(threadListing = new ThreadListing());
     }
@@ -45,6 +49,9 @@ public class CategoryViewImpl extends
 
     @Override
     public void displaySubCategories(final List<Category> subCategories) {
+        // show contained categories only if there are any
+        categoryLayout.setVisible(!subCategories.isEmpty());
+
         categoryListing.setCategories(subCategories);
     }
 
