@@ -4,11 +4,12 @@ import java.util.List;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.component.CategoryListing;
+import org.vaadin.tori.component.HeadingLabel;
+import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.AbstractView;
 
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
@@ -27,7 +28,7 @@ public class DashboardViewImpl extends
 
     @Override
     public void initView() {
-        layout.addComponent(new Label("Pick a Category"));
+        layout.addComponent(new HeadingLabel("Pick a Category", HeadingLevel.H2));
 
         categoryListing = new CategoryListing();
         layout.addComponent(categoryListing);

@@ -4,13 +4,14 @@ import java.util.List;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.component.CategoryListing;
+import org.vaadin.tori.component.HeadingLabel;
+import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.component.thread.ThreadListing;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.Thread;
 import org.vaadin.tori.mvp.AbstractView;
 
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 
@@ -29,9 +30,10 @@ public class CategoryViewImpl extends
 
     @Override
     public void initView() {
-        layout.addComponent(new Label("Contained Categories"));
+        layout.addComponent(new HeadingLabel("Contained Categories",
+                HeadingLevel.H2));
         layout.addComponent(categoryListing = new CategoryListing());
-        layout.addComponent(new Label("Threads"));
+        layout.addComponent(new HeadingLabel("Threads", HeadingLevel.H2));
         layout.addComponent(threadListing = new ThreadListing());
     }
 
