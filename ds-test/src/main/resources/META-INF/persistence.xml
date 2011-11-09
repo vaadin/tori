@@ -6,7 +6,7 @@
 	
 		<!-- list of entities -->
 		<class>org.vaadin.tori.data.entity.Category</class>
-		<class>org.vaadin.tori.data.entity.Thread</class>
+		<class>org.vaadin.tori.data.entity.DiscussionThread</class>
 		<class>org.vaadin.tori.data.entity.User</class>
 		<class>org.vaadin.tori.data.entity.Post</class>
 		

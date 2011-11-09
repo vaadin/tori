@@ -105,8 +105,8 @@ public class TestDataSource implements DataSource {
         return executeWithEntityManager(new Command<List<DiscussionThread>>() {
             @Override
             public final List<DiscussionThread> execute(final EntityManager em) {
-                return em.createQuery("select t from Thread t", DiscussionThread.class)
-                        .getResultList();
+                return em.createQuery("select t from DiscussionThread t",
+                        DiscussionThread.class).getResultList();
             }
         });
     }
