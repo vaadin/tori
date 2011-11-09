@@ -4,7 +4,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import org.apache.log4j.Logger;
-import org.vaadin.navigator.Navigator;
+import org.vaadin.tori.ToriNavigator;
 
 import com.vaadin.Application;
 import com.vaadin.ui.Component;
@@ -35,7 +35,8 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
     protected abstract P createPresenter();
 
     @Override
-    public void init(final Navigator navigator, final Application application) {
+    public void init(final ToriNavigator navigator,
+            final Application application) {
         if (log.isDebugEnabled()) {
             log.debug("Initializing view " + getClass().getName());
         }

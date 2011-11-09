@@ -4,8 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.vaadin.navigator.Navigator;
-import org.vaadin.navigator.Navigator.NavigableApplication;
+import org.vaadin.tori.ToriNavigator.NavigableApplication;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.spi.DataSourceProvider;
 
@@ -83,7 +82,7 @@ public class ToriApplication extends Application implements
     @Override
     public Window getWindow(final String name) {
         // Delegate the multiple browser window/tab handling to Navigator
-        return Navigator.getWindow(this, name, super.getWindow(name));
+        return ToriNavigator.getWindow(this, name, super.getWindow(name));
     }
 
     @Override
