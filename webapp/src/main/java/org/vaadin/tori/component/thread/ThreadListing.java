@@ -4,23 +4,66 @@ import java.util.List;
 
 import org.vaadin.tori.data.entity.DiscussionThread;
 
+import com.vaadin.data.Item;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Table;
 
+/**
+ * UI component for displaying a vertical hierarchical list of threads.
+ */
 @SuppressWarnings("serial")
 public class ThreadListing extends CustomComponent {
 
-    private final VerticalLayout layout = new VerticalLayout();
+    private final ThreadTable categoryTree;
 
     public ThreadListing() {
-        setCompositionRoot(layout);
+        categoryTree = new ThreadTable();
+        setCompositionRoot(categoryTree);
     }
 
-    public void setThreads(final List<DiscussionThread> threadsInCategory) {
-        layout.removeAllComponents();
+    public void setThreads(final List<DiscussionThread> threads) {
+        categoryTree.removeAllItems();
+        for (final DiscussionThread thread : threads) {
+            categoryTree.addThread(thread);
+        }
+    }
 
-        for (final DiscussionThread thread : threadsInCategory) {
-            layout.addComponent(new ThreadListingItem(thread));
+    private static class ThreadTable extends Table {
+        private static final String PROPERTY_ID_TOPIC = "Topic";
+        private static final String PROPERTY_ID_STARTEDBY = "Started by";
+        private static final String PROPERTY_ID_POSTS = "Posts";
+        private static final String PROPERTY_ID_LATESTPOST = "Latest post";
+
+        public ThreadTable() {
+            setStyleName("threadTable");
+
+            // set container properties
+            addContainerProperty(PROPERTY_ID_TOPIC, Component.class, null);
+            addContainerProperty(PROPERTY_ID_STARTEDBY, String.class, "");
+            addContainerProperty(PROPERTY_ID_POSTS, Integer.class, 0);
+            addContainerProperty(PROPERTY_ID_LATESTPOST, Component.class, null);
+
+            setColumnWidth(PROPERTY_ID_STARTEDBY, 150);
+            setColumnWidth(PROPERTY_ID_POSTS, 50);
+            setColumnWidth(PROPERTY_ID_LATESTPOST, 150);
+
+            // set visual properties
+            setWidth("100%");
+        }
+
+        public void addThread(final DiscussionThread thread) {
+            final Item item = addItem(thread);
+            item.getItemProperty(PROPERTY_ID_TOPIC).setValue(
+                    new TopicComponent(thread));
+            item.getItemProperty(PROPERTY_ID_STARTEDBY).setValue(
+                    thread.getOriginalPoster().getDisplayedName());
+            item.getItemProperty(PROPERTY_ID_POSTS).setValue(
+                    thread.getPostCount());
+            item.getItemProperty(PROPERTY_ID_LATESTPOST).setValue(
+                    new LatestPostComponent(thread));
+
+            setPageLength(this.size());
         }
     }
 }
