@@ -121,6 +121,28 @@ public class TestDataSource implements DataSource {
         });
     }
 
+    @Override
+    public long getThreadCount(final Category category) {
+        return executeWithEntityManager(new Command<Long>() {
+            @Override
+            public Long execute(final EntityManager em) {
+                final TypedQuery<Long> query = em
+                        .createQuery(
+                                "select count(t) from DiscussionThread t where t.category = :category",
+                                Long.class);
+                query.setParameter("category", category);
+
+                long threadCount = query.getSingleResult();
+                // recursively add thread count of all sub categories
+                for (final Category subCategory : category.getSubCategories()) {
+                    threadCount += TestDataSource.this
+                            .getThreadCount(subCategory);
+                }
+                return threadCount;
+            }
+        });
+    }
+
     /**
      * Convenience method to execute a {@link Command} with an EntityManager
      * instance that will always be closed after the execution.

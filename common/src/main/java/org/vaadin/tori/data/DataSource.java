@@ -35,4 +35,14 @@ public interface DataSource {
      * Category exist.
      */
     Category getCategory(long categoryId);
+
+    /**
+     * Returns the number {@link DiscussionThread}s in the given
+     * {@link Category}.
+     * 
+     * @param category
+     *            Category from which to count the threads.
+     * @return number of {@link DiscussionThread}s
+     */
+    long getThreadCount(Category category);
 }
