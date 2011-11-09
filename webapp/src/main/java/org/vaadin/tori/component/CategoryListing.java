@@ -12,6 +12,10 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.Tree.CollapseEvent;
+import com.vaadin.ui.Tree.CollapseListener;
+import com.vaadin.ui.Tree.ExpandEvent;
+import com.vaadin.ui.Tree.ExpandListener;
 import com.vaadin.ui.TreeTable;
 
 /**
@@ -34,7 +38,8 @@ public class CategoryListing extends CustomComponent {
         }
     }
 
-    private static class CategoryTreeTable extends TreeTable {
+    private static class CategoryTreeTable extends TreeTable implements
+            CollapseListener, ExpandListener {
         private static final String PROPERTY_ID_THREADS = "Threads";
         private static final String PROPERTY_ID_UNREAD = "Unread Threads";
         private static final String PROPERTY_ID_CATEGORY = "Category";
@@ -49,8 +54,9 @@ public class CategoryListing extends CustomComponent {
 
             // set visual properties
             setWidth("100%");
-            setHeight(null);
             setColumnHeaderMode(COLUMN_HEADER_MODE_HIDDEN);
+            addListener((CollapseListener) this);
+            addListener((ExpandListener) this);
         }
 
         public void addCategory(final Category category, final Category parent) {
@@ -74,7 +80,19 @@ public class CategoryListing extends CustomComponent {
                     addCategory(subCategory, category);
                 }
             }
+            setPageLength(this.size());
         }
+
+        @Override
+        public void nodeExpand(final ExpandEvent event) {
+            setPageLength(this.size());
+        }
+
+        @Override
+        public void nodeCollapse(final CollapseEvent event) {
+            setPageLength(this.size());
+        }
+
     }
 
     /**
