@@ -1,7 +1,13 @@
 @import url(../reindeer/styles.css);
 @import url(categoryview/style.css);
 
+.v-app {
+	font-size: 14px;
+}
+
+a:link, 
 .v-link a:link span,
+a:visited, 
 .v-link a:visited span {
 	color: #00b4f0;
 	text-decoration: none;

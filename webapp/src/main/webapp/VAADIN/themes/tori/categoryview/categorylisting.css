@@ -1,7 +1,7 @@
 /* Styles for the CategoryListing component. */
 
 .v-link-categoryLink {
-	font-size: 120%;
+	font-size: 110%;
 	font-weight: bold;
 }
 
@@ -19,4 +19,5 @@
 }
 .categoryTree .v-treetable-treespacer {
 	float: left;
-} 
+	height: 13px;
+}
