@@ -1,5 +1,7 @@
 package org.vaadin.tori;
 
+import org.vaadin.tori.component.Breadcrumbs;
+
 import com.vaadin.ui.Window;
 
 /**
@@ -14,7 +16,7 @@ public class ToriWindow extends Window {
 
     public ToriWindow() {
         super("Tori");
-        // addComponent(new Breadcrumbs(navigator));
+        addComponent(new Breadcrumbs(navigator));
         addComponent(navigator);
     }
 }

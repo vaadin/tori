@@ -93,10 +93,8 @@ public class ToriNavigator extends CustomComponent {
         if ("".equals(newFragment)) {
             newFragment = mainViewUri;
         }
-        final int i = newFragment.indexOf('/');
-        final String uri = i < 0 ? newFragment : newFragment.substring(0, i);
-        final String requestedDataId = i < 0 || i + 1 == newFragment.length() ? null
-                : newFragment.substring(i + 1);
+        final String uri = getUriFromFragment(newFragment);
+        final String requestedDataId = getDataIdFromFragment(newFragment);
         if (uriToClass.containsKey(uri)) {
             final View newView = getOrCreateView(uri);
 
@@ -111,6 +109,25 @@ public class ToriNavigator extends CustomComponent {
         } else {
             uriFragmentUtil.setFragment(currentFragment, false);
         }
+    }
+
+    private static String getUriFromFragment(final String fragment) {
+        final int i = fragment.indexOf('/');
+        if (i < 0) {
+            return fragment;
+        } else {
+            return fragment.substring(0, i);
+        }
+    }
+
+    private static String getDataIdFromFragment(final String fragment) {
+        final int i = fragment.indexOf('/');
+        if (i < 0 || i + 1 == fragment.length()) {
+            return null;
+        } else {
+            return fragment.substring(i + 1);
+        }
+
     }
 
     private void confirmedMoveToNewView(final String requestedDataId,
@@ -469,6 +486,32 @@ public class ToriNavigator extends CustomComponent {
         }
         w.open(new ExternalResource(w.getURL()));
         return w;
+    }
+
+    /**
+     * In a URI fragment of <code>#foo/bar</code>, this will return
+     * <code>foo</code>. If no fragment is set, this returns <code>null</code>
+     */
+    public String getCurrentUri() {
+        final String fragment = uriFragmentUtil.getFragment();
+        if (fragment != null) {
+            return getUriFromFragment(fragment);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * In a URI fragment of <code>#foo/bar</code>, this will return
+     * <code>bar</code>. If no fragment is set, this returns <code>null</code>
+     */
+    public String getCurrentDataId() {
+        final String fragment = uriFragmentUtil.getFragment();
+        if (fragment != null) {
+            return getDataIdFromFragment(fragment);
+        } else {
+            return null;
+        }
     }
 
 }
