@@ -2,6 +2,7 @@ package org.vaadin.tori.component;
 
 import java.util.List;
 
+import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.data.entity.Category;
 
@@ -60,11 +61,15 @@ public class CategoryListing extends CustomComponent {
         }
 
         public void addCategory(final Category category, final Category parent) {
+            final CategoryLayout categoryLayout = new CategoryLayout(category);
+            final long threadCount = getThreadCount(category);
+            final long unreadThreadCount = getUnreadThreadCount(category);
+
             final Item item = addItem(category);
-            item.getItemProperty(PROPERTY_ID_CATEGORY).setValue(
-                    new CategoryLayout(category));
-            item.getItemProperty(PROPERTY_ID_UNREAD).setValue(0);
-            item.getItemProperty(PROPERTY_ID_THREADS).setValue(0);
+            item.getItemProperty(PROPERTY_ID_CATEGORY).setValue(categoryLayout);
+            item.getItemProperty(PROPERTY_ID_UNREAD).setValue(threadCount);
+            item.getItemProperty(PROPERTY_ID_THREADS).setValue(
+                    unreadThreadCount);
             if (parent != null) {
                 setParent(category, parent);
             }
@@ -81,6 +86,16 @@ public class CategoryListing extends CustomComponent {
                 }
             }
             setPageLength(this.size());
+        }
+
+        private long getUnreadThreadCount(final Category category) {
+            // TODO get the number of unread threads
+            return getThreadCount(category);
+        }
+
+        private long getThreadCount(final Category category) {
+            return ToriApplication.getCurrent().getDataSource()
+                    .getThreadCount(category);
         }
 
         @Override
