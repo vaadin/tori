@@ -3,3 +3,27 @@
 	height: 100%;
 	width: 100%;
 }
+
+.threadTable .v-table-caption-container {
+	text-transform: none;
+	text-shadow: none;
+	font-weight: normal;
+}
+
+.threadTable .v-table-header-wrap {
+	background-image: none;
+}
+
+.threadTable .v-table-row td,
+.threadTable .v-table-row-odd td {
+	background: #fff;
+	border-bottom: 1px solid #dfdfdf;
+	-moz-transition: background 0.2s;
+	-webkit-transition: background 0.2s;
+	transition: background 0.2s;
+}
+
+.threadTable .v-table-row:last-child td,
+.threadTable .v-table-row-odd:last-child td {
+	border-bottom: 0;
+}
