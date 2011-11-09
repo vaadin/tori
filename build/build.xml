@@ -12,6 +12,7 @@
 	<property name="dir.build-artifacts" value="artifacts" />
 	<property name="dir.build-artifacts.common" value="${dir.build-artifacts}/common" />
 	<property name="dir.build-artifacts.webapp" value="${dir.build-artifacts}/webapp" />
+	<property name="dir.build-artifacts.tests" value="${dir.build-artifacts}/tests" />
 	<property name="dir.build-artifacts.widgetsets" value="${dir.build-artifacts}/widgetsets" />
 	<property name="dir.build-artifacts.ds.liferay" value="${dir.build-artifacts}/ds-liferay" />
 	<property name="dir.build-artifacts.ds.test" value="${dir.build-artifacts}/ds-test" />
@@ -30,6 +31,11 @@
 	
 	<property name="file.gwt-user.jar" value="build-libs/gwt-user.jar" />
 	<property name="file.gwt-dev.jar" value="build-libs/gwt-dev.jar" />
+	
+	<property name="file.junit.jar" value="build-libs/junit-4.10.jar" />
+	<property name="file.mockito.jar" value="build-libs/mockito-all-1.8.5.jar" />
+	<property name="class.testsuite.webapp" value="org.vaadin.tori.WebappTestSuite" />
+	<property name="class.testsuite.common" value="org.vaadin.tori.CommonTestSuite" />
 	
 	<property name="file.tori.liferay.war" value="${dir.build-artifacts}/tori-liferay.war" />
 	<property name="file.tori.test.war" value="${dir.build-artifacts}/tori-test.war" />
@@ -63,6 +69,11 @@
 		<pathelement location="${file.common.jar}"/>
 	</path>
 
+	<path id="test-classpath">
+		<pathelement location="${file.junit.jar}"/>
+		<pathelement location="${file.mockito.jar}"/>
+	</path>
+	
 	<target name="clean">
 		<delete dir="${dir.build-artifacts}"/>
 	</target>
@@ -147,6 +158,56 @@
 				prefix="VAADIN/widgetsets"
 			/>
 		</war>
+	</target>
+	
+	<target name="-compile-all-tests" depends="-package-webapp-jar, -package-common-jar">
+		<mkdir dir="${dir.build-artifacts.tests}"/>
+    	<javac srcdir="${dir.webapp}/src/test"
+         	destdir="${dir.build-artifacts.tests}"
+         	debug="on"
+			includeantruntime="false">
+    		<classpath>
+    			<path refid="test-classpath"/>
+    			<path refid="webapp-classpath"/>
+    			<path location="${file.webapp.jar}"/>
+    		</classpath>
+    	</javac>
+		<javac srcdir="${dir.common}/src/test"
+         	destdir="${dir.build-artifacts.tests}"
+         	debug="on"
+			includeantruntime="false">
+    		<classpath>
+    			<path refid="test-classpath"/>
+    			<path refid="common-classpath"/>
+    			<path location="${file.common.jar}"/>
+    		</classpath>
+    	</javac>
+	</target>
+	
+	<target name="test-webapp" depends="-compile-all-tests">
+		<junit fork="yes" haltonfailure="yes">
+			<test name="${class.testsuite.webapp}"></test>
+			<formatter type="plain" usefile="false"/>
+			<classpath>
+				<path refid="test-classpath"/>
+				<path refid="webapp-classpath"/>
+				<path location="${file.webapp.jar}"/>
+				<pathelement path="${dir.build-artifacts.tests}"/>
+			</classpath>
+		</junit>
+	</target>
+	
+	<target name="test-common" depends="-compile-all-tests">
+		<junit fork="yes" haltonfailure="yes">
+			<test name="${class.testsuite.common}"></test>
+			<formatter type="plain" usefile="false"/>
+			<classpath>
+				<path refid="test-classpath"/>
+				<path refid="common-classpath"/>
+				<path location="${file.common.jar}"/>
+				<pathelement path="${dir.build-artifacts.tests}"/>
+			</classpath>
+		</junit>
 	</target>
 	
 	<target name="-check-widgetset-dependency">
@@ -305,7 +366,5 @@
 		 	<class location="${findbugs.target}"/>
 		</findbugs>
 	</target>
-	
-
 	
 </project>
