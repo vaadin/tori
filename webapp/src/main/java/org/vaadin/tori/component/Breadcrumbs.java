@@ -2,7 +2,9 @@ package org.vaadin.tori.component;
 
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriNavigator.ViewChangeListener;
+import org.vaadin.tori.category.CategoryView;
 import org.vaadin.tori.mvp.View;
+import org.vaadin.tori.thread.ThreadView;
 
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
@@ -36,22 +38,23 @@ public class Breadcrumbs extends CustomComponent {
         layout.removeAllComponents();
         layout.addComponent(new Label("Dashboard"));
 
-        final String uri = navigator.getCurrentUri();
-        if (ToriNavigator.ApplicationView.THREADS.getUrl().equals(uri)) {
-            paintForThread();
-        } else if (ToriNavigator.ApplicationView.CATEGORIES.getUrl()
-                .equals(uri)) {
-            paintForCategory();
+        final View currentView = navigator.getCurrentView();
+        if (currentView instanceof CategoryView) {
+            final CategoryView categoryView = (CategoryView) currentView;
+            paint(categoryView);
+        } else if (currentView instanceof ThreadView) {
+            final ThreadView threadView = (ThreadView) currentView;
+            paint(threadView);
         }
     }
 
-    private void paintForThread() {
+    private void paint(final ThreadView threadView) {
         // TODO
         layout.removeAllComponents();
         layout.addComponent(new Label("Dashboard > Category > Thread"));
     }
 
-    private void paintForCategory() {
+    private void paint(final CategoryView categoryView) {
         // TODO
         layout.removeAllComponents();
         layout.addComponent(new Label("Dashboard > Category"));

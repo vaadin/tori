@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import org.vaadin.tori.category.CategoryViewImpl;
 import org.vaadin.tori.dashboard.DashboardViewImpl;
+import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.mvp.NullViewImpl;
 import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.thread.ThreadViewImpl;
@@ -41,10 +42,10 @@ public class ToriNavigator extends CustomComponent {
         // @formatter:on
 
         private String url;
-        private Class<? extends org.vaadin.tori.mvp.View> viewClass;
+        private Class<? extends AbstractView<?, ?>> viewClass;
 
         private ApplicationView(final String url,
-                final Class<? extends org.vaadin.tori.mvp.View> viewClass) {
+                final Class<? extends AbstractView<?, ?>> viewClass) {
             this.url = url;
             this.viewClass = viewClass;
         }
@@ -58,9 +59,9 @@ public class ToriNavigator extends CustomComponent {
         }
     }
 
-    private final HashMap<String, Class<? extends View>> uriToClass = new HashMap<String, Class<? extends View>>();
-    private final HashMap<Class<? extends View>, String> classToUri = new HashMap<Class<? extends View>, String>();
-    private final HashMap<Class<? extends View>, View> classToView = new HashMap<Class<? extends View>, View>();
+    private final HashMap<String, Class<? extends AbstractView<?, ?>>> uriToClass = new HashMap<String, Class<? extends AbstractView<?, ?>>>();
+    private final HashMap<Class<? extends AbstractView<?, ?>>, String> classToUri = new HashMap<Class<? extends AbstractView<?, ?>>, String>();
+    private final HashMap<Class<? extends AbstractView<?, ?>>, AbstractView<?, ?>> classToView = new HashMap<Class<? extends AbstractView<?, ?>>, AbstractView<?, ?>>();
     private String mainViewUri = null;
     private final VerticalLayout layout = new VerticalLayout();
     private final UriFragmentUtility uriFragmentUtil = new UriFragmentUtility();
@@ -96,7 +97,7 @@ public class ToriNavigator extends CustomComponent {
         final String uri = getUriFromFragment(newFragment);
         final String requestedDataId = getDataIdFromFragment(newFragment);
         if (uriToClass.containsKey(uri)) {
-            final View newView = getOrCreateView(uri);
+            final AbstractView<?, ?> newView = getOrCreateView(uri);
 
             final String warn = currentView == null ? null : currentView
                     .getWarningForNavigatingFrom();
@@ -131,7 +132,7 @@ public class ToriNavigator extends CustomComponent {
     }
 
     private void confirmedMoveToNewView(final String requestedDataId,
-            final View newView, final String warn) {
+            final AbstractView<?, ?> newView, final String warn) {
         final VerticalLayout lo = new VerticalLayout();
         lo.setMargin(true);
         lo.setSpacing(true);
@@ -168,11 +169,12 @@ public class ToriNavigator extends CustomComponent {
         lo.setComponentAlignment(h, Alignment.MIDDLE_RIGHT);
     }
 
-    private View getOrCreateView(final String uri) {
-        final Class<? extends View> newViewClass = uriToClass.get(uri);
+    private AbstractView<?, ?> getOrCreateView(final String uri) {
+        final Class<? extends AbstractView<?, ?>> newViewClass = uriToClass
+                .get(uri);
         if (!classToView.containsKey(newViewClass)) {
             try {
-                final View view = newViewClass.newInstance();
+                final AbstractView<?, ?> view = newViewClass.newInstance();
                 view.init(this, getApplication());
                 classToView.put(newViewClass, view);
             } catch (final InstantiationException e) {
@@ -183,12 +185,12 @@ public class ToriNavigator extends CustomComponent {
                 throw new RuntimeException(e);
             }
         }
-        final View v = classToView.get(newViewClass);
+        final AbstractView<?, ?> v = classToView.get(newViewClass);
         return v;
     }
 
-    private void moveTo(final View v, final String requestedDataId,
-            final boolean noFragmentSetting) {
+    private void moveTo(final AbstractView<?, ?> v,
+            final String requestedDataId, final boolean noFragmentSetting) {
         currentFragment = classToUri.get(v.getClass());
         if (requestedDataId != null) {
             currentFragment += "/" + requestedDataId;
@@ -265,7 +267,8 @@ public class ToriNavigator extends CustomComponent {
      * @param viewClass
      *            Component class that implements Navigator.View interface
      */
-    public void addView(final String uri, final Class<? extends View> viewClass) {
+    public void addView(final String uri,
+            final Class<? extends AbstractView<?, ?>> viewClass) {
 
         // Check parameters
         if (!View.class.isAssignableFrom(viewClass)) {
@@ -512,6 +515,10 @@ public class ToriNavigator extends CustomComponent {
         } else {
             return null;
         }
+    }
+
+    public View getCurrentView() {
+        return currentView;
     }
 
 }

@@ -3,9 +3,8 @@ package org.vaadin.tori.mvp;
 import org.vaadin.tori.ToriNavigator;
 
 import com.vaadin.Application;
-import com.vaadin.ui.Component;
 
-public interface View extends Component {
+public interface View {
 
     /**
      * Initializes the UI components used by this View.
