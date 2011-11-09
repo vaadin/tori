@@ -3,7 +3,7 @@ package org.vaadin.tori.data;
 import java.util.List;
 
 import org.vaadin.tori.data.entity.Category;
-import org.vaadin.tori.data.entity.Thread;
+import org.vaadin.tori.data.entity.DiscussionThread;
 
 public class LiferayDataSource implements DataSource {
 
@@ -18,7 +18,7 @@ public class LiferayDataSource implements DataSource {
     }
 
     @Override
-    public List<Thread> getThreads(final Category category) {
+    public List<DiscussionThread> getThreads(final Category category) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 

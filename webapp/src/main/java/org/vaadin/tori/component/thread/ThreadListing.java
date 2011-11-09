@@ -2,7 +2,7 @@ package org.vaadin.tori.component.thread;
 
 import java.util.List;
 
-import org.vaadin.tori.data.entity.Thread;
+import org.vaadin.tori.data.entity.DiscussionThread;
 
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.VerticalLayout;
@@ -16,10 +16,10 @@ public class ThreadListing extends CustomComponent {
         setCompositionRoot(layout);
     }
 
-    public void setThreads(final List<Thread> threadsInCategory) {
+    public void setThreads(final List<DiscussionThread> threadsInCategory) {
         layout.removeAllComponents();
 
-        for (final Thread thread : threadsInCategory) {
+        for (final DiscussionThread thread : threadsInCategory) {
             layout.addComponent(new ThreadListingItem(thread));
         }
     }

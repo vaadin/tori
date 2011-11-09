@@ -2,7 +2,7 @@ package org.vaadin.tori.component.thread;
 
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.data.entity.Post;
-import org.vaadin.tori.data.entity.Thread;
+import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.User;
 
 import com.ocpsoft.pretty.time.PrettyTime;
@@ -12,7 +12,7 @@ import com.vaadin.ui.Label;
 @SuppressWarnings("serial")
 public class ThreadListingItem extends CustomComponent {
 
-    public ThreadListingItem(final Thread thread) {
+    public ThreadListingItem(final DiscussionThread thread) {
 
         final String topicXhtml = getTopicXhtml(thread);
         final String startedByXhtml = getStartedByXhtml(thread);
@@ -26,7 +26,7 @@ public class ThreadListingItem extends CustomComponent {
         setCompositionRoot(new Label(rowXhtml, Label.CONTENT_XHTML));
     }
 
-    private static final String getTopicXhtml(final Thread thread) {
+    private static final String getTopicXhtml(final DiscussionThread thread) {
         final String threadUrl = ToriNavigator.ApplicationView.THREADS.getUrl();
         final long id = thread.getId();
         final String topic = thread.getTopic();
@@ -35,7 +35,7 @@ public class ThreadListingItem extends CustomComponent {
                 threadUrl, id, topic);
     }
 
-    private static final String getStartedByXhtml(final Thread thread) {
+    private static final String getStartedByXhtml(final DiscussionThread thread) {
         final User op = thread.getOriginalPoster();
         final String url = ToriNavigator.ApplicationView.USERS.getUrl();
         final long posterId = op.getId();
@@ -45,12 +45,12 @@ public class ThreadListingItem extends CustomComponent {
                 url, posterId, name);
     }
 
-    private static final String getPostsXhtml(final Thread thread) {
+    private static final String getPostsXhtml(final DiscussionThread thread) {
         return String.format("<div class=\"posts\">%s</div>",
                 thread.getPostCount());
     }
 
-    private static final String getLatestPostXhtml(final Thread thread) {
+    private static final String getLatestPostXhtml(final DiscussionThread thread) {
         final Post latestPost = thread.getLatestPost();
         final String time = new PrettyTime().format(latestPost.getTime());
         final String authorName = latestPost.getAuthor().getDisplayedName();

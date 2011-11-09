@@ -9,7 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 import org.vaadin.tori.data.entity.Category;
-import org.vaadin.tori.data.entity.Thread;
+import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.util.PersistenceUtil;
 
 public class TestDataSource implements DataSource {
@@ -101,11 +101,11 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public List<Thread> getThreads(final Category category) {
-        return executeWithEntityManager(new Command<List<Thread>>() {
+    public List<DiscussionThread> getThreads(final Category category) {
+        return executeWithEntityManager(new Command<List<DiscussionThread>>() {
             @Override
-            public final List<Thread> execute(final EntityManager em) {
-                return em.createQuery("select t from Thread t", Thread.class)
+            public final List<DiscussionThread> execute(final EntityManager em) {
+                return em.createQuery("select t from Thread t", DiscussionThread.class)
                         .getResultList();
             }
         });

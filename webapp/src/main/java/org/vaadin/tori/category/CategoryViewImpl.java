@@ -8,7 +8,7 @@ import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.component.thread.ThreadListing;
 import org.vaadin.tori.data.entity.Category;
-import org.vaadin.tori.data.entity.Thread;
+import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.AbstractView;
 
 import com.vaadin.ui.Component;
@@ -56,7 +56,7 @@ public class CategoryViewImpl extends
     }
 
     @Override
-    public void displayThreads(final List<Thread> threadsInCategory) {
+    public void displayThreads(final List<DiscussionThread> threadsInCategory) {
         threadListing.setThreads(threadsInCategory);
     }
 

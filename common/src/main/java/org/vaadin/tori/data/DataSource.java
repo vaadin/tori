@@ -3,7 +3,7 @@ package org.vaadin.tori.data;
 import java.util.List;
 
 import org.vaadin.tori.data.entity.Category;
-import org.vaadin.tori.data.entity.Thread;
+import org.vaadin.tori.data.entity.DiscussionThread;
 
 public interface DataSource {
 
@@ -28,7 +28,7 @@ public interface DataSource {
      * Get all threads in the given <code>category</code>, ordered by most
      * recent activity first.
      */
-    List<Thread> getThreads(Category category);
+    List<DiscussionThread> getThreads(Category category);
 
     /**
      * Returns the Category corresponding to the id or {@code null} if no such

@@ -12,7 +12,7 @@ public class Post extends AbstractEntity {
     private User author;
 
     @ManyToOne
-    private Thread thread;
+    private DiscussionThread thread;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date time;
@@ -33,11 +33,11 @@ public class Post extends AbstractEntity {
         return (Date) time.clone();
     }
 
-    public void setThread(final Thread thread) {
+    public void setThread(final DiscussionThread thread) {
         this.thread = thread;
     }
 
-    public Thread getThread() {
+    public DiscussionThread getThread() {
         return thread;
     }
 

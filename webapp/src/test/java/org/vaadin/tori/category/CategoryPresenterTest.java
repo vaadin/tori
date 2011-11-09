@@ -49,7 +49,7 @@ public class CategoryPresenterTest {
     public void existingCategoryId() {
         final Category category = new Category();
         final List<Category> subCategories = Collections.emptyList();
-        final List<org.vaadin.tori.data.entity.Thread> threads = Collections
+        final List<org.vaadin.tori.data.entity.DiscussionThread> threads = Collections
                 .emptyList();
 
         when(mockDataSource.getCategory(1)).thenReturn(category);

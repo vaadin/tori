@@ -8,17 +8,17 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 @Entity
-public class Thread extends AbstractEntity {
+public class DiscussionThread extends AbstractEntity {
 
     private String topic;
 
     @OneToMany(mappedBy = "thread")
     private List<Post> posts;
 
-    public Thread() {
+    public DiscussionThread() {
     }
 
-    public Thread(final String topic) {
+    public DiscussionThread(final String topic) {
         this.topic = topic;
     }
 
