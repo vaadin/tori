@@ -12,3 +12,16 @@ a:visited,
 	color: #00b4f0;
 	text-decoration: none;
 }
+
+.v-label-h1 {
+	font-size: 140%;
+}
+.v-label-h2 {
+	font-size: 130%;
+}
+.v-label-h3 {
+	font-size: 120%;
+}
+.v-label-h4 {
+	font-size: 110%;
+}
