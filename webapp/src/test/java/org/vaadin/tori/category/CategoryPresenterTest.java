@@ -5,6 +5,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.vaadin.tori.data.DataSource;
@@ -45,9 +48,21 @@ public class CategoryPresenterTest {
     @Test
     public void existingCategoryId() {
         final Category category = new Category();
-        when(mockDataSource.getCategory(1)).thenReturn(category);
+        final List<Category> subCategories = Collections.emptyList();
+        final List<org.vaadin.tori.data.entity.Thread> threads = Collections
+                .emptyList();
 
+        when(mockDataSource.getCategory(1)).thenReturn(category);
+        when(mockDataSource.getSubCategories(category)).thenReturn(
+                subCategories);
+        when(mockDataSource.getThreads(category)).thenReturn(threads);
+
+        // assert that that category is actually set
         presenter.setCurrentCategoryById("1");
         assertEquals(category, presenter.getCurrentCategory());
+
+        // verify that the category (and subcategories) is displayed)
+        verify(mockView).displaySubCategories(subCategories);
+        verify(mockView).displayThreads(threads);
     }
 }

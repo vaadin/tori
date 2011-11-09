@@ -24,6 +24,11 @@ public class CategoryPresenter extends Presenter<CategoryView> {
 
         if (requestedCategory != null) {
             currentCategory = requestedCategory;
+
+            final CategoryView view = getView();
+            view.displaySubCategories(dataSource
+                    .getSubCategories(currentCategory));
+            view.displayThreads(dataSource.getThreads(currentCategory));
         } else {
             getView().displayCategoryNotFoundError(categoryIdString);
         }
@@ -33,10 +38,4 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         return currentCategory;
     }
 
-    @Override
-    public void init() {
-        final CategoryView view = getView();
-        view.displaySubCategories(dataSource.getSubCategories(currentCategory));
-        view.displayThreads(dataSource.getThreads(currentCategory));
-    }
 }
