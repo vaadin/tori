@@ -1,6 +1,6 @@
 package org.vaadin.tori;
 
-import org.vaadin.tori.component.Breadcrumbs;
+import org.vaadin.tori.component.breadcrumbs.Breadcrumbs;
 
 import com.vaadin.ui.Window;
 
