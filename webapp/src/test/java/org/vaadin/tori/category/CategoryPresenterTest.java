@@ -1,6 +1,7 @@
 package org.vaadin.tori.category;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,6 +30,11 @@ public class CategoryPresenterTest {
         // create the presenter to test
         presenter = new CategoryPresenter(mockDataSource);
         presenter.setView(mockView);
+    }
+
+    @Test
+    public void intentionallyFailingTest() throws Exception {
+        assertTrue("Just testing a failing JUnit test", false);
     }
 
     @Test
