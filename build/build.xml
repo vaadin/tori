@@ -187,7 +187,7 @@
 	<target name="test-webapp" depends="-compile-all-tests">
 		<junit fork="yes" haltonfailure="yes">
 			<test name="${class.testsuite.webapp}"></test>
-			<formatter type="plain" usefile="false"/>
+			<formatter type="xml" usefile="false"/>
 			<classpath>
 				<path refid="test-classpath"/>
 				<path refid="webapp-classpath"/>
@@ -200,7 +200,7 @@
 	<target name="test-common" depends="-compile-all-tests">
 		<junit fork="yes" haltonfailure="yes">
 			<test name="${class.testsuite.common}"></test>
-			<formatter type="plain" usefile="false"/>
+			<formatter type="xml" usefile="false"/>
 			<classpath>
 				<path refid="test-classpath"/>
 				<path refid="common-classpath"/>
