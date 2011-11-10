@@ -1,5 +1,7 @@
 package org.vaadin.tori.thread;
 
+import org.vaadin.tori.data.entity.Category;
+import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.AbstractView;
 
 import com.vaadin.ui.Component;
@@ -27,4 +29,11 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         return new ThreadPresenter();
     }
 
+    @Override
+    public DiscussionThread getCurrentThread() {
+        // TODO Auto-generated method stub
+        final DiscussionThread thread = new DiscussionThread();
+        thread.setCategory(new Category());
+        return thread;
+    }
 }

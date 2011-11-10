@@ -381,6 +381,20 @@ public class ToriNavigator extends CustomComponent {
         }
     }
 
+    public void navigateTo(final ApplicationView view) {
+        this.navigateTo(view, null);
+    }
+
+    public void navigateTo(final ApplicationView view, final String dataId) {
+        final String parsedDataId;
+        if (dataId == null) {
+            parsedDataId = "";
+        } else {
+            parsedDataId = "/" + dataId;
+        }
+        this.navigateTo(view.getUrl() + parsedDataId);
+    }
+
     /**
      * Listen to the view changes.
      * 

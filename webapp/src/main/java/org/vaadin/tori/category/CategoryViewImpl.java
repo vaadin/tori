@@ -73,4 +73,9 @@ public class CategoryViewImpl extends
                 Notification.TYPE_ERROR_MESSAGE);
     }
 
+    @Override
+    public Category getCurrentCategory() {
+        return getPresenter().getCurrentCategory();
+    }
+
 }

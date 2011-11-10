@@ -12,4 +12,6 @@ public interface CategoryView extends View {
     void displayThreads(List<DiscussionThread> threadsInCategory);
 
     void displayCategoryNotFoundError(String requestedCategoryId);
+
+    Category getCurrentCategory();
 }
