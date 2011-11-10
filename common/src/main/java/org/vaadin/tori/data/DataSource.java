@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
+import org.vaadin.tori.data.entity.Post;
 
 public interface DataSource {
 
@@ -45,4 +46,16 @@ public interface DataSource {
      * @return number of {@link DiscussionThread}s
      */
     long getThreadCount(Category category);
+
+    /**
+     * Returns the {@link DiscussionThread} corresponding to the id or
+     * <code>null</code> if no such <code>DiscussionThread</code> exists.
+     */
+    DiscussionThread getThread(long threadId);
+
+    /**
+     * Returns all {@link Post Posts} in a {@link Thread} in ascending time
+     * order (oldest, i.e. first, post first).
+     */
+    List<Post> getPosts(Thread thread);
 }

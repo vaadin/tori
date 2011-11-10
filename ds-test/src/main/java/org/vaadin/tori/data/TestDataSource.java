@@ -10,6 +10,7 @@ import javax.persistence.TypedQuery;
 
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
+import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.util.PersistenceUtil;
 
 public class TestDataSource implements DataSource {
@@ -139,6 +140,30 @@ public class TestDataSource implements DataSource {
                             .getThreadCount(subCategory);
                 }
                 return threadCount;
+            }
+        });
+    }
+
+    @Override
+    public DiscussionThread getThread(final long threadId) {
+        return executeWithEntityManager(new Command<DiscussionThread>() {
+            @Override
+            public final DiscussionThread execute(final EntityManager em) {
+                return em.find(DiscussionThread.class, threadId);
+            }
+        });
+    }
+
+    @Override
+    public List<Post> getPosts(final Thread thread) {
+        return executeWithEntityManager(new Command<List<Post>>() {
+            @Override
+            public List<Post> execute(final EntityManager em) {
+                final TypedQuery<Post> query = em.createQuery(
+                        "select p from Post p where p.thread = :thread "
+                                + "orderby asc time", Post.class);
+                query.setParameter("thread", thread);
+                return query.getResultList();
             }
         });
     }

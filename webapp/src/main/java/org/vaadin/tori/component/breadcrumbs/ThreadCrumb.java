@@ -14,6 +14,7 @@ public class ThreadCrumb extends CustomComponent {
     }
 
     private final ThreadSelectionListener listener;
+    private final SplitButton crumb;
 
     public ThreadCrumb(final DiscussionThread thread,
             final ThreadSelectionListener listener) {
@@ -24,7 +25,7 @@ public class ThreadCrumb extends CustomComponent {
                     + "the breadcrumbs, but the given thread was null");
         }
 
-        final SplitButton crumb = new SplitButton(thread.getTopic());
+        crumb = new SplitButton(thread.getTopic());
         crumb.addPopupVisibilityListener(new SplitButton.SplitButtonPopupVisibilityListener() {
             @Override
             public void splitButtonPopupVisibilityChange(

@@ -46,4 +46,9 @@ public class DashboardViewImpl extends
                 .getDataSource());
     }
 
+    @Override
+    protected void navigationTo(final String requestedDataId) {
+        // NOP
+    }
+
 }
