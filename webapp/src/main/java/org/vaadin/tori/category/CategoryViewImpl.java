@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.component.CategoryListing;
+import org.vaadin.tori.component.CategoryListing.Mode;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.component.thread.ThreadListing;
@@ -34,7 +35,8 @@ public class CategoryViewImpl extends
         categoryLayout = new VerticalLayout();
         categoryLayout.addComponent(new HeadingLabel("Contained Categories",
                 HeadingLevel.H2));
-        categoryLayout.addComponent(categoryListing = new CategoryListing());
+        categoryLayout.addComponent(categoryListing = new CategoryListing(
+                Mode.SINGLE_COLUMN));
         layout.addComponent(categoryLayout);
 
         layout.addComponent(new HeadingLabel("Threads", HeadingLevel.H2));

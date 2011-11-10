@@ -25,9 +25,26 @@ import com.vaadin.ui.TreeTable;
 @SuppressWarnings("serial")
 public class CategoryListing extends CustomComponent {
 
-    private final CategoryTreeTable categoryTree;
+    public enum Mode {
 
-    public CategoryListing() {
+        /**
+         * Displays only a single column with all details inside it.
+         */
+        SINGLE_COLUMN,
+
+        /**
+         * Displays normally with a separate column for each detail.
+         */
+        NORMAL;
+
+    }
+
+    private final CategoryTreeTable categoryTree;
+    private final Mode mode;
+
+    public CategoryListing(final Mode listingMode) {
+        this.mode = listingMode;
+
         categoryTree = new CategoryTreeTable();
         setCompositionRoot(categoryTree);
     }
@@ -39,7 +56,17 @@ public class CategoryListing extends CustomComponent {
         }
     }
 
-    private static class CategoryTreeTable extends TreeTable implements
+    private static long getUnreadPostCount(final Category category) {
+        // TODO get the number of unread posts
+        return 0;
+    }
+
+    private static long getThreadCount(final Category category) {
+        return ToriApplication.getCurrent().getDataSource()
+                .getThreadCount(category);
+    }
+
+    private class CategoryTreeTable extends TreeTable implements
             CollapseListener, ExpandListener {
         private static final String PROPERTY_ID_THREADS = "Threads";
         private static final String PROPERTY_ID_UNREAD = "Unread Threads";
@@ -50,8 +77,10 @@ public class CategoryListing extends CustomComponent {
 
             // set container properties
             addContainerProperty(PROPERTY_ID_CATEGORY, Component.class, null);
-            addContainerProperty(PROPERTY_ID_UNREAD, Integer.class, 0);
-            addContainerProperty(PROPERTY_ID_THREADS, Integer.class, 0);
+            if (mode == Mode.NORMAL) {
+                addContainerProperty(PROPERTY_ID_UNREAD, Integer.class, 0);
+                addContainerProperty(PROPERTY_ID_THREADS, Integer.class, 0);
+            }
 
             // set visual properties
             setWidth("100%");
@@ -62,14 +91,15 @@ public class CategoryListing extends CustomComponent {
 
         public void addCategory(final Category category, final Category parent) {
             final CategoryLayout categoryLayout = new CategoryLayout(category);
-            final long threadCount = getThreadCount(category);
-            final long unreadThreadCount = getUnreadThreadCount(category);
 
             final Item item = addItem(category);
             item.getItemProperty(PROPERTY_ID_CATEGORY).setValue(categoryLayout);
-            item.getItemProperty(PROPERTY_ID_UNREAD).setValue(threadCount);
-            item.getItemProperty(PROPERTY_ID_THREADS).setValue(
-                    unreadThreadCount);
+            if (mode == Mode.NORMAL) {
+                item.getItemProperty(PROPERTY_ID_UNREAD).setValue(
+                        getUnreadPostCount(category));
+                item.getItemProperty(PROPERTY_ID_THREADS).setValue(
+                        getThreadCount(category));
+            }
             if (parent != null) {
                 setParent(category, parent);
             }
@@ -88,16 +118,6 @@ public class CategoryListing extends CustomComponent {
             setPageLength(this.size());
         }
 
-        private long getUnreadThreadCount(final Category category) {
-            // TODO get the number of unread threads
-            return getThreadCount(category);
-        }
-
-        private long getThreadCount(final Category category) {
-            return ToriApplication.getCurrent().getDataSource()
-                    .getThreadCount(category);
-        }
-
         @Override
         public void nodeExpand(final ExpandEvent event) {
             setPageLength(this.size());
@@ -112,11 +132,12 @@ public class CategoryListing extends CustomComponent {
 
     /**
      * Simple layout displaying the category name as a link and the category
-     * description.
+     * description. If the {@code CategoryListing} mode is
+     * {@link Mode#SINGLE_COLUMN}, this layout also includes additional details.
      */
-    private static class CategoryLayout extends CssLayout {
+    private class CategoryLayout extends CssLayout {
 
-        private static final String CATEGORY_URL = ToriNavigator.ApplicationView.CATEGORIES
+        private final String CATEGORY_URL = ToriNavigator.ApplicationView.CATEGORIES
                 .getUrl();
 
         public CategoryLayout(final Category category) {
@@ -126,14 +147,29 @@ public class CategoryListing extends CustomComponent {
 
             setData(category);
             setStyleName("category");
+            if (mode == Mode.SINGLE_COLUMN) {
+                addComponent(createThreadCountLabel(getThreadCount(category),
+                        getUnreadPostCount(category)));
+            }
             addComponent(createCategoryLink(id, name));
             addComponent(createDescriptionLabel(description));
+        }
+
+        private Component createThreadCountLabel(final long threadCount,
+                final long unreadPostCount) {
+            final Label threadCountLabel = new Label(String.format(
+                    "%d threads<br />%d new posts", threadCount,
+                    unreadPostCount), Label.CONTENT_XHTML);
+            threadCountLabel.setStyleName("threadCount");
+            threadCountLabel.setWidth(null);
+            return threadCountLabel;
         }
 
         private Component createDescriptionLabel(
                 final String categoryDescription) {
             final Label description = new Label(categoryDescription);
             description.setStyleName("description");
+            description.setWidth(null);
             return description;
         }
 
@@ -143,6 +179,7 @@ public class CategoryListing extends CustomComponent {
             categoryLink.setResource(new ExternalResource("#" + CATEGORY_URL
                     + "/" + id));
             categoryLink.setStyleName("categoryLink");
+            categoryLink.setWidth(null);
             return categoryLink;
         }
     }

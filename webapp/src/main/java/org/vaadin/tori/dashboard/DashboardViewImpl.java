@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.component.CategoryListing;
+import org.vaadin.tori.component.CategoryListing.Mode;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.data.entity.Category;
@@ -30,7 +31,7 @@ public class DashboardViewImpl extends
     public void initView() {
         layout.addComponent(new HeadingLabel("Pick a Category", HeadingLevel.H2));
 
-        categoryListing = new CategoryListing();
+        categoryListing = new CategoryListing(Mode.NORMAL);
         layout.addComponent(categoryListing);
     }
 

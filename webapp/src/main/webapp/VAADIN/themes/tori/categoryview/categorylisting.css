@@ -23,7 +23,14 @@
 .categoryTree .v-table-row-odd:hover td {
 	background: #f6f6f6;	
 }
+
 .categoryTree .v-treetable-treespacer {
 	float: left;
 	height: 13px;
+}
+
+.v-csslayout-category .v-label-threadCount {
+	float: right;
+	margin-right: 20px;
+	text-align: right;	
 }
