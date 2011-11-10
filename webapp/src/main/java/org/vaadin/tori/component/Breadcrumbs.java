@@ -10,6 +10,7 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.thread.ThreadView;
 
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
@@ -41,12 +42,15 @@ public class Breadcrumbs extends CustomComponent {
 
     private void renderBreadCrumb() {
         layout.removeAllComponents();
-        layout.addComponent(new Button("Dashboard", new Button.ClickListener() {
+        final Button dashboardButton = new Button("Dashboard");
+        dashboardButton.setIcon(new ThemeResource("images/home.gif"));
+        dashboardButton.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 navigator.navigateTo(ToriNavigator.ApplicationView.DASHBOARD);
             }
-        }));
+        });
+        layout.addComponent(dashboardButton);
 
         final View currentView = navigator.getCurrentView();
         if (currentView instanceof CategoryView) {
@@ -77,7 +81,7 @@ public class Breadcrumbs extends CustomComponent {
      * @throws IllegalArgumentException
      *             if <code>thread</code> is <code>null</code>.
      */
-    private Component getThreadCrumb(final DiscussionThread thread)
+    private static Component getThreadCrumb(final DiscussionThread thread)
             throws IllegalArgumentException {
         if (thread == null) {
             throw new RuntimeException("Trying to render the thread part of "
@@ -100,7 +104,7 @@ public class Breadcrumbs extends CustomComponent {
      * @throws IllegalArgumentException
      *             if <code>category</code> is <code>null</code>.
      */
-    private Component getCategoryCrumb(final Category category)
+    private static Component getCategoryCrumb(final Category category)
             throws IllegalArgumentException {
         if (category == null) {
             throw new IllegalArgumentException("Trying to render the category "
@@ -114,10 +118,15 @@ public class Breadcrumbs extends CustomComponent {
             public void splitButtonPopupVisibilityChange(
                     final SplitButtonPopupVisibilityEvent event) {
                 if (event.isPopupVisible()) {
-                    event.getSplitButton().setComponent(new Label("foo"));
+                    event.getSplitButton().setComponent(
+                            getCategoryPopup(category));
                 }
             }
         });
         return crumb;
+    }
+
+    private static Component getCategoryPopup(final Category currentCategory) {
+        return new Label("CATEGORIES!");
     }
 }
