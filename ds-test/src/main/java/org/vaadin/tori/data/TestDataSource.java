@@ -28,15 +28,22 @@ public class TestDataSource implements DataSource {
                 final BufferedReader reader = new BufferedReader(
                         new InputStreamReader(getClass().getClassLoader()
                                 .getResourceAsStream("test-data.sql")));
+
+                // Insert all test data in a single transaction
+                // i.e. all data will be in the database or nothing will.
+                em.getTransaction().begin();
                 try {
                     String sqlLine;
                     while ((sqlLine = reader.readLine()) != null) {
-                        if (!sqlLine.startsWith("#")) {
+                        sqlLine = sqlLine.trim();
+                        if (sqlLine.length() > 0 && !sqlLine.startsWith("#")) {
                             // not a comment line -> run as native query
-                            runNativeSql(em, sqlLine);
+                            em.createNativeQuery(sqlLine).executeUpdate();
                         }
                     }
-                } catch (final IOException e) {
+                    em.getTransaction().commit();
+                } catch (final Exception e) {
+                    em.getTransaction().rollback();
                     e.printStackTrace();
                 } finally {
                     try {
@@ -48,17 +55,6 @@ public class TestDataSource implements DataSource {
                 return null;
             }
         });
-    }
-
-    private void runNativeSql(final EntityManager entityManager,
-            final String sql) {
-        entityManager.getTransaction().begin();
-        try {
-            entityManager.createNativeQuery(sql).executeUpdate();
-            entityManager.getTransaction().commit();
-        } catch (final Exception e) {
-            entityManager.getTransaction().rollback();
-        }
     }
 
     private boolean isEmptyDatabase() {
