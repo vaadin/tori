@@ -20,7 +20,7 @@ insert into DISCUSSIONTHREAD set ID = 4, CATEGORY_ID = 4, TOPIC = "What does 'gi
 insert into DISCUSSIONTHREAD set ID = 5, CATEGORY_ID = 6, TOPIC = "Announced the future release date of Tori alpha 2";
 insert into DISCUSSIONTHREAD set ID = 6, CATEGORY_ID = 5, TOPIC = "Something new is happening";
 insert into DISCUSSIONTHREAD set ID = 7, CATEGORY_ID = 3, TOPIC = "How to deploy Vaadin applications to Liferay";
-insert into DISCUSSIONTHREAD set ID = 8, CATEGORY_ID = 3, TOPIC = "Issues with widgetset compilation";
+insert into DISCUSSIONTHREAD set ID = 8, CATEGORY_ID = 3, TOPIC = "How to change the color of a Label";
 
 ## Users
 insert into `USER` set ID = 1, DISPLAYEDNAME = "John Doe";
