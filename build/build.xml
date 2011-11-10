@@ -16,6 +16,7 @@
 	<property name="dir.build-artifacts.widgetsets" value="${dir.build-artifacts}/widgetsets" />
 	<property name="dir.build-artifacts.ds.liferay" value="${dir.build-artifacts}/ds-liferay" />
 	<property name="dir.build-artifacts.ds.test" value="${dir.build-artifacts}/ds-test" />
+	<property name="dir.build-artifacts.test-reports" value="${dir.build-artifacts}/test-reports" />
 	
 	<property name="dir.meta-inf" value="${dir.webapp}/src/main/webapp/META-INF" />
 	<property name="dir.web-inf" value="${dir.webapp}/src/main/webapp/WEB-INF" />
@@ -185,9 +186,10 @@
 	</target>
 	
 	<target name="test-webapp" depends="-compile-all-tests">
+		<mkdir dir="${dir.build-artifacts.test-reports}"/>
 		<junit fork="yes" haltonfailure="yes">
-			<test name="${class.testsuite.webapp}"></test>
-			<formatter type="xml" usefile="false"/>
+			<test name="${class.testsuite.webapp}" outfile="${dir.build-artifacts.test-reports}/webapp"></test>
+			<formatter type="xml"/>
 			<classpath>
 				<path refid="test-classpath"/>
 				<path refid="webapp-classpath"/>
@@ -198,9 +200,10 @@
 	</target>
 	
 	<target name="test-common" depends="-compile-all-tests">
+		<mkdir dir="${dir.build-artifacts.test-reports}"/>
 		<junit fork="yes" haltonfailure="yes">
-			<test name="${class.testsuite.common}"></test>
-			<formatter type="xml" usefile="false"/>
+			<test name="${class.testsuite.common}" outfile="${dir.build-artifacts.test-reports}/common"></test>
+			<formatter type="xml"/>
 			<classpath>
 				<path refid="test-classpath"/>
 				<path refid="common-classpath"/>
