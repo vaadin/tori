@@ -8,6 +8,7 @@ import org.vaadin.tori.data.entity.Category;
 
 import com.vaadin.data.Item;
 import com.vaadin.terminal.ExternalResource;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
@@ -84,7 +85,17 @@ public class CategoryListing extends CustomComponent {
 
             // set visual properties
             setWidth("100%");
-            setColumnHeaderMode(COLUMN_HEADER_MODE_HIDDEN);
+            setSortDisabled(true);
+            if (mode == Mode.NORMAL) {
+                // icons
+                setColumnIcon(PROPERTY_ID_UNREAD, new ThemeResource(
+                        "images/icon-unread.png"));
+                setColumnIcon(PROPERTY_ID_THREADS, new ThemeResource(
+                        "images/icon-threads.png"));
+                setColumnHeaderMode(COLUMN_HEADER_MODE_EXPLICIT);
+            } else {
+                setColumnHeaderMode(COLUMN_HEADER_MODE_HIDDEN);
+            }
             addListener((CollapseListener) this);
             addListener((ExpandListener) this);
         }
