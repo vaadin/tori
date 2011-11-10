@@ -131,7 +131,7 @@
 		/>
     </target>
 
-	<target name="package-liferay-war" depends="-check-widgetset-dependency, -package-webapp-jar, -package-ds-liferay-jar">
+	<target name="package-liferay-war" depends="-check-widgetset-dependency, -package-webapp-jar, -package-ds-liferay-jar, test-all">
 		<war destfile="${file.tori.liferay.war}" webxml="${dir.web-inf}/web.xml" manifest="${dir.meta-inf}/MANIFEST.MF">
 			<webinf dir="${dir.web-inf}"/>
 			<metainf dir="${dir.meta-inf}"/>
@@ -144,7 +144,7 @@
 		</war>
 	</target>
 	
-	<target name="package-test-war" depends="-check-widgetset-dependency, -package-webapp-jar, -package-ds-test-jar">
+	<target name="package-test-war" depends="-check-widgetset-dependency, -package-webapp-jar, -package-ds-test-jar, test-all">
 		<war destfile="${file.tori.test.war}" webxml="${dir.web-inf}/web.xml" manifest="${dir.meta-inf}/MANIFEST.MF">
 			<webinf 
 				dir="${dir.web-inf}"
@@ -209,6 +209,8 @@
 			</classpath>
 		</junit>
 	</target>
+	
+	<target name="test-all" depends="test-webapp, test-common"></target>
 	
 	<target name="-check-widgetset-dependency">
 		<available file="${dir.build-artifacts.widgetsets}" property="widgetsetIsPresent" />
