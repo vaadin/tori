@@ -27,15 +27,15 @@ insert into `USER` set ID = 1, DISPLAYEDNAME = "John Doe";
 insert into `USER` set ID = 2, DISPLAYEDNAME = "Molly Townsend";
 
 ## Posts
-insert into POST set ID = 1, `TIME` = "2011-10-1 12:00:00", THREAD_ID = 1, AUTHOR_ID = 1;
-insert into POST set ID = 2, `TIME` = "2011-10-2 12:00:00", THREAD_ID = 1, AUTHOR_ID = 2;
-insert into POST set ID = 3, `TIME` = "2011-10-1 12:00:00", THREAD_ID = 2, AUTHOR_ID = 1;
-insert into POST set ID = 4, `TIME` = "2011-10-2 12:00:00", THREAD_ID = 2, AUTHOR_ID = 2;
-insert into POST set ID = 5, `TIME` = "2011-10-1 12:00:00", THREAD_ID = 3, AUTHOR_ID = 1;
-insert into POST set ID = 6, `TIME` = "2011-10-2 12:00:00", THREAD_ID = 3, AUTHOR_ID = 2;
-insert into POST set ID = 7, `TIME` = "2011-10-1 12:00:00", THREAD_ID = 4, AUTHOR_ID = 1;
-insert into POST set ID = 8, `TIME` = "2011-10-2 12:00:00", THREAD_ID = 4, AUTHOR_ID = 2;
-insert into POST set ID = 9, `TIME` = "2011-10-4 12:00:00", THREAD_ID = 5, AUTHOR_ID = 2;
-insert into POST set ID = 10, `TIME` = "2011-10-4 12:00:00", THREAD_ID = 6, AUTHOR_ID = 2;
-insert into POST set ID = 11, `TIME` = "2011-10-4 12:00:00", THREAD_ID = 7, AUTHOR_ID = 2;
-insert into POST set ID = 12, `TIME` = "2011-10-5 12:00:00", THREAD_ID = 8, AUTHOR_ID = 2;
+insert into POST set ID = 1, `TIME` = "2011-10-1 12:00:00", THREAD_ID = 1, AUTHOR_ID = 1, body = "1";
+insert into POST set ID = 2, `TIME` = "2011-10-2 12:00:00", THREAD_ID = 1, AUTHOR_ID = 2, body = "2";
+insert into POST set ID = 3, `TIME` = "2011-10-1 12:00:00", THREAD_ID = 2, AUTHOR_ID = 1, body = "3";
+insert into POST set ID = 4, `TIME` = "2011-10-2 12:00:00", THREAD_ID = 2, AUTHOR_ID = 2, body = "4";
+insert into POST set ID = 5, `TIME` = "2011-10-1 12:00:00", THREAD_ID = 3, AUTHOR_ID = 1, body = "5";
+insert into POST set ID = 6, `TIME` = "2011-10-2 12:00:00", THREAD_ID = 3, AUTHOR_ID = 2, body = "6";
+insert into POST set ID = 7, `TIME` = "2011-10-1 12:00:00", THREAD_ID = 4, AUTHOR_ID = 1, body = "7";
+insert into POST set ID = 8, `TIME` = "2011-10-2 12:00:00", THREAD_ID = 4, AUTHOR_ID = 2, body = "8";
+insert into POST set ID = 9, `TIME` = "2011-10-4 12:00:00", THREAD_ID = 5, AUTHOR_ID = 2, body = "9";
+insert into POST set ID = 10, `TIME` = "2011-10-4 12:00:00", THREAD_ID = 6, AUTHOR_ID = 2, body = "10";
+insert into POST set ID = 11, `TIME` = "2011-10-4 12:00:00", THREAD_ID = 7, AUTHOR_ID = 2, body = "11";
+insert into POST set ID = 12, `TIME` = "2011-10-5 12:00:00", THREAD_ID = 8, AUTHOR_ID = 2, body = "12";

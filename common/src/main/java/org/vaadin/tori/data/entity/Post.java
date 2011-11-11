@@ -2,20 +2,31 @@ package org.vaadin.tori.data.entity;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
 public class Post extends AbstractEntity {
+
+    @JoinColumn(nullable = false)
     private User author;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private DiscussionThread thread;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
     private Date time;
+
+    @Lob
+    @Column(nullable = false, name = "body")
+    private String bodyRaw;
 
     public void setAuthor(final User author) {
         this.author = author;
@@ -39,6 +50,15 @@ public class Post extends AbstractEntity {
 
     public DiscussionThread getThread() {
         return thread;
+    }
+
+    public void setBodyRaw(final String bodyRaw) {
+        this.bodyRaw = bodyRaw;
+    }
+
+    /** Gets the unformatted forum post. */
+    public String getBodyRaw() {
+        return bodyRaw;
     }
 
 }

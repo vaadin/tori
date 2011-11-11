@@ -1,5 +1,6 @@
 package org.vaadin.tori.data.entity;
 
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
@@ -9,6 +10,7 @@ public abstract class AbstractEntity {
 
     @Id
     @GeneratedValue
+    @Column(nullable = false)
     private long id;
 
     public void setId(final long id) {

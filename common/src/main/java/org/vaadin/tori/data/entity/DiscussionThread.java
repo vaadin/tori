@@ -3,7 +3,9 @@ package org.vaadin.tori.data.entity;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
@@ -11,12 +13,15 @@ import javax.persistence.Transient;
 @Entity
 public class DiscussionThread extends AbstractEntity {
 
+    @Column(nullable = false)
     private String topic;
 
     @OneToMany(mappedBy = "thread")
+    @JoinColumn(nullable = false)
     private List<Post> posts;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private Category category;
 
     public DiscussionThread() {

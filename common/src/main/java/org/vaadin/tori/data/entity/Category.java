@@ -2,6 +2,7 @@ package org.vaadin.tori.data.entity;
 
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
@@ -10,7 +11,10 @@ import javax.persistence.OneToMany;
 @Entity
 public class Category extends AbstractEntity {
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String description;
 
     @ManyToOne(optional = true)
