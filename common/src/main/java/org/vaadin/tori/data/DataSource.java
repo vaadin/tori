@@ -5,6 +5,7 @@ import java.util.List;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.User;
 
 public interface DataSource {
 
@@ -58,4 +59,14 @@ public interface DataSource {
      * order (oldest, i.e. first, post first).
      */
     List<Post> getPosts(Thread thread);
+
+    /**
+     * Returns {@code true} if the given {@link User} has administrator
+     * privileges.
+     * 
+     * @param user
+     *            User to check for administrator privileges.
+     * @return {@code true} if the given user has administrator privileges.
+     */
+    boolean isAdministrator(User user);
 }
