@@ -122,7 +122,10 @@ public class CategoryListing extends CustomComponent {
                 setCollapsed(category, true);
 
                 // recursively add all sub categories
-                for (final Category subCategory : category.getSubCategories()) {
+                final List<Category> subCategories = ToriApplication
+                        .getCurrent().getDataSource()
+                        .getSubCategories(category);
+                for (final Category subCategory : subCategories) {
                     addCategory(subCategory, category);
                 }
             }
