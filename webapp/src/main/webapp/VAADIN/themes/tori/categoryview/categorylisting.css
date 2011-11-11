@@ -16,7 +16,9 @@
 }
 .categoryTree.rearranging .v-table-row td:first-child,
 .categoryTree.rearranging .v-table-row-odd td:first-child {
-	background: url(../images/icon-rearranging.png) #fff 10px 23px no-repeat; 	
+	background-image: url(../images/icon-rearranging.png);
+	background-position: 10px 23px;
+	background-repeat: no-repeat;
 }
 
 .categoryTree .v-table-row:last-child td,
