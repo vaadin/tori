@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
-import org.vaadin.tori.data.entity.User;
 
 public class CategoryPresenterTest {
 
@@ -67,23 +66,4 @@ public class CategoryPresenterTest {
         verify(mockView).displayThreads(threads);
     }
 
-    @Test
-    public void nonAdminUser() {
-        final User currentUser = new User();
-        when(mockDataSource.isAdministrator(currentUser)).thenReturn(false);
-
-        presenter.setCurrentUser(currentUser);
-        presenter.init();
-        verify(mockView).setAdministratorMode(false);
-    }
-
-    @Test
-    public void adminUser() {
-        final User currentUser = new User();
-        when(mockDataSource.isAdministrator(currentUser)).thenReturn(true);
-
-        presenter.setCurrentUser(currentUser);
-        presenter.init();
-        verify(mockView).setAdministratorMode(true);
-    }
 }
