@@ -1,0 +1,13 @@
+.post .permalink {
+	text-align: right;
+}
+
+.post .permalink a,
+.post .permalink a:active,
+.post .permalink a:visited {
+	color: #AAA;
+}
+
+.post .permalink a:hover {
+	color: black;
+}

@@ -9,6 +9,9 @@ public class User extends AbstractEntity {
     @Column(nullable = false)
     private String displayedName;
 
+    @Column(nullable = true)
+    private String avatarUrl;
+
     public void setDisplayedName(final String displayedName) {
         this.displayedName = displayedName;
     }
@@ -17,4 +20,14 @@ public class User extends AbstractEntity {
         return displayedName;
     }
 
+    public void setAvatarUrl(final String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    /**
+     * The URL to the avatar image for this user. May return <code>null</code>.
+     */
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
 }
