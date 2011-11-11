@@ -11,7 +11,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Table.TableDragMode;
 
 /**
  * UI component for displaying a vertical hierarchical list of categories.
@@ -100,7 +99,7 @@ public class CategoryListing extends
     }
 
     private void rearrangeCategories() {
-        categoryTree.setDragMode(TableDragMode.ROW);
+        categoryTree.setDraggingEnabled(true);
     }
 
     private void createCategory() {

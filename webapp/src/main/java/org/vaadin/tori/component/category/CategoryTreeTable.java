@@ -8,8 +8,15 @@ import org.vaadin.tori.component.category.CategoryListing.Mode;
 import org.vaadin.tori.data.entity.Category;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.util.HierarchicalContainer;
+import com.vaadin.event.Transferable;
+import com.vaadin.event.dd.DragAndDropEvent;
+import com.vaadin.event.dd.DropHandler;
+import com.vaadin.event.dd.acceptcriteria.AcceptAll;
+import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
@@ -44,6 +51,7 @@ class CategoryTreeTable extends TreeTable implements CollapseListener,
         // set visual properties
         setWidth("100%");
         setSortDisabled(true);
+        setDropHandler(new CategoryTreeDropHandler());
         if (mode == Mode.NORMAL) {
             // icons
             setColumnIcon(PROPERTY_ID_UNREAD, new ThemeResource(
@@ -108,6 +116,16 @@ class CategoryTreeTable extends TreeTable implements CollapseListener,
         setPageLength(this.size());
     }
 
+    public void setDraggingEnabled(final boolean enabled) {
+        if (enabled) {
+            setDragMode(TableDragMode.ROW);
+            addStyleName("rearranging");
+        } else {
+            setDragMode(TableDragMode.NONE);
+            removeStyleName("rearranging");
+        }
+    }
+
     /**
      * Simple layout displaying the category name as a link and the category
      * description. If the {@code CategoryListing} mode is
@@ -161,5 +179,50 @@ class CategoryTreeTable extends TreeTable implements CollapseListener,
             categoryLink.setWidth(null);
             return categoryLink;
         }
+    }
+
+    private class CategoryTreeDropHandler implements DropHandler {
+
+        @Override
+        public void drop(final DragAndDropEvent event) {
+            final Transferable t = event.getTransferable();
+
+            // check that we're dragging within the same CategoryTreeTable
+            if (t.getSourceComponent() != CategoryTreeTable.this) {
+                return;
+            }
+
+            final AbstractSelectTargetDetails targetDetails = (AbstractSelectTargetDetails) event
+                    .getTargetDetails();
+
+            // get source and target itemIds
+            final Object draggedItemId = t.getData("itemId");
+            final Object targetItemId = targetDetails.getItemIdOver();
+
+            final HierarchicalContainer container = (HierarchicalContainer) getContainerDataSource();
+            final Object parentItemId = container.getParent(targetItemId);
+            container.setParent(draggedItemId, parentItemId);
+
+            // move the dragged item in the container according to the drop
+            // location
+            final VerticalDropLocation dropLocation = targetDetails
+                    .getDropLocation();
+            if (dropLocation == VerticalDropLocation.MIDDLE) {
+                // middle -> make it child
+                container.setParent(draggedItemId, targetItemId);
+            } else if (dropLocation == VerticalDropLocation.TOP) {
+                // top -> make it previous
+                container.moveAfterSibling(targetItemId, draggedItemId);
+            } else if (dropLocation == VerticalDropLocation.BOTTOM) {
+                // bottom -> make it next
+                container.moveAfterSibling(draggedItemId, targetItemId);
+            }
+        }
+
+        @Override
+        public AcceptCriterion getAcceptCriterion() {
+            return AcceptAll.get();
+        }
+
     }
 }
