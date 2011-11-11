@@ -41,6 +41,7 @@ public class Breadcrumbs extends CustomComponent implements
         setStyleName("breadcrumbs");
         this.navigator = navigator;
         navigator.addListener(viewListener);
+        setHeight("40px");
 
         setCompositionRoot(layout = new HorizontalLayout());
         renderBreadCrumb();
