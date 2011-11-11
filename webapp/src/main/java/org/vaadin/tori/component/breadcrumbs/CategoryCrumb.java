@@ -3,6 +3,8 @@ package org.vaadin.tori.component.breadcrumbs;
 import java.util.List;
 
 import org.vaadin.hene.splitbutton.SplitButton;
+import org.vaadin.hene.splitbutton.SplitButton.SplitButtonClickEvent;
+import org.vaadin.hene.splitbutton.SplitButton.SplitButtonClickListener;
 import org.vaadin.hene.splitbutton.SplitButton.SplitButtonPopupVisibilityEvent;
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.data.entity.Category;
@@ -13,7 +15,28 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Tree;
 
 @SuppressWarnings("serial")
-class CategoryCrumb extends CustomComponent {
+abstract class CategoryCrumb extends CustomComponent {
+
+    public static class Clickable extends CategoryCrumb {
+        public Clickable(final Category category,
+                final CategorySelectionListener listener) {
+            super(category, listener);
+            setButtonClickListener(new SplitButtonClickListener() {
+                @Override
+                public void splitButtonClick(final SplitButtonClickEvent event) {
+                    listener.selectCategory(category);
+                }
+            });
+        }
+    }
+
+    public static class UnClickable extends CategoryCrumb {
+        public UnClickable(final Category category,
+                final CategorySelectionListener listener) {
+            super(category, listener);
+            addStyleName("unclickable");
+        }
+    }
 
     public interface CategorySelectionListener {
         void selectCategory(Category selectedCategory);
@@ -45,6 +68,11 @@ class CategoryCrumb extends CustomComponent {
         });
 
         setCompositionRoot(crumb);
+    }
+
+    protected void setButtonClickListener(
+            final SplitButtonClickListener listener) {
+        crumb.addClickListener(listener);
     }
 
     private Component getCategoryPopup(final Category currentCategory) {
