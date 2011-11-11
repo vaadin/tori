@@ -8,7 +8,7 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 
 @SuppressWarnings("serial")
-public class ThreadCrumb extends CustomComponent {
+class ThreadCrumb extends CustomComponent {
     public interface ThreadSelectionListener {
         void selectThread(DiscussionThread selectedThread);
     }

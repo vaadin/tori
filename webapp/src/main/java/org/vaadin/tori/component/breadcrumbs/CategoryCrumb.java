@@ -13,7 +13,7 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Tree;
 
 @SuppressWarnings("serial")
-public class CategoryCrumb extends CustomComponent {
+class CategoryCrumb extends CustomComponent {
 
     public interface CategorySelectionListener {
         void selectCategory(Category selectedCategory);
