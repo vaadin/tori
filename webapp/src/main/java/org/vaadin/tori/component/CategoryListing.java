@@ -9,9 +9,11 @@ import org.vaadin.tori.data.entity.Category;
 import com.vaadin.data.Item;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Tree.CollapseEvent;
@@ -42,12 +44,19 @@ public class CategoryListing extends CustomComponent {
 
     private final CategoryTreeTable categoryTree;
     private final Mode mode;
+    private final CssLayout layout;
+    private final Component adminControls;
 
     public CategoryListing(final Mode listingMode) {
         this.mode = listingMode;
+        layout = new CssLayout();
 
         categoryTree = new CategoryTreeTable();
-        setCompositionRoot(categoryTree);
+        layout.addComponent(categoryTree);
+
+        adminControls = createAdminControls();
+        layout.addComponent(adminControls);
+        setCompositionRoot(layout);
     }
 
     public void setCategories(final List<Category> categories) {
@@ -55,6 +64,17 @@ public class CategoryListing extends CustomComponent {
         for (final Category category : categories) {
             categoryTree.addCategory(category, null);
         }
+    }
+
+    public void setAdminControlsVisible(final boolean visible) {
+        adminControls.setVisible(visible);
+    }
+
+    private Component createAdminControls() {
+        final HorizontalLayout adminControls = new HorizontalLayout();
+        adminControls.addComponent(new Button("Create a new category"));
+        adminControls.addComponent(new Button("Rearrange categories"));
+        return adminControls;
     }
 
     private static long getUnreadPostCount(final Category category) {

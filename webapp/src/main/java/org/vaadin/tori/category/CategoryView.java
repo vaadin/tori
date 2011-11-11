@@ -14,4 +14,6 @@ public interface CategoryView extends View {
     void displayCategoryNotFoundError(String requestedCategoryId);
 
     Category getCurrentCategory();
+
+    void setAdministratorMode(boolean admin);
 }

@@ -1,10 +1,12 @@
 package org.vaadin.tori.mvp;
 
 import org.apache.log4j.Logger;
+import org.vaadin.tori.data.entity.User;
 
 public abstract class Presenter<V extends View> {
 
     protected final Logger log = Logger.getLogger(getClass());
+    protected User currentUser;
     private V view;
 
     public void setView(final V view) {
@@ -26,4 +28,7 @@ public abstract class Presenter<V extends View> {
         // NOP, subclasses may override
     }
 
+    public void setCurrentUser(final User currentUser) {
+        this.currentUser = currentUser;
+    }
 }
