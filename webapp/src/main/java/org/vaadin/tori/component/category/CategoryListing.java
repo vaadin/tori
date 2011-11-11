@@ -1,4 +1,4 @@
-package org.vaadin.tori.component;
+package org.vaadin.tori.component.category;
 
 import java.util.List;
 
