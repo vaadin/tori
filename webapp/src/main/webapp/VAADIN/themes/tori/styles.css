@@ -1,5 +1,6 @@
 @import url(../reindeer/styles.css);
 @import url(categoryview/style.css);
+@import url(breadcrumbs/style.css);
 
 .v-app {
 	font-size: 14px;

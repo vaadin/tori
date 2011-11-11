@@ -34,7 +34,7 @@ abstract class CategoryCrumb extends CustomComponent {
         public UnClickable(final Category category,
                 final CategorySelectionListener listener) {
             super(category, listener);
-            addStyleName("unclickable");
+            addStyleName(Breadcrumbs.STYLE_UNCLICKABLE);
         }
     }
 
@@ -54,6 +54,9 @@ abstract class CategoryCrumb extends CustomComponent {
                     + "part of the breadcrumbs, "
                     + "but the given category was null");
         }
+
+        setStyleName(Breadcrumbs.STYLE_CRUMB);
+        addStyleName(Breadcrumbs.STYLE_CATEGORY);
 
         crumb = new SplitButton(category.getName());
         crumb.addPopupVisibilityListener(new SplitButton.SplitButtonPopupVisibilityListener() {

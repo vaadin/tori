@@ -31,6 +31,10 @@ class ThreadCrumb extends CustomComponent {
                     + "the breadcrumbs, but the given thread was null");
         }
 
+        setStyleName(Breadcrumbs.STYLE_CRUMB);
+        addStyleName(Breadcrumbs.STYLE_THREAD);
+        addStyleName(Breadcrumbs.STYLE_UNCLICKABLE);
+
         crumb = new SplitButton(thread.getTopic());
         crumb.addPopupVisibilityListener(new SplitButton.SplitButtonPopupVisibilityListener() {
             @Override

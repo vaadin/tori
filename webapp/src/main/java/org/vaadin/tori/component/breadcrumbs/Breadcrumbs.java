@@ -21,6 +21,11 @@ import com.vaadin.ui.HorizontalLayout;
 public class Breadcrumbs extends CustomComponent implements
         CategorySelectionListener, ThreadSelectionListener {
 
+    static final String STYLE_CRUMB = "crumb";
+    static final String STYLE_THREAD = "thread";
+    static final String STYLE_CATEGORY = "category";
+    static final String STYLE_UNCLICKABLE = "unclickable";
+
     private final HorizontalLayout layout;
 
     private transient final ViewChangeListener viewListener = new ViewChangeListener() {
@@ -33,6 +38,7 @@ public class Breadcrumbs extends CustomComponent implements
     private final ToriNavigator navigator;
 
     public Breadcrumbs(final ToriNavigator navigator) {
+        setStyleName("breadcrumbs");
         this.navigator = navigator;
         navigator.addListener(viewListener);
 
