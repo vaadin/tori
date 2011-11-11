@@ -2,12 +2,59 @@
 	text-align: right;
 }
 
-.post .permalink a,
-.post .permalink a:active,
-.post .permalink a:visited {
-	color: #AAA;
+.post table {
+	width: 100%;
 }
 
-.post .permalink a:hover {
+.post table.container {
+	border: 1px solid black; 
+	margin: 5px 0;
+}
+
+.post .author {
+	width: 140px; /* 150px - padding */ 
+	min-width: 140px; /* 150px - padding */
+	background-color: #ddd; 
+	padding: 5px;
+	vertical-align: top;
+}
+
+.post td.body {
+	width: 100%;
+	vertical-align: top;
+}
+
+.post [location="avatar"] {
+	margin-bottom: 0.5em;
+}
+
+.post [location="authorname"] {
+	font-weight: bold;
+}
+
+.post [location="postedtime"] {
+	font-size: smaller;
+}
+
+.post [location="permalink"] {
+	text-align: right;
+}
+
+.post [location="permalink"] a,
+.post [location="permalink"] a:active,
+.post [location="permalink"] a:visited {
+	color: #AAA;
+	font-size: smaller;
+}
+
+.post [location="permalink"] a:hover {
 	color: black;
+}
+
+.post [location="body"] {
+	padding: 5px;
+}
+
+.post [location="toolbar"] {
+	text-align: right;
 }
