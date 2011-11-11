@@ -76,10 +76,11 @@ public class TestDataSource implements DataSource {
         return executeWithEntityManager(new Command<List<Category>>() {
             @Override
             public final List<Category> execute(final EntityManager em) {
-                return em.createQuery(
-                        "select c from Category c "
-                                + "where c.parentCategory is null",
-                        Category.class).getResultList();
+                return em
+                        .createQuery(
+                                "select c from Category c "
+                                        + "where c.parentCategory is null order by c.displayOrder",
+                                Category.class).getResultList();
             }
         });
     }
@@ -92,7 +93,7 @@ public class TestDataSource implements DataSource {
             public List<Category> execute(final EntityManager em) {
                 return em
                         .createQuery(
-                                "select c from Category c where c.parentCategory = :parent")
+                                "select c from Category c where c.parentCategory = :parent order by c.displayOrder")
                         .setParameter("parent", category).getResultList();
             }
         });

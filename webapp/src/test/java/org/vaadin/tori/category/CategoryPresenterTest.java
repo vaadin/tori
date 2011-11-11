@@ -65,4 +65,5 @@ public class CategoryPresenterTest {
         verify(mockView).displaySubCategories(subCategories);
         verify(mockView).displayThreads(threads);
     }
+
 }

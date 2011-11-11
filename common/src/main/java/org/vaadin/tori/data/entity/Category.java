@@ -1,6 +1,6 @@
 package org.vaadin.tori.data.entity;
 
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,12 +16,13 @@ public class Category extends AbstractEntity {
 
     @Column(nullable = false)
     private String description;
+    private int displayOrder;
 
     @ManyToOne(optional = true)
     private Category parentCategory;
 
     @OneToMany(mappedBy = "parentCategory", fetch = FetchType.LAZY)
-    private Set<Category> subCategories;
+    private List<Category> subCategories;
 
     public String getName() {
         return name;
@@ -47,11 +48,19 @@ public class Category extends AbstractEntity {
         return parentCategory;
     }
 
-    protected void setSubCategories(final Set<Category> subCategories) {
+    protected void setSubCategories(final List<Category> subCategories) {
         this.subCategories = subCategories;
     }
 
-    public Set<Category> getSubCategories() {
+    public List<Category> getSubCategories() {
         return subCategories;
+    }
+
+    public int getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(final int displayOrder) {
+        this.displayOrder = displayOrder;
     }
 }

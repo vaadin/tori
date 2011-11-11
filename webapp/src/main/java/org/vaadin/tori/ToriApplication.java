@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriNavigator.NavigableApplication;
 import org.vaadin.tori.data.DataSource;
+import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.data.spi.DataSourceProvider;
 
 import com.vaadin.Application;
@@ -98,6 +99,16 @@ public class ToriApplication extends Application implements
      */
     public static ToriApplication getCurrent() {
         return currentApplication.get();
+    }
+
+    /**
+     * Returns the current {@link User} of the application or {@code null} if no
+     * user is logged in.
+     * 
+     * @return the current {@link User} of the application or {@code null}.
+     */
+    public static User getCurrentUser() {
+        return (User) currentApplication.get().getUser();
     }
 
     /**

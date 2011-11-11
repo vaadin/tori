@@ -3,10 +3,10 @@ package org.vaadin.tori.dashboard;
 import java.util.List;
 
 import org.vaadin.tori.ToriApplication;
-import org.vaadin.tori.component.CategoryListing;
-import org.vaadin.tori.component.CategoryListing.Mode;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
+import org.vaadin.tori.component.category.CategoryListing;
+import org.vaadin.tori.component.category.CategoryListing.Mode;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.AbstractView;
 
