@@ -55,6 +55,26 @@
 	padding: 5px;
 }
 
-.post [location="toolbar"] {
+.post td.toolbar {
 	text-align: right;
+	width: 100%;
+}
+
+.post td.toolbar div {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.post td.toolbar [location="report"] {
+	color: #AAA;
+}
+
+.post td.toolbar [location="report"],
+.post td.toolbar [location="settings"] {
+	visibility: hidden;
+}
+
+.post td.toolbar:hover [location="report"],
+.post td.toolbar:hover [location="settings"] {
+	visibility: visible;
 }

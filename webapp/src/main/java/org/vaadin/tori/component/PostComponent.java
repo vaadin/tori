@@ -8,16 +8,35 @@ import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.NativeButton;
 
 @SuppressWarnings("serial")
 public class PostComponent extends CustomComponent {
 
     private final CustomLayout root;
+
+    private final ClickListener editListener = new ClickListener() {
+        @Override
+        public void buttonClick(final ClickEvent event) {
+            getApplication().getMainWindow().showNotification(
+                    "Editing not implemented yet.");
+        }
+    };
+
+    private final ClickListener replyListener = new ClickListener() {
+        @Override
+        public void buttonClick(final ClickEvent event) {
+            getApplication().getMainWindow().showNotification(
+                    "Replying not implemented yet");
+        }
+    };
 
     public PostComponent(final Post post) {
         root = new CustomLayout("../../../layouts/postlayout");
@@ -32,8 +51,16 @@ public class PostComponent extends CustomComponent {
         root.addComponent(new Label(getFormattedXhtmlBody(post),
                 Label.CONTENT_XHTML), "body");
         root.addComponent(new Label("0"), "score");
-        root.addComponent(new Label(
-                "Report Post / [Edit Post] [Quote for Reply]"), "toolbar");
+        root.addComponent(undefinedWidth(new Label("Report Post")), "report");
+        root.addComponent(undefinedWidth(new Label("*")), "settings");
+        root.addComponent(new NativeButton("Edit Post", editListener), "edit");
+        root.addComponent(new NativeButton("Quote for Reply", replyListener),
+                "quote");
+    }
+
+    private <T extends Component> T undefinedWidth(final T component) {
+        component.setSizeUndefined();
+        return component;
     }
 
     private String getFormattedXhtmlBody(final Post post) {
