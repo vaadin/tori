@@ -29,13 +29,14 @@ public class PostComponent extends CustomComponent {
                 "authorname");
         root.addComponent(new Label(getPostedAgoText(post)), "postedtime");
         root.addComponent(getPermaLink(post), "permalink");
-        root.addComponent(new Label(getFormattedBody(post)), "body");
+        root.addComponent(new Label(getFormattedXhtmlBody(post),
+                Label.CONTENT_XHTML), "body");
         root.addComponent(new Label("0"), "score");
         root.addComponent(new Label(
                 "Report Post / [Edit Post] [Quote for Reply]"), "toolbar");
     }
 
-    private String getFormattedBody(final Post post) {
+    private String getFormattedXhtmlBody(final Post post) {
         return ToriApplication.getCurrent().getPostFormatter()
                 .format(post.getBodyRaw());
     }
