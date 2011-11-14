@@ -35,7 +35,7 @@ public class ToriApplication extends Application implements
     public void init() {
         checkThatCommonIsLoaded();
 
-        final ServiceProvider spi = getServiceProvider();
+        final ServiceProvider spi = createServiceProvider();
         ds = createDataSource(spi);
         postFormatter = createPostFormatter(spi);
 
@@ -63,7 +63,7 @@ public class ToriApplication extends Application implements
         }
     }
 
-    private static ServiceProvider getServiceProvider() {
+    private static ServiceProvider createServiceProvider() {
         try {
             final ServiceProvider dsFactory = (ServiceProvider) Class.forName(
                     ServiceProvider.IMPLEMENTING_CLASSNAME).newInstance();
