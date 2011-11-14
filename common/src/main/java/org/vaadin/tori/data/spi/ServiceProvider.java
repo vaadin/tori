@@ -1,6 +1,7 @@
 package org.vaadin.tori.data.spi;
 
 import org.vaadin.tori.data.DataSource;
+import org.vaadin.tori.util.PostFormatter;
 
 /**
  * This interface needs to be implemented for the datasource project included in
@@ -14,5 +15,7 @@ public interface ServiceProvider {
      * Returns a new {@link DataSource} instance.
      */
     DataSource createDataSource();
+
+    PostFormatter createPostFormatter();
 
 }

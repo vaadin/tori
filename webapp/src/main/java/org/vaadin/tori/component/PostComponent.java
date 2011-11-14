@@ -1,5 +1,6 @@
 package org.vaadin.tori.component;
 
+import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.data.entity.Post;
 
@@ -28,10 +29,15 @@ public class PostComponent extends CustomComponent {
                 "authorname");
         root.addComponent(new Label(getPostedAgoText(post)), "postedtime");
         root.addComponent(getPermaLink(post), "permalink");
-        root.addComponent(new Label(post.getBodyRaw()), "body");
+        root.addComponent(new Label(getFormattedBody(post)), "body");
         root.addComponent(new Label("0"), "score");
         root.addComponent(new Label(
                 "Report Post / [Edit Post] [Quote for Reply]"), "toolbar");
+    }
+
+    private String getFormattedBody(final Post post) {
+        return ToriApplication.getCurrent().getPostFormatter()
+                .format(post.getBodyRaw());
     }
 
     private static Component getPermaLink(final Post post) {

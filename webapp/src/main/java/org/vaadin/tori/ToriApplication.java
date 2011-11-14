@@ -8,6 +8,7 @@ import org.vaadin.tori.ToriNavigator.NavigableApplication;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.data.spi.ServiceProvider;
+import org.vaadin.tori.util.PostFormatter;
 
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
@@ -28,11 +29,16 @@ public class ToriApplication extends Application implements
     private static ThreadLocal<ToriApplication> currentApplication = new ThreadLocal<ToriApplication>();
 
     private DataSource ds;
+    private PostFormatter postFormatter;
 
     @Override
     public void init() {
         checkThatCommonIsLoaded();
-        resolveDataSource();
+
+        final ServiceProvider spi = getServiceProvider();
+        ds = createDataSource(spi);
+        postFormatter = createPostFormatter(spi);
+
         setCurrentInstance();
 
         setTheme("tori");
@@ -57,11 +63,11 @@ public class ToriApplication extends Application implements
         }
     }
 
-    private void resolveDataSource() {
+    private static ServiceProvider getServiceProvider() {
         try {
             final ServiceProvider dsFactory = (ServiceProvider) Class.forName(
                     ServiceProvider.IMPLEMENTING_CLASSNAME).newInstance();
-            ds = dsFactory.createDataSource();
+            return dsFactory;
         } catch (final InstantiationException e) {
             log.error("Can't use the constructor for the current datasource's "
                     + ServiceProvider.IMPLEMENTING_CLASSNAME + ".");
@@ -76,7 +82,21 @@ public class ToriApplication extends Application implements
                     + ServiceProvider.class.getName() + ")");
             throw new RuntimeException(e);
         }
-        log.info("Using DataSource implementation: " + ds.getClass().getName());
+    }
+
+    private static DataSource createDataSource(final ServiceProvider spi) {
+        final DataSource ds = spi.createDataSource();
+        log.info(String.format("Using %s implementation: %s",
+                DataSource.class.getSimpleName(), ds.getClass().getName()));
+        return ds;
+    }
+
+    private static PostFormatter createPostFormatter(final ServiceProvider spi) {
+        final PostFormatter postFormatter = spi.createPostFormatter();
+        log.info(String.format("Using %s implementation: %s",
+                PostFormatter.class.getSimpleName(), postFormatter.getClass()
+                        .getName()));
+        return postFormatter;
     }
 
     @Override
@@ -117,6 +137,10 @@ public class ToriApplication extends Application implements
      */
     public DataSource getDataSource() {
         return ds;
+    }
+
+    public PostFormatter getPostFormatter() {
+        return postFormatter;
     }
 
     private void setCurrentInstance() {
