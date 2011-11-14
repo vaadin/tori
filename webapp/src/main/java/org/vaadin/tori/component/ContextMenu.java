@@ -100,7 +100,7 @@ public class ContextMenu extends CustomComponent {
 
     protected void add(final Resource icon, final String caption,
             final ContextComponentSwapper swapper) {
-        final Button button = new Button(caption + "...",
+        final Button button = new Button(caption + '\u2026',
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(final ClickEvent event) {
