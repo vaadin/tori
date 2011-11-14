@@ -21,6 +21,12 @@
 	background-repeat: no-repeat;
 }
 
+.categoryTree.rearranging .v-table-row-odd * {
+	cursor: grab;
+	cursor: -moz-grab;
+	cursor: -webkit-grab;
+}
+
 .categoryTree .v-table-row:last-child td,
 .categoryTree .v-table-row-odd:last-child td {
 	border-bottom: 0;

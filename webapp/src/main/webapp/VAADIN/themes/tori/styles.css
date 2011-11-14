@@ -27,3 +27,14 @@ a:visited,
 .v-label-h4 {
 	font-size: 110%;
 }
+
+.v-drag-element {
+    opacity: 0.65;
+    filter: alpha(opacity=65);
+}
+.v-drag-element,
+.v-drag-element * {
+	cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
