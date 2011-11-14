@@ -1,6 +1,9 @@
 package org.vaadin.tori.component.category;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.data.entity.Category;
@@ -125,6 +128,7 @@ public class CategoryListing extends
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(final ClickEvent event) {
+                        setRearranging(false);
                         getPresenter().applyRearrangement();
                     }
                 }));
@@ -144,6 +148,51 @@ public class CategoryListing extends
         categoryTree.setDraggingEnabled(rearranging);
         rearrangeCategoriesButton.setVisible(!rearranging);
         rearrangeControls.setVisible(rearranging);
+    }
+
+    @Override
+    public Set<Category> getModifiedCategories() {
+        return getModifiedCategories(categoryTree.rootItemIds());
+    }
+
+    private Set<Category> getModifiedCategories(
+            final Collection<?> itemIdsToCheck) {
+        final Set<Category> changed = new HashSet<Category>();
+
+        int index = 0;
+        for (final Object itemId : itemIdsToCheck) {
+            if (itemId instanceof Category) {
+                // check the display order
+                final Category category = (Category) itemId;
+                if (category.getDisplayOrder() != index) {
+                    // update the displayOrder property if reordered
+                    category.setDisplayOrder(index);
+                    changed.add(category);
+                }
+
+                // check the parent
+                final Object parent = categoryTree.getParent(itemId);
+                if (parent == null && category.getParentCategory() != null) {
+                    category.setParentCategory(null);
+                    changed.add(category);
+                } else if (parent instanceof Category) {
+                    final Category parentCategory = (Category) parent;
+                    if (!parentCategory.equals(category.getParentCategory())) {
+                        category.setParentCategory(parentCategory);
+                        changed.add(category);
+                    }
+                }
+                index++;
+            }
+
+            // recursively add changes from sub categories
+            final Collection<?> subCategoryItemIds = categoryTree
+                    .getChildren(itemId);
+            if (subCategoryItemIds != null && !subCategoryItemIds.isEmpty()) {
+                changed.addAll(getModifiedCategories(subCategoryItemIds));
+            }
+        }
+        return changed;
     }
 
     private void createCategory() {

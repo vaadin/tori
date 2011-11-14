@@ -1,6 +1,7 @@
 package org.vaadin.tori.component.category;
 
 import java.util.List;
+import java.util.Set;
 
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
@@ -31,18 +32,34 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
     }
 
     public void applyRearrangement() {
-        // TODO Auto-generated method stub
+        final Set<Category> modifiedCategories = getView()
+                .getModifiedCategories();
+        if (log.isDebugEnabled()) {
+            log.debug("Saving " + modifiedCategories.size()
+                    + " modified categories.");
+        }
+        if (!modifiedCategories.isEmpty()) {
+            dataSource.saveCategories(modifiedCategories);
 
+            // reload the new order from database
+            setCategories(dataSource.getRootCategories());
+        }
     }
 
     public void cancelRearrangement() {
-        // restore the original categories
-        getView().displayCategories(categories);
+        if (!getView().getModifiedCategories().isEmpty()) {
+            // restore the original categories
+            getView().displayCategories(categories);
+        }
     }
 
     public void setCategories(final List<Category> categories) {
         this.categories = categories;
         getView().displayCategories(categories);
+    }
+
+    public List<Category> getSubCategories(final Category category) {
+        return dataSource.getSubCategories(category);
     }
 
 }

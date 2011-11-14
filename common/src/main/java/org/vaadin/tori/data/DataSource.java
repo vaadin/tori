@@ -1,6 +1,7 @@
 package org.vaadin.tori.data;
 
 import java.util.List;
+import java.util.Set;
 
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -69,4 +70,12 @@ public interface DataSource {
      * @return {@code true} if the given user has administrator privileges.
      */
     boolean isAdministrator(User user);
+
+    /**
+     * Saves all changes made to the given {@link Category Categories}.
+     * 
+     * @param categoriesToSave
+     *            {@link Category Categories} to save.
+     */
+    void saveCategories(Set<Category> categoriesToSave);
 }
