@@ -1,0 +1,24 @@
+.v-popupbutton-popup-contextmenu {
+	padding: 0;
+}
+
+.v-popupbutton-popup-contextmenu .v-button-link,
+.v-popupbutton-popup-contextmenu .v-button-link:focus,
+.v-popupbutton-popup-contextmenu .v-button-link:active {
+	display: block;
+	padding: 4px;
+	border-bottom: 1px solid black;
+}
+
+.v-popupbutton-popup-contextmenu .v-button-link:last-child {
+	border-bottom: 0;
+}
+
+.v-popupbutton-popup-contextmenu .v-button-link:hover {
+	background-color: #ccc;
+}
+
+.v-popupbutton-popup-contextmenu .v-button-link .v-button-caption {
+	color: #222;
+	text-decoration: none;
+}

@@ -9,9 +9,9 @@ import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 /**
@@ -55,7 +55,7 @@ public class ContextMenu extends CustomComponent {
     }
 
     private final HorizontalLayout layout;
-    private final VerticalLayout popupLayout = new VerticalLayout();
+    private final CssLayout popupLayout;
     private final PopupButton contextComponent;
 
     private final PopupVisibilityListener popupResetter = new PopupVisibilityListener() {
@@ -73,8 +73,12 @@ public class ContextMenu extends CustomComponent {
         layout.setSizeFull();
         setWidth("16px");
         setHeight("16px");
+        setStyleName("contextmenu");
+
+        popupLayout = new CssLayout();
 
         contextComponent = newContextComponent();
+        contextComponent.setStyleName("contextmenu");
         final Button settingsIcon = getSettingsIcon(contextComponent);
         layout.addComponent(settingsIcon);
         layout.addComponent(contextComponent);

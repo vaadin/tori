@@ -1,7 +1,12 @@
 @import url(../reindeer/styles.css);
+
+/* views */
 @import url(categoryview/style.css);
-@import url(breadcrumbs/style.css);
 @import url(threadview/style.css);
+
+/* components */
+@import url(breadcrumbs/style.css);
+@import url(contextmenu/style.css);
 
 .v-app {
 	font-size: 14px;
