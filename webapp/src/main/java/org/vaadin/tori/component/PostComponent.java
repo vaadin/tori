@@ -2,6 +2,7 @@ package org.vaadin.tori.component;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.component.ContextMenu.Builder;
 import org.vaadin.tori.data.entity.Post;
 
 import com.ocpsoft.pretty.time.PrettyTime;
@@ -19,6 +20,8 @@ import com.vaadin.ui.NativeButton;
 
 @SuppressWarnings("serial")
 public class PostComponent extends CustomComponent {
+
+    private static final String EXAMPLE_IMAGE_URL = "http://cache.ohinternet.com/images/thumb/2/2d/Trollface_HD.png/618px-Trollface_HD.png";
 
     private final CustomLayout root;
 
@@ -52,10 +55,32 @@ public class PostComponent extends CustomComponent {
                 Label.CONTENT_XHTML), "body");
         root.addComponent(new Label("0"), "score");
         root.addComponent(undefinedWidth(new Label("Report Post")), "report");
-        root.addComponent(undefinedWidth(new Label("*")), "settings");
+        root.addComponent(buildContextMenu(), "settings");
         root.addComponent(new NativeButton("Edit Post", editListener), "edit");
         root.addComponent(new NativeButton("Quote for Reply", replyListener),
                 "quote");
+    }
+
+    private ContextMenu buildContextMenu() {
+        final Builder builder = new ContextMenu.Builder();
+        builder.add(null, "Ban user", new ContextMenu.ContextAction() {
+            @Override
+            public void contextClicked() {
+                getApplication().getMainWindow().showNotification("BANNED!");
+            }
+        });
+        builder.add(null, "Swap-a-roo",
+                new ContextMenu.ContextComponentSwapper() {
+                    @Override
+                    public Component swapContextComponent() {
+                        final ExternalResource resource = new ExternalResource(
+                                EXAMPLE_IMAGE_URL);
+                        final Embedded embedded = new Embedded(null, resource);
+                        embedded.setType(Embedded.TYPE_IMAGE);
+                        return embedded;
+                    }
+                });
+        return builder.build();
     }
 
     private <T extends Component> T undefinedWidth(final T component) {
