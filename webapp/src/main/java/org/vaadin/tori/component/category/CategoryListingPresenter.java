@@ -11,6 +11,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
 
     private final DataSource dataSource;
     private List<Category> categories;
+    private Category currentRoot;
 
     public CategoryListingPresenter(final DataSource dataSource) {
         this.dataSource = dataSource;
@@ -42,7 +43,11 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
             dataSource.saveCategories(modifiedCategories);
 
             // reload the new order from database
-            setCategories(dataSource.getRootCategories());
+            if (currentRoot == null) {
+                setCategories(dataSource.getRootCategories());
+            } else {
+                setCategories(dataSource.getSubCategories(currentRoot));
+            }
         }
     }
 
@@ -55,11 +60,18 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
 
     public void setCategories(final List<Category> categories) {
         this.categories = categories;
+        if (!categories.isEmpty()) {
+            currentRoot = categories.get(0).getParentCategory();
+        }
         getView().displayCategories(categories);
     }
 
     public List<Category> getSubCategories(final Category category) {
         return dataSource.getSubCategories(category);
+    }
+
+    public Category getCurrentRoot() {
+        return currentRoot;
     }
 
 }

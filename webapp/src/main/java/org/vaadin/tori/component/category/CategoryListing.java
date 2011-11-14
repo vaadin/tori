@@ -172,9 +172,15 @@ public class CategoryListing extends
 
                 // check the parent
                 final Object parent = categoryTree.getParent(itemId);
-                if (parent == null && category.getParentCategory() != null) {
-                    category.setParentCategory(null);
-                    changed.add(category);
+                if (parent == null) {
+                    final Category currentRoot = getPresenter()
+                            .getCurrentRoot();
+                    if ((currentRoot == null && category.getParentCategory() != null)
+                            || (currentRoot != null && !currentRoot
+                                    .equals(category.getParentCategory()))) {
+                        category.setParentCategory(currentRoot);
+                        changed.add(category);
+                    }
                 } else if (parent instanceof Category) {
                     final Category parentCategory = (Category) parent;
                     if (!parentCategory.equals(category.getParentCategory())) {
