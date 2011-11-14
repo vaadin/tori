@@ -2,8 +2,12 @@ package org.vaadin.tori.component.category;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -68,4 +72,26 @@ public class CategoryListingTest {
                 Mode.SINGLE_COLUMN);
         assertEquals(1, treeTable.getContainerPropertyIds().size());
     }
+
+    @Test
+    public void applyRearrangementEmpty() {
+        final Set<Category> modified = new HashSet<Category>(0);
+        when(mockView.getModifiedCategories()).thenReturn(modified);
+
+        // verify that the saveCategories method is not called when no
+        // categories modified
+        presenter.applyRearrangement();
+        verify(mockDataSource, never()).saveCategories(modified);
+    }
+
+    @Test
+    public void applyRearrangement() {
+        final Set<Category> modified = new HashSet<Category>(1);
+        modified.add(new Category());
+        when(mockView.getModifiedCategories()).thenReturn(modified);
+
+        presenter.applyRearrangement();
+        verify(mockDataSource).saveCategories(modified);
+    }
+
 }

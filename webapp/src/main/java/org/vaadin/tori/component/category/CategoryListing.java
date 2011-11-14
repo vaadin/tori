@@ -1,14 +1,19 @@
 package org.vaadin.tori.component.category;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.AbstractView;
 
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 
@@ -40,6 +45,7 @@ public class CategoryListing extends
     private Component adminControls;
     private Button createCategoryButton;
     private Button rearrangeCategoriesButton;
+    private ComponentContainer rearrangeControls;
 
     public CategoryListing(final Mode listingMode) {
         this.mode = listingMode;
@@ -70,6 +76,11 @@ public class CategoryListing extends
     }
 
     public void setCategories(final List<Category> categories) {
+        getPresenter().setCategories(categories);
+    }
+
+    @Override
+    public void displayCategories(final List<Category> categories) {
         categoryTree.removeAllItems();
         for (final Category category : categories) {
             categoryTree.addCategory(category, null);
@@ -81,7 +92,7 @@ public class CategoryListing extends
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(final ClickEvent event) {
-                        rearrangeCategories();
+                        setRearranging(true);
                     }
                 });
         createCategoryButton = new Button("Create a new category",
@@ -92,14 +103,96 @@ public class CategoryListing extends
                     }
                 });
 
+        rearrangeControls = createRearrangeControls();
+        rearrangeControls.setVisible(false);
+
+        final HorizontalLayout buttonWrapper = new HorizontalLayout();
+        buttonWrapper.setSpacing(true);
+        buttonWrapper.addComponent(createCategoryButton);
+        buttonWrapper.addComponent(rearrangeCategoriesButton);
+
         final HorizontalLayout adminControls = new HorizontalLayout();
-        adminControls.addComponent(createCategoryButton);
-        adminControls.addComponent(rearrangeCategoriesButton);
+        adminControls.setWidth("100%");
+        adminControls.addComponent(buttonWrapper);
+        adminControls.addComponent(rearrangeControls);
+        adminControls.setComponentAlignment(rearrangeControls,
+                Alignment.TOP_RIGHT);
+        adminControls.setMargin(true, false, true, false);
         return adminControls;
     }
 
-    private void rearrangeCategories() {
-        categoryTree.setDraggingEnabled(true);
+    private ComponentContainer createRearrangeControls() {
+        final HorizontalLayout rearrangeControls = new HorizontalLayout();
+        rearrangeControls.setSpacing(true);
+        rearrangeControls.addComponent(new Button("Apply rearrangement",
+                new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(final ClickEvent event) {
+                        setRearranging(false);
+                        getPresenter().applyRearrangement();
+                    }
+                }));
+        rearrangeControls.addComponent(new Button("Cancel",
+                new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(final ClickEvent event) {
+                        setRearranging(false);
+                        getPresenter().cancelRearrangement();
+                    }
+                }));
+        return rearrangeControls;
+    }
+
+    private void setRearranging(final boolean rearranging) {
+        createCategoryButton.setEnabled(!rearranging);
+        categoryTree.setDraggingEnabled(rearranging);
+        rearrangeCategoriesButton.setVisible(!rearranging);
+        rearrangeControls.setVisible(rearranging);
+    }
+
+    @Override
+    public Set<Category> getModifiedCategories() {
+        return getModifiedCategories(categoryTree.rootItemIds());
+    }
+
+    private Set<Category> getModifiedCategories(
+            final Collection<?> itemIdsToCheck) {
+        final Set<Category> changed = new HashSet<Category>();
+
+        int index = 0;
+        for (final Object itemId : itemIdsToCheck) {
+            if (itemId instanceof Category) {
+                // check the display order
+                final Category category = (Category) itemId;
+                if (category.getDisplayOrder() != index) {
+                    // update the displayOrder property if reordered
+                    category.setDisplayOrder(index);
+                    changed.add(category);
+                }
+
+                // check the parent
+                final Object parent = categoryTree.getParent(itemId);
+                if (parent == null && category.getParentCategory() != null) {
+                    category.setParentCategory(null);
+                    changed.add(category);
+                } else if (parent instanceof Category) {
+                    final Category parentCategory = (Category) parent;
+                    if (!parentCategory.equals(category.getParentCategory())) {
+                        category.setParentCategory(parentCategory);
+                        changed.add(category);
+                    }
+                }
+                index++;
+            }
+
+            // recursively add changes from sub categories
+            final Collection<?> subCategoryItemIds = categoryTree
+                    .getChildren(itemId);
+            if (subCategoryItemIds != null && !subCategoryItemIds.isEmpty()) {
+                changed.addAll(getModifiedCategories(subCategoryItemIds));
+            }
+        }
+        return changed;
     }
 
     private void createCategory() {

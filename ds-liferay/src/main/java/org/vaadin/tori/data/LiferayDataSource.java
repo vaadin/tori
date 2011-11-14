@@ -1,6 +1,7 @@
 package org.vaadin.tori.data;
 
 import java.util.List;
+import java.util.Set;
 
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -46,6 +47,11 @@ public class LiferayDataSource implements DataSource {
 
     @Override
     public boolean isAdministrator(final User user) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public void saveCategories(final Set<Category> categoriesToSave) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 

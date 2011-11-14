@@ -2,7 +2,6 @@ package org.vaadin.tori.component.category;
 
 import java.util.List;
 
-import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.component.category.CategoryListing.Mode;
 import org.vaadin.tori.data.entity.Category;
@@ -90,15 +89,15 @@ class CategoryTreeTable extends TreeTable implements CollapseListener,
             setParent(category, parent);
         }
 
-        if (category.getSubCategories().isEmpty()) {
+        final List<Category> subCategories = presenter
+                .getSubCategories(category);
+        if (subCategories.isEmpty()) {
             setChildrenAllowed(category, false);
         } else {
             // all categories are collapsed by default
             setCollapsed(category, true);
 
             // recursively add all sub categories
-            final List<Category> subCategories = ToriApplication.getCurrent()
-                    .getDataSource().getSubCategories(category);
             for (final Category subCategory : subCategories) {
                 addCategory(subCategory, category);
             }
@@ -209,6 +208,7 @@ class CategoryTreeTable extends TreeTable implements CollapseListener,
                     .getDropLocation();
             if (dropLocation == VerticalDropLocation.MIDDLE) {
                 // middle -> make it child
+                container.setChildrenAllowed(targetItemId, true);
                 container.setParent(draggedItemId, targetItemId);
             } else if (dropLocation == VerticalDropLocation.TOP) {
                 // top -> make it previous

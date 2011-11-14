@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
 
 import org.vaadin.tori.data.entity.Category;
@@ -193,5 +195,25 @@ public class TestDataSource implements DataSource {
     @Override
     public boolean isAdministrator(final User user) {
         return true;
+    }
+
+    @Override
+    public void saveCategories(final Set<Category> categoriesToSave) {
+        executeWithEntityManager(new Command<Void>() {
+            @Override
+            public Void execute(final EntityManager em) {
+                final EntityTransaction transaction = em.getTransaction();
+                transaction.begin();
+                try {
+                    for (final Category categoryToSave : categoriesToSave) {
+                        em.merge(categoryToSave);
+                    }
+                    transaction.commit();
+                } catch (final Exception e) {
+                    transaction.rollback();
+                }
+                return null;
+            }
+        });
     }
 }
