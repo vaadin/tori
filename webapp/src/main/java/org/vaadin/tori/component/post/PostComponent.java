@@ -96,23 +96,12 @@ public class PostComponent extends CustomComponent {
 
     private ContextMenu buildContextMenu() {
         final Builder builder = new ContextMenu.Builder();
-        builder.add(null, "Ban user", new ContextMenu.ContextAction() {
+        builder.add(null, "[TODO]", new ContextMenu.ContextAction() {
             @Override
             public void contextClicked() {
-                getApplication().getMainWindow().showNotification("BANNED!");
+                getApplication().getMainWindow().showNotification("...");
             }
         });
-        builder.add(null, "Swap-a-roo",
-                new ContextMenu.ContextComponentSwapper() {
-                    @Override
-                    public Component swapContextComponent() {
-                        final ExternalResource resource = new ExternalResource(
-                                EXAMPLE_IMAGE_URL);
-                        final Embedded embedded = new Embedded(null, resource);
-                        embedded.setType(Embedded.TYPE_IMAGE);
-                        return embedded;
-                    }
-                });
         return builder.build();
     }
 
