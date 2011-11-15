@@ -139,10 +139,11 @@ public class TestDataSource implements DataSource {
                 query.setParameter("category", category);
 
                 long threadCount = query.getSingleResult();
+
                 // recursively add thread count of all sub categories
-                for (final Category subCategory : category.getSubCategories()) {
-                    threadCount += TestDataSource.this
-                            .getThreadCount(subCategory);
+                final List<Category> subCategories = getSubCategories(category);
+                for (final Category subCategory : subCategories) {
+                    threadCount += getThreadCount(subCategory);
                 }
                 return threadCount;
             }
