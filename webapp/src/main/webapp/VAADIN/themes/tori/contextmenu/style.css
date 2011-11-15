@@ -22,3 +22,7 @@
 	color: #222;
 	text-decoration: none;
 }
+
+.contextmenu .v-button-opened {
+	visibility: visible;
+}

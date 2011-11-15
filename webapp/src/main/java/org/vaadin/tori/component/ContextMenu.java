@@ -57,13 +57,19 @@ public class ContextMenu extends CustomComponent {
     private final HorizontalLayout layout;
     private final CssLayout popupLayout;
     private final PopupButton contextComponent;
+    private final Button settingsIcon;
 
-    private final PopupVisibilityListener popupResetter = new PopupVisibilityListener() {
+    private final PopupVisibilityListener popupListener = new PopupVisibilityListener() {
         @Override
         public void popupVisibilityChange(final PopupVisibilityEvent event) {
             if (!event.isPopupVisible()) {
-                event.getPopupButton().setComponent(popupLayout);
-                event.getPopupButton().removePopupVisibilityListener(this);
+                if (popupLayout.getParent() != contextComponent) {
+                    contextComponent.setComponent(popupLayout);
+                }
+
+                settingsIcon.removeStyleName("opened");
+            } else {
+                settingsIcon.addStyleName("opened");
             }
         }
     };
@@ -79,7 +85,7 @@ public class ContextMenu extends CustomComponent {
 
         contextComponent = newContextComponent();
         contextComponent.setStyleName("contextmenu");
-        final Button settingsIcon = getSettingsIcon(contextComponent);
+        settingsIcon = newSettingsIcon(contextComponent);
         layout.addComponent(settingsIcon);
         layout.addComponent(contextComponent);
     }
@@ -107,8 +113,6 @@ public class ContextMenu extends CustomComponent {
                         contextComponent.removeAllComponents();
                         contextComponent.setComponent(swapper
                                 .swapContextComponent());
-                        contextComponent
-                                .addPopupVisibilityListener(popupResetter);
                     }
                 });
         button.setIcon(icon);
@@ -116,7 +120,7 @@ public class ContextMenu extends CustomComponent {
         popupLayout.addComponent(button);
     }
 
-    private static Button getSettingsIcon(final PopupButton contextComponent) {
+    private static Button newSettingsIcon(final PopupButton contextComponent) {
         final Button button = new Button();
         button.setStyleName(Reindeer.BUTTON_LINK);
         button.setIcon(new ThemeResource("images/icon-settings.gif"));
@@ -134,6 +138,7 @@ public class ContextMenu extends CustomComponent {
         popupButton.setWidth("0");
         popupButton.setHeight("0");
         popupButton.setComponent(popupLayout);
+        popupButton.addPopupVisibilityListener(popupListener);
         popupLayout.setWidth("200px");
         return popupButton;
     }
