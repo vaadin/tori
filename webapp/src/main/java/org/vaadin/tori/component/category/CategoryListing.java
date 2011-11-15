@@ -9,6 +9,7 @@ import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.AbstractView;
+import org.vaadin.tori.util.StyleConstants;
 
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
@@ -109,7 +110,8 @@ public class CategoryListing extends
                 createCategory();
             }
         });
-        createCategoryButton.setStyleName("popupIndicatorHidden");
+        createCategoryButton
+                .addStyleName(StyleConstants.POPUP_INDICATOR_HIDDEN);
         createCategoryButton.setIcon(new ThemeResource("images/icon-add.png"));
         createCategoryButton.setComponent(createNewCategoryForm());
 
@@ -133,6 +135,7 @@ public class CategoryListing extends
 
     private Component createNewCategoryForm() {
         final VerticalLayout newCategoryLayout = new VerticalLayout();
+        newCategoryLayout.addStyleName(StyleConstants.HALF_MARGIN);
         newCategoryLayout.setSpacing(true);
         newCategoryLayout.setMargin(true);
         newCategoryLayout.setWidth("300px");

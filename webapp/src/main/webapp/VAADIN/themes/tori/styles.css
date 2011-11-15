@@ -47,3 +47,8 @@ a:visited,
 .v-popupbutton.popupIndicatorHidden .v-popup-indicator {
 	display: none;
 }
+
+.v-horizontallayout-halfMargin .v-horizontallayout-margin,
+.v-verticallayout-halfMargin .v-verticallayout-margin {
+	padding: 9px;
+}
