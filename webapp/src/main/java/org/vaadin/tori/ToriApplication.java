@@ -57,9 +57,9 @@ public class ToriApplication extends Application implements
         try {
             Class.forName("org.vaadin.tori.data.spi.ServiceProvider");
         } catch (final ClassNotFoundException e) {
-            log.error("Your project was apparently deployed without "
-                    + "the Common project (common.jar) in its classpath");
-            throw new RuntimeException(e);
+            throw new RuntimeException("Your project was "
+                    + "apparently deployed without the Common "
+                    + "project (common.jar) in its classpath", e);
         }
     }
 
@@ -69,18 +69,20 @@ public class ToriApplication extends Application implements
                     ServiceProvider.IMPLEMENTING_CLASSNAME).newInstance();
             return dsFactory;
         } catch (final InstantiationException e) {
-            log.error("Can't use the constructor for the current datasource's "
-                    + ServiceProvider.IMPLEMENTING_CLASSNAME + ".");
-            log.error("Make sure it is a non-abstract class with a public no-argument constructor.");
-            throw new RuntimeException(e);
+            throw new RuntimeException(
+                    "Can't use the constructor for the current datasource's "
+                            + ServiceProvider.IMPLEMENTING_CLASSNAME
+                            + ". Make sure it is a non-abstract class with "
+                            + "a public no-argument constructor.", e);
         } catch (final IllegalAccessException e) {
-            log.error("DataSource's no-argument constructor seems non-public. It needs to be publicly accessible.");
-            throw new RuntimeException(e);
+            throw new RuntimeException(
+                    "DataSource's no-argument constructor seems non-public. "
+                            + "It needs to be publicly accessible.", e);
         } catch (final ClassNotFoundException e) {
-            log.error("It seems you don't have a DataSource in your classpath, "
-                    + "or the added data source is misconfigured (see JavaDoc for "
-                    + ServiceProvider.class.getName() + ")");
-            throw new RuntimeException(e);
+            throw new RuntimeException(
+                    "It seems you don't have a DataSource in your classpath, "
+                            + "or the added data source is misconfigured (see JavaDoc for "
+                            + ServiceProvider.class.getName() + ")", e);
         }
     }
 
