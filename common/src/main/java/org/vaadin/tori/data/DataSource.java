@@ -89,5 +89,11 @@ public interface DataSource {
      */
     void saveCategory(Category categoryToSave);
 
+    /**
+     * Handles the reporting of a single {@link Post}.
+     * 
+     * @param report
+     *            The report in its entirety.
+     */
     void reportPost(PostReport report);
 }
