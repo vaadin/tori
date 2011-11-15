@@ -43,3 +43,7 @@ a:visited,
     cursor: -moz-grabbing;
     cursor: -webkit-grabbing;
 }
+
+.v-popupbutton.popupIndicatorHidden .v-popup-indicator {
+	display: none;
+}

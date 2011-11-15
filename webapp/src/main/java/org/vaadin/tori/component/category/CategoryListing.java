@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.AbstractView;
@@ -17,6 +18,9 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * UI component for displaying a vertical hierarchical list of categories.
@@ -44,7 +48,7 @@ public class CategoryListing extends
     private CategoryTreeTable categoryTree;
     private CssLayout layout;
     private Component adminControls;
-    private Button createCategoryButton;
+    private PopupButton createCategoryButton;
     private Button rearrangeCategoriesButton;
     private ComponentContainer rearrangeControls;
 
@@ -98,14 +102,16 @@ public class CategoryListing extends
                 });
         rearrangeCategoriesButton.setIcon(new ThemeResource(
                 "images/icon-rearrange.png"));
-        createCategoryButton = new Button("Create a new category",
-                new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(final ClickEvent event) {
-                        createCategory();
-                    }
-                });
+        createCategoryButton = new PopupButton("Create a new category");
+        createCategoryButton.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                createCategory();
+            }
+        });
+        createCategoryButton.setStyleName("popupIndicatorHidden");
         createCategoryButton.setIcon(new ThemeResource("images/icon-add.png"));
+        createCategoryButton.setComponent(createNewCategoryForm());
 
         rearrangeControls = createRearrangeControls();
         rearrangeControls.setVisible(false);
@@ -123,6 +129,31 @@ public class CategoryListing extends
                 Alignment.TOP_RIGHT);
         adminControls.setMargin(true, false, true, false);
         return adminControls;
+    }
+
+    private Component createNewCategoryForm() {
+        final VerticalLayout newCategoryLayout = new VerticalLayout();
+        newCategoryLayout.setSpacing(true);
+        newCategoryLayout.setMargin(true);
+        newCategoryLayout.setWidth("300px");
+
+        final TextField nameField = new TextField();
+        nameField.setInputPrompt("Category name");
+        nameField.setWidth("100%");
+        newCategoryLayout.addComponent(nameField);
+
+        final TextArea descriptionField = new TextArea();
+        descriptionField.setInputPrompt("Description");
+        descriptionField.setRows(3);
+        descriptionField.setWidth("100%");
+        newCategoryLayout.addComponent(descriptionField);
+
+        final Button saveButton = new Button("Create Category");
+        newCategoryLayout.addComponent(saveButton);
+        newCategoryLayout.setComponentAlignment(saveButton,
+                Alignment.BOTTOM_RIGHT);
+
+        return newCategoryLayout;
     }
 
     private ComponentContainer createRearrangeControls() {
