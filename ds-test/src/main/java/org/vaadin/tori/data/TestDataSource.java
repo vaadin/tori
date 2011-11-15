@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.vaadin.tori.data.entity.Category;
@@ -76,16 +77,7 @@ public class TestDataSource implements DataSource {
 
     @Override
     public List<Category> getRootCategories() {
-        return executeWithEntityManager(new Command<List<Category>>() {
-            @Override
-            public final List<Category> execute(final EntityManager em) {
-                return em
-                        .createQuery(
-                                "select c from Category c "
-                                        + "where c.parentCategory is null order by c.displayOrder",
-                                Category.class).getResultList();
-            }
-        });
+        return getSubCategories(null);
     }
 
     @Override
@@ -94,10 +86,14 @@ public class TestDataSource implements DataSource {
             @Override
             @SuppressWarnings("unchecked")
             public List<Category> execute(final EntityManager em) {
-                return em
-                        .createQuery(
-                                "select c from Category c where c.parentCategory = :parent order by c.displayOrder")
-                        .setParameter("parent", category).getResultList();
+                final Query q = em
+                        .createQuery("select c from Category c where c.parentCategory "
+                                + (category != null ? "= :parent" : "is null")
+                                + " order by c.displayOrder");
+                if (category != null) {
+                    q.setParameter("parent", category);
+                }
+                return q.getResultList();
             }
         });
     }
