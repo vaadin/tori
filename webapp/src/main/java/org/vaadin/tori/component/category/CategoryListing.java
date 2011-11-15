@@ -9,6 +9,7 @@ import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.AbstractView;
 
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -95,6 +96,8 @@ public class CategoryListing extends
                         setRearranging(true);
                     }
                 });
+        rearrangeCategoriesButton.setIcon(new ThemeResource(
+                "images/icon-rearrange.png"));
         createCategoryButton = new Button("Create a new category",
                 new Button.ClickListener() {
                     @Override
@@ -102,6 +105,7 @@ public class CategoryListing extends
                         createCategory();
                     }
                 });
+        createCategoryButton.setIcon(new ThemeResource("images/icon-add.png"));
 
         rearrangeControls = createRearrangeControls();
         rearrangeControls.setVisible(false);
