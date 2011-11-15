@@ -52,6 +52,21 @@
 	display: none;
 }
 
+.v-csslayout-category {
+	position: relative;
+}
+
+.v-csslayout-category .contextmenu {
+	visibility: hidden;
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
+.v-csslayout-category:hover .contextmenu {
+	visibility: visible;	
+}
+
 .v-csslayout-category .v-label-threadCount {
 	float: right;
 	margin-right: 20px;

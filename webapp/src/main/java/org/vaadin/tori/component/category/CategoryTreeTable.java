@@ -3,6 +3,8 @@ package org.vaadin.tori.component.category;
 import java.util.List;
 
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.component.ContextMenu;
+import org.vaadin.tori.component.ContextMenu.Builder;
 import org.vaadin.tori.component.category.CategoryListing.Mode;
 import org.vaadin.tori.data.entity.Category;
 
@@ -133,6 +135,7 @@ class CategoryTreeTable extends TreeTable {
             }
             addComponent(createCategoryLink(id, name));
             addComponent(createDescriptionLabel(description));
+            addComponent(createSettingsMenu());
         }
 
         private Component createThreadCountLabel(final long threadCount,
@@ -161,6 +164,17 @@ class CategoryTreeTable extends TreeTable {
             categoryLink.setStyleName("categoryLink");
             categoryLink.setWidth(null);
             return categoryLink;
+        }
+
+        private Component createSettingsMenu() {
+            final Builder builder = new ContextMenu.Builder();
+            builder.add(null, "[TODO]", new ContextMenu.ContextAction() {
+                @Override
+                public void contextClicked() {
+                    getApplication().getMainWindow().showNotification("...");
+                }
+            });
+            return builder.build();
         }
     }
 
