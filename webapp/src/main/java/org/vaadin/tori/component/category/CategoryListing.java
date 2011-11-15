@@ -104,12 +104,6 @@ public class CategoryListing extends
         rearrangeCategoriesButton.setIcon(new ThemeResource(
                 "images/icon-rearrange.png"));
         createCategoryButton = new PopupButton("Create a new category");
-        createCategoryButton.addListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                createCategory();
-            }
-        });
         createCategoryButton
                 .addStyleName(StyleConstants.POPUP_INDICATOR_HIDDEN);
         createCategoryButton.setIcon(new ThemeResource("images/icon-add.png"));
@@ -250,10 +244,6 @@ public class CategoryListing extends
             }
         }
         return changed;
-    }
-
-    private void createCategory() {
-        // TODO
     }
 
     @Override
