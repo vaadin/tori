@@ -78,4 +78,13 @@ public interface DataSource {
      *            {@link Category Categories} to save.
      */
     void saveCategories(Set<Category> categoriesToSave);
+
+    /**
+     * Saves all changes made to the given {@link Category Category} or adds it
+     * if it's a new Category.
+     * 
+     * @param categoryToSave
+     *            {@link Category Category} to save.
+     */
+    void saveCategory(Category categoryToSave);
 }

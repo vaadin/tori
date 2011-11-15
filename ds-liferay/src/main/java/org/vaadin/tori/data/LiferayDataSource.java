@@ -55,4 +55,9 @@ public class LiferayDataSource implements DataSource {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
+    @Override
+    public void saveCategory(final Category categoryToSave) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
 }

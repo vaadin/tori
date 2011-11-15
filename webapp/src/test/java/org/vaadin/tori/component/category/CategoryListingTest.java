@@ -6,7 +6,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
@@ -94,4 +96,30 @@ public class CategoryListingTest {
         verify(mockDataSource).saveCategories(modified);
     }
 
+    @Test
+    public void maxDisplayOrderWithoutRoot() {
+        final List<Category> categories = new ArrayList<Category>();
+        final Category min = new Category();
+        min.setDisplayOrder(10);
+        final Category mid = new Category();
+        mid.setDisplayOrder(50);
+        final Category max = new Category();
+        max.setDisplayOrder(100);
+        categories.add(min);
+        categories.add(max);
+        categories.add(mid);
+
+        presenter.setCategories(categories);
+        assertEquals(100, presenter.getMaxDisplayOrder());
+    }
+
+    @Test
+    public void createNewCategory() throws Exception {
+        final Category c = new Category();
+        c.setName("New");
+        c.setDescription("New Category");
+
+        presenter.createNewCategory(c.getName(), c.getDescription());
+        verify(mockDataSource).saveCategory(c);
+    }
 }

@@ -216,4 +216,28 @@ public class TestDataSource implements DataSource {
             }
         });
     }
+
+    @Override
+    public void saveCategory(final Category categoryToSave) {
+        executeWithEntityManager(new Command<Void>() {
+            @Override
+            public Void execute(final EntityManager em) {
+                final EntityTransaction transaction = em.getTransaction();
+                transaction.begin();
+                try {
+                    if (categoryToSave.getId() == 0) {
+                        em.persist(categoryToSave);
+                    } else {
+                        em.merge(categoryToSave);
+                    }
+                    transaction.commit();
+                } catch (final Exception e) {
+                    if (transaction.isActive()) {
+                        transaction.rollback();
+                    }
+                }
+                return null;
+            }
+        });
+    }
 }

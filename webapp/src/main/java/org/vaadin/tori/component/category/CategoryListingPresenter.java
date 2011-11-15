@@ -43,11 +43,15 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
             dataSource.saveCategories(modifiedCategories);
 
             // reload the new order from database
-            if (currentRoot == null) {
-                setCategories(dataSource.getRootCategories());
-            } else {
-                setCategories(dataSource.getSubCategories(currentRoot));
-            }
+            reloadCategoriesFromDataSource();
+        }
+    }
+
+    private void reloadCategoriesFromDataSource() {
+        if (currentRoot == null) {
+            setCategories(dataSource.getRootCategories());
+        } else {
+            setCategories(dataSource.getSubCategories(currentRoot));
         }
     }
 
@@ -74,4 +78,36 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         return currentRoot;
     }
 
+    public void createNewCategory(final String name, final String description) {
+        final Category newCategory = new Category();
+        newCategory.setName(name);
+        newCategory.setDescription(description);
+        newCategory.setParentCategory(currentRoot);
+        newCategory.setDisplayOrder(getMaxDisplayOrder() + 1);
+
+        // TODO validation, error handling
+        dataSource.saveCategory(newCategory);
+        getView().hideCreateCategoryForm();
+
+        // refresh the categories
+        reloadCategoriesFromDataSource();
+    }
+
+    /**
+     * Returns the maximum display order within the {@link Category Categories}
+     * currently displayed under the {@code currentRoot}.
+     * 
+     * @return the maximum display order under the {@code currentRoot}.
+     */
+    int getMaxDisplayOrder() {
+        int max = 0;
+        if (categories != null) {
+            for (final Category category : categories) {
+                if (category.getDisplayOrder() > max) {
+                    max = category.getDisplayOrder();
+                }
+            }
+        }
+        return max;
+    }
 }

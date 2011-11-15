@@ -148,7 +148,15 @@ public class CategoryListing extends
         descriptionField.setWidth("100%");
         newCategoryLayout.addComponent(descriptionField);
 
-        final Button saveButton = new Button("Create Category");
+        final Button saveButton = new Button("Create Category",
+                new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(final ClickEvent event) {
+                        getPresenter().createNewCategory(
+                                (String) nameField.getValue(),
+                                (String) descriptionField.getValue());
+                    }
+                });
         newCategoryLayout.addComponent(saveButton);
         newCategoryLayout.setComponentAlignment(saveButton,
                 Alignment.BOTTOM_RIGHT);
@@ -176,6 +184,11 @@ public class CategoryListing extends
                     }
                 }));
         return rearrangeControls;
+    }
+
+    @Override
+    public void hideCreateCategoryForm() {
+        createCategoryButton.setPopupVisible(false);
     }
 
     private void setRearranging(final boolean rearranging) {

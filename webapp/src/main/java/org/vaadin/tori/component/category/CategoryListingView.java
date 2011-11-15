@@ -29,4 +29,9 @@ interface CategoryListingView extends View {
      * @return a {@link Set} of modified {@link Category Categories}.
      */
     Set<Category> getModifiedCategories();
+
+    /**
+     * Hides the controls used for creating a new {@link Category}.
+     */
+    void hideCreateCategoryForm();
 }
