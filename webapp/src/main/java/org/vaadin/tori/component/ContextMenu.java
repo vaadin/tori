@@ -3,6 +3,7 @@ package org.vaadin.tori.component;
 import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
+import org.vaadin.tori.ToriUtil;
 
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
@@ -92,6 +93,8 @@ public class ContextMenu extends CustomComponent {
 
     protected void add(final Resource icon, final String caption,
             final ContextAction action) {
+        ToriUtil.checkForNull(action, "action may not be null");
+
         final Button button = new Button(caption, new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
@@ -106,6 +109,8 @@ public class ContextMenu extends CustomComponent {
 
     protected void add(final Resource icon, final String caption,
             final ContextComponentSwapper swapper) {
+        ToriUtil.checkForNull(swapper, "swapper may not be null");
+
         final Button button = new Button(caption + '\u2026',
                 new Button.ClickListener() {
                     @Override
