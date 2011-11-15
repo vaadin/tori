@@ -20,15 +20,11 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
-import com.vaadin.ui.Tree.CollapseEvent;
-import com.vaadin.ui.Tree.CollapseListener;
-import com.vaadin.ui.Tree.ExpandEvent;
-import com.vaadin.ui.Tree.ExpandListener;
 import com.vaadin.ui.TreeTable;
 
 @SuppressWarnings("serial")
-class CategoryTreeTable extends TreeTable implements CollapseListener,
-        ExpandListener {
+class CategoryTreeTable extends TreeTable {
+
     private static final String PROPERTY_ID_THREADS = "Threads";
     private static final String PROPERTY_ID_UNREAD = "Unread Threads";
     private static final String PROPERTY_ID_CATEGORY = "Category";
@@ -49,6 +45,7 @@ class CategoryTreeTable extends TreeTable implements CollapseListener,
 
         // set visual properties
         setWidth("100%");
+        setPageLength(0);
         setSortDisabled(true);
         setDropHandler(new CategoryTreeDropHandler());
         if (mode == Mode.NORMAL) {
@@ -61,8 +58,6 @@ class CategoryTreeTable extends TreeTable implements CollapseListener,
         } else {
             setColumnHeaderMode(COLUMN_HEADER_MODE_HIDDEN);
         }
-        addListener((CollapseListener) this);
-        addListener((ExpandListener) this);
     }
 
     public void setPresenter(final CategoryListingPresenter presenter) {
@@ -102,17 +97,6 @@ class CategoryTreeTable extends TreeTable implements CollapseListener,
                 addCategory(subCategory, category);
             }
         }
-        setPageLength(this.size());
-    }
-
-    @Override
-    public void nodeExpand(final ExpandEvent event) {
-        setPageLength(this.size());
-    }
-
-    @Override
-    public void nodeCollapse(final CollapseEvent event) {
-        setPageLength(this.size());
     }
 
     public void setDraggingEnabled(final boolean enabled) {
