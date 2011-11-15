@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.component.category.CreateCategoryForm.CreateCategoryListener;
+import org.vaadin.tori.component.category.RearrangeControls.RearrangeListener;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.util.StyleConstants;
@@ -19,9 +21,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 
 /**
  * UI component for displaying a vertical hierarchical list of categories.
@@ -107,9 +106,28 @@ public class CategoryListing extends
         createCategoryButton
                 .addStyleName(StyleConstants.POPUP_INDICATOR_HIDDEN);
         createCategoryButton.setIcon(new ThemeResource("images/icon-add.png"));
-        createCategoryButton.setComponent(createNewCategoryForm());
+        createCategoryButton.setComponent(new CreateCategoryForm(
+                new CreateCategoryListener() {
+                    @Override
+                    public void createCategory(final String name,
+                            final String description) {
+                        getPresenter().createNewCategory(name, description);
+                    }
+                }));
 
-        rearrangeControls = createRearrangeControls();
+        rearrangeControls = new RearrangeControls(new RearrangeListener() {
+            @Override
+            public void applyRearrangement() {
+                setRearranging(false);
+                getPresenter().applyRearrangement();
+            }
+
+            @Override
+            public void cancelRearrangement() {
+                setRearranging(false);
+                getPresenter().cancelRearrangement();
+            }
+        });
         rearrangeControls.setVisible(false);
 
         final HorizontalLayout buttonWrapper = new HorizontalLayout();
@@ -125,62 +143,6 @@ public class CategoryListing extends
                 Alignment.TOP_RIGHT);
         adminControls.setMargin(true, false, true, false);
         return adminControls;
-    }
-
-    private Component createNewCategoryForm() {
-        final VerticalLayout newCategoryLayout = new VerticalLayout();
-        newCategoryLayout.addStyleName(StyleConstants.HALF_MARGIN);
-        newCategoryLayout.setSpacing(true);
-        newCategoryLayout.setMargin(true);
-        newCategoryLayout.setWidth("300px");
-
-        final TextField nameField = new TextField();
-        nameField.setInputPrompt("Category name");
-        nameField.setWidth("100%");
-        newCategoryLayout.addComponent(nameField);
-
-        final TextArea descriptionField = new TextArea();
-        descriptionField.setInputPrompt("Description");
-        descriptionField.setRows(3);
-        descriptionField.setWidth("100%");
-        newCategoryLayout.addComponent(descriptionField);
-
-        final Button saveButton = new Button("Create Category",
-                new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(final ClickEvent event) {
-                        getPresenter().createNewCategory(
-                                (String) nameField.getValue(),
-                                (String) descriptionField.getValue());
-                    }
-                });
-        newCategoryLayout.addComponent(saveButton);
-        newCategoryLayout.setComponentAlignment(saveButton,
-                Alignment.BOTTOM_RIGHT);
-
-        return newCategoryLayout;
-    }
-
-    private ComponentContainer createRearrangeControls() {
-        final HorizontalLayout rearrangeControls = new HorizontalLayout();
-        rearrangeControls.setSpacing(true);
-        rearrangeControls.addComponent(new Button("Apply rearrangement",
-                new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(final ClickEvent event) {
-                        setRearranging(false);
-                        getPresenter().applyRearrangement();
-                    }
-                }));
-        rearrangeControls.addComponent(new Button("Cancel",
-                new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(final ClickEvent event) {
-                        setRearranging(false);
-                        getPresenter().cancelRearrangement();
-                    }
-                }));
-        return rearrangeControls;
     }
 
     @Override
