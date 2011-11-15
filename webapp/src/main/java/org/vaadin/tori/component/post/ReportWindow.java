@@ -24,7 +24,8 @@ class ReportWindow extends Window {
     private final NativeButton reportButton;
     private final VerticalLayout layout = new VerticalLayout();
 
-    public ReportWindow(final Post post, final PostReportReceiver reportReciever) {
+    public ReportWindow(final Post post,
+            final PostReportReceiver reportReciever, final int x, final int y) {
         super("Report Post");
         layout.setSpacing(true);
         layout.setMargin(true);
@@ -37,7 +38,11 @@ class ReportWindow extends Window {
         getContent().setWidth("100%");
         setWidth("350px");
         focus();
-        center();
+
+        if (x != -1 && y != -1) {
+            setPositionX(x - 350);
+            setPositionY(y);
+        }
 
         addComponent(new Label("What's wrong with this post?"));
 

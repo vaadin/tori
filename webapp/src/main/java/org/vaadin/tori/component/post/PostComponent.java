@@ -85,8 +85,10 @@ public class PostComponent extends CustomComponent {
         button.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
+                final int x = event.getClientX();
+                final int y = event.getClientY();
                 getApplication().getMainWindow().addWindow(
-                        new ReportWindow(post, reportReciever));
+                        new ReportWindow(post, reportReciever, x, y));
             }
         });
         return button;
