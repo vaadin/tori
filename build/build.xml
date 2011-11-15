@@ -363,7 +363,7 @@
 	</target>
 	
 	<target name="-findbugs-shared-target">
-		<findbugs home="${findbugs.home}" output="xml" outputfile="${dir.build-artifacts}/${findbugs.outputfile}">
+		<findbugs home="${findbugs.home}" output="xml:withMessages" outputfile="${dir.build-artifacts}/${findbugs.outputfile}">
 			<auxclasspath refid="${findbugs.acp.refid}"/>
 			<auxclasspath path="${file.gwt-dev.jar}"/>
 			<auxclasspath path="${file.gwt-user.jar}"/>
