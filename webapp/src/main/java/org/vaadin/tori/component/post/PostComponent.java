@@ -116,11 +116,6 @@ public class PostComponent extends CustomComponent {
         return builder.build();
     }
 
-    private <T extends Component> T undefinedWidth(final T component) {
-        component.setSizeUndefined();
-        return component;
-    }
-
     private String getFormattedXhtmlBody(final Post post) {
         return ToriApplication.getCurrent().getPostFormatter()
                 .format(post.getBodyRaw());
