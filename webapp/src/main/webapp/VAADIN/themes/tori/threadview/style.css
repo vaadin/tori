@@ -78,3 +78,22 @@
 .post td.toolbar:hover [location="settings"] {
 	visibility: visible;
 }
+
+.reportwindow .v-window-outerheader {
+	padding: 5px;
+	background: white;
+	height: auto;
+}
+
+.reportwindow .v-window-header {
+	color: #222;
+	text-shadow: none;
+}
+
+.reportwindow .explanationlayout .v-csslayout-margin {
+	padding-left: 20px;
+}
+
+.reportwindow .v-verticallayout .v-verticallayout-margin {
+	padding: 5px;
+}

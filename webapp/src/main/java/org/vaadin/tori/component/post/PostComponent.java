@@ -1,7 +1,9 @@
-package org.vaadin.tori.component;
+package org.vaadin.tori.component.post;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.ToriUtil;
+import org.vaadin.tori.component.ContextMenu;
 import org.vaadin.tori.component.ContextMenu.Builder;
 import org.vaadin.tori.data.entity.Post;
 
@@ -9,6 +11,7 @@ import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
@@ -17,6 +20,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
+import com.vaadin.ui.themes.Reindeer;
 
 @SuppressWarnings("serial")
 public class PostComponent extends CustomComponent {
@@ -24,6 +28,7 @@ public class PostComponent extends CustomComponent {
     private static final String EXAMPLE_IMAGE_URL = "http://cache.ohinternet.com/images/thumb/2/2d/Trollface_HD.png/618px-Trollface_HD.png";
 
     private final CustomLayout root;
+    private final Post post;
 
     private final ClickListener editListener = new ClickListener() {
         @Override
@@ -41,7 +46,14 @@ public class PostComponent extends CustomComponent {
         }
     };
 
+    /**
+     * @throws IllegalArgumentException
+     *             if <code>post</code> is <code>null</code>.
+     */
     public PostComponent(final Post post) {
+        ToriUtil.checkForNull(post, "post may not be null");
+        this.post = post;
+
         root = new CustomLayout("../../../layouts/postlayout");
         setCompositionRoot(root);
         setStyleName("post");
@@ -54,11 +66,23 @@ public class PostComponent extends CustomComponent {
         root.addComponent(new Label(getFormattedXhtmlBody(post),
                 Label.CONTENT_XHTML), "body");
         root.addComponent(new Label("0"), "score");
-        root.addComponent(undefinedWidth(new Label("Report Post")), "report");
+        root.addComponent(buildReportPostComponent(), "report");
         root.addComponent(buildContextMenu(), "settings");
         root.addComponent(new NativeButton("Edit Post", editListener), "edit");
         root.addComponent(new NativeButton("Quote for Reply", replyListener),
                 "quote");
+    }
+
+    private Component buildReportPostComponent() {
+        final Button button = new Button("Report Post");
+        button.setStyleName(Reindeer.BUTTON_LINK);
+        button.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                getApplication().getMainWindow().addWindow(new ReportWindow());
+            }
+        });
+        return button;
     }
 
     private ContextMenu buildContextMenu() {

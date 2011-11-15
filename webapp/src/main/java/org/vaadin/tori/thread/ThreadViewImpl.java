@@ -5,7 +5,7 @@ import java.util.List;
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
-import org.vaadin.tori.component.PostComponent;
+import org.vaadin.tori.component.post.PostComponent;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.mvp.AbstractView;
