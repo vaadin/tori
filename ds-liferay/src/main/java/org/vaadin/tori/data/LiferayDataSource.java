@@ -7,6 +7,7 @@ import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;
+import org.vaadin.tori.service.post.PostReport;
 
 public class LiferayDataSource implements DataSource {
 
@@ -57,6 +58,11 @@ public class LiferayDataSource implements DataSource {
 
     @Override
     public void saveCategory(final Category categoryToSave) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public void reportPost(final PostReport report) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 

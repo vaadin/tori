@@ -12,4 +12,6 @@ public interface ThreadView extends View {
     void displayPosts(List<Post> posts);
 
     void displayThreadNotFoundError(String threadIdString);
+
+    void confirmPostReported();
 }

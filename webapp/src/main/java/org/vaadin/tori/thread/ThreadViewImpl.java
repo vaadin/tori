@@ -48,7 +48,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 HeadingLevel.H2));
 
         for (final Post post : posts) {
-            layout.addComponent(new PostComponent(post));
+            layout.addComponent(new PostComponent(post, getPresenter()));
         }
     }
 
@@ -61,5 +61,11 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     protected void navigationTo(final String requestedDataId) {
         super.getPresenter().setCurrentThreadById(requestedDataId);
+    }
+
+    @Override
+    public void confirmPostReported() {
+        // TODO
+        getWindow().showNotification("Post is reported!");
     }
 }

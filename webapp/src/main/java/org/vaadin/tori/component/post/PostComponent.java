@@ -6,6 +6,7 @@ import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.component.ContextMenu;
 import org.vaadin.tori.component.ContextMenu.Builder;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.service.post.PostReportReceiver;
 
 import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.terminal.ExternalResource;
@@ -50,8 +51,11 @@ public class PostComponent extends CustomComponent {
      * @throws IllegalArgumentException
      *             if <code>post</code> is <code>null</code>.
      */
-    public PostComponent(final Post post) {
+    public PostComponent(final Post post,
+            final PostReportReceiver reportReceiver) {
         ToriUtil.checkForNull(post, "post may not be null");
+        ToriUtil.checkForNull(reportReceiver,
+                "post report receiver may not be null");
         this.post = post;
 
         root = new CustomLayout("../../../layouts/postlayout");
@@ -66,20 +70,23 @@ public class PostComponent extends CustomComponent {
         root.addComponent(new Label(getFormattedXhtmlBody(post),
                 Label.CONTENT_XHTML), "body");
         root.addComponent(new Label("0"), "score");
-        root.addComponent(buildReportPostComponent(), "report");
+        root.addComponent(buildReportPostComponent(post, reportReceiver),
+                "report");
         root.addComponent(buildContextMenu(), "settings");
         root.addComponent(new NativeButton("Edit Post", editListener), "edit");
         root.addComponent(new NativeButton("Quote for Reply", replyListener),
                 "quote");
     }
 
-    private Component buildReportPostComponent() {
+    private Component buildReportPostComponent(final Post post,
+            final PostReportReceiver reportReciever) {
         final Button button = new Button("Report Post");
         button.setStyleName(Reindeer.BUTTON_LINK);
         button.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
-                getApplication().getMainWindow().addWindow(new ReportWindow());
+                getApplication().getMainWindow().addWindow(
+                        new ReportWindow(post, reportReciever));
             }
         });
         return button;

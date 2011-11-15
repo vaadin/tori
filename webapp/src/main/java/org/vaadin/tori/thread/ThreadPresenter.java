@@ -3,8 +3,11 @@ package org.vaadin.tori.thread;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.Presenter;
+import org.vaadin.tori.service.post.PostReport;
+import org.vaadin.tori.service.post.PostReportReceiver;
 
-public class ThreadPresenter extends Presenter<ThreadView> {
+public class ThreadPresenter extends Presenter<ThreadView> implements
+        PostReportReceiver {
 
     private final DataSource dataSource;
     private DiscussionThread currentThread;
@@ -35,4 +38,9 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         return currentThread;
     }
 
+    @Override
+    public void handlePostReport(final PostReport report) {
+        dataSource.reportPost(report);
+        getView().confirmPostReported();
+    }
 }

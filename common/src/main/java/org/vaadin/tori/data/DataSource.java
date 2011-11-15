@@ -7,6 +7,7 @@ import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;
+import org.vaadin.tori.service.post.PostReport;
 
 public interface DataSource {
 
@@ -87,4 +88,6 @@ public interface DataSource {
      *            {@link Category Category} to save.
      */
     void saveCategory(Category categoryToSave);
+
+    void reportPost(PostReport report);
 }

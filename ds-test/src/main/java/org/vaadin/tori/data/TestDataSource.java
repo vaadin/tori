@@ -15,6 +15,7 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.data.util.PersistenceUtil;
+import org.vaadin.tori.service.post.PostReport;
 
 public class TestDataSource implements DataSource {
 
@@ -239,5 +240,13 @@ public class TestDataSource implements DataSource {
                 return null;
             }
         });
+    }
+
+    @Override
+    public void reportPost(final PostReport report) {
+        System.out.println("TestDataSource.reportPost()");
+        System.out.println("Post: " + report.getPost());
+        System.out.println("Reason: " + report.getReason());
+        System.out.println("Info: " + report.getAdditionalInfo());
     }
 }
