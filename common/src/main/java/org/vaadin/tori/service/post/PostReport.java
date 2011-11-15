@@ -10,7 +10,7 @@ public class PostReport {
         /** The post was deemed offensive, abusive or hateful */
         OFFENSIVE,
 
-        /** The post seems to be in the wrong cateory */
+        /** The post seems to be in the wrong category */
         WRONG_CATEGORY,
 
         /** A moderator needs to take a look at the post */
