@@ -32,6 +32,7 @@ class RearrangeControls extends CustomComponent {
                 }));
 
         setCompositionRoot(rearrangeControls);
+        setWidth(null);
     }
 
     interface RearrangeListener {
