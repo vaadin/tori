@@ -128,7 +128,7 @@ public class ContextMenu extends CustomComponent {
     private static Button newSettingsIcon(final PopupButton contextComponent) {
         final Button button = new Button();
         button.setStyleName(Reindeer.BUTTON_LINK);
-        button.setIcon(new ThemeResource("images/icon-settings.gif"));
+        button.setIcon(new ThemeResource("images/icon-settings.png"));
         button.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
