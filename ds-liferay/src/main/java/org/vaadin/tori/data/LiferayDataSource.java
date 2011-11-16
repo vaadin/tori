@@ -60,4 +60,9 @@ public class LiferayDataSource implements DataSource {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
+    @Override
+    public long getUnreadThreadCount(final Category category) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
 }

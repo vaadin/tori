@@ -240,4 +240,10 @@ public class TestDataSource implements DataSource {
         System.out.println("Reason: " + report.getReason());
         System.out.println("Info: " + report.getAdditionalInfo());
     }
+
+    @Override
+    public long getUnreadThreadCount(final Category category) {
+        // TODO implement actual unread thread logic
+        return 0;
+    }
 }

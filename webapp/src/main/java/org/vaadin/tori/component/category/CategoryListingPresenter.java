@@ -29,8 +29,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
     }
 
     public long getUnreadThreadCount(final Category category) {
-        // TODO implement actual unread thread logic
-        return 0;
+        return dataSource.getUnreadThreadCount(category);
     }
 
     public void applyRearrangement() {

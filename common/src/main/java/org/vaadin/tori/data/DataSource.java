@@ -40,14 +40,24 @@ public interface DataSource {
     Category getCategory(long categoryId);
 
     /**
-     * Returns the number {@link DiscussionThread}s in the given
-     * {@link Category}.
+     * Returns the number {@link DiscussionThread DiscussionThreads} in the
+     * given {@link Category}.
      * 
      * @param category
      *            Category from which to count the threads.
-     * @return number of {@link DiscussionThread}s
+     * @return number of DiscussionThreads
      */
     long getThreadCount(Category category);
+
+    /**
+     * Returns the number of {@link DiscussionThread DiscussionThreads} in the
+     * given {@link Category} that are considered unread by the current user.
+     * 
+     * @param category
+     *            Category from which to count the unread threads.
+     * @return number of unread DiscussionThreads
+     */
+    long getUnreadThreadCount(Category category);
 
     /**
      * Returns the {@link DiscussionThread} corresponding to the id or
