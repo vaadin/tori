@@ -17,4 +17,6 @@ public interface AuthorizationService {
     boolean mayReportPosts();
 
     boolean mayEditPosts();
+    
+    boolean mayReplyInThreads();
 }
