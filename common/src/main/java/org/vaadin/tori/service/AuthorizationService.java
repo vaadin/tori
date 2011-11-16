@@ -6,4 +6,12 @@ package org.vaadin.tori.service;
  */
 public interface AuthorizationService {
 
+    /**
+     * Returns {@code true} if the current user is authorized to create and
+     * rearrange categories.
+     * 
+     * @return {@code true} if the user can create and rearrange categories.
+     */
+    boolean isCategoryAdministrator();
+
 }

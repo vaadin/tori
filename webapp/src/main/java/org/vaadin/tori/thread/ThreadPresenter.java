@@ -3,17 +3,18 @@ package org.vaadin.tori.thread;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.Presenter;
+import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.post.PostReport;
 import org.vaadin.tori.service.post.PostReportReceiver;
 
 public class ThreadPresenter extends Presenter<ThreadView> implements
         PostReportReceiver {
 
-    private final DataSource dataSource;
     private DiscussionThread currentThread;
 
-    public ThreadPresenter(final DataSource dataSource) {
-        this.dataSource = dataSource;
+    public ThreadPresenter(final DataSource dataSource,
+            final AuthorizationService authorizationService) {
+        super(dataSource, authorizationService);
     }
 
     public void setCurrentThreadById(final String threadIdString) {

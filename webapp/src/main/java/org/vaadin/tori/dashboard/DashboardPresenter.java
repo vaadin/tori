@@ -2,13 +2,13 @@ package org.vaadin.tori.dashboard;
 
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.mvp.Presenter;
+import org.vaadin.tori.service.AuthorizationService;
 
 public class DashboardPresenter extends Presenter<DashboardView> {
 
-    private final DataSource dataSource;
-
-    public DashboardPresenter(final DataSource dataSource) {
-        this.dataSource = dataSource;
+    public DashboardPresenter(final DataSource dataSource,
+            final AuthorizationService authorizationService) {
+        super(dataSource, authorizationService);
     }
 
     @Override

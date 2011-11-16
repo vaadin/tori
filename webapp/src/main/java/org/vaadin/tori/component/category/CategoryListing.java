@@ -210,8 +210,9 @@ public class CategoryListing extends
 
     @Override
     protected CategoryListingPresenter createPresenter() {
+        final ToriApplication app = ToriApplication.getCurrent();
         final CategoryListingPresenter presenter = new CategoryListingPresenter(
-                ToriApplication.getCurrent().getDataSource());
+                app.getDataSource(), app.getAuthorizationService());
         categoryTree.setPresenter(presenter);
         return presenter;
     }

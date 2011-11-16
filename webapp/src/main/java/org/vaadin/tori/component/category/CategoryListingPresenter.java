@@ -6,21 +6,22 @@ import java.util.Set;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.Presenter;
+import org.vaadin.tori.service.AuthorizationService;
 
 class CategoryListingPresenter extends Presenter<CategoryListingView> {
 
-    private final DataSource dataSource;
     private List<Category> categories;
     private Category currentRoot;
 
-    public CategoryListingPresenter(final DataSource dataSource) {
-        this.dataSource = dataSource;
+    public CategoryListingPresenter(final DataSource dataSource,
+            final AuthorizationService authorizationService) {
+        super(dataSource, authorizationService);
     }
 
     @Override
     public void init() {
         getView().setAdminControlsVisible(
-                dataSource.isAdministrator(currentUser));
+                authorizationService.isCategoryAdministrator());
     }
 
     public long getThreadCount(final Category category) {

@@ -27,7 +27,7 @@ public class CategoryPresenterTest {
         mockDataSource = mock(DataSource.class);
 
         // create the presenter to test
-        presenter = new CategoryPresenter(mockDataSource);
+        presenter = new CategoryPresenter(mockDataSource, null);
         presenter.setView(mockView);
     }
 

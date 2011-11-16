@@ -6,8 +6,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriNavigator.NavigableApplication;
 import org.vaadin.tori.data.DataSource;
-import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.data.spi.ServiceProvider;
+import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
 
 import com.vaadin.Application;
@@ -30,6 +30,7 @@ public class ToriApplication extends Application implements
 
     private DataSource ds;
     private PostFormatter postFormatter;
+    private AuthorizationService authorizationService;
 
     @Override
     public void init() {
@@ -38,6 +39,7 @@ public class ToriApplication extends Application implements
         final ServiceProvider spi = createServiceProvider();
         ds = createDataSource(spi);
         postFormatter = createPostFormatter(spi);
+        authorizationService = createAuthorizationService(spi);
 
         setCurrentInstance();
 
@@ -101,6 +103,16 @@ public class ToriApplication extends Application implements
         return postFormatter;
     }
 
+    private static AuthorizationService createAuthorizationService(
+            final ServiceProvider spi) {
+        final AuthorizationService authorizationService = spi
+                .createAuthorizationService();
+        log.info(String.format("Using %s implementation: %s",
+                PostFormatter.class.getSimpleName(), authorizationService
+                        .getClass().getName()));
+        return authorizationService;
+    }
+
     @Override
     public Window getWindow(final String name) {
         // Delegate the multiple browser window/tab handling to Navigator
@@ -123,22 +135,16 @@ public class ToriApplication extends Application implements
     }
 
     /**
-     * Returns the current {@link User} of the application or {@code null} if no
-     * user is logged in.
-     * 
-     * @return the current {@link User} of the application or {@code null}.
-     */
-    public static User getCurrentUser() {
-        return (User) currentApplication.get().getUser();
-    }
-
-    /**
      * Returns the {@link DataSource} of this application.
      * 
      * @return {@link DataSource} of this application
      */
     public DataSource getDataSource() {
         return ds;
+    }
+
+    public AuthorizationService getAuthorizationService() {
+        return authorizationService;
     }
 
     public PostFormatter getPostFormatter() {

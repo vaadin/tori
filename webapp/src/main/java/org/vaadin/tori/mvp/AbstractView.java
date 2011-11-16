@@ -4,7 +4,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import org.apache.log4j.Logger;
-import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
 
 import com.vaadin.Application;
@@ -51,7 +50,6 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
         // then initialize the presenter
         presenter = createPresenter();
         presenter.setView(viewClass.cast(this));
-        presenter.setCurrentUser(ToriApplication.getCurrentUser());
         if (log.isDebugEnabled()) {
             log.debug("Initializing presenter "
                     + presenter.getClass().getName());

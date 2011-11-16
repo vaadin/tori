@@ -42,8 +42,9 @@ public class DashboardViewImpl extends
 
     @Override
     protected DashboardPresenter createPresenter() {
-        return new DashboardPresenter(ToriApplication.getCurrent()
-                .getDataSource());
+        final ToriApplication app = ToriApplication.getCurrent();
+        return new DashboardPresenter(app.getDataSource(),
+                app.getAuthorizationService());
     }
 
     @Override

@@ -32,7 +32,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     protected ThreadPresenter createPresenter() {
-        return new ThreadPresenter(ToriApplication.getCurrent().getDataSource());
+        final ToriApplication app = ToriApplication.getCurrent();
+        return new ThreadPresenter(app.getDataSource(),
+                app.getAuthorizationService());
     }
 
     @Override

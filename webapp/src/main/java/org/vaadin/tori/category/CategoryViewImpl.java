@@ -45,8 +45,9 @@ public class CategoryViewImpl extends
 
     @Override
     protected CategoryPresenter createPresenter() {
-        return new CategoryPresenter(ToriApplication.getCurrent()
-                .getDataSource());
+        final ToriApplication app = ToriApplication.getCurrent();
+        return new CategoryPresenter(app.getDataSource(),
+                app.getAuthorizationService());
     }
 
     @Override

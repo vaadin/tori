@@ -1,13 +1,22 @@
 package org.vaadin.tori.mvp;
 
 import org.apache.log4j.Logger;
-import org.vaadin.tori.data.entity.User;
+import org.vaadin.tori.data.DataSource;
+import org.vaadin.tori.service.AuthorizationService;
 
 public abstract class Presenter<V extends View> {
 
     protected final Logger log = Logger.getLogger(getClass());
-    protected User currentUser;
     private V view;
+
+    protected final DataSource dataSource;
+    protected final AuthorizationService authorizationService;
+
+    public Presenter(final DataSource dataSource,
+            final AuthorizationService authorizationService) {
+        this.dataSource = dataSource;
+        this.authorizationService = authorizationService;
+    }
 
     public void setView(final V view) {
         this.view = view;
@@ -28,7 +37,4 @@ public abstract class Presenter<V extends View> {
         // NOP, subclasses may override
     }
 
-    public void setCurrentUser(final User currentUser) {
-        this.currentUser = currentUser;
-    }
 }

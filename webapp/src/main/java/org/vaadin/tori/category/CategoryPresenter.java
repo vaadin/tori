@@ -3,14 +3,15 @@ package org.vaadin.tori.category;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.Presenter;
+import org.vaadin.tori.service.AuthorizationService;
 
 public class CategoryPresenter extends Presenter<CategoryView> {
 
-    private final DataSource dataSource;
     private Category currentCategory;
 
-    public CategoryPresenter(final DataSource dataSource) {
-        this.dataSource = dataSource;
+    public CategoryPresenter(final DataSource dataSource,
+            final AuthorizationService authorizationService) {
+        super(dataSource, authorizationService);
     }
 
     public void setCurrentCategoryById(final String categoryIdString) {
