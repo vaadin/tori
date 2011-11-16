@@ -1,6 +1,9 @@
 package org.vaadin.tori;
 
+import org.vaadin.tori.component.DebugControlPanel;
 import org.vaadin.tori.component.breadcrumbs.Breadcrumbs;
+import org.vaadin.tori.service.AuthorizationService;
+import org.vaadin.tori.service.DebugAuthorizationService;
 
 import com.vaadin.ui.Window;
 
@@ -16,7 +19,17 @@ public class ToriWindow extends Window {
 
     public ToriWindow() {
         super("Tori");
+        addControlPanelIfInDevelopment();
         addComponent(new Breadcrumbs(navigator));
         addComponent(navigator);
+    }
+
+    private void addControlPanelIfInDevelopment() {
+        final AuthorizationService authorizationService = ToriApplication
+                .getCurrent().getAuthorizationService();
+        if (authorizationService instanceof DebugAuthorizationService) {
+            addComponent(new DebugControlPanel(
+                    (DebugAuthorizationService) authorizationService, navigator));
+        }
     }
 }

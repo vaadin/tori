@@ -174,22 +174,27 @@ public class ToriNavigator extends CustomComponent {
         final Class<? extends AbstractView<?, ?>> newViewClass = uriToClass
                 .get(uri);
         if (!viewCacheEnabled || !classToView.containsKey(newViewClass)) {
-            try {
-                final AbstractView<?, ?> view = newViewClass.newInstance();
-                view.init(this, getApplication());
-                if (viewCacheEnabled) {
-                    classToView.put(newViewClass, view);
-                } else {
-                    return view;
-                }
-            } catch (final InstantiationException e) {
-                throw new RuntimeException(e);
-            } catch (final IllegalAccessException e) {
-                throw new RuntimeException(e);
+            final AbstractView<?, ?> view = createView(newViewClass);
+            if (viewCacheEnabled) {
+                classToView.put(newViewClass, view);
+            } else {
+                return view;
             }
         }
         final AbstractView<?, ?> v = classToView.get(newViewClass);
         return v;
+    }
+
+    private <T extends AbstractView<?, ?>> T createView(final Class<T> viewClass) {
+        try {
+            final T view = viewClass.newInstance();
+            view.init(this, getApplication());
+            return view;
+        } catch (final InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (final IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void moveTo(final AbstractView<?, ?> v,
@@ -561,4 +566,15 @@ public class ToriNavigator extends CustomComponent {
         this.viewCacheEnabled = enabled;
     }
 
+    /**
+     * Creates a new instance of the current {@link View} and replaces the old
+     * one with the new one in the UI.
+     */
+    public void recreateCurrentView() {
+        @SuppressWarnings("unchecked")
+        final Class<? extends AbstractView<?, ?>> viewClass = (Class<? extends AbstractView<?, ?>>) ((AbstractView<?, ?>) getCurrentView())
+                .getClass();
+        final AbstractView<?, ?> view = createView(viewClass);
+        moveTo(view, getCurrentDataId(), true);
+    }
 }

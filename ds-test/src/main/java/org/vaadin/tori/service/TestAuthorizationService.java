@@ -1,9 +1,9 @@
 package org.vaadin.tori.service;
 
-public class TestAuthorizationService implements AuthorizationService {
+public class TestAuthorizationService implements DebugAuthorizationService {
 
-    private final boolean isCategoryAdministrator = true;
-    private final boolean mayReportPosts = true;
+    private boolean isCategoryAdministrator = true;
+    private boolean mayReportPosts = true;
 
     @Override
     public boolean isCategoryAdministrator() {
@@ -11,8 +11,17 @@ public class TestAuthorizationService implements AuthorizationService {
     }
 
     @Override
+    public void setIsCategoryAdministrator(final boolean b) {
+        isCategoryAdministrator = b;
+    }
+
+    @Override
     public boolean mayReportPosts() {
         return mayReportPosts;
     }
 
+    @Override
+    public void setMayReportPosts(final boolean b) {
+        mayReportPosts = b;
+    }
 }
