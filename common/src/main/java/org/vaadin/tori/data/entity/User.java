@@ -30,4 +30,11 @@ public class User extends AbstractEntity {
     public String getAvatarUrl() {
         return avatarUrl;
     }
+
+    /**
+     * Whether this object represents a user that is not logged in.
+     */
+    public boolean isAnonymous() {
+        return false;
+    }
 }
