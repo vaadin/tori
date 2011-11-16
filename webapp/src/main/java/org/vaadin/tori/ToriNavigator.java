@@ -183,10 +183,8 @@ public class ToriNavigator extends CustomComponent {
                     return view;
                 }
             } catch (final InstantiationException e) {
-                e.printStackTrace();
                 throw new RuntimeException(e);
             } catch (final IllegalAccessException e) {
-                e.printStackTrace();
                 throw new RuntimeException(e);
             }
         }
