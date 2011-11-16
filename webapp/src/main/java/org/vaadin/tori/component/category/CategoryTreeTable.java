@@ -6,6 +6,7 @@ import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.component.ContextMenu;
 import org.vaadin.tori.component.ContextMenu.Builder;
 import org.vaadin.tori.component.category.CategoryListing.Mode;
+import org.vaadin.tori.component.category.CategoryListingPresenter.ContextMenuItem;
 import org.vaadin.tori.data.entity.Category;
 
 import com.vaadin.data.Item;
@@ -135,7 +136,7 @@ class CategoryTreeTable extends TreeTable {
             }
             addComponent(createCategoryLink(id, name));
             addComponent(createDescriptionLabel(description));
-            addComponent(createSettingsMenu());
+            addComponent(createSettingsMenu(category));
         }
 
         private Component createThreadCountLabel(final long threadCount,
@@ -166,14 +167,14 @@ class CategoryTreeTable extends TreeTable {
             return categoryLink;
         }
 
-        private Component createSettingsMenu() {
+        private Component createSettingsMenu(final Category category) {
+            final List<ContextMenuItem> contextMenuItems = presenter
+                    .getContextMenuItems(category);
+
             final Builder builder = new ContextMenu.Builder();
-            builder.add(null, "[TODO]", new ContextMenu.ContextAction() {
-                @Override
-                public void contextClicked() {
-                    getApplication().getMainWindow().showNotification("...");
-                }
-            });
+            for (final ContextMenuItem menuItem : contextMenuItems) {
+                builder.add(menuItem.icon, menuItem.caption, menuItem.action);
+            }
             return builder.build();
         }
     }

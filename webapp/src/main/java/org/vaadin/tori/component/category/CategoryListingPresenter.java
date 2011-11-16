@@ -1,12 +1,17 @@
 package org.vaadin.tori.component.category;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.vaadin.tori.component.ContextMenu.ContextAction;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
+
+import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.ThemeResource;
 
 class CategoryListingPresenter extends Presenter<CategoryListingView> {
 
@@ -110,4 +115,63 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         }
         return max;
     }
+
+    public List<ContextMenuItem> getContextMenuItems(final Category category) {
+        final List<ContextMenuItem> items = new ArrayList<ContextMenuItem>();
+        if (authorizationService.mayFollowCategory(category)) {
+            items.add(new ContextMenuItem(new ThemeResource(
+                    "images/icon-delete.png"), "Follow category",
+                    new ContextAction() {
+                        @Override
+                        public void contextClicked() {
+                            System.out.println("follow " + category.getName());
+                        }
+                    }));
+        }
+        if (authorizationService.mayMoveCategory(category)) {
+            items.add(new ContextMenuItem(new ThemeResource(
+                    "images/icon-delete.png"), "Move category",
+                    new ContextAction() {
+                        @Override
+                        public void contextClicked() {
+                            System.out.println("move " + category.getName());
+                        }
+                    }));
+        }
+        if (authorizationService.mayDeleteCategory(category)) {
+            items.add(new ContextMenuItem(new ThemeResource(
+                    "images/icon-delete.png"), "Delete category",
+                    new ContextAction() {
+                        @Override
+                        public void contextClicked() {
+                            System.out.println("delete " + category.getName());
+                        }
+                    }));
+        }
+        if (authorizationService.mayEditCategory(category)) {
+            items.add(new ContextMenuItem(new ThemeResource(
+                    "images/icon-delete.png"), "Edit category",
+                    new ContextAction() {
+                        @Override
+                        public void contextClicked() {
+                            System.out.println("edit " + category.getName());
+                        }
+                    }));
+        }
+        return items;
+    }
+
+    public static class ContextMenuItem {
+        Resource icon;
+        String caption;
+        ContextAction action;
+
+        public ContextMenuItem(final Resource icon, final String caption,
+                final ContextAction action) {
+            this.icon = icon;
+            this.caption = caption;
+            this.action = action;
+        }
+    }
+
 }
