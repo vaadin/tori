@@ -15,4 +15,6 @@ public interface AuthorizationService {
     boolean isCategoryAdministrator();
 
     boolean mayReportPosts();
+
+    boolean mayEditPosts();
 }

@@ -20,4 +20,7 @@ public interface DebugAuthorizationService extends AuthorizationService {
 
     /** @see AuthorizationService#mayReportPosts() */
     void setMayReportPosts(boolean b);
+
+    /** @see AuthorizationService#mayEditPosts() */
+    void setMayEditPosts(boolean b);
 }
