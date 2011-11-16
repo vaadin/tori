@@ -18,7 +18,7 @@ class CreateCategoryForm extends CustomComponent {
         newCategoryLayout.addStyleName(StyleConstants.HALF_MARGIN);
         newCategoryLayout.setSpacing(true);
         newCategoryLayout.setMargin(true);
-        newCategoryLayout.setWidth("300px");
+        newCategoryLayout.setWidth("100%");
 
         final TextField nameField = new TextField();
         nameField.setInputPrompt("Category name");
@@ -46,6 +46,7 @@ class CreateCategoryForm extends CustomComponent {
         newCategoryLayout.setComponentAlignment(saveButton,
                 Alignment.BOTTOM_RIGHT);
 
+        setWidth("300px");
         setCompositionRoot(newCategoryLayout);
     }
 
