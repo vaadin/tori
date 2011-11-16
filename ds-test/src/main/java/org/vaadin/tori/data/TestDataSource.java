@@ -14,7 +14,6 @@ import javax.persistence.TypedQuery;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
-import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.data.util.PersistenceUtil;
 import org.vaadin.tori.service.post.PostReport;
 
@@ -188,11 +187,6 @@ public class TestDataSource implements DataSource {
 
     private static interface Command<T> {
         T execute(EntityManager em);
-    }
-
-    @Override
-    public boolean isAdministrator(final User user) {
-        return true;
     }
 
     @Override

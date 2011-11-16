@@ -6,7 +6,6 @@ import java.util.Set;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
-import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.service.post.PostReport;
 
 public class LiferayDataSource implements DataSource {
@@ -43,11 +42,6 @@ public class LiferayDataSource implements DataSource {
 
     @Override
     public List<Post> getPosts(final Thread thread) {
-        throw new UnsupportedOperationException("Not yet implemented.");
-    }
-
-    @Override
-    public boolean isAdministrator(final User user) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
