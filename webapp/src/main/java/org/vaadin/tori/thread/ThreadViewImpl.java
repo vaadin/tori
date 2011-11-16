@@ -50,7 +50,11 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 HeadingLevel.H2));
 
         for (final Post post : posts) {
-            layout.addComponent(new PostComponent(post, getPresenter()));
+            final PostComponent c = new PostComponent(post, getPresenter());
+            if (getPresenter().userMayReportPosts()) {
+                c.enableReporting();
+            }
+            layout.addComponent(c);
         }
     }
 

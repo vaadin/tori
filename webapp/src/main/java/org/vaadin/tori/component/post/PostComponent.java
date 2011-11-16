@@ -26,8 +26,6 @@ import com.vaadin.ui.themes.Reindeer;
 @SuppressWarnings("serial")
 public class PostComponent extends CustomComponent {
 
-    private static final String EXAMPLE_IMAGE_URL = "http://cache.ohinternet.com/images/thumb/2/2d/Trollface_HD.png/618px-Trollface_HD.png";
-
     private final CustomLayout root;
     private final Post post;
 
@@ -46,6 +44,8 @@ public class PostComponent extends CustomComponent {
                     "Replying not implemented yet");
         }
     };
+
+    private final Component reportComponent;
 
     /**
      * @throws IllegalArgumentException
@@ -70,12 +70,17 @@ public class PostComponent extends CustomComponent {
         root.addComponent(new Label(getFormattedXhtmlBody(post),
                 Label.CONTENT_XHTML), "body");
         root.addComponent(new Label("0"), "score");
-        root.addComponent(buildReportPostComponent(post, reportReceiver),
+        root.addComponent(
+                reportComponent = buildReportPostComponent(post, reportReceiver),
                 "report");
         root.addComponent(buildContextMenu(), "settings");
         root.addComponent(new NativeButton("Edit Post", editListener), "edit");
         root.addComponent(new NativeButton("Quote for Reply", replyListener),
                 "quote");
+    }
+
+    public void enableReporting() {
+        reportComponent.setVisible(true);
     }
 
     private Component buildReportPostComponent(final Post post,
@@ -91,6 +96,7 @@ public class PostComponent extends CustomComponent {
                         new ReportWindow(post, reportReciever, x, y));
             }
         });
+        button.setVisible(false);
         return button;
     }
 

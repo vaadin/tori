@@ -44,4 +44,8 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         dataSource.reportPost(report);
         getView().confirmPostReported();
     }
+
+    public boolean userMayReportPosts() {
+        return authorizationService.mayReportPosts();
+    }
 }
