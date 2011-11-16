@@ -38,8 +38,4 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         return currentCategory;
     }
 
-    @Override
-    public void init() {
-        getView().setAdministratorMode(dataSource.isAdministrator(currentUser));
-    }
 }

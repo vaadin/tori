@@ -79,8 +79,4 @@ public class CategoryViewImpl extends
         return getPresenter().getCurrentCategory();
     }
 
-    @Override
-    public void setAdministratorMode(final boolean admin) {
-        categoryListing.setAdminControlsVisible(admin);
-    }
 }
