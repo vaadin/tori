@@ -98,7 +98,7 @@ public class CategoryListingTest {
     }
 
     @Test
-    public void maxDisplayOrderWithoutRoot() {
+    public void maxDisplayOrder() {
         final List<Category> categories = new ArrayList<Category>();
         final Category min = new Category();
         min.setDisplayOrder(10);
