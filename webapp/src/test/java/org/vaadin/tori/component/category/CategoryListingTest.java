@@ -132,8 +132,6 @@ public class CategoryListingTest {
                 true);
         when(mockAuthorizationService.mayDeleteCategory(category)).thenReturn(
                 true);
-        when(mockAuthorizationService.mayMoveCategory(category)).thenReturn(
-                true);
         when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
                 true);
         assertEquals(4, presenter.getContextMenuItems(category).size());
