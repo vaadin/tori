@@ -120,21 +120,25 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         final List<ContextMenuItem> items = new ArrayList<ContextMenuItem>();
         if (authorizationService.mayFollowCategory(category)) {
             items.add(new ContextMenuItem(new ThemeResource(
-                    "images/icon-delete.png"), "Follow category",
+                    "images/icon-pin.png"), "Follow category",
                     new ContextAction() {
                         @Override
                         public void contextClicked() {
-                            System.out.println("follow " + category.getName());
+                            if (log.isDebugEnabled()) {
+                                log.debug("Following " + category.getName());
+                            }
                         }
                     }));
         }
         if (authorizationService.mayMoveCategory(category)) {
             items.add(new ContextMenuItem(new ThemeResource(
-                    "images/icon-delete.png"), "Move category",
+                    "images/icon-rearrange.png"), "Move category",
                     new ContextAction() {
                         @Override
                         public void contextClicked() {
-                            System.out.println("move " + category.getName());
+                            if (log.isDebugEnabled()) {
+                                log.debug("Moving " + category.getName());
+                            }
                         }
                     }));
         }
@@ -144,17 +148,21 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
                     new ContextAction() {
                         @Override
                         public void contextClicked() {
-                            System.out.println("delete " + category.getName());
+                            if (log.isDebugEnabled()) {
+                                log.debug("Deleting " + category.getName());
+                            }
                         }
                     }));
         }
         if (authorizationService.mayEditCategory(category)) {
             items.add(new ContextMenuItem(new ThemeResource(
-                    "images/icon-delete.png"), "Edit category",
+                    "images/icon-edit.png"), "Edit category",
                     new ContextAction() {
                         @Override
                         public void contextClicked() {
-                            System.out.println("edit " + category.getName());
+                            if (log.isDebugEnabled()) {
+                                log.debug("Editing " + category.getName());
+                            }
                         }
                     }));
         }
