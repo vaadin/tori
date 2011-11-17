@@ -29,15 +29,15 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
                 authorizationService.isCategoryAdministrator());
     }
 
-    public long getThreadCount(final Category category) {
+    long getThreadCount(final Category category) {
         return dataSource.getThreadCount(category);
     }
 
-    public long getUnreadThreadCount(final Category category) {
+    long getUnreadThreadCount(final Category category) {
         return dataSource.getUnreadThreadCount(category);
     }
 
-    public void applyRearrangement() {
+    void applyRearrangement() {
         final Set<Category> modifiedCategories = getView()
                 .getModifiedCategories();
         if (log.isDebugEnabled()) {
@@ -60,14 +60,14 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         }
     }
 
-    public void cancelRearrangement() {
+    void cancelRearrangement() {
         if (!getView().getModifiedCategories().isEmpty()) {
             // restore the original categories
             getView().displayCategories(categories);
         }
     }
 
-    public void setCategories(final List<Category> categories) {
+    void setCategories(final List<Category> categories) {
         this.categories = categories;
         if (!categories.isEmpty()) {
             currentRoot = categories.get(0).getParentCategory();
@@ -75,15 +75,15 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         getView().displayCategories(categories);
     }
 
-    public List<Category> getSubCategories(final Category category) {
+    List<Category> getSubCategories(final Category category) {
         return dataSource.getSubCategories(category);
     }
 
-    public Category getCurrentRoot() {
+    Category getCurrentRoot() {
         return currentRoot;
     }
 
-    public void createNewCategory(final String name, final String description) {
+    void createNewCategory(final String name, final String description) {
         final Category newCategory = new Category();
         newCategory.setName(name);
         newCategory.setDescription(description);
