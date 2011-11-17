@@ -1,6 +1,8 @@
 package org.vaadin.tori.service;
 
 import org.vaadin.tori.data.entity.Category;
+import org.vaadin.tori.data.entity.DiscussionThread;
+import org.vaadin.tori.data.entity.Post;
 
 public class LiferayAuthorizationService implements AuthorizationService {
 
@@ -30,12 +32,12 @@ public class LiferayAuthorizationService implements AuthorizationService {
     }
 
     @Override
-    public boolean mayEditPosts() {
+    public boolean mayEditPost(final Post post) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
     @Override
-    public boolean mayReplyInThreads() {
+    public boolean mayReplyInThread(final DiscussionThread thread) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 

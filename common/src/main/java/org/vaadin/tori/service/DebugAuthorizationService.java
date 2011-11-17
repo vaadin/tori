@@ -1,5 +1,9 @@
 package org.vaadin.tori.service;
 
+import org.vaadin.tori.data.entity.Category;
+import org.vaadin.tori.data.entity.DiscussionThread;
+import org.vaadin.tori.data.entity.Post;
+
 /**
  * <p>
  * If the deployed {@link AuthorizationService} is an instance of
@@ -21,9 +25,18 @@ public interface DebugAuthorizationService extends AuthorizationService {
     /** @see AuthorizationService#mayReportPosts() */
     void setMayReportPosts(boolean b);
 
-    /** @see AuthorizationService#mayEditPosts() */
-    void setMayEditPosts(boolean b);
+    /** @see AuthorizationService#mayFollowCategory(Category) */
+    void setMayFollowCategory(Category category, boolean b);
 
-    /** @see AuthorizationService#mayReplyInThreads() */
-    void setMayReplyInThreads(boolean b);
+    /** @see AuthorizationService#mayDeleteCategory(org.vaadin.tori.data.entity.Category) */
+    void setMayDeleteCategory(Category category, boolean b);
+
+    /** @see AuthorizationService#mayEditCategory(Category) */
+    void setMayEditCategory(Category category, boolean b);
+
+    /** @see AuthorizationService#mayEditPost(Post) */
+    void setMayEditPost(Post post, boolean b);
+
+    /** @see AuthorizationService#mayReplyInThread(DiscussionThread) */
+    void setMayReplyInThread(DiscussionThread thread, boolean b);
 }

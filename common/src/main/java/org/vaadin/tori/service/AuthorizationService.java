@@ -1,6 +1,8 @@
 package org.vaadin.tori.service;
 
 import org.vaadin.tori.data.entity.Category;
+import org.vaadin.tori.data.entity.DiscussionThread;
+import org.vaadin.tori.data.entity.Post;
 
 /**
  * Provides methods for specifying access rights to resources or certain
@@ -24,7 +26,7 @@ public interface AuthorizationService {
 
     boolean mayEditCategory(Category category);
 
-    boolean mayEditPosts();
+    boolean mayEditPost(Post post);
 
-    boolean mayReplyInThreads();
+    boolean mayReplyInThread(DiscussionThread thread);
 }
