@@ -5,8 +5,9 @@ import java.util.List;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.component.ContextMenu;
 import org.vaadin.tori.component.ContextMenu.Builder;
+import org.vaadin.tori.component.ContextMenu.ContextAction;
 import org.vaadin.tori.component.category.CategoryListing.Mode;
-import org.vaadin.tori.component.category.CategoryListingPresenter.ContextMenuItem;
+import org.vaadin.tori.component.category.CategoryListingPresenter.ContextMenuOperation;
 import org.vaadin.tori.data.entity.Category;
 
 import com.vaadin.data.Item;
@@ -168,17 +169,39 @@ class CategoryTreeTable extends TreeTable {
         }
 
         private Component createSettingsMenu(final Category category) {
-            final List<ContextMenuItem> contextMenuItems = presenter
-                    .getContextMenuItems(category);
+            final List<ContextMenuOperation> contextMenuOperations = presenter
+                    .getContextMenuOperations(category);
 
             final Builder builder = new ContextMenu.Builder();
-            for (final ContextMenuItem menuItem : contextMenuItems) {
-                if (menuItem.swapper != null) {
-                    builder.add(menuItem.icon, menuItem.caption,
-                            menuItem.swapper);
-                } else {
-                    builder.add(menuItem.icon, menuItem.caption,
-                            menuItem.action);
+            for (final ContextMenuOperation menuItem : contextMenuOperations) {
+                switch (menuItem) {
+                case EDIT:
+                    builder.add(new ThemeResource("images/icon-edit.png"),
+                            "Follow category", new ContextAction() {
+                                @Override
+                                public void contextClicked() {
+                                    presenter.editCategory(category);
+                                }
+                            });
+                    break;
+                case DELETE:
+                    builder.add(new ThemeResource("images/icon-delete.png"),
+                            "Delete category" + '\u2026', new ContextAction() {
+                                @Override
+                                public void contextClicked() {
+                                    presenter.confirmDelete(category);
+                                }
+                            });
+                    break;
+                case FOLLOW:
+                    builder.add(new ThemeResource("images/icon-pin.png"),
+                            "Follow category", new ContextAction() {
+                                @Override
+                                public void contextClicked() {
+                                    presenter.followCategory(category);
+                                }
+                            });
+                    break;
                 }
             }
             return builder.build();

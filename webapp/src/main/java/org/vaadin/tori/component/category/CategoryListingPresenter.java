@@ -4,20 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.vaadin.tori.component.ContextMenu;
-import org.vaadin.tori.component.ContextMenu.ContextAction;
-import org.vaadin.tori.component.ContextMenu.ContextComponentSwapper;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 
-import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
-
 class CategoryListingPresenter extends Presenter<CategoryListingView> {
+
+    public static enum ContextMenuOperation {
+        EDIT, FOLLOW, DELETE
+    }
 
     private List<Category> categories;
     private Category currentRoot;
@@ -120,82 +116,39 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         return max;
     }
 
-    public List<ContextMenuItem> getContextMenuItems(final Category category) {
-        final List<ContextMenuItem> items = new ArrayList<ContextMenuItem>();
+    List<ContextMenuOperation> getContextMenuOperations(final Category category) {
+        final List<ContextMenuOperation> items = new ArrayList<ContextMenuOperation>();
         if (authorizationService.mayFollowCategory(category)) {
-            items.add(new ContextMenuItem(new ThemeResource(
-                    "images/icon-pin.png"), "Follow category",
-                    new ContextAction() {
-                        @Override
-                        public void contextClicked() {
-                            followCategory(category);
-                        }
-                    }));
+            items.add(ContextMenuOperation.FOLLOW);
         }
         if (authorizationService.mayDeleteCategory(category)) {
-            items.add(new ContextMenuItem(new ThemeResource(
-                    "images/icon-delete.png"), "Delete category" + '\u2026',
-                    new ContextAction() {
-                        @Override
-                        public void contextClicked() {
-                            confirmDelete(category);
-                        }
-                    }));
+            items.add(ContextMenuOperation.DELETE);
         }
         if (authorizationService.mayEditCategory(category)) {
-            items.add(new ContextMenuItem(new ThemeResource(
-                    "images/icon-edit.png"), "Edit category",
-                    new ContextMenu.ContextComponentSwapper() {
-                        @Override
-                        public Component swapContextComponent() {
-                            return getCategoryEditor(category);
-                        }
-                    }));
+            items.add(ContextMenuOperation.EDIT);
         }
         return items;
     }
 
-    private void followCategory(final Category category) {
-        if (log.isDebugEnabled()) {
-            log.debug("Following " + category.getName());
-        }
-    }
-
-    private Component getCategoryEditor(final Category category) {
-        if (log.isDebugEnabled()) {
-            log.debug("Editing " + category.getName());
-        }
-        return new Label("Edit category here");
-    }
-
-    private void confirmDelete(final Category category) {
+    void confirmDelete(final Category category) {
         getView().displayDeleteConfirmation(category);
     }
 
-    Component deleteCategory(final Category category) {
+    void deleteCategory(final Category category) {
         if (log.isDebugEnabled()) {
             log.debug("Deleting " + category.getName());
         }
-        return new Label("Really delete?");
     }
 
-    public static class ContextMenuItem {
-        Resource icon;
-        String caption;
-        ContextAction action;
-        ContextComponentSwapper swapper;
-
-        public ContextMenuItem(final Resource icon, final String caption,
-                final ContextAction action) {
-            this.icon = icon;
-            this.caption = caption;
-            this.action = action;
+    void editCategory(final Category category) {
+        if (log.isDebugEnabled()) {
+            log.debug("Editing " + category.getName());
         }
+    }
 
-        public ContextMenuItem(final Resource icon, final String caption,
-                final ContextComponentSwapper swapper) {
-            this(icon, caption, (ContextAction) null);
-            this.swapper = swapper;
+    void followCategory(final Category category) {
+        if (log.isDebugEnabled()) {
+            log.debug("Following " + category.getName());
         }
     }
 

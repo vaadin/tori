@@ -135,7 +135,7 @@ public class CategoryListingTest {
                 true);
         when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
                 true);
-        assertEquals(3, presenter.getContextMenuItems(category).size());
+        assertEquals(3, presenter.getContextMenuOperations(category).size());
 
         when(mockAuthorizationService.mayEditCategory(category)).thenReturn(
                 true);
@@ -143,7 +143,7 @@ public class CategoryListingTest {
                 false);
         when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
                 true);
-        assertEquals(2, presenter.getContextMenuItems(category).size());
+        assertEquals(2, presenter.getContextMenuOperations(category).size());
 
         when(mockAuthorizationService.mayEditCategory(category)).thenReturn(
                 false);
@@ -151,7 +151,7 @@ public class CategoryListingTest {
                 false);
         when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
                 true);
-        assertEquals(1, presenter.getContextMenuItems(category).size());
+        assertEquals(1, presenter.getContextMenuOperations(category).size());
 
         when(mockAuthorizationService.mayEditCategory(category)).thenReturn(
                 false);
@@ -159,6 +159,6 @@ public class CategoryListingTest {
                 false);
         when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
                 false);
-        assertTrue(presenter.getContextMenuItems(category).isEmpty());
+        assertTrue(presenter.getContextMenuOperations(category).isEmpty());
     }
 }
