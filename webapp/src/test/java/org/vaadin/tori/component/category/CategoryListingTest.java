@@ -1,6 +1,8 @@
 package org.vaadin.tori.component.category;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -132,10 +134,42 @@ public class CategoryListingTest {
                 true);
         when(mockAuthorizationService.mayDeleteCategory(category)).thenReturn(
                 true);
-        when(mockAuthorizationService.mayMoveCategory(category)).thenReturn(
+        when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
+                true);
+        assertEquals(3, presenter.getContextMenuItems(category).size());
+        assertTrue(presenter.getContextMenuItems(category).contains(
+                CategoryContextMenuItem.EDIT_CATEGORY));
+        assertTrue(presenter.getContextMenuItems(category).contains(
+                CategoryContextMenuItem.DELETE_CATEGORY));
+        assertTrue(presenter.getContextMenuItems(category).contains(
+                CategoryContextMenuItem.FOLLOW_CATEGORY));
+
+        when(mockAuthorizationService.mayEditCategory(category)).thenReturn(
+                false);
+        when(mockAuthorizationService.mayDeleteCategory(category)).thenReturn(
                 true);
         when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
                 true);
-        assertEquals(4, presenter.getContextMenuItems(category).size());
+        assertEquals(2, presenter.getContextMenuItems(category).size());
+        assertFalse(presenter.getContextMenuItems(category).contains(
+                CategoryContextMenuItem.EDIT_CATEGORY));
+        assertTrue(presenter.getContextMenuItems(category).contains(
+                CategoryContextMenuItem.DELETE_CATEGORY));
+        assertTrue(presenter.getContextMenuItems(category).contains(
+                CategoryContextMenuItem.FOLLOW_CATEGORY));
+
+        when(mockAuthorizationService.mayEditCategory(category)).thenReturn(
+                false);
+        when(mockAuthorizationService.mayDeleteCategory(category)).thenReturn(
+                false);
+        when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
+                true);
+        assertEquals(1, presenter.getContextMenuItems(category).size());
+        assertFalse(presenter.getContextMenuItems(category).contains(
+                CategoryContextMenuItem.EDIT_CATEGORY));
+        assertFalse(presenter.getContextMenuItems(category).contains(
+                CategoryContextMenuItem.DELETE_CATEGORY));
+        assertTrue(presenter.getContextMenuItems(category).contains(
+                CategoryContextMenuItem.FOLLOW_CATEGORY));
     }
 }

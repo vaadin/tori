@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.vaadin.tori.component.ContextMenu.ContextAction;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 
-import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 
 class CategoryListingPresenter extends Presenter<CategoryListingView> {
 
@@ -29,15 +28,15 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
                 authorizationService.isCategoryAdministrator());
     }
 
-    public long getThreadCount(final Category category) {
+    long getThreadCount(final Category category) {
         return dataSource.getThreadCount(category);
     }
 
-    public long getUnreadThreadCount(final Category category) {
+    long getUnreadThreadCount(final Category category) {
         return dataSource.getUnreadThreadCount(category);
     }
 
-    public void applyRearrangement() {
+    void applyRearrangement() {
         final Set<Category> modifiedCategories = getView()
                 .getModifiedCategories();
         if (log.isDebugEnabled()) {
@@ -60,14 +59,14 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         }
     }
 
-    public void cancelRearrangement() {
+    void cancelRearrangement() {
         if (!getView().getModifiedCategories().isEmpty()) {
             // restore the original categories
             getView().displayCategories(categories);
         }
     }
 
-    public void setCategories(final List<Category> categories) {
+    void setCategories(final List<Category> categories) {
         this.categories = categories;
         if (!categories.isEmpty()) {
             currentRoot = categories.get(0).getParentCategory();
@@ -75,15 +74,15 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         getView().displayCategories(categories);
     }
 
-    public List<Category> getSubCategories(final Category category) {
+    List<Category> getSubCategories(final Category category) {
         return dataSource.getSubCategories(category);
     }
 
-    public Category getCurrentRoot() {
+    Category getCurrentRoot() {
         return currentRoot;
     }
 
-    public void createNewCategory(final String name, final String description) {
+    void createNewCategory(final String name, final String description) {
         final Category newCategory = new Category();
         newCategory.setName(name);
         newCategory.setDescription(description);
@@ -116,69 +115,39 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         return max;
     }
 
-    public List<ContextMenuItem> getContextMenuItems(final Category category) {
-        final List<ContextMenuItem> items = new ArrayList<ContextMenuItem>();
+    List<CategoryContextMenuItem> getContextMenuItems(final Category category) {
+        final List<CategoryContextMenuItem> items = new ArrayList<CategoryContextMenuItem>();
         if (authorizationService.mayFollowCategory(category)) {
-            items.add(new ContextMenuItem(new ThemeResource(
-                    "images/icon-pin.png"), "Follow category",
-                    new ContextAction() {
-                        @Override
-                        public void contextClicked() {
-                            if (log.isDebugEnabled()) {
-                                log.debug("Following " + category.getName());
-                            }
-                        }
-                    }));
-        }
-        if (authorizationService.mayMoveCategory(category)) {
-            items.add(new ContextMenuItem(new ThemeResource(
-                    "images/icon-rearrange.png"), "Move category",
-                    new ContextAction() {
-                        @Override
-                        public void contextClicked() {
-                            if (log.isDebugEnabled()) {
-                                log.debug("Moving " + category.getName());
-                            }
-                        }
-                    }));
+            items.add(CategoryContextMenuItem.FOLLOW_CATEGORY);
         }
         if (authorizationService.mayDeleteCategory(category)) {
-            items.add(new ContextMenuItem(new ThemeResource(
-                    "images/icon-delete.png"), "Delete category",
-                    new ContextAction() {
-                        @Override
-                        public void contextClicked() {
-                            if (log.isDebugEnabled()) {
-                                log.debug("Deleting " + category.getName());
-                            }
-                        }
-                    }));
+            items.add(CategoryContextMenuItem.DELETE_CATEGORY);
         }
         if (authorizationService.mayEditCategory(category)) {
-            items.add(new ContextMenuItem(new ThemeResource(
-                    "images/icon-edit.png"), "Edit category",
-                    new ContextAction() {
-                        @Override
-                        public void contextClicked() {
-                            if (log.isDebugEnabled()) {
-                                log.debug("Editing " + category.getName());
-                            }
-                        }
-                    }));
+            items.add(CategoryContextMenuItem.EDIT_CATEGORY);
         }
         return items;
     }
 
-    public static class ContextMenuItem {
-        Resource icon;
-        String caption;
-        ContextAction action;
+    @ContextMenuBinding(CategoryContextMenuItem.FOLLOW_CATEGORY)
+    public void followCategory(final Category category) {
+        if (log.isDebugEnabled()) {
+            log.debug("Following " + category.getName());
+        }
+    }
 
-        public ContextMenuItem(final Resource icon, final String caption,
-                final ContextAction action) {
-            this.icon = icon;
-            this.caption = caption;
-            this.action = action;
+    @ContextMenuBinding(CategoryContextMenuItem.DELETE_CATEGORY)
+    public Component deleteCategory(final Category category) {
+        if (log.isDebugEnabled()) {
+            log.debug("Deleting " + category.getName());
+        }
+        return new Label(category.getDescription());
+    }
+
+    @ContextMenuBinding(CategoryContextMenuItem.EDIT_CATEGORY)
+    public void editCategory(final Category category) {
+        if (log.isDebugEnabled()) {
+            log.debug("Editing " + category.getName());
         }
     }
 

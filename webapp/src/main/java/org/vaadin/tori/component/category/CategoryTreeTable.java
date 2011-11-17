@@ -1,12 +1,15 @@
 package org.vaadin.tori.component.category;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.component.ContextMenu;
 import org.vaadin.tori.component.ContextMenu.Builder;
+import org.vaadin.tori.component.ContextMenu.ContextAction;
+import org.vaadin.tori.component.ContextMenu.ContextComponentSwapper;
 import org.vaadin.tori.component.category.CategoryListing.Mode;
-import org.vaadin.tori.component.category.CategoryListingPresenter.ContextMenuItem;
 import org.vaadin.tori.data.entity.Category;
 
 import com.vaadin.data.Item;
@@ -168,14 +171,77 @@ class CategoryTreeTable extends TreeTable {
         }
 
         private Component createSettingsMenu(final Category category) {
-            final List<ContextMenuItem> contextMenuItems = presenter
+            final List<CategoryContextMenuItem> contextMenuItems = presenter
                     .getContextMenuItems(category);
 
             final Builder builder = new ContextMenu.Builder();
-            for (final ContextMenuItem menuItem : contextMenuItems) {
-                builder.add(menuItem.icon, menuItem.caption, menuItem.action);
+            for (final CategoryContextMenuItem menuItem : contextMenuItems) {
+                final Method boundMethod = findPresenterMethod(menuItem);
+                if (boundMethod != null) {
+                    if (boundMethod.getReturnType().isAssignableFrom(
+                            Component.class)) {
+                        // swapper for the component
+                        final ContextComponentSwapper swapper = new ContextComponentSwapper() {
+                            @Override
+                            public Component swapContextComponent() {
+                                return invoke(boundMethod, category);
+                            }
+                        };
+                        builder.add(menuItem.getIcon(), menuItem.getCaption(),
+                                swapper);
+                    } else {
+                        // just a simple action
+                        final ContextAction action = new ContextAction() {
+                            @Override
+                            public void contextClicked() {
+                                invoke(boundMethod, category);
+                            }
+                        };
+                        builder.add(menuItem.getIcon(), menuItem.getCaption(),
+                                action);
+                    }
+                }
             }
             return builder.build();
+        }
+
+        private Component invoke(final Method method, final Category category) {
+            try {
+                return (Component) method.invoke(presenter, category);
+            } catch (final IllegalArgumentException e) {
+                throw new RuntimeException("Cannot invoke presenter method "
+                        + method, e);
+            } catch (final IllegalAccessException e) {
+                throw new RuntimeException("Cannot invoke presenter method "
+                        + method, e);
+            } catch (final InvocationTargetException e) {
+                throw new RuntimeException("Cannot invoke presenter method "
+                        + method, e);
+            }
+        }
+
+        /**
+         * Returns the presenter method that is bound to the given
+         * {@link CategoryContextMenuItem} via the {@link ContextMenuBinding}
+         * annotation or {@code null} if no such method is found.
+         * 
+         * @param menuItem
+         * @return
+         */
+        private Method findPresenterMethod(
+                final CategoryContextMenuItem menuItem) {
+            final Method[] presenterMethods = presenter.getClass().getMethods();
+            for (final Method presenterMethod : presenterMethods) {
+                if (presenterMethod
+                        .isAnnotationPresent(ContextMenuBinding.class)) {
+                    final ContextMenuBinding binding = presenterMethod
+                            .getAnnotation(ContextMenuBinding.class);
+                    if (binding.value() == menuItem) {
+                        return presenterMethod;
+                    }
+                }
+            }
+            return null;
         }
     }
 
