@@ -2,6 +2,7 @@ package org.vaadin.tori.thread;
 
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.DiscussionThread;
+import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.post.PostReport;
@@ -47,5 +48,14 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     public boolean userMayReportPosts() {
         return authorizationService.mayReportPosts();
+    }
+
+    public boolean userMayEditPost(final Post post) {
+        // TODO: make sure the user may edit his/her own post.
+        return authorizationService.mayEditPosts();
+    }
+
+    public boolean userMayQuotePost(final Post post) {
+        return authorizationService.mayReplyInThreads();
     }
 }

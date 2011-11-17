@@ -32,4 +32,10 @@ public interface DebugAuthorizationService extends AuthorizationService {
 
     /** @see AuthorizationService#mayEditCategory(org.vaadin.tori.data.entity.Category) */
     void setMayEditCategory(boolean mayEditCategory);
+
+    /** @see AuthorizationService#mayEditPosts() */
+    void setMayEditPosts(boolean b);
+
+    /** @see AuthorizationService#mayReplyInThreads() */
+    void setMayReplyInThreads(boolean b);
 }

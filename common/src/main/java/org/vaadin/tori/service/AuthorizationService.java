@@ -26,4 +26,7 @@ public interface AuthorizationService {
 
     boolean mayEditCategory(Category category);
 
+    boolean mayEditPosts();
+
+    boolean mayReplyInThreads();
 }

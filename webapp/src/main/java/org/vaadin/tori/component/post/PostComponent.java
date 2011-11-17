@@ -46,6 +46,8 @@ public class PostComponent extends CustomComponent {
     };
 
     private final Component reportComponent;
+    private final NativeButton editButton;
+    private final NativeButton quoteButton;
 
     /**
      * @throws IllegalArgumentException
@@ -57,6 +59,12 @@ public class PostComponent extends CustomComponent {
         ToriUtil.checkForNull(reportReceiver,
                 "post report receiver may not be null");
         this.post = post;
+
+        editButton = new NativeButton("Edit Post", editListener);
+        editButton.setVisible(false);
+
+        quoteButton = new NativeButton("Quote for Reply", replyListener);
+        quoteButton.setVisible(false);
 
         root = new CustomLayout("../../../layouts/postlayout");
         setCompositionRoot(root);
@@ -74,13 +82,20 @@ public class PostComponent extends CustomComponent {
                 reportComponent = buildReportPostComponent(post, reportReceiver),
                 "report");
         root.addComponent(buildContextMenu(), "settings");
-        root.addComponent(new NativeButton("Edit Post", editListener), "edit");
-        root.addComponent(new NativeButton("Quote for Reply", replyListener),
-                "quote");
+        root.addComponent(editButton, "edit");
+        root.addComponent(quoteButton, "quote");
     }
 
     public void enableReporting() {
         reportComponent.setVisible(true);
+    }
+
+    public void enableEditing() {
+        editButton.setVisible(true);
+    }
+
+    public void enableQuoting() {
+        quoteButton.setVisible(true);
     }
 
     private Component buildReportPostComponent(final Post post,

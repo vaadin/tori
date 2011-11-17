@@ -10,6 +10,8 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     private boolean mayMoveCategory = true;
     private boolean mayDeleteCategory = true;
     private boolean mayEditCategory = true;
+    private boolean mayEditPosts = true;
+    private boolean mayReplyInThreads = true;
 
     @Override
     public boolean isCategoryAdministrator() {
@@ -71,4 +73,23 @@ public class TestAuthorizationService implements DebugAuthorizationService {
         this.mayEditCategory = mayEditCategory;
     }
 
+    @Override
+    public boolean mayEditPosts() {
+        return mayEditPosts;
+    }
+
+    @Override
+    public void setMayEditPosts(final boolean b) {
+        mayEditPosts = b;
+    }
+
+    @Override
+    public boolean mayReplyInThreads() {
+        return mayReplyInThreads;
+    }
+
+    @Override
+    public void setMayReplyInThreads(final boolean b) {
+        mayReplyInThreads = b;
+    }
 }
