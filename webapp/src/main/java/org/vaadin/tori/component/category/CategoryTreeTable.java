@@ -173,7 +173,13 @@ class CategoryTreeTable extends TreeTable {
 
             final Builder builder = new ContextMenu.Builder();
             for (final ContextMenuItem menuItem : contextMenuItems) {
-                builder.add(menuItem.icon, menuItem.caption, menuItem.action);
+                if (menuItem.swapper != null) {
+                    builder.add(menuItem.icon, menuItem.caption,
+                            menuItem.swapper);
+                } else {
+                    builder.add(menuItem.icon, menuItem.caption,
+                            menuItem.action);
+                }
             }
             return builder.build();
         }

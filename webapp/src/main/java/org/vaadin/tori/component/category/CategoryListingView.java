@@ -34,4 +34,6 @@ interface CategoryListingView extends View {
      * Hides the controls used for creating a new {@link Category}.
      */
     void hideCreateCategoryForm();
+
+    void displayDeleteConfirmation(Category category);
 }

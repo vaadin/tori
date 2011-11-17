@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.vaadin.tori.component.ContextMenu;
 import org.vaadin.tori.component.ContextMenu.ContextAction;
+import org.vaadin.tori.component.ContextMenu.ContextComponentSwapper;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.Presenter;
@@ -12,6 +14,8 @@ import org.vaadin.tori.service.AuthorizationService;
 
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 
 class CategoryListingPresenter extends Presenter<CategoryListingView> {
 
@@ -124,49 +128,74 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
                     new ContextAction() {
                         @Override
                         public void contextClicked() {
-                            if (log.isDebugEnabled()) {
-                                log.debug("Following " + category.getName());
-                            }
+                            followCategory(category);
                         }
                     }));
         }
         if (authorizationService.mayDeleteCategory(category)) {
             items.add(new ContextMenuItem(new ThemeResource(
-                    "images/icon-delete.png"), "Delete category",
+                    "images/icon-delete.png"), "Delete category" + '\u2026',
                     new ContextAction() {
                         @Override
                         public void contextClicked() {
-                            if (log.isDebugEnabled()) {
-                                log.debug("Deleting " + category.getName());
-                            }
+                            confirmDelete(category);
                         }
                     }));
         }
         if (authorizationService.mayEditCategory(category)) {
             items.add(new ContextMenuItem(new ThemeResource(
                     "images/icon-edit.png"), "Edit category",
-                    new ContextAction() {
+                    new ContextMenu.ContextComponentSwapper() {
                         @Override
-                        public void contextClicked() {
-                            if (log.isDebugEnabled()) {
-                                log.debug("Editing " + category.getName());
-                            }
+                        public Component swapContextComponent() {
+                            return getCategoryEditor(category);
                         }
                     }));
         }
         return items;
     }
 
+    private void followCategory(final Category category) {
+        if (log.isDebugEnabled()) {
+            log.debug("Following " + category.getName());
+        }
+    }
+
+    private Component getCategoryEditor(final Category category) {
+        if (log.isDebugEnabled()) {
+            log.debug("Editing " + category.getName());
+        }
+        return new Label("Edit category here");
+    }
+
+    private void confirmDelete(final Category category) {
+        getView().displayDeleteConfirmation(category);
+    }
+
+    Component deleteCategory(final Category category) {
+        if (log.isDebugEnabled()) {
+            log.debug("Deleting " + category.getName());
+        }
+        return new Label("Really delete?");
+    }
+
     public static class ContextMenuItem {
         Resource icon;
         String caption;
         ContextAction action;
+        ContextComponentSwapper swapper;
 
         public ContextMenuItem(final Resource icon, final String caption,
                 final ContextAction action) {
             this.icon = icon;
             this.caption = caption;
             this.action = action;
+        }
+
+        public ContextMenuItem(final Resource icon, final String caption,
+                final ContextComponentSwapper swapper) {
+            this(icon, caption, (ContextAction) null);
+            this.swapper = swapper;
         }
     }
 
