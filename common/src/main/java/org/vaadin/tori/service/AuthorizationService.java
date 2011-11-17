@@ -20,8 +20,6 @@ public interface AuthorizationService {
 
     boolean mayFollowCategory(Category category);
 
-    boolean mayMoveCategory(Category category);
-
     boolean mayDeleteCategory(Category category);
 
     boolean mayEditCategory(Category category);

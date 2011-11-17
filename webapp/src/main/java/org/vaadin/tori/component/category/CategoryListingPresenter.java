@@ -130,18 +130,6 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
                         }
                     }));
         }
-        if (authorizationService.mayMoveCategory(category)) {
-            items.add(new ContextMenuItem(new ThemeResource(
-                    "images/icon-rearrange.png"), "Move category",
-                    new ContextAction() {
-                        @Override
-                        public void contextClicked() {
-                            if (log.isDebugEnabled()) {
-                                log.debug("Moving " + category.getName());
-                            }
-                        }
-                    }));
-        }
         if (authorizationService.mayDeleteCategory(category)) {
             items.add(new ContextMenuItem(new ThemeResource(
                     "images/icon-delete.png"), "Delete category",

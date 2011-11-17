@@ -39,11 +39,6 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     }
 
     @Override
-    public boolean mayMoveCategory(final Category category) {
-        return mayMoveCategory;
-    }
-
-    @Override
     public boolean mayDeleteCategory(final Category category) {
         return mayDeleteCategory;
     }
