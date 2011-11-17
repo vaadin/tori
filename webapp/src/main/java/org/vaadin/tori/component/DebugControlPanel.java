@@ -1,6 +1,5 @@
 package org.vaadin.tori.component;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,53 +11,148 @@ import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.category.CategoryView;
+import org.vaadin.tori.dashboard.DashboardView;
+import org.vaadin.tori.data.entity.AbstractEntity;
+import org.vaadin.tori.data.entity.Category;
+import org.vaadin.tori.data.entity.DiscussionThread;
+import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.service.DebugAuthorizationService;
+import org.vaadin.tori.thread.ThreadView;
 
 import com.google.common.collect.Lists;
-import com.vaadin.data.Property.ConversionException;
-import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.PopupView;
 import com.vaadin.ui.themes.Reindeer;
 
 @SuppressWarnings("serial")
 public class DebugControlPanel extends CustomComponent implements
         PopupVisibilityListener {
 
-    private final DebugAuthorizationService authorizationService;
-    private final ToriNavigator navigator;
+    private static class CheckBoxShouldBeDisabledException extends Exception {
+    }
 
-    private final ClickListener checkboxClickListener = new ClickListener() {
+    @SuppressWarnings("unused")
+    private static class ContextData {
+        private Category category;
+        private DiscussionThread thread;
+        private List<Post> posts;
+
+        public void setCategory(final Category category) {
+            this.category = category;
+        }
+
+        public Category getCategory() {
+            return category;
+        }
+
+        public void setThread(final DiscussionThread thread) {
+            this.thread = thread;
+        }
+
+        public DiscussionThread getThread() {
+            return thread;
+        }
+
+        public void setPosts(final List<Post> posts) {
+            this.posts = posts;
+        }
+
+        public List<Post> getPosts() {
+            return posts;
+        }
+    }
+
+    private class CheckboxListener implements ClickListener {
+        private final ContextData data;
+        private final Method setter;
+
+        public CheckboxListener(final ContextData data, final Method setter) {
+            this.data = data;
+            this.setter = setter;
+        }
+
         @Override
         public void buttonClick(final ClickEvent event) {
+            final Button button = event.getButton();
+            final boolean newValue = button.booleanValue();
+            callSetter(newValue);
+            navigator.recreateCurrentView();
+        }
+
+        private void callSetter(final boolean newValue) {
             try {
-                final Button button = event.getButton();
-                final Method setter = (Method) button.getData();
-                final boolean newValue = button.booleanValue();
-                setter.invoke(authorizationService, newValue);
-                navigator.recreateCurrentView();
-            } catch (final IllegalArgumentException e) {
+
+                if (methodHasArguments(setter, 1)) {
+                    setter.invoke(authorizationService, newValue);
+                }
+
+                else {
+                    final Class<?> paramClass = setter.getParameterTypes()[0];
+                    if (paramClass == Post.class) {
+                        throw new IllegalStateException("Setters for "
+                                + Post.class.getName()
+                                + " should be handled by "
+                                + "another piece of code. MAJOR BUG!");
+                    } else {
+                        final Object setterParam = getCorrectTypeOfDataFrom(
+                                paramClass, data);
+                        setter.invoke(authorizationService, setterParam,
+                                newValue);
+                    }
+                }
+
+            } catch (final Exception e) {
                 getApplication().getMainWindow().showNotification(
                         e.getClass().getSimpleName());
                 e.printStackTrace();
-            } catch (final IllegalAccessException e) {
-                getApplication().getMainWindow().showNotification(
-                        e.getClass().getSimpleName());
-                e.printStackTrace();
-            } catch (final InvocationTargetException e) {
+            }
+
+        }
+    }
+
+    private class PostCheckboxListener implements ClickListener {
+
+        private final Post post;
+        private final Method setter;
+
+        public PostCheckboxListener(final Post post, final Method setter) {
+            this.post = post;
+            this.setter = setter;
+        }
+
+        @Override
+        public void buttonClick(final ClickEvent event) {
+            final Button button = event.getButton();
+            final boolean newValue = button.booleanValue();
+            callSetter(newValue);
+            navigator.recreateCurrentView();
+        }
+
+        private void callSetter(final boolean newValue) {
+            try {
+                setter.invoke(authorizationService, post, newValue);
+            } catch (final Exception e) {
                 getApplication().getMainWindow().showNotification(
                         e.getClass().getSimpleName());
                 e.printStackTrace();
             }
         }
-    };
+    }
+
+    private final DebugAuthorizationService authorizationService;
+    private final ToriNavigator navigator;
+    private ContextData data;
 
     public DebugControlPanel(
             final DebugAuthorizationService authorizationService,
@@ -75,14 +169,37 @@ public class DebugControlPanel extends CustomComponent implements
 
     @Override
     public void popupVisibilityChange(final PopupVisibilityEvent event) {
+        final ContextData data = getContextData();
         if (event.isPopupVisible()) {
             final PopupButton popupButton = event.getPopupButton();
             popupButton.removeAllComponents();
-            popupButton.setComponent(createControlPanel());
+            popupButton.setComponent(createControlPanel(data));
         }
     }
 
-    private Component createControlPanel() {
+    private ContextData getContextData() {
+        final ContextData data = new ContextData();
+        final View currentView = navigator.getCurrentView();
+        if (currentView instanceof DashboardView) {
+            // NOP - no context data, can't populate
+        } else if (currentView instanceof CategoryView) {
+            final CategoryView categoryView = (CategoryView) currentView;
+            data.setCategory(categoryView.getCurrentCategory());
+        } else if (currentView instanceof ThreadView) {
+            final ThreadView threadView = (ThreadView) currentView;
+            final DiscussionThread currentThread = threadView
+                    .getCurrentThread();
+            data.setCategory(currentThread.getCategory());
+            data.setThread(currentThread);
+            data.setPosts(currentThread.getPosts());
+        }
+
+        return data;
+    }
+
+    private Component createControlPanel(final ContextData data) {
+        this.data = data;
+
         final Panel panel = new Panel();
         panel.setStyleName(Reindeer.PANEL_LIGHT);
         panel.setScrollable(true);
@@ -101,33 +218,14 @@ public class DebugControlPanel extends CustomComponent implements
 
         try {
             for (final Method setter : orderedSetters) {
-                final CheckBox checkbox = new CheckBox(setter.getName());
-                checkbox.setData(setter);
-                checkbox.setValue(getGetterFrom(setter).invoke(
-                        authorizationService));
-                checkbox.addListener(checkboxClickListener);
-                checkbox.setImmediate(true);
-                panel.addComponent(checkbox);
+                if (isForPosts(setter)) {
+                    panel.addComponent(createPostControl(setter,
+                            data.getPosts()));
+                } else {
+                    panel.addComponent(createRegularControl(setter));
+                }
             }
-        } catch (final IllegalArgumentException e) {
-            e.printStackTrace();
-            panel.addComponent(new Label(e.toString()));
-        } catch (final ReadOnlyException e) {
-            e.printStackTrace();
-            panel.addComponent(new Label(e.toString()));
-        } catch (final ConversionException e) {
-            e.printStackTrace();
-            panel.addComponent(new Label(e.toString()));
-        } catch (final IllegalAccessException e) {
-            e.printStackTrace();
-            panel.addComponent(new Label(e.toString()));
-        } catch (final InvocationTargetException e) {
-            e.printStackTrace();
-            panel.addComponent(new Label(e.toString()));
-        } catch (final SecurityException e) {
-            e.printStackTrace();
-            panel.addComponent(new Label(e.toString()));
-        } catch (final NoSuchMethodException e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             panel.addComponent(new Label(e.toString()));
         }
@@ -135,12 +233,107 @@ public class DebugControlPanel extends CustomComponent implements
         return panel;
     }
 
+    private Component createPostControl(final Method setter,
+            final List<Post> posts) throws Exception {
+        if (posts == null || posts.isEmpty()) {
+            final Label label = new Label(setter.getName());
+            label.setEnabled(false);
+            return label;
+        }
+
+        final PopupView popup = new PopupView(setter.getName(),
+                new CustomComponent() {
+                    {
+                        final CssLayout root = new CssLayout();
+                        setCompositionRoot(root);
+                        root.setWidth("100%");
+                        setWidth("400px");
+
+                        root.addComponent(new Label(setter.getName()));
+
+                        for (final Post post : posts) {
+                            final Method getter = getGetterFrom(setter);
+                            final boolean getterValue = (Boolean) getter
+                                    .invoke(authorizationService, post);
+
+                            final String authorName = post.getAuthor()
+                                    .getDisplayedName();
+                            final String postBody = post.getBodyRaw()
+                                    .substring(0, 20);
+
+                            final CheckBox checkbox = new CheckBox(authorName
+                                    + " :: " + postBody);
+                            checkbox.setValue(getterValue);
+                            checkbox.addListener(new PostCheckboxListener(post,
+                                    setter));
+                            checkbox.setImmediate(true);
+                            checkbox.setWidth("100%");
+                            root.addComponent(checkbox);
+                        }
+                    }
+                });
+        popup.setHideOnMouseOut(false);
+        return popup;
+    }
+
+    private Component createRegularControl(final Method setter)
+            throws SecurityException, NoSuchMethodException, Exception {
+        final CheckBox checkbox = new CheckBox(setter.getName());
+        try {
+            final boolean getterValue = callGetter(getGetterFrom(setter));
+            checkbox.setValue(getterValue);
+            checkbox.addListener(new CheckboxListener(data, setter));
+            checkbox.setImmediate(true);
+        } catch (final CheckBoxShouldBeDisabledException e) {
+            /*
+             * Because our context doesn't have data to set up this object, we
+             * disable the checkbox. E.g. DashboardView doesn't have context
+             * data on a particular Category or Thread
+             */
+
+            checkbox.setEnabled(false);
+        }
+        return checkbox;
+    }
+
+    private static boolean isForPosts(final Method setter) {
+        return setter.getParameterTypes()[0] == Post.class;
+    }
+
+    private boolean callGetter(final Method getter)
+            throws CheckBoxShouldBeDisabledException, Exception {
+        if (methodHasArguments(getter, 0)) {
+            return (Boolean) getter.invoke(authorizationService);
+        } else if (methodHasArguments(getter, 1)) {
+            final Class<?> paramClass = getter.getParameterTypes()[0];
+            final Object entityParameter = getCorrectTypeOfDataFrom(paramClass,
+                    data);
+
+            if (entityParameter != null) {
+                return (Boolean) getter.invoke(authorizationService,
+                        entityParameter);
+            } else {
+                throw new CheckBoxShouldBeDisabledException();
+            }
+        } else {
+            throw new IllegalArgumentException("Getter has too many parameters");
+        }
+    }
+
     private Method getGetterFrom(final Method setter) throws SecurityException,
             NoSuchMethodException {
         final String getterSubString = setter.getName().substring(3);
         final String getterName = getterSubString.substring(0, 1).toLowerCase()
                 + getterSubString.substring(1);
-        return authorizationService.getClass().getMethod(getterName);
+
+        for (final Method method : authorizationService.getClass().getMethods()) {
+            if (method.getName().equals(getterName)) {
+                return method;
+            }
+        }
+
+        throw new NoSuchMethodException("No method by the name " + getterName
+                + " was found in " + authorizationService.getClass().getName());
     }
 
     private static Set<Method> getSettersByReflection(
@@ -152,21 +345,57 @@ public class DebugControlPanel extends CustomComponent implements
                     .startsWith("set");
 
             if (soundsLikeASetter) {
-                final Class<?>[] parameterTypes = method.getParameterTypes();
-                final boolean hasExactlyOneParameter = parameterTypes.length == 1;
-                final boolean parameterTypeIsBoolean = parameterTypes[0] == boolean.class;
-
-                if (hasExactlyOneParameter && parameterTypeIsBoolean) {
+                if (isAnAcceptableSetter(method)) {
                     setters.add(method);
                 } else {
                     // if this happens, it's actually our own fault. Oops.
                     throw new IllegalStateException("method " + method
-                            + " sounds like a setter, but doesn't have "
-                            + "exactly one boolean parameter");
+                            + " sounds like a setter, but doesn't "
+                            + "conform to our format");
                 }
             }
         }
 
         return setters;
+    }
+
+    private static boolean methodHasArguments(final Method method,
+            final int amount) {
+        return method.getParameterTypes().length == amount;
+    }
+
+    private static boolean isAnAcceptableSetter(final Method method) {
+        final Class<?>[] parameterTypes = method.getParameterTypes();
+
+        if (methodHasArguments(method, 1)) {
+            return parameterTypes[0] == boolean.class;
+        } else if (methodHasArguments(method, 2)) {
+            return AbstractEntity.class.isAssignableFrom(parameterTypes[0])
+                    && parameterTypes[1] == boolean.class;
+        } else {
+            throw new IllegalArgumentException(
+                    "Given method has 0 or more than 2 parameters");
+        }
+    }
+
+    private static <T extends Object> T getCorrectTypeOfDataFrom(
+            final Class<T> paramClass, final ContextData data) {
+        try {
+            for (final Method method : data.getClass().getMethods()) {
+                if (method.getReturnType() == paramClass
+                        && method.getParameterTypes().length == 0) {
+                    @SuppressWarnings("unchecked")
+                    final T value = (T) method.invoke(data);
+                    return value;
+                }
+            }
+        } catch (final Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+        throw new RuntimeException(ContextData.class.getName()
+                + " does not have a no-arg method that "
+                + "would return the data type " + paramClass);
     }
 }

@@ -51,11 +51,10 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     }
 
     public boolean userMayEditPost(final Post post) {
-        // TODO: make sure the user may edit his/her own post.
-        return authorizationService.mayEditPosts();
+        return authorizationService.mayEditPost(post);
     }
 
     public boolean userMayQuotePost(final Post post) {
-        return authorizationService.mayReplyInThreads();
+        return authorizationService.mayReplyInThread(currentThread);
     }
 }
