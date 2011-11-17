@@ -177,7 +177,7 @@ class CategoryTreeTable extends TreeTable {
                 switch (menuItem) {
                 case EDIT:
                     builder.add(new ThemeResource("images/icon-edit.png"),
-                            "Follow category", new ContextAction() {
+                            "Edit category", new ContextAction() {
                                 @Override
                                 public void contextClicked() {
                                     presenter.editCategory(category);
