@@ -123,4 +123,19 @@ public class CategoryListingTest {
         presenter.createNewCategory(c.getName(), c.getDescription());
         verify(mockDataSource).saveCategory(c);
     }
+
+    @Test
+    public void contextMenuItems() {
+        final Category category = new Category();
+
+        when(mockAuthorizationService.mayEditCategory(category)).thenReturn(
+                true);
+        when(mockAuthorizationService.mayDeleteCategory(category)).thenReturn(
+                true);
+        when(mockAuthorizationService.mayMoveCategory(category)).thenReturn(
+                true);
+        when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
+                true);
+        assertEquals(4, presenter.getContextMenuItems(category).size());
+    }
 }

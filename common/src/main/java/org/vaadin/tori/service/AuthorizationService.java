@@ -1,5 +1,7 @@
 package org.vaadin.tori.service;
 
+import org.vaadin.tori.data.entity.Category;
+
 /**
  * Provides methods for specifying access rights to resources or certain
  * operations.
@@ -15,4 +17,13 @@ public interface AuthorizationService {
     boolean isCategoryAdministrator();
 
     boolean mayReportPosts();
+
+    boolean mayFollowCategory(Category category);
+
+    boolean mayMoveCategory(Category category);
+
+    boolean mayDeleteCategory(Category category);
+
+    boolean mayEditCategory(Category category);
+
 }
