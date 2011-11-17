@@ -134,6 +134,6 @@ public class CategoryListingTest {
                 true);
         when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
                 true);
-        assertEquals(4, presenter.getContextMenuItems(category).size());
+        assertEquals(3, presenter.getContextMenuItems(category).size());
     }
 }
