@@ -1,6 +1,7 @@
 package org.vaadin.tori.component.category;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -135,5 +136,29 @@ public class CategoryListingTest {
         when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
                 true);
         assertEquals(3, presenter.getContextMenuItems(category).size());
+
+        when(mockAuthorizationService.mayEditCategory(category)).thenReturn(
+                true);
+        when(mockAuthorizationService.mayDeleteCategory(category)).thenReturn(
+                false);
+        when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
+                true);
+        assertEquals(2, presenter.getContextMenuItems(category).size());
+
+        when(mockAuthorizationService.mayEditCategory(category)).thenReturn(
+                false);
+        when(mockAuthorizationService.mayDeleteCategory(category)).thenReturn(
+                false);
+        when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
+                true);
+        assertEquals(1, presenter.getContextMenuItems(category).size());
+
+        when(mockAuthorizationService.mayEditCategory(category)).thenReturn(
+                false);
+        when(mockAuthorizationService.mayDeleteCategory(category)).thenReturn(
+                false);
+        when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
+                false);
+        assertTrue(presenter.getContextMenuItems(category).isEmpty());
     }
 }
