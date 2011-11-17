@@ -110,18 +110,25 @@ public class DebugControlPanel extends CustomComponent implements
                 panel.addComponent(checkbox);
             }
         } catch (final IllegalArgumentException e) {
+            e.printStackTrace();
             panel.addComponent(new Label(e.toString()));
         } catch (final ReadOnlyException e) {
+            e.printStackTrace();
             panel.addComponent(new Label(e.toString()));
         } catch (final ConversionException e) {
+            e.printStackTrace();
             panel.addComponent(new Label(e.toString()));
         } catch (final IllegalAccessException e) {
+            e.printStackTrace();
             panel.addComponent(new Label(e.toString()));
         } catch (final InvocationTargetException e) {
+            e.printStackTrace();
             panel.addComponent(new Label(e.toString()));
         } catch (final SecurityException e) {
+            e.printStackTrace();
             panel.addComponent(new Label(e.toString()));
         } catch (final NoSuchMethodException e) {
+            e.printStackTrace();
             panel.addComponent(new Label(e.toString()));
         }
 
