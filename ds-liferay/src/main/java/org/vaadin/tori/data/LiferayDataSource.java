@@ -56,6 +56,11 @@ public class LiferayDataSource implements DataSource {
     }
 
     @Override
+    public void deleteCategory(final Category categoryToDelete) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
     public void reportPost(final PostReport report) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }

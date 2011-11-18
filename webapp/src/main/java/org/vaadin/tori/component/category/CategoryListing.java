@@ -225,19 +225,17 @@ public class CategoryListing extends
 
     @Override
     public void displayDeleteConfirmation(final Category category) {
-        ConfirmDialog
-                .show(getWindow(),
-                        String.format("Really delete category %s?",
-                                category.getName()),
-                        new ConfirmDialog.Listener() {
+        ConfirmDialog.show(getWindow(), String.format(
+                "Really delete category \"%s\" and all of its contents?",
+                category.getName()), new ConfirmDialog.Listener() {
 
-                            @Override
-                            public void onClose(final ConfirmDialog dialog) {
-                                if (dialog.isConfirmed()) {
-                                    getPresenter().deleteCategory(category);
-                                }
-                            }
-                        });
+            @Override
+            public void onClose(final ConfirmDialog dialog) {
+                if (dialog.isConfirmed()) {
+                    getPresenter().deleteCategory(category);
+                }
+            }
+        });
     }
 
 }

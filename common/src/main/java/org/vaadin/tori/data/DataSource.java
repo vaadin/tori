@@ -89,6 +89,16 @@ public interface DataSource {
     void saveCategory(Category categoryToSave);
 
     /**
+     * Removes the given {@link Category} along with all containing
+     * {@link DiscussionThread DiscussionThreads}, {@link Post Posts} and sub
+     * categories.
+     * 
+     * @param categoryToDelete
+     *            {@link Category Category} to delete.
+     */
+    void deleteCategory(Category categoryToDelete);
+
+    /**
      * Handles the reporting of a single {@link Post}.
      * 
      * @param report

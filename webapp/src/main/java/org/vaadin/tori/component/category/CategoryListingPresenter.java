@@ -138,6 +138,8 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         if (log.isDebugEnabled()) {
             log.debug("Deleting " + category.getName());
         }
+        dataSource.deleteCategory(category);
+        reloadCategoriesFromDataSource();
     }
 
     void editCategory(final Category category) {

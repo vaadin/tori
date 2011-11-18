@@ -3,6 +3,7 @@ package org.vaadin.tori.data.entity;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -16,7 +17,7 @@ public class DiscussionThread extends AbstractEntity {
     @Column(nullable = false)
     private String topic;
 
-    @OneToMany(mappedBy = "thread")
+    @OneToMany(mappedBy = "thread", cascade = { CascadeType.REMOVE })
     @JoinColumn(nullable = false)
     private List<Post> posts;
 

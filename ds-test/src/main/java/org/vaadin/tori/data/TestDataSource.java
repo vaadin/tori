@@ -234,6 +234,29 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
+    public void deleteCategory(final Category categoryToDelete) {
+        executeWithEntityManager(new Command<Void>() {
+            @Override
+            public Void execute(final EntityManager em) {
+                final EntityTransaction transaction = em.getTransaction();
+                transaction.begin();
+                try {
+                    // must merge detached entity before removal
+                    final Category mergedCategory = em.merge(categoryToDelete);
+                    em.remove(mergedCategory);
+                    transaction.commit();
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                    if (transaction.isActive()) {
+                        transaction.rollback();
+                    }
+                }
+                return null;
+            }
+        });
+    }
+
+    @Override
     public void reportPost(final PostReport report) {
         System.out.println("TestDataSource.reportPost()");
         System.out.println("Post: " + report.getPost());
@@ -246,4 +269,5 @@ public class TestDataSource implements DataSource {
         // TODO implement actual unread thread logic
         return 0;
     }
+
 }

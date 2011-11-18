@@ -2,6 +2,7 @@ package org.vaadin.tori.data.entity;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -21,8 +22,12 @@ public class Category extends AbstractEntity {
     @ManyToOne(optional = true)
     private Category parentCategory;
 
-    @OneToMany(mappedBy = "parentCategory", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "parentCategory", fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE })
     private List<Category> subCategories;
+
+    @SuppressWarnings("unused")
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE })
+    private List<DiscussionThread> threads;
 
     public String getName() {
         return name;
