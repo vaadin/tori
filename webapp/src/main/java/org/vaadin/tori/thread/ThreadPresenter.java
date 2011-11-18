@@ -57,4 +57,8 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     public boolean userMayQuote(final Post post) {
         return authorizationService.mayReplyIn(currentThread);
     }
+
+    public boolean userMayReply() {
+        return authorizationService.mayReplyIn(currentThread);
+    }
 }

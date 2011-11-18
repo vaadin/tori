@@ -5,6 +5,7 @@ import java.util.List;
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
+import org.vaadin.tori.component.ReplyComponent;
 import org.vaadin.tori.component.post.PostComponent;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
@@ -61,6 +62,11 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 c.enableQuoting();
             }
             layout.addComponent(c);
+        }
+
+        if (getPresenter().userMayReply()) {
+            layout.addComponent(new HeadingLabel("~~ FIN ~~", HeadingLevel.H3));
+            layout.addComponent(new ReplyComponent());
         }
     }
 
