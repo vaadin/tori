@@ -54,10 +54,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             if (getPresenter().userMayReportPosts()) {
                 c.enableReporting();
             }
-            if (getPresenter().userMayEditPost(post)) {
+            if (getPresenter().userMayEdit(post)) {
                 c.enableEditing();
             }
-            if (getPresenter().userMayQuotePost(post)) {
+            if (getPresenter().userMayQuote(post)) {
                 c.enableQuoting();
             }
             layout.addComponent(c);

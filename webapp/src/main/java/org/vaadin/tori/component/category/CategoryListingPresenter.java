@@ -134,7 +134,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         getView().displayDeleteConfirmation(category);
     }
 
-    void deleteCategory(final Category category) {
+    void delete(final Category category) {
         if (log.isDebugEnabled()) {
             log.debug("Deleting " + category.getName());
         }
@@ -142,13 +142,13 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         reloadCategoriesFromDataSource();
     }
 
-    void editCategory(final Category category) {
+    void edit(final Category category) {
         if (log.isDebugEnabled()) {
             log.debug("Editing " + category.getName());
         }
     }
 
-    void followCategory(final Category category) {
+    void follow(final Category category) {
         if (log.isDebugEnabled()) {
             log.debug("Following " + category.getName());
         }

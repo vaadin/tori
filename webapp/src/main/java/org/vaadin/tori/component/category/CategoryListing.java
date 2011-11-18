@@ -232,7 +232,7 @@ public class CategoryListing extends
             @Override
             public void onClose(final ConfirmDialog dialog) {
                 if (dialog.isConfirmed()) {
-                    getPresenter().deleteCategory(category);
+                    getPresenter().delete(category);
                 }
             }
         });

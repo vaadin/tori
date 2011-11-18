@@ -180,7 +180,7 @@ class CategoryTreeTable extends TreeTable {
                             "Edit category", new ContextAction() {
                                 @Override
                                 public void contextClicked() {
-                                    presenter.editCategory(category);
+                                    presenter.edit(category);
                                 }
                             });
                     break;
@@ -198,7 +198,7 @@ class CategoryTreeTable extends TreeTable {
                             "Follow category", new ContextAction() {
                                 @Override
                                 public void contextClicked() {
-                                    presenter.followCategory(category);
+                                    presenter.follow(category);
                                 }
                             });
                     break;
