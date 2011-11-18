@@ -14,7 +14,7 @@ public class ReplyComponent extends CustomComponent {
     private final CustomLayout layout = new CustomLayout(
             ToriApplication.CUSTOM_LAYOUT_PATH + "replylayout");
 
-    public ReplyComponent() {
+    public ReplyComponent(final String formattingSyntaxXhtml) {
         setCompositionRoot(layout);
         setStyleName("reply");
         layout.setWidth("100%");
@@ -24,7 +24,8 @@ public class ReplyComponent extends CustomComponent {
                 new Label() {
                     {
                         setWidth("200px");
-                        setValue("Foo");
+                        setValue(formattingSyntaxXhtml);
+                        setContentMode(CONTENT_XHTML);
                     }
                 }), "formattingsyntax");
 

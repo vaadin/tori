@@ -8,4 +8,9 @@ public class TestPostFormatter implements PostFormatter {
                 .replace("[b]", "<b>").replace("[/b]", "</b>");
     }
 
+    @Override
+    public String getFormattingSyntaxXhtml() {
+        return "[b]bold[/b] &raquo; <b>bold</b>";
+    }
+
 }

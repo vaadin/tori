@@ -66,7 +66,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
         if (getPresenter().userMayReply()) {
             layout.addComponent(new HeadingLabel("~~ FIN ~~", HeadingLevel.H3));
-            layout.addComponent(new ReplyComponent());
+            layout.addComponent(new ReplyComponent(getPresenter()
+                    .getFormattingSyntax()));
         }
     }
 

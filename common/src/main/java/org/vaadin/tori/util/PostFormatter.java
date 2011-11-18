@@ -19,4 +19,10 @@ public interface PostFormatter {
      * @see Post#getBodyRaw()
      */
     String format(String rawPostBody);
+
+    /**
+     * The returned string should be an XHTML-formatted explanation of the
+     * formatting currently being used to render the posts.
+     */
+    String getFormattingSyntaxXhtml();
 }

@@ -1,5 +1,6 @@
 package org.vaadin.tori.thread;
 
+import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
@@ -60,5 +61,10 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     public boolean userMayReply() {
         return authorizationService.mayReplyIn(currentThread);
+    }
+
+    public String getFormattingSyntax() {
+        return ToriApplication.getCurrent().getPostFormatter()
+                .getFormattingSyntaxXhtml();
     }
 }
