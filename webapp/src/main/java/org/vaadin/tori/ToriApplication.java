@@ -13,6 +13,7 @@ import org.vaadin.tori.util.PostFormatter;
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
 import com.vaadin.terminal.gwt.server.PortletRequestListener;
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Window;
 
 /**
@@ -24,6 +25,13 @@ import com.vaadin.ui.Window;
 public class ToriApplication extends Application implements
         NavigableApplication, HttpServletRequestListener,
         PortletRequestListener {
+
+    /**
+     * The path that points {@link CustomLayout CustomLayouts} that are located
+     * under VAADIN/layouts/ instead of the ordinary Vaadin path
+     * (VAADIN/themes/themename/layouts/)
+     */
+    public static final String CUSTOM_LAYOUT_PATH = "../../../layouts/";
 
     private static Logger log = Logger.getLogger(ToriApplication.class);
     private static ThreadLocal<ToriApplication> currentApplication = new ThreadLocal<ToriApplication>();

@@ -66,7 +66,8 @@ public class PostComponent extends CustomComponent {
         quoteButton = new NativeButton("Quote for Reply", replyListener);
         quoteButton.setVisible(false);
 
-        root = new CustomLayout("../../../layouts/postlayout");
+        root = new CustomLayout(ToriApplication.CUSTOM_LAYOUT_PATH
+                + "postlayout");
         setCompositionRoot(root);
         setStyleName("post");
 
