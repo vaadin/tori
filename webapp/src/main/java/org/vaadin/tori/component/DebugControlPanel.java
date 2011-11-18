@@ -21,6 +21,7 @@ import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.service.DebugAuthorizationService;
 import org.vaadin.tori.thread.ThreadView;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
@@ -236,12 +237,12 @@ public class DebugControlPanel extends CustomComponent implements
     private Component createPostControl(final Method setter,
             final List<Post> posts) throws Exception {
         if (posts == null || posts.isEmpty()) {
-            final Label label = new Label(setter.getName());
+            final Label label = new Label(getNameForCheckBox(setter));
             label.setEnabled(false);
             return label;
         }
 
-        final PopupView popup = new PopupView(setter.getName(),
+        final PopupView popup = new PopupView(getNameForCheckBox(setter),
                 new CustomComponent() {
                     {
                         final CssLayout root = new CssLayout();
@@ -278,7 +279,7 @@ public class DebugControlPanel extends CustomComponent implements
 
     private Component createRegularControl(final Method setter)
             throws SecurityException, NoSuchMethodException, Exception {
-        final CheckBox checkbox = new CheckBox(setter.getName());
+        final CheckBox checkbox = new CheckBox(getNameForCheckBox(setter));
         try {
             final boolean getterValue = callGetter(getGetterFrom(setter));
             checkbox.setValue(getterValue);
@@ -294,6 +295,20 @@ public class DebugControlPanel extends CustomComponent implements
             checkbox.setEnabled(false);
         }
         return checkbox;
+    }
+
+    private String getNameForCheckBox(final Method setter) {
+        if (setter.getParameterTypes().length == 1) {
+            return setter.getName();
+        } else {
+            final List<String> typeNames = Lists.newArrayList();
+            for (final Class<?> type : setter.getParameterTypes()) {
+                typeNames.add(type.getSimpleName());
+            }
+            typeNames.remove(typeNames.size() - 1); // the last boolean
+            final String params = Joiner.on(", ").join(typeNames);
+            return setter.getName() + "(" + params + ")";
+        }
     }
 
     private static boolean isForPosts(final Method setter) {
@@ -322,18 +337,48 @@ public class DebugControlPanel extends CustomComponent implements
 
     private Method getGetterFrom(final Method setter) throws SecurityException,
             NoSuchMethodException {
-        final String getterSubString = setter.getName().substring(3);
-        final String getterName = getterSubString.substring(0, 1).toLowerCase()
-                + getterSubString.substring(1);
+        if (setter.getParameterTypes().length == 1) {
+            // this is a simple, global access right.
 
-        for (final Method method : authorizationService.getClass().getMethods()) {
-            if (method.getName().equals(getterName)) {
-                return method;
+            final String getterSubString = setter.getName().substring(3);
+            final String getterName = getterSubString.substring(0, 1)
+                    .toLowerCase() + getterSubString.substring(1);
+
+            for (final Method method : authorizationService.getClass()
+                    .getMethods()) {
+                if (method.getName().equals(getterName)
+                        && method.getParameterTypes().length == 0) {
+                    return method;
+                }
             }
-        }
 
-        throw new NoSuchMethodException("No method by the name " + getterName
-                + " was found in " + authorizationService.getClass().getName());
+            throw new NoSuchMethodException("No expected method " + getterName
+                    + "() was found in "
+                    + authorizationService.getClass().getName());
+        } else if (setter.getParameterTypes().length == 2) {
+            // this is a access right to a certain object.
+
+            final Class<?> type = setter.getParameterTypes()[0];
+            final String getterSubString = setter.getName().substring(3);
+            final String getterName = getterSubString.substring(0, 1)
+                    .toLowerCase() + getterSubString.substring(1);
+
+            for (final Method method : authorizationService.getClass()
+                    .getMethods()) {
+                if (method.getName().equals(getterName)
+                        && method.getParameterTypes().length == 1
+                        && method.getParameterTypes()[0] == type) {
+                    return method;
+                }
+            }
+
+            throw new NoSuchMethodException("No expected method " + getterName
+                    + "(" + type.getSimpleName() + ") was found in "
+                    + authorizationService.getClass().getName());
+        } else {
+            throw new RuntimeException(
+                    "Setter has an unexpected amount of parameters. ARCHITECTURE BUG!");
+        }
     }
 
     private static Set<Method> getSettersByReflection(

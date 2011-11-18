@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -190,7 +189,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void saveCategories(final Set<Category> categoriesToSave) {
+    public void save(final Iterable<Category> categoriesToSave) {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
@@ -210,7 +209,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void saveCategory(final Category categoryToSave) {
+    public void save(final Category categoryToSave) {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
@@ -234,7 +233,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void deleteCategory(final Category categoryToDelete) {
+    public void delete(final Category categoryToDelete) {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {

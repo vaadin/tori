@@ -20,13 +20,13 @@ public interface AuthorizationService {
 
     boolean mayReportPosts();
 
-    boolean mayFollowCategory(Category category);
+    boolean mayFollow(Category category);
 
-    boolean mayDeleteCategory(Category category);
+    boolean mayDelete(Category category);
 
-    boolean mayEditCategory(Category category);
+    boolean mayEdit(Category category);
 
-    boolean mayEditPost(Post post);
+    boolean mayEdit(Post post);
 
-    boolean mayReplyInThread(DiscussionThread thread);
+    boolean mayReplyIn(DiscussionThread thread);
 }

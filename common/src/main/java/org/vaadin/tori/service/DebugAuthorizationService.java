@@ -25,18 +25,18 @@ public interface DebugAuthorizationService extends AuthorizationService {
     /** @see AuthorizationService#mayReportPosts() */
     void setMayReportPosts(boolean b);
 
-    /** @see AuthorizationService#mayFollowCategory(Category) */
-    void setMayFollowCategory(Category category, boolean b);
+    /** @see AuthorizationService#mayFollow(Category) */
+    void setMayFollow(Category category, boolean b);
 
-    /** @see AuthorizationService#mayDeleteCategory(org.vaadin.tori.data.entity.Category) */
-    void setMayDeleteCategory(Category category, boolean b);
+    /** @see AuthorizationService#mayDelete(org.vaadin.tori.data.entity.Category) */
+    void setMayDelete(Category category, boolean b);
 
-    /** @see AuthorizationService#mayEditCategory(Category) */
-    void setMayEditCategory(Category category, boolean b);
+    /** @see AuthorizationService#mayEdit(Category) */
+    void setMayEdit(Category category, boolean b);
 
-    /** @see AuthorizationService#mayEditPost(Post) */
-    void setMayEditPost(Post post, boolean b);
+    /** @see AuthorizationService#mayEdit(Post) */
+    void setMayEdit(Post post, boolean b);
 
-    /** @see AuthorizationService#mayReplyInThread(DiscussionThread) */
-    void setMayReplyInThread(DiscussionThread thread, boolean b);
+    /** @see AuthorizationService#mayReplyIn(DiscussionThread) */
+    void setMayReplyIn(DiscussionThread thread, boolean b);
 }

@@ -17,27 +17,27 @@ public class LiferayAuthorizationService implements AuthorizationService {
     }
 
     @Override
-    public boolean mayFollowCategory(final Category category) {
+    public boolean mayFollow(final Category category) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
     @Override
-    public boolean mayDeleteCategory(final Category category) {
+    public boolean mayDelete(final Category category) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
     @Override
-    public boolean mayEditCategory(final Category category) {
+    public boolean mayEdit(final Category category) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
     @Override
-    public boolean mayEditPost(final Post post) {
+    public boolean mayEdit(final Post post) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
     @Override
-    public boolean mayReplyInThread(final DiscussionThread thread) {
+    public boolean mayReplyIn(final DiscussionThread thread) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 

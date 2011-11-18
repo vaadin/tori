@@ -1,7 +1,6 @@
 package org.vaadin.tori.data;
 
 import java.util.List;
-import java.util.Set;
 
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -77,7 +76,7 @@ public interface DataSource {
      * @param categoriesToSave
      *            {@link Category Categories} to save.
      */
-    void saveCategories(Set<Category> categoriesToSave);
+    void save(Iterable<Category> categoriesToSave);
 
     /**
      * Saves all changes made to the given {@link Category Category} or adds it
@@ -86,7 +85,7 @@ public interface DataSource {
      * @param categoryToSave
      *            {@link Category Category} to save.
      */
-    void saveCategory(Category categoryToSave);
+    void save(Category categoryToSave);
 
     /**
      * Removes the given {@link Category} along with all containing
@@ -96,7 +95,7 @@ public interface DataSource {
      * @param categoryToDelete
      *            {@link Category Category} to delete.
      */
-    void deleteCategory(Category categoryToDelete);
+    void delete(Category categoryToDelete);
 
     /**
      * Handles the reporting of a single {@link Post}.

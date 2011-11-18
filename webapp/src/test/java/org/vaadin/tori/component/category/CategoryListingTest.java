@@ -85,7 +85,7 @@ public class CategoryListingTest {
         // verify that the saveCategories method is not called when no
         // categories modified
         presenter.applyRearrangement();
-        verify(mockDataSource, never()).saveCategories(modified);
+        verify(mockDataSource, never()).save(modified);
     }
 
     @Test
@@ -95,7 +95,7 @@ public class CategoryListingTest {
         when(mockView.getModifiedCategories()).thenReturn(modified);
 
         presenter.applyRearrangement();
-        verify(mockDataSource).saveCategories(modified);
+        verify(mockDataSource).save(modified);
     }
 
     @Test
@@ -122,42 +122,42 @@ public class CategoryListingTest {
         c.setDescription("New Category");
 
         presenter.createNewCategory(c.getName(), c.getDescription());
-        verify(mockDataSource).saveCategory(c);
+        verify(mockDataSource).save(c);
     }
 
     @Test
     public void contextMenuItems() {
         final Category category = new Category();
 
-        when(mockAuthorizationService.mayEditCategory(category)).thenReturn(
+        when(mockAuthorizationService.mayEdit(category)).thenReturn(
                 true);
-        when(mockAuthorizationService.mayDeleteCategory(category)).thenReturn(
+        when(mockAuthorizationService.mayDelete(category)).thenReturn(
                 true);
-        when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
+        when(mockAuthorizationService.mayFollow(category)).thenReturn(
                 true);
         assertEquals(3, presenter.getContextMenuOperations(category).size());
 
-        when(mockAuthorizationService.mayEditCategory(category)).thenReturn(
+        when(mockAuthorizationService.mayEdit(category)).thenReturn(
                 true);
-        when(mockAuthorizationService.mayDeleteCategory(category)).thenReturn(
+        when(mockAuthorizationService.mayDelete(category)).thenReturn(
                 false);
-        when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
+        when(mockAuthorizationService.mayFollow(category)).thenReturn(
                 true);
         assertEquals(2, presenter.getContextMenuOperations(category).size());
 
-        when(mockAuthorizationService.mayEditCategory(category)).thenReturn(
+        when(mockAuthorizationService.mayEdit(category)).thenReturn(
                 false);
-        when(mockAuthorizationService.mayDeleteCategory(category)).thenReturn(
+        when(mockAuthorizationService.mayDelete(category)).thenReturn(
                 false);
-        when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
+        when(mockAuthorizationService.mayFollow(category)).thenReturn(
                 true);
         assertEquals(1, presenter.getContextMenuOperations(category).size());
 
-        when(mockAuthorizationService.mayEditCategory(category)).thenReturn(
+        when(mockAuthorizationService.mayEdit(category)).thenReturn(
                 false);
-        when(mockAuthorizationService.mayDeleteCategory(category)).thenReturn(
+        when(mockAuthorizationService.mayDelete(category)).thenReturn(
                 false);
-        when(mockAuthorizationService.mayFollowCategory(category)).thenReturn(
+        when(mockAuthorizationService.mayFollow(category)).thenReturn(
                 false);
         assertTrue(presenter.getContextMenuOperations(category).isEmpty());
     }

@@ -39,32 +39,32 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     }
 
     @Override
-    public void setMayFollowCategory(final Category category, final boolean b) {
+    public void setMayFollow(final Category category, final boolean b) {
         mayFollowCategory.put(category, b);
     }
 
     @Override
-    public boolean mayFollowCategory(final Category category) {
+    public boolean mayFollow(final Category category) {
         return get(mayFollowCategory, category, true);
     }
 
     @Override
-    public boolean mayDeleteCategory(final Category category) {
+    public boolean mayDelete(final Category category) {
         return get(mayDeleteCategory, category, true);
     }
 
     @Override
-    public void setMayDeleteCategory(final Category category, final boolean b) {
+    public void setMayDelete(final Category category, final boolean b) {
         mayDeleteCategory.put(category, b);
     }
 
     @Override
-    public boolean mayEditCategory(final Category category) {
+    public boolean mayEdit(final Category category) {
         return get(mayEditCategory, category, true);
     }
 
     @Override
-    public void setMayEditCategory(final Category category, final boolean b) {
+    public void setMayEdit(final Category category, final boolean b) {
         mayEditCategory.put(category, b);
     }
 
@@ -80,22 +80,22 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     }
 
     @Override
-    public boolean mayEditPost(final Post post) {
+    public boolean mayEdit(final Post post) {
         return get(mayEditPost, post, true);
     }
 
     @Override
-    public void setMayEditPost(final Post post, final boolean b) {
+    public void setMayEdit(final Post post, final boolean b) {
         mayEditPost.put(post, b);
     }
 
     @Override
-    public boolean mayReplyInThread(final DiscussionThread thread) {
+    public boolean mayReplyIn(final DiscussionThread thread) {
         return get(mayReplyInThread, thread, true);
     }
 
     @Override
-    public void setMayReplyInThread(final DiscussionThread thread,
+    public void setMayReplyIn(final DiscussionThread thread,
             final boolean b) {
         mayReplyInThread.put(thread, b);
     }

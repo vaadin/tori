@@ -45,7 +45,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
                     + " modified categories.");
         }
         if (!modifiedCategories.isEmpty()) {
-            dataSource.saveCategories(modifiedCategories);
+            dataSource.save(modifiedCategories);
 
             // reload the new order from database
             reloadCategoriesFromDataSource();
@@ -91,7 +91,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         newCategory.setDisplayOrder(getMaxDisplayOrder() + 1);
 
         // TODO validation, error handling
-        dataSource.saveCategory(newCategory);
+        dataSource.save(newCategory);
         getView().hideCreateCategoryForm();
 
         // refresh the categories
@@ -118,13 +118,13 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
 
     List<ContextMenuOperation> getContextMenuOperations(final Category category) {
         final List<ContextMenuOperation> items = new ArrayList<ContextMenuOperation>();
-        if (authorizationService.mayFollowCategory(category)) {
+        if (authorizationService.mayFollow(category)) {
             items.add(ContextMenuOperation.FOLLOW);
         }
-        if (authorizationService.mayDeleteCategory(category)) {
+        if (authorizationService.mayDelete(category)) {
             items.add(ContextMenuOperation.DELETE);
         }
-        if (authorizationService.mayEditCategory(category)) {
+        if (authorizationService.mayEdit(category)) {
             items.add(ContextMenuOperation.EDIT);
         }
         return items;
@@ -138,7 +138,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         if (log.isDebugEnabled()) {
             log.debug("Deleting " + category.getName());
         }
-        dataSource.deleteCategory(category);
+        dataSource.delete(category);
         reloadCategoriesFromDataSource();
     }
 
