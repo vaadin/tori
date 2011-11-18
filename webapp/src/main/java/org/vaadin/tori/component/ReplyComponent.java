@@ -33,7 +33,7 @@ public class ReplyComponent extends CustomComponent {
         input.setWidth("100%");
         layout.addComponent(input, "input");
 
-        layout.addComponent(new Label(), "preview");
+        layout.addComponent(new Label("preview"), "preview");
         layout.addComponent(new NativeButton("Post"), "postbutton");
         layout.addComponent(new NativeButton("Clear"), "clearbutton");
     }
