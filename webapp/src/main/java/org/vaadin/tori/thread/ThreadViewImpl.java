@@ -77,7 +77,6 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void confirmPostReported() {
-        // TODO
         getWindow().showNotification("Post is reported!");
     }
 }
