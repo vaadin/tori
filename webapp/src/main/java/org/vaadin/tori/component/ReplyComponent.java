@@ -25,6 +25,7 @@ public class ReplyComponent extends CustomComponent {
         @Override
         public void buttonClick(final ClickEvent event) {
             resetInput();
+            input.focus();
         }
     };
 
