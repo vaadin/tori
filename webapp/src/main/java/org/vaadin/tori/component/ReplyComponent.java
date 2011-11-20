@@ -14,6 +14,12 @@ public class ReplyComponent extends CustomComponent {
     private final CustomLayout layout = new CustomLayout(
             ToriApplication.CUSTOM_LAYOUT_PATH + "replylayout");
 
+    /**
+     * @param formattingSyntaxXhtml
+     *            The forum post formatting reference that will be shown as-is
+     *            to the user, when she clicks on the designated help button.
+     *            The string must be formatted in valid XHTML.
+     */
     public ReplyComponent(final String formattingSyntaxXhtml) {
         setCompositionRoot(layout);
         setStyleName("reply");
