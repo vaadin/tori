@@ -1,13 +1,15 @@
 package org.vaadin.tori.component;
 
+import org.vaadin.hene.expandingtextarea.ExpandingTextArea;
 import org.vaadin.tori.ToriApplication;
 
+import com.vaadin.event.FieldEvents;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.PopupView;
-import com.vaadin.ui.TextArea;
 
 @SuppressWarnings("serial")
 public class ReplyComponent extends CustomComponent {
@@ -35,12 +37,24 @@ public class ReplyComponent extends CustomComponent {
                     }
                 }), "formattingsyntax");
 
-        final TextArea input = new TextArea();
+        final ExpandingTextArea input = new ExpandingTextArea();
         input.setWidth("100%");
         layout.addComponent(input, "input");
 
-        layout.addComponent(new Label("preview"), "preview");
+        final Label preview = new Label("<br/>", Label.CONTENT_XHTML);
+        layout.addComponent(preview, "preview");
         layout.addComponent(new NativeButton("Post"), "postbutton");
         layout.addComponent(new NativeButton("Clear"), "clearbutton");
+
+        input.addListener(new FieldEvents.TextChangeListener() {
+            @Override
+            public void textChange(final TextChangeEvent event) {
+                final String previewText = event.getText();
+                final String formattedPreview = ToriApplication.getCurrent()
+                        .getPostFormatter().format(previewText);
+                preview.setValue(formattedPreview + "<br/>");
+            }
+        });
+
     }
 }
