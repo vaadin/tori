@@ -6,6 +6,7 @@ import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.component.ReplyComponent;
+import org.vaadin.tori.component.ReplyComponent.ReplyListener;
 import org.vaadin.tori.component.post.PostComponent;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
@@ -20,6 +21,12 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         implements ThreadView {
 
     private CssLayout layout;
+    private final ReplyListener replyListener = new ReplyListener() {
+        @Override
+        public void sendReply(final String rawBody) {
+            getPresenter().sendReply(rawBody);
+        }
+    };
 
     @Override
     protected Component createCompositionRoot() {
@@ -66,8 +73,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
         if (getPresenter().userMayReply()) {
             layout.addComponent(new HeadingLabel("~~ FIN ~~", HeadingLevel.H3));
-            layout.addComponent(new ReplyComponent(getPresenter()
-                    .getFormattingSyntax()));
+            layout.addComponent(new ReplyComponent(replyListener,
+                    getPresenter().getFormattingSyntax()));
         }
     }
 
@@ -85,5 +92,11 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public void confirmPostReported() {
         getWindow().showNotification("Post is reported!");
+    }
+
+    @Override
+    public void confirmReplyPosted() {
+        // TODO make neater
+        getWindow().showNotification("Replied!");
     }
 }

@@ -14,4 +14,6 @@ public interface ThreadView extends View {
     void displayThreadNotFoundError(String threadIdString);
 
     void confirmPostReported();
+
+    void confirmReplyPosted();
 }

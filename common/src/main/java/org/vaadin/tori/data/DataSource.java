@@ -104,4 +104,6 @@ public interface DataSource {
      *            The report in its entirety.
      */
     void reportPost(PostReport report);
+
+    void save(Post post);
 }

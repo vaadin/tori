@@ -1,5 +1,7 @@
 package org.vaadin.tori.thread;
 
+import java.util.Date;
+
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -66,5 +68,17 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     public String getFormattingSyntax() {
         return ToriApplication.getCurrent().getPostFormatter()
                 .getFormattingSyntaxXhtml();
+    }
+
+    public void sendReply(final String rawBody) {
+        final Post post = new Post();
+        // TODO: how did i get current user now again?
+        post.setAuthor(null);
+        post.setBodyRaw(rawBody);
+        post.setThread(currentThread);
+        post.setTime(new Date());
+        dataSource.save(post);
+        getView().confirmReplyPosted();
+        getView().displayPosts(currentThread.getPosts());
     }
 }

@@ -223,6 +223,7 @@ public class TestDataSource implements DataSource {
                     }
                     transaction.commit();
                 } catch (final Exception e) {
+                    e.printStackTrace();
                     if (transaction.isActive()) {
                         transaction.rollback();
                     }
@@ -269,4 +270,28 @@ public class TestDataSource implements DataSource {
         return 0;
     }
 
+    @Override
+    public void save(final Post post) {
+        executeWithEntityManager(new Command<Void>() {
+            @Override
+            public Void execute(final EntityManager em) {
+                final EntityTransaction transaction = em.getTransaction();
+                transaction.begin();
+                try {
+                    if (post.getId() == 0) {
+                        em.persist(post);
+                    } else {
+                        em.merge(post);
+                    }
+                    transaction.commit();
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                    if (transaction.isActive()) {
+                        transaction.rollback();
+                    }
+                }
+                return null;
+            }
+        });
+    }
 }
