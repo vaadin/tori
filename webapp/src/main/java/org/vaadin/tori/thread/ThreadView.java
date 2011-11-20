@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.View;
 
 public interface ThreadView extends View {
@@ -16,4 +17,13 @@ public interface ThreadView extends View {
     void confirmPostReported();
 
     void confirmReplyPosted();
+
+    /**
+     * This method is called when a reply is tried to be sent, but the current
+     * {@link User} doens't have the rights to.
+     * <p/>
+     * Most probably happens when the <code>User</code> was revoked replying
+     * rights while the post was being authored.
+     */
+    void displayUserCanNotReply();
 }

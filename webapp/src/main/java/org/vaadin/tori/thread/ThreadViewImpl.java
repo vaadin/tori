@@ -99,4 +99,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         // TODO make neater
         getWindow().showNotification("Replied!");
     }
+
+    @Override
+    public void displayUserCanNotReply() {
+        getWindow().showNotification(
+                "Unfortunately, you are not allowed to reply to this thread.");
+    }
 }

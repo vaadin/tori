@@ -71,14 +71,23 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     }
 
     public void sendReply(final String rawBody) {
-        final Post post = new Post();
-        // TODO: how did i get current user now again?
-        post.setAuthor(null);
-        post.setBodyRaw(rawBody);
-        post.setThread(currentThread);
-        post.setTime(new Date());
-        dataSource.save(post);
-        getView().confirmReplyPosted();
+
+        if (userMayReply()) {
+            final Post post = new Post();
+            // TODO: how did i get current user now again?
+            post.setAuthor(null);
+            post.setBodyRaw(rawBody);
+            post.setThread(currentThread);
+            post.setTime(new Date());
+            dataSource.save(post);
+            getView().confirmReplyPosted();
+        } else {
+            getView().displayUserCanNotReply();
+        }
+        resetView();
+    }
+
+    private void resetView() {
         getView().displayPosts(currentThread.getPosts());
     }
 }
