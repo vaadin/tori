@@ -8,6 +8,7 @@ import org.vaadin.tori.component.ContextMenu.Builder;
 import org.vaadin.tori.component.ContextMenu.ContextAction;
 import org.vaadin.tori.component.category.CategoryListing.Mode;
 import org.vaadin.tori.component.category.CategoryListingPresenter.ContextMenuOperation;
+import org.vaadin.tori.component.category.EditCategoryForm.EditCategoryListener;
 import org.vaadin.tori.data.entity.Category;
 
 import com.vaadin.data.Item;
@@ -177,10 +178,21 @@ class CategoryTreeTable extends TreeTable {
                 switch (menuItem) {
                 case EDIT:
                     builder.add(new ThemeResource("images/icon-edit.png"),
-                            "Edit category", new ContextAction() {
+                            "Edit category",
+                            new ContextMenu.ContextComponentSwapper() {
                                 @Override
-                                public void contextClicked() {
-                                    presenter.edit(category);
+                                public Component swapContextComponent() {
+                                    final EditCategoryListener listener = new EditCategoryListener() {
+                                        @Override
+                                        public void commit(
+                                                final String name,
+                                                final String description) {
+                                            presenter.edit(category, name,
+                                                    description);
+                                        }
+                                    };
+                                    return new EditCategoryForm(listener,
+                                            category);
                                 }
                             });
                     break;

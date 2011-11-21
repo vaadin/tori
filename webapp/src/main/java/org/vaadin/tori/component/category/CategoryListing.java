@@ -8,7 +8,7 @@ import java.util.Set;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.tori.ToriApplication;
-import org.vaadin.tori.component.category.CreateCategoryForm.CreateCategoryListener;
+import org.vaadin.tori.component.category.EditCategoryForm.EditCategoryListener;
 import org.vaadin.tori.component.category.RearrangeControls.RearrangeListener;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.AbstractView;
@@ -107,10 +107,10 @@ public class CategoryListing extends
         createCategoryButton
                 .addStyleName(StyleConstants.POPUP_INDICATOR_HIDDEN);
         createCategoryButton.setIcon(new ThemeResource("images/icon-add.png"));
-        createCategoryButton.setComponent(new CreateCategoryForm(
-                new CreateCategoryListener() {
+        createCategoryButton.setComponent(new EditCategoryForm(
+                new EditCategoryListener() {
                     @Override
-                    public void createCategory(final String name,
+                    public void commit(final String name,
                             final String description) {
                         getPresenter().createNewCategory(name, description);
                     }
