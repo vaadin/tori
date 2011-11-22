@@ -42,4 +42,7 @@ public interface DebugAuthorizationService extends AuthorizationService {
 
     /** @see AuthorizationService#mayBan() */
     void setMayBan(boolean b);
+
+    /** @see AuthorizationService#mayFollow(DiscussionThread) */
+    void setMayFollow(DiscussionThread thread, boolean b);
 }

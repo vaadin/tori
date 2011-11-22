@@ -31,4 +31,6 @@ public interface AuthorizationService {
     boolean mayReplyIn(DiscussionThread thread);
 
     boolean mayBan();
+
+    boolean mayFollow(DiscussionThread currentThread);
 }

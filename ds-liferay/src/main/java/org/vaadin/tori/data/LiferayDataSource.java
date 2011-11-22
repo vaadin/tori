@@ -75,4 +75,19 @@ public class LiferayDataSource implements DataSource {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
+    @Override
+    public void follow(final DiscussionThread thread) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public void unFollow(final DiscussionThread thread) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public boolean isFollowing(final DiscussionThread currentThread) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
 }

@@ -46,4 +46,9 @@ public class LiferayAuthorizationService implements AuthorizationService {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
+    @Override
+    public boolean mayFollow(final DiscussionThread currentThread) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
 }

@@ -51,7 +51,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
         for (final Post post : posts) {
             final PostComponent c = new PostComponent(post, getPresenter(),
-                    getPresenter());
+                    getPresenter(), getPresenter(), getPresenter());
+
+            // main component permissions
+
             if (getPresenter().userMayReportPosts()) {
                 c.enableReporting();
             }
@@ -60,6 +63,15 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             }
             if (getPresenter().userMayQuote(post)) {
                 c.enableQuoting();
+            }
+
+            // context menu permissions
+
+            if (getPresenter().userCanFollowThread()) {
+                c.enableThreadFollowing();
+            }
+            if (getPresenter().userCanUnFollowThread()) {
+                c.enableThreadUnFollowing();
             }
             if (getPresenter().userMayBan()) {
                 c.enableBanning();
@@ -87,5 +99,15 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public void confirmBanned() {
         getWindow().showNotification("User is banned");
+    }
+
+    @Override
+    public void confirmFollowingThread() {
+        getWindow().showNotification("Following thread");
+    }
+
+    @Override
+    public void confirmUnFollowingThread() {
+        getWindow().showNotification("Not following thread anymore");
     }
 }

@@ -107,4 +107,10 @@ public interface DataSource {
     void reportPost(PostReport report);
 
     void ban(User user);
+
+    void follow(DiscussionThread thread);
+
+    void unFollow(DiscussionThread thread);
+
+    boolean isFollowing(DiscussionThread currentThread);
 }

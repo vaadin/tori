@@ -32,6 +32,15 @@ import com.vaadin.ui.themes.Reindeer;
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't bother us with serialization.")
 public class PostComponent extends CustomComponent {
 
+    public interface FollowListener {
+        void followThread();
+    }
+
+    public interface UnFollowListener {
+
+        void unFollowThread();
+    }
+
     public interface BanListener {
         void ban(User user);
     }
@@ -99,6 +108,8 @@ public class PostComponent extends CustomComponent {
     private final NativeButton quoteButton;
     private final ContextMenu contextMenu;
     private final BanListener banListener;
+    private final FollowListener followListener;
+    private final UnFollowListener unFollowListener;
 
     /**
      * @throws IllegalArgumentException
@@ -106,14 +117,20 @@ public class PostComponent extends CustomComponent {
      */
     public PostComponent(final Post post,
             final PostReportReceiver reportReceiver,
-            final BanListener banListener) {
+            final BanListener banListener, final FollowListener followListener,
+            final UnFollowListener unFollowListener) {
 
         ToriUtil.checkForNull(post, "post may not be null");
         ToriUtil.checkForNull(reportReceiver,
                 "post report receiver may not be null");
         ToriUtil.checkForNull(banListener, "banListener may not be null");
+        ToriUtil.checkForNull(followListener, "followListener may not be null");
+        ToriUtil.checkForNull(unFollowListener,
+                "unFollowListener may not be null");
 
         this.banListener = banListener;
+        this.followListener = followListener;
+        this.unFollowListener = unFollowListener;
         this.post = post;
 
         editButton = new NativeButton("Edit Post", editListener);
@@ -155,6 +172,26 @@ public class PostComponent extends CustomComponent {
 
     public void enableQuoting() {
         quoteButton.setVisible(true);
+    }
+
+    public void enableThreadFollowing() {
+        contextMenu.add(new ThemeResource("images/icon-follow.png"),
+                "Follow Thread", new ContextMenu.ContextAction() {
+                    @Override
+                    public void contextClicked() {
+                        followListener.followThread();
+                    }
+                });
+    }
+
+    public void enableThreadUnFollowing() {
+        contextMenu.add(new ThemeResource("images/icon-unfollow.png"),
+                "Unfollow Thread", new ContextMenu.ContextAction() {
+                    @Override
+                    public void contextClicked() {
+                        unFollowListener.unFollowThread();
+                    }
+                });
     }
 
     public void enableBanning() {

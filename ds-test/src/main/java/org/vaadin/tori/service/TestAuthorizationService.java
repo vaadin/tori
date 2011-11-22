@@ -18,6 +18,7 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     private final Map<DiscussionThread, Boolean> mayReplyInThread = new HashMap<DiscussionThread, Boolean>();
     private final Map<Post, Boolean> mayEditPost = new HashMap<Post, Boolean>();
     private boolean mayBan = true;
+    private final Map<DiscussionThread, Boolean> mayFollow = new HashMap<DiscussionThread, Boolean>();
 
     @Override
     public boolean isCategoryAdministrator() {
@@ -108,5 +109,15 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     @Override
     public void setMayBan(final boolean b) {
         mayBan = b;
+    }
+
+    @Override
+    public boolean mayFollow(final DiscussionThread currentThread) {
+        return get(mayFollow, currentThread, true);
+    }
+
+    @Override
+    public void setMayFollow(final DiscussionThread thread, final boolean b) {
+        mayFollow.put(thread, b);
     }
 }

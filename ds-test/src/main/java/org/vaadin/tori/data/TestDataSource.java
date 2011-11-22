@@ -277,4 +277,26 @@ public class TestDataSource implements DataSource {
         System.err.println("Banning, it does nothing!");
     }
 
+    @Override
+    public void follow(final DiscussionThread thread) {
+        // TODO Auto-generated method stub
+        System.err.println("TestDataSource.follow()");
+        System.err.println("following does nothing!");
+    }
+
+    @Override
+    public void unFollow(final DiscussionThread thread) {
+        // TODO Auto-generated method stub
+        System.err.println("TestDataSource.unFollow()");
+        System.err.println("unfollowing does nothing!");
+    }
+
+    @Override
+    public boolean isFollowing(final DiscussionThread currentThread) {
+        // TODO Auto-generated method stub
+        System.err.println("TestDataSource.isFollowing()");
+        System.err.println("NEVER FOLLOW!");
+        return false;
+    }
+
 }

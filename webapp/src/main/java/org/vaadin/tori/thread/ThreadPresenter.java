@@ -1,6 +1,8 @@
 package org.vaadin.tori.thread;
 
 import org.vaadin.tori.component.post.PostComponent.BanListener;
+import org.vaadin.tori.component.post.PostComponent.FollowListener;
+import org.vaadin.tori.component.post.PostComponent.UnFollowListener;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
@@ -11,7 +13,7 @@ import org.vaadin.tori.service.post.PostReport;
 import org.vaadin.tori.service.post.PostReportReceiver;
 
 public class ThreadPresenter extends Presenter<ThreadView> implements
-        PostReportReceiver, BanListener {
+        PostReportReceiver, BanListener, FollowListener, UnFollowListener {
 
     private DiscussionThread currentThread;
 
@@ -68,5 +70,27 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     public boolean userMayBan() {
         return authorizationService.mayBan();
+    }
+
+    @Override
+    public void followThread() {
+        dataSource.follow(currentThread);
+        getView().confirmFollowingThread();
+    }
+
+    @Override
+    public void unFollowThread() {
+        dataSource.unFollow(currentThread);
+        getView().confirmUnFollowingThread();
+    }
+
+    public boolean userCanFollowThread() {
+        return authorizationService.mayFollow(currentThread)
+                && !dataSource.isFollowing(currentThread);
+    }
+
+    public boolean userCanUnFollowThread() {
+        // TODO Auto-generated method stub
+        return false;
     }
 }
