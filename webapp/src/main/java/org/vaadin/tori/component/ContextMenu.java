@@ -123,4 +123,9 @@ public class ContextMenu extends CustomComponent {
         popupLayout.setWidth("200px");
         return popupButton;
     }
+
+    /** Closes the context menu */
+    public void close() {
+        contextComponent.setPopupVisible(false);
+    }
 }

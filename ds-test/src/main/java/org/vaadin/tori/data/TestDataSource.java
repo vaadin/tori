@@ -13,6 +13,7 @@ import javax.persistence.TypedQuery;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.data.util.PersistenceUtil;
 import org.vaadin.tori.service.post.PostReport;
 
@@ -267,6 +268,13 @@ public class TestDataSource implements DataSource {
     public long getUnreadThreadCount(final Category category) {
         // TODO implement actual unread thread logic
         return 0;
+    }
+
+    @Override
+    public void ban(final User user) {
+        // TODO Auto-generated method stub
+        System.err.println("TestDataSource.ban()");
+        System.err.println("Banning, it does nothing!");
     }
 
 }

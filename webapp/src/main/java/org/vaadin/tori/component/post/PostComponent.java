@@ -4,13 +4,17 @@ import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.component.ContextMenu;
+import org.vaadin.tori.component.HeadingLabel;
+import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.service.post.PostReportReceiver;
 
 import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -18,12 +22,57 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 @SuppressWarnings("serial")
 public class PostComponent extends CustomComponent {
+
+    public interface BanListener {
+        void ban(User user);
+    }
+
+    // trying a new pattern here
+    private static class Util {
+        private static Component newConfirmBanComponent(
+                final BanListener banListener, final User user,
+                final ContextMenu menu) {
+
+            final VerticalLayout layout = new VerticalLayout();
+            layout.setMargin(true);
+            layout.setWidth("200px");
+            layout.addComponent(new HeadingLabel("Ban "
+                    + user.getDisplayedName() + "?", HeadingLevel.H2));
+
+            final HorizontalLayout buttonBar = new HorizontalLayout();
+            layout.addComponent(buttonBar);
+            layout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
+
+            final NativeButton ban = new NativeButton("Yes, Ban",
+                    new ClickListener() {
+                        @Override
+                        public void buttonClick(final ClickEvent event) {
+                            banListener.ban(user);
+                            menu.close();
+                        }
+                    });
+            buttonBar.addComponent(ban);
+
+            final NativeButton cancel = new NativeButton("No, Cancel!",
+                    new ClickListener() {
+                        @Override
+                        public void buttonClick(final ClickEvent event) {
+                            menu.close();
+                        }
+                    });
+            buttonBar.addComponent(cancel);
+
+            return layout;
+        }
+    }
 
     private final CustomLayout root;
     private final Post post;
@@ -47,16 +96,23 @@ public class PostComponent extends CustomComponent {
     private final Component reportComponent;
     private final NativeButton editButton;
     private final NativeButton quoteButton;
+    private final ContextMenu contextMenu;
+    private final BanListener banListener;
 
     /**
      * @throws IllegalArgumentException
-     *             if <code>post</code> is <code>null</code>.
+     *             if any argument is <code>null</code>.
      */
     public PostComponent(final Post post,
-            final PostReportReceiver reportReceiver) {
+            final PostReportReceiver reportReceiver,
+            final BanListener banListener) {
+
         ToriUtil.checkForNull(post, "post may not be null");
         ToriUtil.checkForNull(reportReceiver,
                 "post report receiver may not be null");
+        ToriUtil.checkForNull(banListener, "banListener may not be null");
+
+        this.banListener = banListener;
         this.post = post;
 
         editButton = new NativeButton("Edit Post", editListener);
@@ -70,6 +126,8 @@ public class PostComponent extends CustomComponent {
         setCompositionRoot(root);
         setStyleName("post");
 
+        contextMenu = new ContextMenu();
+
         root.addComponent(getAvatarImage(post), "avatar");
         root.addComponent(new Label(post.getAuthor().getDisplayedName()),
                 "authorname");
@@ -81,7 +139,7 @@ public class PostComponent extends CustomComponent {
         root.addComponent(
                 reportComponent = buildReportPostComponent(post, reportReceiver),
                 "report");
-        root.addComponent(buildContextMenu(), "settings");
+        root.addComponent(contextMenu, "settings");
         root.addComponent(editButton, "edit");
         root.addComponent(quoteButton, "quote");
     }
@@ -96,6 +154,17 @@ public class PostComponent extends CustomComponent {
 
     public void enableQuoting() {
         quoteButton.setVisible(true);
+    }
+
+    public void enableBanning() {
+        contextMenu.add(new ThemeResource("images/icon-ban.png"), "Ban Author",
+                new ContextMenu.ContextComponentSwapper() {
+                    @Override
+                    public Component swapContextComponent() {
+                        return Util.newConfirmBanComponent(banListener,
+                                post.getAuthor(), contextMenu);
+                    }
+                });
     }
 
     private Component buildReportPostComponent(final Post post,
@@ -113,17 +182,6 @@ public class PostComponent extends CustomComponent {
         });
         button.setVisible(false);
         return button;
-    }
-
-    private ContextMenu buildContextMenu() {
-        final ContextMenu contextMenu = new ContextMenu();
-        contextMenu.add(null, "[TODO]", new ContextMenu.ContextAction() {
-            @Override
-            public void contextClicked() {
-                getApplication().getMainWindow().showNotification("...");
-            }
-        });
-        return contextMenu;
     }
 
     private String getFormattedXhtmlBody(final Post post) {

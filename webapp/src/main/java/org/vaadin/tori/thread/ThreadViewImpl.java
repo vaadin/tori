@@ -50,7 +50,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 HeadingLevel.H2));
 
         for (final Post post : posts) {
-            final PostComponent c = new PostComponent(post, getPresenter());
+            final PostComponent c = new PostComponent(post, getPresenter(),
+                    getPresenter());
             if (getPresenter().userMayReportPosts()) {
                 c.enableReporting();
             }
@@ -59,6 +60,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             }
             if (getPresenter().userMayQuote(post)) {
                 c.enableQuoting();
+            }
+            if (getPresenter().userMayBan()) {
+                c.enableBanning();
             }
             layout.addComponent(c);
         }
@@ -78,5 +82,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public void confirmPostReported() {
         getWindow().showNotification("Post is reported!");
+    }
+
+    @Override
+    public void confirmBanned() {
+        getWindow().showNotification("User is banned");
     }
 }

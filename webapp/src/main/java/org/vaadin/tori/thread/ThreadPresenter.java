@@ -1,15 +1,17 @@
 package org.vaadin.tori.thread;
 
+import org.vaadin.tori.component.post.PostComponent.BanListener;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.post.PostReport;
 import org.vaadin.tori.service.post.PostReportReceiver;
 
 public class ThreadPresenter extends Presenter<ThreadView> implements
-        PostReportReceiver {
+        PostReportReceiver, BanListener {
 
     private DiscussionThread currentThread;
 
@@ -56,5 +58,15 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     public boolean userMayQuote(final Post post) {
         return authorizationService.mayReplyIn(currentThread);
+    }
+
+    @Override
+    public void ban(final User user) {
+        dataSource.ban(user);
+        getView().confirmBanned();
+    }
+
+    public boolean userMayBan() {
+        return authorizationService.mayBan();
     }
 }
