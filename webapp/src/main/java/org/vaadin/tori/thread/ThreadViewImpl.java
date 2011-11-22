@@ -50,8 +50,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 HeadingLevel.H2));
 
         for (final Post post : posts) {
-            final PostComponent c = new PostComponent(post, getPresenter(),
-                    getPresenter(), getPresenter(), getPresenter());
+            final PostComponent c = new PostComponent(post, getPresenter());
 
             // main component permissions
 

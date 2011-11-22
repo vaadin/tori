@@ -8,7 +8,7 @@ import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;
-import org.vaadin.tori.service.post.PostReportReceiver;
+import org.vaadin.tori.thread.ThreadPresenter;
 
 import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.terminal.ExternalResource;
@@ -32,23 +32,10 @@ import com.vaadin.ui.themes.Reindeer;
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't bother us with serialization.")
 public class PostComponent extends CustomComponent {
 
-    public interface FollowListener {
-        void followThread();
-    }
-
-    public interface UnFollowListener {
-
-        void unFollowThread();
-    }
-
-    public interface BanListener {
-        void ban(User user);
-    }
-
     // trying a new pattern here
     private static class Util {
         private static Component newConfirmBanComponent(
-                final BanListener banListener, final User user,
+                final ThreadPresenter presenter, final User user,
                 final ContextMenu menu) {
 
             final VerticalLayout layout = new VerticalLayout();
@@ -65,7 +52,7 @@ public class PostComponent extends CustomComponent {
                     new ClickListener() {
                         @Override
                         public void buttonClick(final ClickEvent event) {
-                            banListener.ban(user);
+                            presenter.ban(user);
                             menu.close();
                         }
                     });
@@ -107,30 +94,18 @@ public class PostComponent extends CustomComponent {
     private final NativeButton editButton;
     private final NativeButton quoteButton;
     private final ContextMenu contextMenu;
-    private final BanListener banListener;
-    private final FollowListener followListener;
-    private final UnFollowListener unFollowListener;
+    private final ThreadPresenter presenter;
 
     /**
      * @throws IllegalArgumentException
      *             if any argument is <code>null</code>.
      */
-    public PostComponent(final Post post,
-            final PostReportReceiver reportReceiver,
-            final BanListener banListener, final FollowListener followListener,
-            final UnFollowListener unFollowListener) {
+    public PostComponent(final Post post, final ThreadPresenter presenter) {
 
         ToriUtil.checkForNull(post, "post may not be null");
-        ToriUtil.checkForNull(reportReceiver,
-                "post report receiver may not be null");
-        ToriUtil.checkForNull(banListener, "banListener may not be null");
-        ToriUtil.checkForNull(followListener, "followListener may not be null");
-        ToriUtil.checkForNull(unFollowListener,
-                "unFollowListener may not be null");
+        ToriUtil.checkForNull(presenter, "presenter may not be null");
 
-        this.banListener = banListener;
-        this.followListener = followListener;
-        this.unFollowListener = unFollowListener;
+        this.presenter = presenter;
         this.post = post;
 
         editButton = new NativeButton("Edit Post", editListener);
@@ -155,7 +130,7 @@ public class PostComponent extends CustomComponent {
                 Label.CONTENT_XHTML), "body");
         root.addComponent(new Label("0"), "score");
         root.addComponent(
-                reportComponent = buildReportPostComponent(post, reportReceiver),
+                reportComponent = buildReportPostComponent(post, presenter),
                 "report");
         root.addComponent(contextMenu, "settings");
         root.addComponent(editButton, "edit");
@@ -179,7 +154,7 @@ public class PostComponent extends CustomComponent {
                 "Follow Thread", new ContextMenu.ContextAction() {
                     @Override
                     public void contextClicked() {
-                        followListener.followThread();
+                        presenter.followThread();
                     }
                 });
     }
@@ -189,7 +164,7 @@ public class PostComponent extends CustomComponent {
                 "Unfollow Thread", new ContextMenu.ContextAction() {
                     @Override
                     public void contextClicked() {
-                        unFollowListener.unFollowThread();
+                        presenter.unFollowThread();
                     }
                 });
     }
@@ -199,14 +174,14 @@ public class PostComponent extends CustomComponent {
                 new ContextMenu.ContextComponentSwapper() {
                     @Override
                     public Component swapContextComponent() {
-                        return Util.newConfirmBanComponent(banListener,
+                        return Util.newConfirmBanComponent(presenter,
                                 post.getAuthor(), contextMenu);
                     }
                 });
     }
 
     private Component buildReportPostComponent(final Post post,
-            final PostReportReceiver reportReciever) {
+            final ThreadPresenter presenter) {
         final Button button = new Button("Report Post");
         button.setStyleName(Reindeer.BUTTON_LINK);
         button.addListener(new Button.ClickListener() {
@@ -215,7 +190,7 @@ public class PostComponent extends CustomComponent {
                 final int x = event.getClientX();
                 final int y = event.getClientY();
                 getApplication().getMainWindow().addWindow(
-                        new ReportWindow(post, reportReciever, x, y));
+                        new ReportWindow(post, presenter, x, y));
             }
         });
         button.setVisible(false);

@@ -1,8 +1,5 @@
 package org.vaadin.tori.thread;
 
-import org.vaadin.tori.component.post.PostComponent.BanListener;
-import org.vaadin.tori.component.post.PostComponent.FollowListener;
-import org.vaadin.tori.component.post.PostComponent.UnFollowListener;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
@@ -10,10 +7,8 @@ import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.post.PostReport;
-import org.vaadin.tori.service.post.PostReportReceiver;
 
-public class ThreadPresenter extends Presenter<ThreadView> implements
-        PostReportReceiver, BanListener, FollowListener, UnFollowListener {
+public class ThreadPresenter extends Presenter<ThreadView> {
 
     private DiscussionThread currentThread;
 
@@ -44,7 +39,6 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         return currentThread;
     }
 
-    @Override
     public void handlePostReport(final PostReport report) {
         dataSource.reportPost(report);
         getView().confirmPostReported();
@@ -62,7 +56,6 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         return authorizationService.mayReplyIn(currentThread);
     }
 
-    @Override
     public void ban(final User user) {
         dataSource.ban(user);
         getView().confirmBanned();
@@ -72,13 +65,11 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         return authorizationService.mayBan();
     }
 
-    @Override
     public void followThread() {
         dataSource.follow(currentThread);
         getView().confirmFollowingThread();
     }
 
-    @Override
     public void unFollowThread() {
         dataSource.unFollow(currentThread);
         getView().confirmUnFollowingThread();

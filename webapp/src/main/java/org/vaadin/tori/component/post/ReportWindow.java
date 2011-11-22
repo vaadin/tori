@@ -3,7 +3,7 @@ package org.vaadin.tori.component.post;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.service.post.PostReport;
 import org.vaadin.tori.service.post.PostReport.Reason;
-import org.vaadin.tori.service.post.PostReportReceiver;
+import org.vaadin.tori.thread.ThreadPresenter;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -24,8 +24,8 @@ class ReportWindow extends Window {
     private final NativeButton reportButton;
     private final VerticalLayout layout = new VerticalLayout();
 
-    public ReportWindow(final Post post,
-            final PostReportReceiver reportReciever, final int x, final int y) {
+    public ReportWindow(final Post post, final ThreadPresenter presenter,
+            final int x, final int y) {
         super("Report Post");
         layout.setSpacing(true);
         layout.setMargin(true);
@@ -93,7 +93,7 @@ class ReportWindow extends Window {
             public void buttonClick(final ClickEvent event) {
                 final PostReport report = new PostReport(post, (Reason) reason
                         .getValue(), (String) reasonText.getValue());
-                reportReciever.handlePostReport(report);
+                presenter.handlePostReport(report);
                 ReportWindow.this.close();
             }
         });
