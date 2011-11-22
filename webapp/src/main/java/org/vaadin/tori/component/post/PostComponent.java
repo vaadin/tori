@@ -29,6 +29,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 @SuppressWarnings("serial")
+@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't bother us with serialization.")
 public class PostComponent extends CustomComponent {
 
     public interface BanListener {
@@ -53,14 +54,9 @@ public class PostComponent extends CustomComponent {
 
             final NativeButton ban = new NativeButton("Yes, Ban",
                     new ClickListener() {
-                        private final transient User _user;
-                        {
-                            _user = user;
-                        }
-
                         @Override
                         public void buttonClick(final ClickEvent event) {
-                            banListener.ban(_user);
+                            banListener.ban(user);
                             menu.close();
                         }
                     });
