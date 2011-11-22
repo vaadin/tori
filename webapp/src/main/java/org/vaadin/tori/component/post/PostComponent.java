@@ -150,7 +150,7 @@ public class PostComponent extends CustomComponent {
     }
 
     public void enableThreadFollowing() {
-        contextMenu.add(new ThemeResource("images/icon-pin.png"),
+        contextMenu.add(new ThemeResource("images/icon-follow.png"),
                 "Follow Thread", new ContextMenu.ContextAction() {
                     @Override
                     public void contextClicked() {
@@ -160,7 +160,7 @@ public class PostComponent extends CustomComponent {
     }
 
     public void enableThreadUnFollowing() {
-        contextMenu.add(new ThemeResource("images/icon-pin.png"),
+        contextMenu.add(new ThemeResource("images/icon-unfollow.png"),
                 "Unfollow Thread", new ContextMenu.ContextAction() {
                     @Override
                     public void contextClicked() {
