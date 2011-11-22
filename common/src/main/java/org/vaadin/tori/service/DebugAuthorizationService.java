@@ -48,4 +48,7 @@ public interface DebugAuthorizationService extends AuthorizationService {
 
     /** @see AuthorizationService#mayDelete(Post) */
     void setMayDelete(Post post, boolean b);
+
+    /** @see AuthorizationService#mayVote() */
+    void setMayVote(boolean b);
 }

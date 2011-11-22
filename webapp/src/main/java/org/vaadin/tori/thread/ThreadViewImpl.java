@@ -63,6 +63,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             if (getPresenter().userMayQuote(post)) {
                 c.enableQuoting();
             }
+            if (getPresenter().userMayVote()) {
+                c.enableUpDownVoting();
+            }
 
             // context menu permissions
 

@@ -28,6 +28,9 @@ public class Post extends AbstractEntity {
     @Column(nullable = false, name = "body")
     private String bodyRaw;
 
+    @Column(nullable = false)
+    private int score;
+
     public void setAuthor(final User author) {
         this.author = author;
     }
@@ -59,6 +62,14 @@ public class Post extends AbstractEntity {
     /** Gets the unformatted forum post. */
     public String getBodyRaw() {
         return bodyRaw;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(final int score) {
+        this.score = score;
     }
 
 }

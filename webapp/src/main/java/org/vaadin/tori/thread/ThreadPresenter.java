@@ -93,4 +93,8 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     public boolean userMayDelete(final Post post) {
         return authorizationService.mayDelete(post);
     }
+
+    public boolean userMayVote() {
+        return authorizationService.mayVote();
+    }
 }

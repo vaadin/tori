@@ -97,3 +97,21 @@
 .reportwindow .v-verticallayout .v-verticallayout-margin {
 	padding: 5px;
 }
+
+.scorecomponent .vote {
+	padding: 0;
+	border: 0;
+	height: 10px;
+	width: 16px;
+	display: inline-block;
+	clear: left;
+	float: left;
+	background-color: inherit;
+	background-image: url(../images/sprite-votearrows.png);
+	background-repeat: no-repeat;
+}
+
+.scorecomponent .upvote         { background-position: left top; }
+.scorecomponent .upvote:hover   { background-position: right top; }
+.scorecomponent .downvote       { background-position: left bottom; }
+.scorecomponent .downvote:hover { background-position: right bottom; }

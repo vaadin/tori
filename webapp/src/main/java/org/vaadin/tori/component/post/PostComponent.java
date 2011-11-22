@@ -131,6 +131,7 @@ public class PostComponent extends CustomComponent {
     private final NativeButton quoteButton;
     private final ContextMenu contextMenu;
     private final ThreadPresenter presenter;
+    private final PostScoreComponent score;
 
     /**
      * @throws IllegalArgumentException
@@ -156,6 +157,7 @@ public class PostComponent extends CustomComponent {
         setStyleName("post");
 
         contextMenu = new ContextMenu();
+        score = new PostScoreComponent(post, presenter);
 
         root.addComponent(getAvatarImage(post), "avatar");
         root.addComponent(new Label(post.getAuthor().getDisplayedName()),
@@ -164,7 +166,7 @@ public class PostComponent extends CustomComponent {
         root.addComponent(getPermaLink(post), "permalink");
         root.addComponent(new Label(getFormattedXhtmlBody(post),
                 Label.CONTENT_XHTML), "body");
-        root.addComponent(new Label("0"), "score");
+        root.addComponent(score, "score");
         root.addComponent(
                 reportComponent = buildReportPostComponent(post, presenter),
                 "report");
@@ -225,6 +227,10 @@ public class PostComponent extends CustomComponent {
                                 contextMenu);
                     }
                 });
+    }
+
+    public void enableUpDownVoting() {
+        score.enableUpDownVoting();
     }
 
     private Component buildReportPostComponent(final Post post,
