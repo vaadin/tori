@@ -3,6 +3,7 @@ package org.vaadin.tori.thread;
 import java.util.List;
 
 import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.component.FloatingBar;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.component.post.PostComponent;
@@ -12,6 +13,8 @@ import org.vaadin.tori.mvp.AbstractView;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 
 @SuppressWarnings("serial")
@@ -62,6 +65,20 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             }
             layout.addComponent(c);
         }
+
+        // TODO replace with a proper version
+        layout.addComponent(getDummyFloatingBar());
+    }
+
+    private FloatingBar getDummyFloatingBar() {
+        final FloatingBar bar = new FloatingBar();
+        final VerticalLayout barLayout = new VerticalLayout();
+        barLayout.setWidth("100%");
+        barLayout
+                .addComponent(new Label(
+                        "Lorem ipsum... Lorem ipsum... Lorem ipsum... Lorem ipsum... Lorem ipsum2..."));
+        bar.setContent(barLayout);
+        return bar;
     }
 
     @Override
