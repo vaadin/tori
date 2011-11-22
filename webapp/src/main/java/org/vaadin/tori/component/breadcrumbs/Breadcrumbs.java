@@ -50,7 +50,7 @@ public class Breadcrumbs extends CustomComponent implements
     private void renderBreadCrumb() {
         layout.removeAllComponents();
         final Button dashboardButton = new Button("Dashboard");
-        dashboardButton.setIcon(new ThemeResource("images/home.gif"));
+        dashboardButton.setIcon(new ThemeResource("images/icon-home.gif"));
         dashboardButton.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
