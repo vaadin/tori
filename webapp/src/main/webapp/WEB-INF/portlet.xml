@@ -17,12 +17,10 @@
           widgetset can be configured on the portal level (parameter
           vaadin.widgetset) or here for each portlet.
         -->
-        <!--
         <init-param>
             <name>widgetset</name>
-            <value>com.vaadin.portal.gwt.PortalDefaultWidgetSet</value>
+            <value>org.vaadin.tori.widgetset.ToriWidgetset</value>
         </init-param>
-        -->
         
         <!-- Supported portlet modes and content types. -->
         <supports>
