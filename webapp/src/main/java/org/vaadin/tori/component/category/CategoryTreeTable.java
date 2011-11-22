@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.component.ContextMenu;
-import org.vaadin.tori.component.ContextMenu.Builder;
 import org.vaadin.tori.component.ContextMenu.ContextAction;
 import org.vaadin.tori.component.category.CategoryListing.Mode;
 import org.vaadin.tori.component.category.CategoryListingPresenter.ContextMenuOperation;
@@ -173,19 +172,18 @@ class CategoryTreeTable extends TreeTable {
             final List<ContextMenuOperation> contextMenuOperations = presenter
                     .getContextMenuOperations(category);
 
-            final Builder builder = new ContextMenu.Builder();
+            final ContextMenu contextMenu = new ContextMenu();
             for (final ContextMenuOperation menuItem : contextMenuOperations) {
                 switch (menuItem) {
                 case EDIT:
-                    builder.add(new ThemeResource("images/icon-edit.png"),
+                    contextMenu.add(new ThemeResource("images/icon-edit.png"),
                             "Edit category",
                             new ContextMenu.ContextComponentSwapper() {
                                 @Override
                                 public Component swapContextComponent() {
                                     final EditCategoryListener listener = new EditCategoryListener() {
                                         @Override
-                                        public void commit(
-                                                final String name,
+                                        public void commit(final String name,
                                                 final String description) {
                                             presenter.edit(category, name,
                                                     description);
@@ -197,7 +195,8 @@ class CategoryTreeTable extends TreeTable {
                             });
                     break;
                 case DELETE:
-                    builder.add(new ThemeResource("images/icon-delete.png"),
+                    contextMenu.add(
+                            new ThemeResource("images/icon-delete.png"),
                             "Delete category" + '\u2026', new ContextAction() {
                                 @Override
                                 public void contextClicked() {
@@ -206,7 +205,7 @@ class CategoryTreeTable extends TreeTable {
                             });
                     break;
                 case FOLLOW:
-                    builder.add(new ThemeResource("images/icon-pin.png"),
+                    contextMenu.add(new ThemeResource("images/icon-pin.png"),
                             "Follow category", new ContextAction() {
                                 @Override
                                 public void contextClicked() {
@@ -216,7 +215,7 @@ class CategoryTreeTable extends TreeTable {
                     break;
                 }
             }
-            return builder.build();
+            return contextMenu;
         }
     }
 

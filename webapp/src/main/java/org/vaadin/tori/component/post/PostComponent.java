@@ -4,7 +4,6 @@ import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.component.ContextMenu;
-import org.vaadin.tori.component.ContextMenu.Builder;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.service.post.PostReportReceiver;
 
@@ -117,14 +116,14 @@ public class PostComponent extends CustomComponent {
     }
 
     private ContextMenu buildContextMenu() {
-        final Builder builder = new ContextMenu.Builder();
-        builder.add(null, "[TODO]", new ContextMenu.ContextAction() {
+        final ContextMenu contextMenu = new ContextMenu();
+        contextMenu.add(null, "[TODO]", new ContextMenu.ContextAction() {
             @Override
             public void contextClicked() {
                 getApplication().getMainWindow().showNotification("...");
             }
         });
-        return builder.build();
+        return contextMenu;
     }
 
     private String getFormattedXhtmlBody(final Post post) {

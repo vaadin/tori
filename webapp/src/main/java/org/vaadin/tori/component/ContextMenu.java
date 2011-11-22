@@ -31,30 +31,6 @@ public class ContextMenu extends CustomComponent {
         Component swapContextComponent();
     }
 
-    public static class Builder {
-        private final ContextMenu contextMenu;
-
-        public Builder() {
-            contextMenu = new ContextMenu();
-        }
-
-        public Builder add(final Resource icon, final String caption,
-                final ContextAction action) {
-            contextMenu.add(icon, caption, action);
-            return this;
-        }
-
-        public Builder add(final Resource icon, final String caption,
-                final ContextComponentSwapper swapper) {
-            contextMenu.add(icon, caption, swapper);
-            return this;
-        }
-
-        public ContextMenu build() {
-            return contextMenu;
-        }
-    }
-
     private final HorizontalLayout layout;
     private final CssLayout popupLayout;
     private final PopupButton contextComponent;
@@ -75,7 +51,7 @@ public class ContextMenu extends CustomComponent {
         }
     };
 
-    private ContextMenu() {
+    public ContextMenu() {
         setCompositionRoot(layout = new HorizontalLayout());
         layout.setSizeFull();
         setWidth("16px");
@@ -91,7 +67,7 @@ public class ContextMenu extends CustomComponent {
         layout.addComponent(contextComponent);
     }
 
-    protected void add(final Resource icon, final String caption,
+    public void add(final Resource icon, final String caption,
             final ContextAction action) {
         ToriUtil.checkForNull(action, "action may not be null");
 
@@ -107,7 +83,7 @@ public class ContextMenu extends CustomComponent {
         popupLayout.addComponent(button);
     }
 
-    protected void add(final Resource icon, final String caption,
+    public void add(final Resource icon, final String caption,
             final ContextComponentSwapper swapper) {
         ToriUtil.checkForNull(swapper, "swapper may not be null");
 
