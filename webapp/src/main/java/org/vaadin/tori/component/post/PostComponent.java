@@ -53,9 +53,14 @@ public class PostComponent extends CustomComponent {
 
             final NativeButton ban = new NativeButton("Yes, Ban",
                     new ClickListener() {
+                        private final transient User _user;
+                        {
+                            _user = user;
+                        }
+
                         @Override
                         public void buttonClick(final ClickEvent event) {
-                            banListener.ban(user);
+                            banListener.ban(_user);
                             menu.close();
                         }
                     });
