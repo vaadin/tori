@@ -350,7 +350,7 @@
 		<property name="findbugs.outputfile" value="findbugs-ds-test.xml"/>
 		<property name="findbugs.acp.refid" value="ds-test-classpath"/>
 		<property name="findbugs.sourcepath" value="${dir.ds.test}/src"/>
-		<property name="findbugs.target" value="${file.ds.test.jar}}"/>
+		<property name="findbugs.target" value="${file.ds.test.jar}"/>
 		<antcall target="-findbugs-shared-target" inheritall="yes"/>
 	</target>
 	
