@@ -84,4 +84,13 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         // TODO Auto-generated method stub
         return false;
     }
+
+    public void delete(final Post post) {
+        dataSource.delete(post);
+        getView().confirmPostDeleted();
+    }
+
+    public boolean userMayDelete(final Post post) {
+        return authorizationService.mayDelete(post);
+    }
 }

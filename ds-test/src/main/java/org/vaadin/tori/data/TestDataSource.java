@@ -299,4 +299,30 @@ public class TestDataSource implements DataSource {
         return false;
     }
 
+    @Override
+    public void delete(final Post post) {
+        executeWithEntityManager(new Command<Void>() {
+            @Override
+            public Void execute(final EntityManager em) {
+                final EntityTransaction transaction = em.getTransaction();
+                transaction.begin();
+                try {
+                    final DiscussionThread thread = post.getThread();
+                    thread.getPosts().remove(post);
+
+                    // must merge detached entity before removal
+                    final DiscussionThread mergedThread = em.merge(thread);
+                    em.merge(mergedThread);
+                    transaction.commit();
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                    if (transaction.isActive()) {
+                        transaction.rollback();
+                    }
+                }
+                return null;
+            }
+        });
+    }
+
 }

@@ -20,4 +20,6 @@ public interface ThreadView extends View {
     void confirmFollowingThread();
 
     void confirmUnFollowingThread();
+
+    void confirmPostDeleted();
 }

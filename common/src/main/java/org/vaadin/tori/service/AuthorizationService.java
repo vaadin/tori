@@ -33,4 +33,6 @@ public interface AuthorizationService {
     boolean mayBan();
 
     boolean mayFollow(DiscussionThread currentThread);
+
+    boolean mayDelete(Post post);
 }

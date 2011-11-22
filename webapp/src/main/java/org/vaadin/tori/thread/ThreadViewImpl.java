@@ -75,6 +75,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             if (getPresenter().userMayBan()) {
                 c.enableBanning();
             }
+            if (getPresenter().userMayDelete(post)) {
+                c.enableDeleting();
+            }
+
             layout.addComponent(c);
         }
     }
@@ -98,6 +102,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public void confirmBanned() {
         getWindow().showNotification("User is banned");
+        reloadPage();
     }
 
     @Override
@@ -108,5 +113,15 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public void confirmUnFollowingThread() {
         getWindow().showNotification("Not following thread anymore");
+    }
+
+    @Override
+    public void confirmPostDeleted() {
+        getWindow().showNotification("Post deleted");
+        reloadPage();
+    }
+
+    private void reloadPage() {
+        displayPosts(getPresenter().getCurrentThread().getPosts());
     }
 }

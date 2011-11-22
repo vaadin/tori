@@ -45,4 +45,7 @@ public interface DebugAuthorizationService extends AuthorizationService {
 
     /** @see AuthorizationService#mayFollow(DiscussionThread) */
     void setMayFollow(DiscussionThread thread, boolean b);
+
+    /** @see AuthorizationService#mayDelete(Post) */
+    void setMayDelete(Post post, boolean b);
 }

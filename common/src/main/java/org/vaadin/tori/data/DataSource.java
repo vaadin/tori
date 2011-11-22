@@ -113,4 +113,6 @@ public interface DataSource {
     void unFollow(DiscussionThread thread);
 
     boolean isFollowing(DiscussionThread currentThread);
+
+    void delete(Post post);
 }

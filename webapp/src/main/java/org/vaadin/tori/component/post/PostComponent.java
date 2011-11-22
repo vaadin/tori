@@ -69,6 +69,42 @@ public class PostComponent extends CustomComponent {
 
             return layout;
         }
+
+        public static Component newConfirmDeleteComponent(
+                final ThreadPresenter presenter, final Post post,
+                final ContextMenu menu) {
+
+            final VerticalLayout layout = new VerticalLayout();
+            layout.setMargin(true);
+            layout.setWidth("200px");
+            layout.addComponent(new HeadingLabel("Delete Post?",
+                    HeadingLevel.H2));
+
+            final HorizontalLayout buttonBar = new HorizontalLayout();
+            layout.addComponent(buttonBar);
+            layout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
+
+            final NativeButton ban = new NativeButton("Yes, Delete",
+                    new ClickListener() {
+                        @Override
+                        public void buttonClick(final ClickEvent event) {
+                            presenter.delete(post);
+                            menu.close();
+                        }
+                    });
+            buttonBar.addComponent(ban);
+
+            final NativeButton cancel = new NativeButton("No, Cancel!",
+                    new ClickListener() {
+                        @Override
+                        public void buttonClick(final ClickEvent event) {
+                            menu.close();
+                        }
+                    });
+            buttonBar.addComponent(cancel);
+
+            return layout;
+        }
     }
 
     private final CustomLayout root;
@@ -176,6 +212,17 @@ public class PostComponent extends CustomComponent {
                     public Component swapContextComponent() {
                         return Util.newConfirmBanComponent(presenter,
                                 post.getAuthor(), contextMenu);
+                    }
+                });
+    }
+
+    public void enableDeleting() {
+        contextMenu.add(new ThemeResource("images/icon-delete.png"),
+                "Delete Post", new ContextMenu.ContextComponentSwapper() {
+                    @Override
+                    public Component swapContextComponent() {
+                        return Util.newConfirmDeleteComponent(presenter, post,
+                                contextMenu);
                     }
                 });
     }
