@@ -1,6 +1,6 @@
 package org.vaadin.tori.component;
 
-import org.vaadin.tori.widgetset.client.ui.VFloatingBar;
+import org.vaadin.tori.widgetset.client.ui.floatingbar.VFloatingBar;
 
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
@@ -19,7 +19,7 @@ import com.vaadin.ui.CustomComponent;
  * reference to the component in {@link #setScrollComponent(Component)}.
  */
 @SuppressWarnings("serial")
-@com.vaadin.ui.ClientWidget(org.vaadin.tori.widgetset.client.ui.VFloatingBar.class)
+@com.vaadin.ui.ClientWidget(org.vaadin.tori.widgetset.client.ui.floatingbar.VFloatingBar.class)
 public class FloatingBar extends CustomComponent {
 
     private Component scrollComponent;

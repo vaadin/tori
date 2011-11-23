@@ -1,4 +1,4 @@
-package org.vaadin.tori.widgetset.client.ui;
+package org.vaadin.tori.widgetset.client.ui.floatingbar;
 
 import java.util.ArrayList;
 import java.util.Iterator;
