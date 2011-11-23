@@ -365,23 +365,56 @@ public class TestDataSource implements DataSource {
 
     @Override
     public void upvote(final Post post) {
-        // TODO
-        System.err.println("TestDataSource.upvote()");
-        System.err.println("upvoting not implemeneted");
+        final PostVote vote = getPostVote(post);
+        vote.setUpvote();
+        save(vote);
     }
 
     @Override
     public void downvote(final Post post) {
-        // TODO
-        System.err.println("TestDataSource.downvote()");
-        System.err.println("downvoting not implemeneted");
+        final PostVote vote = getPostVote(post);
+        vote.setDownvote();
+        save(vote);
+    }
+
+    private void save(final PostVote vote) {
+        executeWithEntityManager(new Command<Void>() {
+            @Override
+            public Void execute(final EntityManager em) {
+                final EntityTransaction transaction = em.getTransaction();
+                transaction.begin();
+                em.merge(vote);
+                transaction.commit();
+                return null;
+            }
+        });
     }
 
     @Override
     public void removeUserVote(final Post post) {
-        // TODO Auto-generated method stub
-        System.out.println("TestDataSource.removeUserVote()");
-        System.out.println("removing votes not implemented");
+        delete(getPostVote(post));
+    }
+
+    private void delete(final PostVote postVote) {
+        executeWithEntityManager(new Command<Void>() {
+            @Override
+            public Void execute(final EntityManager em) {
+                final EntityTransaction transaction = em.getTransaction();
+                transaction.begin();
+                try {
+                    // must merge detached entity before removal
+                    final PostVote mergedVote = em.merge(postVote);
+                    em.remove(mergedVote);
+                    transaction.commit();
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                    if (transaction.isActive()) {
+                        transaction.rollback();
+                    }
+                }
+                return null;
+            }
+        });
     }
 
 }
