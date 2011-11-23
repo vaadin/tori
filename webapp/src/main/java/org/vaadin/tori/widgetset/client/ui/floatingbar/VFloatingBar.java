@@ -31,9 +31,13 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
         ResizeHandler, ScrollHandler {
 
     public static final String ATTR_SCROLL_COMPONENT = "scrollComponent";
+    public static final String ATTR_ALIGNMENT = "alignment";
+    public static final String ALIGNMENT_TOP = "top";
+    public static final String ALIGNMENT_BOTTOM = "bottom";
 
     /** Set the CSS class name to allow styling. */
     public static final String CLASSNAME = "v-floatingbar";
+    private static final String PREFIX_ALIGNMENT_CLASSNAME = "alignment-";
 
     /** The client side widget identifier */
     protected String paintableId;
@@ -43,6 +47,7 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
 
     private FloatingBarOverlay overlay;
     private Widget scrollComponent;
+    private String alignment;
 
     private HandlerRegistration handlerRegistration;
 
@@ -82,9 +87,24 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
         if (overlay == null) {
             overlay = new FloatingBarOverlay(this);
         }
+        updateAlignment(uidl);
         overlay.show();
         overlay.updateFromUIDL(uidl, client);
         overlay.setVisible(!isScrollComponentVisible());
+    }
+
+    private void updateAlignment(final UIDL uidl) {
+        if (uidl.hasAttribute(ATTR_ALIGNMENT)) {
+            final String newAlignment = uidl.getStringAttribute(ATTR_ALIGNMENT);
+            if (!newAlignment.equals(alignment)) {
+                // update style names
+                overlay.removeStyleName(PREFIX_ALIGNMENT_CLASSNAME + alignment);
+                overlay.addStyleName(PREFIX_ALIGNMENT_CLASSNAME + newAlignment);
+
+                // assign the new alignment
+                alignment = newAlignment;
+            }
+        }
     }
 
     private Widget getScrollComponent(final UIDL uidl) {
@@ -159,9 +179,16 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
 
     private boolean isScrollComponentVisible() {
         if (scrollComponent != null) {
-            final int componentHeight = scrollComponent.getOffsetHeight();
             final int componentTop = scrollComponent.getAbsoluteTop();
-            return componentTop > -componentHeight;
+
+            if (alignment.equals(ALIGNMENT_TOP)) {
+                final int componentHeight = scrollComponent.getOffsetHeight();
+                return componentTop > -componentHeight;
+            } else {
+                // bottom alignment
+                final int viewPortHeight = client.getView().getOffsetHeight();
+                return componentTop < viewPortHeight;
+            }
         }
         return true;
     }

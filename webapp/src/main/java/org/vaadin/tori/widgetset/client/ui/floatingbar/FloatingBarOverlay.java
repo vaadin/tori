@@ -19,11 +19,15 @@ class FloatingBarOverlay extends VOverlay {
     private static final String CLASSNAME = VPopupView.CLASSNAME + " "
             + VFloatingBar.CLASSNAME + " " + VPopupView.CLASSNAME + "-popup";
 
+    private static final String CLASSNAME_SHADOW = "floatingbar "
+            + VOverlay.CLASSNAME_SHADOW;
+
     public FloatingBarOverlay(final VFloatingBar owner) {
         this.owner = owner;
 
         setStyleName(CLASSNAME);
         setShadowEnabled(true);
+        setShadowStyle(CLASSNAME_SHADOW);
         setModal(false);
     }
 
