@@ -5,6 +5,7 @@ import java.util.List;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.service.post.PostReport;
 
@@ -116,18 +117,27 @@ public interface DataSource {
 
     void delete(Post post);
 
-    /**
-     * Get the current voting status for the current user on a {@link Post}.
-     * 
-     * @param post
-     * @return a negative number is given for a downvote, a positive number is
-     *         given for an upvote, and <code>0</code> (zero) is returned if the
-     *         user hans't voted on the {@link Post}. This query with an
-     *         anonymous user always returns <code>0</code>.
-     */
-    int getUserVoteStatus(Post post);
+    PostVote getPostVote(Post post);
 
+    /**
+     * Deletes the current user's possible vote on the given {@link Post}. If no
+     * such vote is given, this method does nothing.
+     */
+    void removeUserVote(Post post);
+
+    /**
+     * The current user upvotes the given {@link Post}.
+     * <p/>
+     * <em>Note:</em> This method must make sure that all previous votes on the
+     * given {@link Post} are removed before the new vote is given.
+     */
     void upvote(Post post);
 
+    /**
+     * The current user downvotes the given {@link Post}
+     * <p/>
+     * <em>Note:</em> This method must make sure that all previous votes on the
+     * given {@link Post} are removed before the new vote is given.
+     */
     void downvote(Post post);
 }

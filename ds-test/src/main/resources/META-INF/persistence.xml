@@ -9,6 +9,7 @@
 		<class>org.vaadin.tori.data.entity.DiscussionThread</class>
 		<class>org.vaadin.tori.data.entity.User</class>
 		<class>org.vaadin.tori.data.entity.Post</class>
+		<class>org.vaadin.tori.data.entity.PostVote</class>
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />

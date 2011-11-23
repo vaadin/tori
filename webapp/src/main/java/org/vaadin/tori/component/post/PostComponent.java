@@ -7,9 +7,9 @@ import org.vaadin.tori.component.ContextMenu;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.thread.ThreadPresenter;
-import org.vaadin.tori.thread.ThreadPresenter.PostVoteStatus;
 
 import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.terminal.ExternalResource;
@@ -230,8 +230,8 @@ public class PostComponent extends CustomComponent {
                 });
     }
 
-    public void enableUpDownVoting(final PostVoteStatus postVoteStatus) {
-        score.enableUpDownVoting(postVoteStatus);
+    public void enableUpDownVoting(final PostVote postVote) {
+        score.enableUpDownVoting(postVote);
     }
 
     private Component buildReportPostComponent(final Post post,

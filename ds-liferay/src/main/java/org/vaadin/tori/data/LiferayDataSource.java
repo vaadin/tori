@@ -5,6 +5,7 @@ import java.util.List;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.service.post.PostReport;
 
@@ -96,7 +97,7 @@ public class LiferayDataSource implements DataSource {
     }
 
     @Override
-    public int getUserVoteStatus(final Post post) {
+    public PostVote getPostVote(final Post post) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
@@ -107,6 +108,11 @@ public class LiferayDataSource implements DataSource {
 
     @Override
     public void downvote(final Post post) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public void removeUserVote(final Post post) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 

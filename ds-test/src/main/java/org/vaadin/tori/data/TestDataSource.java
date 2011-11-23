@@ -7,12 +7,14 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.data.util.PersistenceUtil;
 import org.vaadin.tori.service.post.PostReport;
@@ -340,11 +342,25 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public int getUserVoteStatus(final Post post) {
-        // TODO
-        System.err.println("TestDataSource.getUserVoteStatus(Post)");
-        System.err.println("will never have been voted!");
-        return 0;
+    public PostVote getPostVote(final Post post) {
+        try {
+            return executeWithEntityManager(new Command<PostVote>() {
+                @Override
+                public PostVote execute(final EntityManager em) {
+                    final TypedQuery<PostVote> query = em.createQuery(
+                            "select v from PostVote v where v.voter = :voter "
+                                    + "and v.post = :post", PostVote.class);
+                    query.setParameter("voter", currentUser);
+                    query.setParameter("post", post);
+                    return query.getSingleResult();
+                }
+            });
+        } catch (final NoResultException e) {
+            final PostVote vote = new PostVote();
+            vote.setPost(post);
+            vote.setVoter(currentUser);
+            return vote;
+        }
     }
 
     @Override
@@ -359,6 +375,13 @@ public class TestDataSource implements DataSource {
         // TODO
         System.err.println("TestDataSource.downvote()");
         System.err.println("downvoting not implemeneted");
+    }
+
+    @Override
+    public void removeUserVote(final Post post) {
+        // TODO Auto-generated method stub
+        System.out.println("TestDataSource.removeUserVote()");
+        System.out.println("removing votes not implemented");
     }
 
 }

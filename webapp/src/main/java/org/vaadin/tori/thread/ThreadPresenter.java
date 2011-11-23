@@ -3,16 +3,13 @@ package org.vaadin.tori.thread;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.post.PostReport;
 
 public class ThreadPresenter extends Presenter<ThreadView> {
-
-    public enum PostVoteStatus {
-        NOT_VOTED, UPVOTED, DOWNVOTED
-    };
 
     private DiscussionThread currentThread;
 
@@ -110,14 +107,11 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         dataSource.downvote(post);
     }
 
-    public PostVoteStatus getVotesForPost(final Post post) {
-        final int vote = dataSource.getUserVoteStatus(post);
-        if (vote < 0) {
-            return PostVoteStatus.DOWNVOTED;
-        } else if (vote == 0) {
-            return PostVoteStatus.NOT_VOTED;
-        } else {
-            return PostVoteStatus.UPVOTED;
-        }
+    public void unvote(final Post post) {
+        dataSource.removeUserVote(post);
+    }
+
+    public PostVote getPostVote(final Post post) {
+        return dataSource.getPostVote(post);
     }
 }
