@@ -23,8 +23,6 @@ import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.RenderSpace;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.Util;
-import com.vaadin.terminal.gwt.client.ui.VOverlay;
-import com.vaadin.terminal.gwt.client.ui.VPopupView;
 
 /**
  * The client-side implementation for server-side {@code FloatingBar} component.
@@ -43,7 +41,7 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
     /** Reference to the server connection object. */
     protected ApplicationConnection client;
 
-    private FloatingContent content;
+    private FloatingBarOverlay overlay;
     private Widget scrollComponent;
 
     private HandlerRegistration handlerRegistration;
@@ -81,12 +79,12 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
         scrollComponent = getScrollComponent(uidl);
         attachScrollHandlerIfNeeded();
 
-        if (content == null) {
-            content = new FloatingContent();
+        if (overlay == null) {
+            overlay = new FloatingBarOverlay(this);
         }
-        content.show();
-        content.updateFromUIDL(uidl, client);
-        content.setVisible(!isScrollComponentVisible());
+        overlay.show();
+        overlay.updateFromUIDL(uidl, client);
+        overlay.setVisible(!isScrollComponentVisible());
     }
 
     private Widget getScrollComponent(final UIDL uidl) {
@@ -114,20 +112,20 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
     @Override
     protected void onDetach() {
         super.onDetach();
-        content.setVisible(false);
-        content.hide();
+        overlay.setVisible(false);
+        overlay.hide();
     }
 
     @Override
     public void replaceChildComponent(final Widget oldComponent,
             final Widget newComponent) {
-        content.setWidget(newComponent);
+        overlay.setWidget(newComponent);
     }
 
     @Override
     public boolean hasChildComponent(final Widget component) {
-        if (content.getWidget() != null) {
-            return content.getWidget() == component;
+        if (overlay.getWidget() != null) {
+            return overlay.getWidget() == component;
         } else {
             return false;
         }
@@ -140,14 +138,14 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
 
     @Override
     public boolean requestLayout(final Set<Paintable> children) {
-        content.updateShadowSizeAndPosition();
+        overlay.updateShadowSizeAndPosition();
         return true;
     }
 
     @Override
     public RenderSpace getAllocatedSpace(final Widget child) {
-        final Element pe = content.getElement();
-        final Element ipe = content.getContainerElement();
+        final Element pe = overlay.getElement();
+        final Element ipe = overlay.getContainerElement();
 
         // border + padding
         final int width = Util.getRequiredWidth(pe)
@@ -171,12 +169,12 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
     @Override
     public void onResize(final ResizeEvent event) {
         client.runDescendentsLayout(this);
-        content.updateShadowSizeAndPosition();
+        overlay.updateShadowSizeAndPosition();
     }
 
     @Override
     public void onScroll(final ScrollEvent event) {
-        content.setVisible(!isScrollComponentVisible());
+        overlay.setVisible(!isScrollComponentVisible());
 
         // TODO remove this debugging output
         if (scrollComponent != null) {
@@ -192,7 +190,7 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
     @Override
     public Iterator<Widget> iterator() {
         final List<Widget> wrapper = new ArrayList<Widget>(1);
-        wrapper.add(content);
+        wrapper.add(overlay);
         return wrapper.iterator();
     }
 
@@ -211,69 +209,4 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * The actual VOverlay that displays the content for the floating bar.
-     */
-    private class FloatingContent extends VOverlay {
-
-        private Widget contentWidget;
-
-        private static final String CLASSNAME = VPopupView.CLASSNAME + " "
-                + VFloatingBar.CLASSNAME + " " + VPopupView.CLASSNAME
-                + "-popup";
-
-        public FloatingContent() {
-            setStyleName(CLASSNAME);
-            setShadowEnabled(true);
-            setModal(false);
-        }
-
-        public void updateFromUIDL(final UIDL uidl,
-                final ApplicationConnection client) {
-            final UIDL child = uidl.getChildUIDL(0);
-            final Paintable contentPaintable = client.getPaintable(child);
-            contentWidget = (Widget) contentPaintable;
-
-            if (!contentWidget.equals(getWidget())) {
-                if (getWidget() != null) {
-                    client.unregisterPaintable((Paintable) getWidget());
-                }
-                setWidget(contentWidget);
-            }
-            contentPaintable.updateFromUIDL(child, client);
-            updateShadowSizeAndPosition();
-        }
-
-        /*
-         * Copied from: VPopupView.CustomPopup.getParent()
-         * 
-         * We need a hack make content act as a child of VFloatingBar in
-         * Vaadin's component tree, but work in default GWT manner when closing
-         * or opening.
-         * 
-         * (non-Javadoc)
-         * 
-         * @see com.google.gwt.user.client.ui.Widget#getParent()
-         */
-        @Override
-        public Widget getParent() {
-            if (!isAttached()) {
-                return super.getParent();
-            } else {
-                return VFloatingBar.this;
-            }
-        }
-
-        // overridden for method visibility
-        @Override
-        public void updateShadowSizeAndPosition() {
-            super.updateShadowSizeAndPosition();
-        }
-
-        // overridden for method visibility
-        @Override
-        public Element getContainerElement() {
-            return super.getContainerElement();
-        }
-    }
 }
