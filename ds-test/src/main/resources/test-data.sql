@@ -25,6 +25,7 @@ insert into DISCUSSIONTHREAD set ID = 8, CATEGORY_ID = 3, TOPIC = "How to change
 ## Users
 insert into `USER` set ID = 1, DISPLAYEDNAME = "John Doe";
 insert into `USER` set ID = 2, DISPLAYEDNAME = "Molly Townsend";
+insert into `USER` set ID = 3, DISPLAYEDNAME = "Current User";
 
 ## Posts
 insert into POST set ID = 1, SCORE=ROUND(RAND()*10-5,0), `TIME` = "2011-10-1 12:00:00", THREAD_ID = 1, AUTHOR_ID = 1, body = "<div class='escaped'>Nisi</div> [b]ut tempor[/b], jerky ad spare ribs ut ground round labore non sed swine ham. Cupidatat t-bone turducken eu sunt. Ut spare ribs fatback eiusmod ribeye ham consequat prosciutto qui. Tri-tip tail filet mignon, qui jowl consectetur nostrud shankle ut ground round in dolor leberkäse ad. Brisket ex flank bacon dolore prosciutto ut. Nisi dolore fatback, prosciutto meatball kielbasa rump tri-tip consectetur salami pig shoulder. Beef ribs magna shoulder, jerky sunt brisket turducken drumstick tempor nisi eiusmod elit.";

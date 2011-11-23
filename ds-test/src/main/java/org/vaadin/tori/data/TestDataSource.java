@@ -19,10 +19,24 @@ import org.vaadin.tori.service.post.PostReport;
 
 public class TestDataSource implements DataSource {
 
+    private static final long CURRENT_USER_ID = 3;
+    private final User currentUser;
+
     public TestDataSource() {
         if (isEmptyDatabase()) {
             initDatabaseWithTestData();
         }
+
+        currentUser = getUser(CURRENT_USER_ID);
+    }
+
+    private User getUser(final long userId) {
+        return executeWithEntityManager(new Command<User>() {
+            @Override
+            public final User execute(final EntityManager em) {
+                return em.find(User.class, userId);
+            }
+        });
     }
 
     private void initDatabaseWithTestData() {
