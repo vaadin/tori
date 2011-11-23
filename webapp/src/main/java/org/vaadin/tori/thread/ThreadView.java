@@ -22,4 +22,6 @@ public interface ThreadView extends View {
     void confirmUnFollowingThread();
 
     void confirmPostDeleted();
+
+    void refreshScores(Post post, long newScore);
 }

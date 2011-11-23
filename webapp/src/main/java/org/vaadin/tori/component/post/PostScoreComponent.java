@@ -1,6 +1,7 @@
 package org.vaadin.tori.component.post;
 
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.thread.ThreadPresenter;
 
 import com.vaadin.ui.Button.ClickEvent;
@@ -15,6 +16,7 @@ public class PostScoreComponent extends CustomComponent {
     private final Post post;
 
     private final CssLayout layout = new CssLayout();
+    private final Label score;
 
     public PostScoreComponent(final Post post, final ThreadPresenter presenter) {
         this.post = post;
@@ -24,14 +26,18 @@ public class PostScoreComponent extends CustomComponent {
         setWidth("50px");
         setStyleName("scorecomponent");
 
-        layout.addComponent(new Label(String.valueOf(post.getScore())));
+        score = new Label();
+        layout.addComponent(score);
     }
 
-    public void enableUpDownVoting() {
+    public void enableUpDownVoting(final PostVote postVote) {
         layout.removeAllComponents();
         final NativeButton upvote = new NativeButton();
         upvote.setStyleName("upvote");
         upvote.addStyleName("vote");
+        if (postVote.isUpvote()) {
+            upvote.addStyleName("done");
+        }
         upvote.addListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
@@ -43,6 +49,9 @@ public class PostScoreComponent extends CustomComponent {
         final NativeButton downvote = new NativeButton();
         downvote.setStyleName("downvote");
         downvote.addStyleName("vote");
+        if (postVote.isDownvote()) {
+            downvote.addStyleName("done");
+        }
         downvote.addListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
@@ -50,7 +59,10 @@ public class PostScoreComponent extends CustomComponent {
             }
         });
         layout.addComponent(downvote);
+        layout.addComponent(score);
+    }
 
-        layout.addComponent(new Label(String.valueOf(post.getScore())));
+    public void setScore(final long newScore) {
+        score.setValue(String.valueOf(newScore));
     }
 }

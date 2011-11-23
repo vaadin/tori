@@ -7,6 +7,7 @@ import org.vaadin.tori.component.ContextMenu;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.thread.ThreadPresenter;
 
@@ -158,6 +159,7 @@ public class PostComponent extends CustomComponent {
 
         contextMenu = new ContextMenu();
         score = new PostScoreComponent(post, presenter);
+        score.setScore(presenter.getScore(post));
 
         root.addComponent(getAvatarImage(post), "avatar");
         root.addComponent(new Label(post.getAuthor().getDisplayedName()),
@@ -229,8 +231,8 @@ public class PostComponent extends CustomComponent {
                 });
     }
 
-    public void enableUpDownVoting() {
-        score.enableUpDownVoting();
+    public void enableUpDownVoting(final PostVote postVote) {
+        score.enableUpDownVoting(postVote);
     }
 
     private Component buildReportPostComponent(final Post post,
@@ -287,5 +289,12 @@ public class PostComponent extends CustomComponent {
         image.setWidth("100px");
         image.setHeight("100px");
         return image;
+    }
+
+    public void refreshScores(final long newScore) {
+        score.setScore(newScore);
+
+        // just to refresh the up/down icon visuals. bad method name here.
+        score.enableUpDownVoting(presenter.getPostVote(post));
     }
 }

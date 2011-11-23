@@ -3,6 +3,7 @@ package org.vaadin.tori.thread;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
@@ -99,10 +100,36 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     }
 
     public void upvote(final Post post) {
-        log.debug("upvote not implemented yet");
+        if (!getPostVote(post).isUpvote()) {
+            dataSource.upvote(post);
+        } else {
+            dataSource.removeUserVote(post);
+        }
+        final long newScore = dataSource.getScore(post);
+        getView().refreshScores(post, newScore);
     }
 
     public void downvote(final Post post) {
-        log.debug("downvote not implemented yet");
+        if (!getPostVote(post).isDownvote()) {
+            dataSource.downvote(post);
+        } else {
+            dataSource.removeUserVote(post);
+        }
+        final long newScore = dataSource.getScore(post);
+        getView().refreshScores(post, newScore);
+    }
+
+    public void unvote(final Post post) {
+        dataSource.removeUserVote(post);
+        final long newScore = dataSource.getScore(post);
+        getView().refreshScores(post, newScore);
+    }
+
+    public PostVote getPostVote(final Post post) {
+        return dataSource.getPostVote(post);
+    }
+
+    public long getScore(final Post post) {
+        return dataSource.getScore(post);
     }
 }
