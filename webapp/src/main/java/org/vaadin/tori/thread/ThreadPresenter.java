@@ -100,11 +100,20 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     }
 
     public void upvote(final Post post) {
-        dataSource.upvote(post);
+        if (!getPostVote(post).isUpvote()) {
+            dataSource.upvote(post);
+        } else {
+            dataSource.removeUserVote(post);
+        }
+
     }
 
     public void downvote(final Post post) {
-        dataSource.downvote(post);
+        if (!getPostVote(post).isDownvote()) {
+            dataSource.downvote(post);
+        } else {
+            dataSource.removeUserVote(post);
+        }
     }
 
     public void unvote(final Post post) {

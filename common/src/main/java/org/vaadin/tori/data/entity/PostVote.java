@@ -10,12 +10,12 @@ import javax.persistence.Transient;
 public class PostVote {
     @Id
     @ManyToOne
-    @JoinColumn(nullable = false, unique = true)
+    @JoinColumn(nullable = false)
     private User voter;
 
     @Id
     @ManyToOne
-    @JoinColumn(nullable = false, unique = true)
+    @JoinColumn(nullable = false)
     private Post post;
 
     // this value is just an internal representation of the vote
