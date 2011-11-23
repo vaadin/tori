@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.event.dom.client.ScrollHandler;
@@ -202,16 +201,6 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
     @Override
     public void onScroll(final ScrollEvent event) {
         overlay.setVisible(!isScrollComponentVisible());
-
-        // TODO remove this debugging output
-        if (scrollComponent != null) {
-            final int scrollTop = client.getView().getElement().getScrollTop();
-            final int componentHeight = scrollComponent.getOffsetHeight();
-            final int componentTop = scrollComponent.getAbsoluteTop();
-
-            GWT.log("scrollTop:" + scrollTop + ", componentHeight: "
-                    + componentHeight + ", componentTop: " + componentTop);
-        }
     }
 
     @Override
