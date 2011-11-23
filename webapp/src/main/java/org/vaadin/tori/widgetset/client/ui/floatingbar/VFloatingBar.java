@@ -194,6 +194,9 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
 
     @Override
     public void onResize(final ResizeEvent event) {
+        // resizing the window might also reveal/hide the scroll component
+        overlay.setVisible(!isScrollComponentVisible());
+
         client.runDescendentsLayout(this);
         overlay.updateShadowSizeAndPosition();
     }
