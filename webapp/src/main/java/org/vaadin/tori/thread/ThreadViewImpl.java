@@ -52,6 +52,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         layout.addComponent(new HeadingLabel(getCurrentThread().getTopic(),
                 HeadingLevel.H2));
 
+        boolean first = true;
         for (final Post post : posts) {
             final PostComponent c = new PostComponent(post, getPresenter());
             if (getPresenter().userMayReportPosts()) {
@@ -64,19 +65,22 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 c.enableQuoting();
             }
             layout.addComponent(c);
-        }
 
-        // TODO replace with a proper version
-        layout.addComponent(getDummyFloatingBar());
+            if (first) {
+                // create the floating summary bar for the first post
+                final FloatingBar summaryBar = getPostSummaryBar(post);
+                summaryBar.setScrollComponent(c);
+                layout.addComponent(summaryBar);
+                first = false;
+            }
+        }
     }
 
-    private FloatingBar getDummyFloatingBar() {
+    private FloatingBar getPostSummaryBar(final Post post) {
         final FloatingBar bar = new FloatingBar();
         final VerticalLayout barLayout = new VerticalLayout();
         barLayout.setWidth("100%");
-        barLayout
-                .addComponent(new Label(
-                        "Lorem ipsum... Lorem ipsum... Lorem ipsum... Lorem ipsum... Lorem ipsum2..."));
+        barLayout.addComponent(new Label(post.getBodyRaw().substring(0, 100)));
         bar.setContent(barLayout);
         return bar;
     }

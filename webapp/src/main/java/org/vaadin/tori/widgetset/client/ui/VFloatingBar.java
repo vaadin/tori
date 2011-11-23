@@ -84,9 +84,9 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
         if (content == null) {
             content = new FloatingContent();
         }
-        content.setVisible(true);
         content.show();
         content.updateFromUIDL(uidl, client);
+        content.setVisible(!isScrollComponentVisible());
     }
 
     private Widget getScrollComponent(final UIDL uidl) {
@@ -159,6 +159,15 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
                 RootPanel.get().getOffsetHeight() - height);
     }
 
+    private boolean isScrollComponentVisible() {
+        if (scrollComponent != null) {
+            final int componentHeight = scrollComponent.getOffsetHeight();
+            final int componentTop = scrollComponent.getAbsoluteTop();
+            return componentTop > -componentHeight;
+        }
+        return true;
+    }
+
     @Override
     public void onResize(final ResizeEvent event) {
         client.runDescendentsLayout(this);
@@ -167,8 +176,17 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
 
     @Override
     public void onScroll(final ScrollEvent event) {
-        final int scrollTop = client.getView().getElement().getScrollTop();
-        GWT.log("onWindowScroll: " + scrollTop);
+        content.setVisible(!isScrollComponentVisible());
+
+        // TODO remove this debugging output
+        if (scrollComponent != null) {
+            final int scrollTop = client.getView().getElement().getScrollTop();
+            final int componentHeight = scrollComponent.getOffsetHeight();
+            final int componentTop = scrollComponent.getAbsoluteTop();
+
+            GWT.log("scrollTop:" + scrollTop + ", componentHeight: "
+                    + componentHeight + ", componentTop: " + componentTop);
+        }
     }
 
     @Override
