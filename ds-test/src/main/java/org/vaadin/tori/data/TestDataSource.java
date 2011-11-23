@@ -13,6 +13,7 @@ import javax.persistence.TypedQuery;
 
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
+import org.vaadin.tori.data.entity.Following;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
@@ -294,25 +295,70 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void follow(final DiscussionThread thread) {
-        // TODO Auto-generated method stub
-        System.err.println("TestDataSource.follow()");
-        System.err.println("following does nothing!");
+        if (!isFollowing(thread)) {
+            final Following following = new Following();
+            following.setFollower(currentUser);
+            following.setThread(thread);
+            save(following);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private void save(final Following following) {
+        executeWithEntityManager(new Command<Void>() {
+            @Override
+            public Void execute(final EntityManager em) {
+                final EntityTransaction transaction = em.getTransaction();
+                transaction.begin();
+                em.merge(following);
+                transaction.commit();
+                return null;
+            }
+        });
     }
 
     @Override
     public void unFollow(final DiscussionThread thread) {
-        // TODO Auto-generated method stub
-        System.err.println("TestDataSource.unFollow()");
-        System.err.println("unfollowing does nothing!");
+        executeWithEntityManager(new Command<Void>() {
+            @Override
+            public Void execute(final EntityManager em) {
+                final EntityTransaction transaction = em.getTransaction();
+                transaction.begin();
+                try {
+                    final Query query = em
+                            .createQuery("delete from Following f where f.thread = :thread and f.follower = :follower");
+                    query.setParameter("thread", thread);
+                    query.setParameter("follower", currentUser);
+                    query.executeUpdate();
+                } finally {
+                    transaction.commit();
+                }
+                return null;
+            }
+        });
     }
 
     @Override
-    public boolean isFollowing(final DiscussionThread currentThread) {
-        // TODO Auto-generated method stub
-        System.err.println("TestDataSource.isFollowing()");
-        System.err.println("NEVER FOLLOW!");
-        return false;
+    public boolean isFollowing(final DiscussionThread thread) {
+        return executeWithEntityManager(new Command<Boolean>() {
+            @Override
+            public Boolean execute(final EntityManager em) {
+                final TypedQuery<Long> query = em
+                        .createQuery(
+                                "select count(f) from Following f where f.follower = :follower AND f.thread = :thread",
+                                Long.class);
+                query.setParameter("follower", currentUser);
+                query.setParameter("thread", thread);
+                final Long result = query.getSingleResult();
+                if (result != null) {
+                    return result > 0;
+                } else {
+                    return false;
+                }
+            }
+        });
     }
 
     @Override
