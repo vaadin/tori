@@ -57,6 +57,8 @@
 		<path refid="common-classpath"/>
 		<pathelement location="${file.common.jar}"/>
 		<pathelement location="${file.servlet-api.jar}"/>
+		<pathelement location="${file.gwt-user.jar}"/>
+		<pathelement location="${file.gwt-dev.jar}"/>
 		<fileset dir="${dir.web-inf.lib}" includes="**/*.jar"/>
 	</path>
 

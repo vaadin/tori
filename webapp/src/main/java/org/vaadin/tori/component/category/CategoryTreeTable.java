@@ -3,6 +3,8 @@ package org.vaadin.tori.component.category;
 import java.util.List;
 
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.component.ConfirmationDialog;
+import org.vaadin.tori.component.ConfirmationDialog.ConfirmationListener;
 import org.vaadin.tori.component.ContextMenu;
 import org.vaadin.tori.component.ContextMenu.ContextAction;
 import org.vaadin.tori.component.category.CategoryListing.Mode;
@@ -197,10 +199,32 @@ class CategoryTreeTable extends TreeTable {
                 case DELETE:
                     contextMenu.add(
                             new ThemeResource("images/icon-delete.png"),
-                            "Delete category" + '\u2026', new ContextAction() {
+                            "Delete category",
+                            new ContextMenu.ContextComponentSwapper() {
                                 @Override
-                                public void contextClicked() {
-                                    presenter.confirmDelete(category);
+                                public Component swapContextComponent() {
+                                    final String title = String.format(String
+                                            .format("Really delete category \"%s\" and all of its contents?",
+                                                    category.getName()));
+                                    final String confirmCaption = "Yes, Delete";
+                                    final String cancelCaption = "No, Cancel!";
+                                    final ConfirmationListener listener = new ConfirmationListener() {
+
+                                        @Override
+                                        public void onConfirmed() {
+                                            presenter.delete(category);
+                                            contextMenu.close();
+                                        }
+
+                                        @Override
+                                        public void onCancel() {
+                                            contextMenu.close();
+                                        }
+                                    };
+                                    return new ConfirmationDialog(title,
+                                            confirmCaption, cancelCaption,
+                                            listener);
+
                                 }
                             });
                     break;

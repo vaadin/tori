@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.component.FloatingBar;
+import org.vaadin.tori.component.FloatingBar.FloatingAlignment;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.component.post.PostComponent;
@@ -12,8 +14,13 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.mvp.AbstractView;
 
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 
 @SuppressWarnings("serial")
@@ -53,6 +60,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         layout.addComponent(new HeadingLabel(getCurrentThread().getTopic(),
                 HeadingLevel.H2));
 
+        boolean first = true;
         for (final Post post : posts) {
             final PostComponent c = new PostComponent(post, getPresenter());
             postsToComponents.put(post, c);
@@ -88,7 +96,52 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             }
 
             layout.addComponent(c);
+
+            if (first) {
+                // create the floating summary bar for the first post
+                final FloatingBar summaryBar = getPostSummaryBar(post);
+                summaryBar.setScrollComponent(c);
+                layout.addComponent(summaryBar);
+                first = false;
+            }
         }
+
+        // TODO the actual reply form
+        final Label replyForm = new Label("Reply form should be here...");
+        layout.addComponent(replyForm);
+
+        // add the floating quick reply bar
+        final FloatingBar quickReplyBar = getQuickReplyBar();
+        quickReplyBar.setAlignment(FloatingAlignment.BOTTOM);
+        quickReplyBar.setScrollComponent(replyForm);
+        layout.addComponent(quickReplyBar);
+    }
+
+    private FloatingBar getPostSummaryBar(final Post post) {
+        // TODO the actual post summary
+        final FloatingBar bar = new FloatingBar();
+        bar.setContent(new Label(post.getBodyRaw().substring(0, 100)));
+        return bar;
+    }
+
+    private FloatingBar getQuickReplyBar() {
+        // TODO the actual quick reply bar
+        final FloatingBar bar = new FloatingBar();
+        final VerticalLayout layout = new VerticalLayout();
+        layout.setWidth("100%");
+
+        final TextArea replyArea = new TextArea();
+        replyArea.setVisible(false);
+        layout.addComponent(new Button("Quick Reply",
+                new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(final ClickEvent event) {
+                        replyArea.setVisible(!replyArea.isVisible());
+                    }
+                }));
+        layout.addComponent(replyArea);
+        bar.setContent(layout);
+        return bar;
     }
 
     @Override

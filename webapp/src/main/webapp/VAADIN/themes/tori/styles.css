@@ -7,6 +7,7 @@
 /* components */
 @import url(breadcrumbs/style.css);
 @import url(contextmenu/style.css);
+@import url(floatingbar/style.css);
 
 .v-app {
 	font-size: 14px;

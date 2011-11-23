@@ -3,10 +3,10 @@ package org.vaadin.tori.component.post;
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUtil;
+import org.vaadin.tori.component.ConfirmationDialog;
+import org.vaadin.tori.component.ConfirmationDialog.ConfirmationListener;
 import org.vaadin.tori.component.ContextMenu;
 import org.vaadin.tori.component.ContextMenu.ContextAction;
-import org.vaadin.tori.component.HeadingLabel;
-import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
@@ -16,7 +16,6 @@ import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -24,10 +23,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 @SuppressWarnings("serial")
@@ -47,73 +44,48 @@ public class PostComponent extends CustomComponent {
         private static Component newConfirmBanComponent(
                 final ThreadPresenter presenter, final User user,
                 final ContextMenu menu) {
+            final String title = String.format("Ban %s?",
+                    user.getDisplayedName());
+            final String confirmCaption = "Yes, Ban";
+            final String cancelCaption = "No, Cancel!";
+            final ConfirmationListener listener = new ConfirmationListener() {
 
-            final VerticalLayout layout = new VerticalLayout();
-            layout.setMargin(true);
-            layout.setWidth("200px");
-            layout.addComponent(new HeadingLabel("Ban "
-                    + user.getDisplayedName() + "?", HeadingLevel.H2));
+                @Override
+                public void onConfirmed() {
+                    presenter.ban(user);
+                    menu.close();
+                }
 
-            final HorizontalLayout buttonBar = new HorizontalLayout();
-            layout.addComponent(buttonBar);
-            layout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
-
-            final NativeButton ban = new NativeButton("Yes, Ban",
-                    new ClickListener() {
-                        @Override
-                        public void buttonClick(final ClickEvent event) {
-                            presenter.ban(user);
-                            menu.close();
-                        }
-                    });
-            buttonBar.addComponent(ban);
-
-            final NativeButton cancel = new NativeButton("No, Cancel!",
-                    new ClickListener() {
-                        @Override
-                        public void buttonClick(final ClickEvent event) {
-                            menu.close();
-                        }
-                    });
-            buttonBar.addComponent(cancel);
-
-            return layout;
+                @Override
+                public void onCancel() {
+                    menu.close();
+                }
+            };
+            return new ConfirmationDialog(title, confirmCaption, cancelCaption,
+                    listener);
         }
 
         public static Component newConfirmDeleteComponent(
                 final ThreadPresenter presenter, final Post post,
                 final ContextMenu menu) {
+            final String title = String.format("Delete Post?");
+            final String confirmCaption = "Yes, Delete";
+            final String cancelCaption = "No, Cancel!";
+            final ConfirmationListener listener = new ConfirmationListener() {
 
-            final VerticalLayout layout = new VerticalLayout();
-            layout.setMargin(true);
-            layout.setWidth("200px");
-            layout.addComponent(new HeadingLabel("Delete Post?",
-                    HeadingLevel.H2));
+                @Override
+                public void onConfirmed() {
+                    presenter.delete(post);
+                    menu.close();
+                }
 
-            final HorizontalLayout buttonBar = new HorizontalLayout();
-            layout.addComponent(buttonBar);
-            layout.setComponentAlignment(buttonBar, Alignment.MIDDLE_CENTER);
-
-            final NativeButton ban = new NativeButton("Yes, Delete",
-                    new ClickListener() {
-                        @Override
-                        public void buttonClick(final ClickEvent event) {
-                            presenter.delete(post);
-                            menu.close();
-                        }
-                    });
-            buttonBar.addComponent(ban);
-
-            final NativeButton cancel = new NativeButton("No, Cancel!",
-                    new ClickListener() {
-                        @Override
-                        public void buttonClick(final ClickEvent event) {
-                            menu.close();
-                        }
-                    });
-            buttonBar.addComponent(cancel);
-
-            return layout;
+                @Override
+                public void onCancel() {
+                    menu.close();
+                }
+            };
+            return new ConfirmationDialog(title, confirmCaption, cancelCaption,
+                    listener);
         }
     }
 

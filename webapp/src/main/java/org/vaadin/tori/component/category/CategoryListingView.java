@@ -35,5 +35,4 @@ interface CategoryListingView extends View {
      */
     void hideCreateCategoryForm();
 
-    void displayDeleteConfirmation(Category category);
 }

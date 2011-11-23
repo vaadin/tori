@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.component.category.EditCategoryForm.EditCategoryListener;
@@ -221,21 +220,6 @@ public class CategoryListing extends
     @Override
     protected void navigationTo(final String requestedDataId) {
         // NOP
-    }
-
-    @Override
-    public void displayDeleteConfirmation(final Category category) {
-        ConfirmDialog.show(getWindow(), String.format(
-                "Really delete category \"%s\" and all of its contents?",
-                category.getName()), new ConfirmDialog.Listener() {
-
-            @Override
-            public void onClose(final ConfirmDialog dialog) {
-                if (dialog.isConfirmed()) {
-                    getPresenter().delete(category);
-                }
-            }
-        });
     }
 
 }
