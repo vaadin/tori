@@ -5,9 +5,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.event.dom.client.ScrollEvent;
+import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -26,7 +30,9 @@ import com.vaadin.terminal.gwt.client.ui.VPopupView;
  * The client-side implementation for server-side {@code FloatingBar} component.
  */
 public class VFloatingBar extends Widget implements Container, HasWidgets,
-        ResizeHandler {
+        ResizeHandler, ScrollHandler {
+
+    public static final String ATTR_SCROLL_COMPONENT = "scrollComponent";
 
     /** Set the CSS class name to allow styling. */
     public static final String CLASSNAME = "v-floatingbar";
@@ -38,6 +44,9 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
     protected ApplicationConnection client;
 
     private FloatingContent content;
+    private Widget scrollComponent;
+
+    private HandlerRegistration handlerRegistration;
 
     public VFloatingBar() {
         setElement(Document.get().createDivElement());
@@ -69,12 +78,37 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
         // Save the client side identifier (paintable id) for the widget
         paintableId = uidl.getId();
 
+        scrollComponent = getScrollComponent(uidl);
+        attachScrollHandlerIfNeeded();
+
         if (content == null) {
             content = new FloatingContent();
         }
         content.setVisible(true);
         content.show();
         content.updateFromUIDL(uidl, client);
+    }
+
+    private Widget getScrollComponent(final UIDL uidl) {
+        if (client == null) {
+            throw new IllegalStateException(
+                    "The client must be set before calling this method.");
+        }
+
+        if (uidl.hasAttribute(ATTR_SCROLL_COMPONENT)) {
+            return (Widget) client.getPaintable(uidl
+                    .getStringAttribute(ATTR_SCROLL_COMPONENT));
+        }
+        return null;
+    }
+
+    private void attachScrollHandlerIfNeeded() {
+        if (scrollComponent != null && handlerRegistration == null) {
+            // Cannot use Window.addWindowScrollHandler() in Vaadin apps, but
+            // we must listen for scroll events in the VView instance instead.
+            handlerRegistration = client.getView().addDomHandler(this,
+                    ScrollEvent.getType());
+        }
     }
 
     @Override
@@ -129,6 +163,12 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
     public void onResize(final ResizeEvent event) {
         client.runDescendentsLayout(this);
         content.updateShadowSizeAndPosition();
+    }
+
+    @Override
+    public void onScroll(final ScrollEvent event) {
+        final int scrollTop = client.getView().getElement().getScrollTop();
+        GWT.log("onWindowScroll: " + scrollTop);
     }
 
     @Override

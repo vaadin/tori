@@ -1,5 +1,7 @@
 package org.vaadin.tori.component;
 
+import org.vaadin.tori.widgetset.client.ui.VFloatingBar;
+
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.Component;
@@ -28,7 +30,8 @@ public class FloatingBar extends CustomComponent {
 
         // add the component to follow
         if (scrollComponent != null) {
-            target.addAttribute("scrollComponent", scrollComponent);
+            target.addAttribute(VFloatingBar.ATTR_SCROLL_COMPONENT,
+                    scrollComponent);
         }
     }
 
