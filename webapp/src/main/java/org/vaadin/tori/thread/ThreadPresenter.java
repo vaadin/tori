@@ -105,7 +105,8 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         } else {
             dataSource.removeUserVote(post);
         }
-
+        final long newScore = dataSource.getScore(post);
+        getView().refreshScores(post, newScore);
     }
 
     public void downvote(final Post post) {
@@ -114,13 +115,21 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         } else {
             dataSource.removeUserVote(post);
         }
+        final long newScore = dataSource.getScore(post);
+        getView().refreshScores(post, newScore);
     }
 
     public void unvote(final Post post) {
         dataSource.removeUserVote(post);
+        final long newScore = dataSource.getScore(post);
+        getView().refreshScores(post, newScore);
     }
 
     public PostVote getPostVote(final Post post) {
         return dataSource.getPostVote(post);
+    }
+
+    public long getScore(final Post post) {
+        return dataSource.getScore(post);
     }
 }

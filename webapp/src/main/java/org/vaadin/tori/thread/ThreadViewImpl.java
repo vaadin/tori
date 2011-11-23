@@ -1,6 +1,8 @@
 package org.vaadin.tori.thread;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.component.HeadingLabel;
@@ -19,6 +21,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         implements ThreadView {
 
     private CssLayout layout;
+
+    private final Map<Post, PostComponent> postsToComponents = new HashMap<Post, PostComponent>();
 
     @Override
     protected Component createCompositionRoot() {
@@ -51,6 +55,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
         for (final Post post : posts) {
             final PostComponent c = new PostComponent(post, getPresenter());
+            postsToComponents.put(post, c);
 
             // main component permissions
 
@@ -126,5 +131,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     private void reloadPage() {
         displayPosts(getPresenter().getCurrentThread().getPosts());
+    }
+
+    @Override
+    public void refreshScores(final Post post, final long newScore) {
+        postsToComponents.get(post).refreshScores(newScore);
     }
 }

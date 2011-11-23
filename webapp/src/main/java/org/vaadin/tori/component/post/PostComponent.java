@@ -159,6 +159,7 @@ public class PostComponent extends CustomComponent {
 
         contextMenu = new ContextMenu();
         score = new PostScoreComponent(post, presenter);
+        score.setScore(presenter.getScore(post));
 
         root.addComponent(getAvatarImage(post), "avatar");
         root.addComponent(new Label(post.getAuthor().getDisplayedName()),
@@ -288,5 +289,12 @@ public class PostComponent extends CustomComponent {
         image.setWidth("100px");
         image.setHeight("100px");
         return image;
+    }
+
+    public void refreshScores(final long newScore) {
+        score.setScore(newScore);
+
+        // just to refresh the up/down icon visuals. bad method name here.
+        score.enableUpDownVoting(presenter.getPostVote(post));
     }
 }

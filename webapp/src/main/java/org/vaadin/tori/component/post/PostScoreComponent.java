@@ -16,6 +16,7 @@ public class PostScoreComponent extends CustomComponent {
     private final Post post;
 
     private final CssLayout layout = new CssLayout();
+    private final Label score;
 
     public PostScoreComponent(final Post post, final ThreadPresenter presenter) {
         this.post = post;
@@ -25,7 +26,8 @@ public class PostScoreComponent extends CustomComponent {
         setWidth("50px");
         setStyleName("scorecomponent");
 
-        layout.addComponent(new Label(String.valueOf(post.getScore())));
+        score = new Label();
+        layout.addComponent(score);
     }
 
     public void enableUpDownVoting(final PostVote postVote) {
@@ -57,7 +59,10 @@ public class PostScoreComponent extends CustomComponent {
             }
         });
         layout.addComponent(downvote);
+        layout.addComponent(score);
+    }
 
-        layout.addComponent(new Label(String.valueOf(post.getScore())));
+    public void setScore(final long newScore) {
+        score.setValue(String.valueOf(newScore));
     }
 }

@@ -417,4 +417,24 @@ public class TestDataSource implements DataSource {
         });
     }
 
+    @Override
+    public long getScore(final Post post) {
+        return executeWithEntityManager(new Command<Long>() {
+            @Override
+            public Long execute(final EntityManager em) {
+                final TypedQuery<Long> query = em
+                        .createQuery(
+                                "select SUM(v.vote) from PostVote v where v.post = :post",
+                                Long.class);
+                query.setParameter("post", post);
+                final Long singleResult = query.getSingleResult();
+                if (singleResult != null) {
+                    return singleResult;
+                } else {
+                    return 0L;
+                }
+            }
+        });
+    }
+
 }

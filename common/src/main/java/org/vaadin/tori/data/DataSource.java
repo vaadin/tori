@@ -140,4 +140,13 @@ public interface DataSource {
      * given {@link Post} are removed before the new vote is given.
      */
     void downvote(Post post);
+
+    /**
+     * Upvotes count as +1 points, downvotes count as -1 points.
+     * <p/>
+     * <strong>Note: This method is on probation. The calculations may change,
+     * or this method might be split in three: <code>getUpvotes</code>,
+     * <code>getDownvotes</code> and <code>getVoteCount</code>
+     */
+    long getScore(Post post);
 }
