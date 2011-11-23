@@ -4,6 +4,7 @@ import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.component.ContextMenu;
+import org.vaadin.tori.component.ContextMenu.ContextAction;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.data.entity.Post;
@@ -32,6 +33,14 @@ import com.vaadin.ui.themes.Reindeer;
 @SuppressWarnings("serial")
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't bother us with serialization.")
 public class PostComponent extends CustomComponent {
+
+    private static final String UNFOLLOW_CAPTION = "Unfollow Thread";
+    private static final ThemeResource UNFOLLOW_ICON = new ThemeResource(
+            "images/icon-unfollow.png");
+
+    private static final String FOLLOW_CAPTION = "Follow Thread";
+    private static final ThemeResource FOLLOW_ICON = new ThemeResource(
+            "images/icon-follow.png");
 
     // trying a new pattern here
     private static class Util {
@@ -134,6 +143,23 @@ public class PostComponent extends CustomComponent {
     private final ThreadPresenter presenter;
     private final PostScoreComponent score;
 
+    private final ContextAction followAction = new ContextMenu.ContextAction() {
+        @Override
+        public void contextClicked() {
+            presenter.followThread();
+        }
+    };
+
+    private final ContextAction unfollowAction = new ContextMenu.ContextAction() {
+        @Override
+        public void contextClicked() {
+            presenter.unFollowThread();
+        }
+    };
+
+    private boolean followingEnabled = false;
+    private boolean unfollowingEnabled = false;
+
     /**
      * @throws IllegalArgumentException
      *             if any argument is <code>null</code>.
@@ -190,23 +216,15 @@ public class PostComponent extends CustomComponent {
     }
 
     public void enableThreadFollowing() {
-        contextMenu.add(new ThemeResource("images/icon-follow.png"),
-                "Follow Thread", new ContextMenu.ContextAction() {
-                    @Override
-                    public void contextClicked() {
-                        presenter.followThread();
-                    }
-                });
+        contextMenu.add(FOLLOW_ICON, FOLLOW_CAPTION, followAction);
+        followingEnabled = true;
+        unfollowingEnabled = false;
     }
 
     public void enableThreadUnFollowing() {
-        contextMenu.add(new ThemeResource("images/icon-unfollow.png"),
-                "Unfollow Thread", new ContextMenu.ContextAction() {
-                    @Override
-                    public void contextClicked() {
-                        presenter.unFollowThread();
-                    }
-                });
+        contextMenu.add(UNFOLLOW_ICON, UNFOLLOW_CAPTION, unfollowAction);
+        followingEnabled = false;
+        unfollowingEnabled = true;
     }
 
     public void enableBanning() {
@@ -296,5 +314,21 @@ public class PostComponent extends CustomComponent {
 
         // just to refresh the up/down icon visuals. bad method name here.
         score.enableUpDownVoting(presenter.getPostVote(post));
+    }
+
+    public void swapFollowingMenu() {
+        if (followingEnabled || unfollowingEnabled) {
+
+            if (followingEnabled) {
+                contextMenu.swap(followAction, UNFOLLOW_ICON, UNFOLLOW_CAPTION,
+                        unfollowAction);
+            } else {
+                contextMenu.swap(unfollowAction, FOLLOW_ICON, FOLLOW_CAPTION,
+                        followAction);
+            }
+
+            followingEnabled = !followingEnabled;
+            unfollowingEnabled = !unfollowingEnabled;
+        }
     }
 }
