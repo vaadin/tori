@@ -1,0 +1,9 @@
+.v-floatingbar {
+	width: 100%;
+	position: fixed;
+}
+
+.v-floatingbar.alignment-bottom {
+	top: auto !important;
+	bottom: 0;
+}
