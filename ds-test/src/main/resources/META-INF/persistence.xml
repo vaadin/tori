@@ -10,6 +10,7 @@
 		<class>org.vaadin.tori.data.entity.User</class>
 		<class>org.vaadin.tori.data.entity.Post</class>
 		<class>org.vaadin.tori.data.entity.PostVote</class>
+		<class>org.vaadin.tori.data.entity.Following</class>
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />

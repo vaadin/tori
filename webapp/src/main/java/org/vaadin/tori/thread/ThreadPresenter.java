@@ -82,8 +82,8 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     }
 
     public boolean userCanUnFollowThread() {
-        // TODO Auto-generated method stub
-        return false;
+        return authorizationService.mayFollow(currentThread)
+                && dataSource.isFollowing(currentThread);
     }
 
     public void delete(final Post post) {
