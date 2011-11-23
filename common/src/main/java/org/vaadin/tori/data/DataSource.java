@@ -115,4 +115,19 @@ public interface DataSource {
     boolean isFollowing(DiscussionThread currentThread);
 
     void delete(Post post);
+
+    /**
+     * Get the current voting status for the current user on a {@link Post}.
+     * 
+     * @param post
+     * @return a negative number is given for a downvote, a positive number is
+     *         given for an upvote, and <code>0</code> (zero) is returned if the
+     *         user hans't voted on the {@link Post}. This query with an
+     *         anonymous user always returns <code>0</code>.
+     */
+    int getUserVoteStatus(Post post);
+
+    void upvote(Post post);
+
+    void downvote(Post post);
 }

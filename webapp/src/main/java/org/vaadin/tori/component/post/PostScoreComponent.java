@@ -2,6 +2,7 @@ package org.vaadin.tori.component.post;
 
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.thread.ThreadPresenter;
+import org.vaadin.tori.thread.ThreadPresenter.PostVoteStatus;
 
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CssLayout;
@@ -27,11 +28,14 @@ public class PostScoreComponent extends CustomComponent {
         layout.addComponent(new Label(String.valueOf(post.getScore())));
     }
 
-    public void enableUpDownVoting() {
+    public void enableUpDownVoting(final PostVoteStatus postVoteStatus) {
         layout.removeAllComponents();
         final NativeButton upvote = new NativeButton();
         upvote.setStyleName("upvote");
         upvote.addStyleName("vote");
+        if (postVoteStatus == PostVoteStatus.UPVOTED) {
+            upvote.addStyleName("done");
+        }
         upvote.addListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
@@ -43,6 +47,9 @@ public class PostScoreComponent extends CustomComponent {
         final NativeButton downvote = new NativeButton();
         downvote.setStyleName("downvote");
         downvote.addStyleName("vote");
+        if (postVoteStatus == PostVoteStatus.DOWNVOTED) {
+            downvote.addStyleName("done");
+        }
         downvote.addListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {

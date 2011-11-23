@@ -325,4 +325,26 @@ public class TestDataSource implements DataSource {
         });
     }
 
+    @Override
+    public int getUserVoteStatus(final Post post) {
+        // TODO
+        System.err.println("TestDataSource.getUserVoteStatus(Post)");
+        System.err.println("will never have been voted!");
+        return 0;
+    }
+
+    @Override
+    public void upvote(final Post post) {
+        // TODO
+        System.err.println("TestDataSource.upvote()");
+        System.err.println("upvoting not implemeneted");
+    }
+
+    @Override
+    public void downvote(final Post post) {
+        // TODO
+        System.err.println("TestDataSource.downvote()");
+        System.err.println("downvoting not implemeneted");
+    }
+
 }

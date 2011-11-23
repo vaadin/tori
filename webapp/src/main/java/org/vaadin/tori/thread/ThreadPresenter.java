@@ -10,6 +10,10 @@ import org.vaadin.tori.service.post.PostReport;
 
 public class ThreadPresenter extends Presenter<ThreadView> {
 
+    public enum PostVoteStatus {
+        NOT_VOTED, UPVOTED, DOWNVOTED
+    };
+
     private DiscussionThread currentThread;
 
     public ThreadPresenter(final DataSource dataSource,
@@ -99,10 +103,21 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     }
 
     public void upvote(final Post post) {
-        log.debug("upvote not implemented yet");
+        dataSource.upvote(post);
     }
 
     public void downvote(final Post post) {
-        log.debug("downvote not implemented yet");
+        dataSource.downvote(post);
+    }
+
+    public PostVoteStatus getVotesForPost(final Post post) {
+        final int vote = dataSource.getUserVoteStatus(post);
+        if (vote < 0) {
+            return PostVoteStatus.DOWNVOTED;
+        } else if (vote == 0) {
+            return PostVoteStatus.NOT_VOTED;
+        } else {
+            return PostVoteStatus.UPVOTED;
+        }
     }
 }

@@ -95,4 +95,19 @@ public class LiferayDataSource implements DataSource {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
+    @Override
+    public int getUserVoteStatus(final Post post) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public void upvote(final Post post) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public void downvote(final Post post) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
 }
