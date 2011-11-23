@@ -97,4 +97,12 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     public boolean userMayVote() {
         return authorizationService.mayVote();
     }
+
+    public void upvote(final Post post) {
+        log.debug("upvote not implemented yet");
+    }
+
+    public void downvote(final Post post) {
+        log.debug("downvote not implemented yet");
+    }
 }

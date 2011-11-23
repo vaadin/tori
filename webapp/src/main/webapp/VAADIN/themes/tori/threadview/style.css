@@ -111,7 +111,12 @@
 	background-repeat: no-repeat;
 }
 
-.scorecomponent .upvote         { background-position: left top; }
-.scorecomponent .upvote:hover   { background-position: right top; }
-.scorecomponent .downvote       { background-position: left bottom; }
-.scorecomponent .downvote:hover { background-position: right bottom; }
+.scorecomponent .upvote         { background-position:   0px   0px; }
+.scorecomponent .upvote:hover   { background-position: -16px   0px; }
+.scorecomponent .downvote       { background-position:   0px -10px; }
+.scorecomponent .downvote:hover { background-position: -16px -10px; }
+
+.scorecomponent .done.upvote         { background-position: -32px   0px; }
+.scorecomponent .done.upvote:hover   { background-position: -48px   0px; }
+.scorecomponent .done.downvote       { background-position: -32px -10px; }
+.scorecomponent .done.downvote:hover { background-position: -48px -10px; }
