@@ -80,6 +80,9 @@
 }
 
 /* Summary post that is displayed in the floating bar */
+.post.summary table.container {
+	margin: 0;	
+}
 .post.summary [location="permalink"],
 .post.summary [location="postedtime"],
 .post.summary [location="score"] {
@@ -99,6 +102,12 @@
 .post.summary .author [location="avatar"] .v-embedded img {
 	width: 100% !important;
 	height: auto !important;
+}
+.post.summary .body .v-label {
+	height: 1.5em;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;	
 }
 
 .reportwindow .v-window-outerheader {
