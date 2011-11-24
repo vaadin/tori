@@ -21,7 +21,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 /**
- * Use {@link ContextMenu.Builder} to build a new {@link ContextMenu}
+ * ContextMenu displays a context menu that can contain {@link ContextAction}
+ * items and {@link ContextComponentSwapper} items. Notice that this component
+ * is not visible until there are some actual items to display.
  * 
  * @author Henrik Paul
  */
