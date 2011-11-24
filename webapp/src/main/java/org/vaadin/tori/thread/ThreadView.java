@@ -26,12 +26,7 @@ public interface ThreadView extends View {
 
     void refreshScores(Post post, long newScore);
 
-    /**
-     * @param reply
-     *            The newly created {@link Post} component, representing the
-     *            reply.
-     */
-    void confirmReplyPosted(Post reply);
+    void confirmReplyPosted();
 
     /**
      * This method is called when a reply is tried to be sent, but the current

@@ -154,7 +154,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             post.setThread(currentThread);
             post.setTime(new Date());
             dataSource.saveAsCurrentUser(post);
-            getView().confirmReplyPosted(post);
+            getView().confirmReplyPosted();
         } else {
             getView().displayUserCanNotReply();
         }

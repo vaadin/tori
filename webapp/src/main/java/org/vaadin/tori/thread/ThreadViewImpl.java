@@ -227,7 +227,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void confirmReplyPosted(final Post reply) {
+    public void confirmReplyPosted() {
         getWindow().showNotification("Replied!");
         reloadPage();
     }
