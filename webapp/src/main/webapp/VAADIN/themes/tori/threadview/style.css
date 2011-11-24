@@ -120,3 +120,11 @@
 .scorecomponent .done.upvote:hover   { background-position: -48px   0px; }
 .scorecomponent .done.downvote       { background-position: -32px -10px; }
 .scorecomponent .done.downvote:hover { background-position: -48px -10px; }
+
+.threadview .spacer {
+	text-align: center;
+	font-size: 20px;
+	color: #666;
+	padding: 1em 0;
+	font-style: italic;
+}

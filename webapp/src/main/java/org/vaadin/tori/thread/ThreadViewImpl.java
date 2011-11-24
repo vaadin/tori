@@ -39,6 +39,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     private final Map<Post, PostComponent> postsToComponents = new HashMap<Post, PostComponent>();
 
+    public ThreadViewImpl() {
+        setStyleName("threadview");
+    }
+
     @Override
     protected Component createCompositionRoot() {
         return layout = new CssLayout();
@@ -116,7 +120,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         }
 
         if (getPresenter().userMayReply()) {
-            layout.addComponent(new HeadingLabel("~~ FIN ~~", HeadingLevel.H3));
+            final Label spacer = new Label("~~ FIN ~~");
+            spacer.setStyleName("spacer");
+            layout.addComponent(spacer);
+
             final ReplyComponent reply = new ReplyComponent(replyListener,
                     getPresenter().getFormattingSyntax());
             layout.addComponent(reply);
