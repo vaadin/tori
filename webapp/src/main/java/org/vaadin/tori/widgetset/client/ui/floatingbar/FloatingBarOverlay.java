@@ -15,6 +15,7 @@ class FloatingBarOverlay extends VOverlay {
 
     private Widget contentWidget;
     private final VFloatingBar owner;
+    private boolean hiding = false;
 
     private static final String CLASSNAME = VPopupView.CLASSNAME + " "
             + VFloatingBar.CLASSNAME + " " + VPopupView.CLASSNAME + "-popup";
@@ -25,8 +26,9 @@ class FloatingBarOverlay extends VOverlay {
     public FloatingBarOverlay(final VFloatingBar owner) {
         this.owner = owner;
 
+        // the shadow is defined in CSS instead of additional elements
+        setShadowEnabled(false);
         setStyleName(CLASSNAME);
-        setShadowEnabled(true);
         setShadowStyle(CLASSNAME_SHADOW);
         setModal(false);
     }
@@ -59,11 +61,29 @@ class FloatingBarOverlay extends VOverlay {
      */
     @Override
     public Widget getParent() {
-        if (!isAttached()) {
+        if (!isAttached() || hiding) {
             return super.getParent();
         } else {
             return owner;
         }
+    }
+
+    @Override
+    public void hide(final boolean autoClosed) {
+        hiding = true;
+        super.hide(autoClosed);
+    }
+
+    @Override
+    public void show() {
+        hiding = false;
+        super.show();
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        hiding = false;
     }
 
     // overridden for method visibility
