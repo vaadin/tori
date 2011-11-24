@@ -70,7 +70,7 @@ public interface DataSource {
      * Returns all {@link Post Posts} in a {@link Thread} in ascending time
      * order (oldest, i.e. first, post first).
      */
-    List<Post> getPosts(Thread thread);
+    List<Post> getPosts(DiscussionThread thread);
 
     /**
      * Saves all changes made to the given {@link Category Categories}.

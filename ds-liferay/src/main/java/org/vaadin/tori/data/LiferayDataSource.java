@@ -42,7 +42,7 @@ public class LiferayDataSource implements DataSource {
     }
 
     @Override
-    public List<Post> getPosts(final Thread thread) {
+    public List<Post> getPosts(final DiscussionThread thread) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 

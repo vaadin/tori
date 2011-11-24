@@ -173,7 +173,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public List<Post> getPosts(final Thread thread) {
+    public List<Post> getPosts(final DiscussionThread thread) {
         return executeWithEntityManager(new Command<List<Post>>() {
             @Override
             public List<Post> execute(final EntityManager em) {
