@@ -13,7 +13,6 @@ import javax.persistence.TypedQuery;
 
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
-import org.vaadin.tori.data.entity.Following;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
@@ -275,6 +274,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_ALWAYS_NULL", justification = "System.out will never be null, afaik")
     public void reportPost(final PostReport report) {
         System.out.println("TestDataSource.reportPost()");
         System.out.println("Post: " + report.getPost());
@@ -310,17 +310,18 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_ALWAYS_NULL", justification = "System.out will never be null, afaik")
     public void ban(final User user) {
         // TODO Auto-generated method stub
-        System.err.println("TestDataSource.ban()");
-        System.err.println("Banning, it does nothing!");
+        System.out.println("TestDataSource.ban()");
+        System.out.println("Banning, it does nothing!");
     }
 
     @Override
     @SuppressWarnings("deprecation")
     public void follow(final DiscussionThread thread) {
         if (!isFollowing(thread)) {
-            final Following following = new Following();
+            final org.vaadin.tori.data.entity.Following following = new org.vaadin.tori.data.entity.Following();
             following.setFollower(currentUser);
             following.setThread(thread);
             save(following);
@@ -328,7 +329,7 @@ public class TestDataSource implements DataSource {
     }
 
     @SuppressWarnings("deprecation")
-    private void save(final Following following) {
+    private void save(final org.vaadin.tori.data.entity.Following following) {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
