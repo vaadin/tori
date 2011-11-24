@@ -79,6 +79,28 @@
 	visibility: visible;
 }
 
+/* Summary post that is displayed in the floating bar */
+.post.summary [location="permalink"],
+.post.summary [location="postedtime"],
+.post.summary [location="score"] {
+	display: none;
+}
+.post.summary .author [location="avatar"] {
+	width: 30px;
+	float: left;
+}
+.post.summary .author [location="authorname"] {
+	margin-top: 5px;	
+}
+.post.summary .author [location="authorname"] .v-label {
+	text-indent: 5px;	
+}
+.post.summary .author [location="avatar"] .v-embedded,
+.post.summary .author [location="avatar"] .v-embedded img {
+	width: 100% !important;
+	height: auto !important;
+}
+
 .reportwindow .v-window-outerheader {
 	padding: 5px;
 	background: white;
