@@ -8,6 +8,8 @@ import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
 import org.vaadin.tori.ToriUtil;
 
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
@@ -71,6 +73,17 @@ public class ContextMenu extends CustomComponent {
         settingsIcon = newSettingsIcon(contextComponent);
         layout.addComponent(settingsIcon);
         layout.addComponent(contextComponent);
+    }
+
+    public boolean hasItems() {
+        return !actions.isEmpty() || !swappers.isEmpty();
+    }
+
+    @Override
+    public void paintContent(final PaintTarget target) throws PaintException {
+        // should be visible only if there are menu items
+        setVisible(hasItems());
+        super.paintContent(target);
     }
 
     public void add(final Resource icon, final String caption,
