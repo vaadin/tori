@@ -130,9 +130,8 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
 
     @Override
     protected void onDetach() {
-        super.onDetach();
-        overlay.setVisible(false);
         overlay.hide();
+        super.onDetach();
     }
 
     @Override
