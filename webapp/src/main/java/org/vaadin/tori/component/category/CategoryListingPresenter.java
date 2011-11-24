@@ -130,10 +130,6 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         return items;
     }
 
-    void confirmDelete(final Category category) {
-        getView().displayDeleteConfirmation(category);
-    }
-
     void delete(final Category category) {
         if (log.isDebugEnabled()) {
             log.debug("Deleting " + category.getName());
@@ -142,10 +138,16 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         reloadCategoriesFromDataSource();
     }
 
-    void edit(final Category category) {
+    void edit(final Category category, final String name,
+            final String description) {
         if (log.isDebugEnabled()) {
-            log.debug("Editing " + category.getName());
+            log.debug("Editing " + category.getName() + " -> " + name + ", "
+                    + category.getDescription() + " -> " + description);
         }
+        category.setName(name);
+        category.setDescription(description);
+        dataSource.save(category);
+        reloadCategoriesFromDataSource();
     }
 
     void follow(final Category category) {

@@ -29,4 +29,12 @@ public interface AuthorizationService {
     boolean mayEdit(Post post);
 
     boolean mayReplyIn(DiscussionThread thread);
+
+    boolean mayBan();
+
+    boolean mayFollow(DiscussionThread currentThread);
+
+    boolean mayDelete(Post post);
+
+    boolean mayVote();
 }

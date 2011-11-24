@@ -17,7 +17,7 @@ public class DiscussionThread extends AbstractEntity {
     @Column(nullable = false)
     private String topic;
 
-    @OneToMany(mappedBy = "thread", cascade = { CascadeType.REMOVE })
+    @OneToMany(mappedBy = "thread", cascade = { CascadeType.ALL }, orphanRemoval = true)
     @JoinColumn(nullable = false)
     private List<Post> posts;
 

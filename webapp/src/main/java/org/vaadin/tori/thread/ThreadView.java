@@ -16,6 +16,16 @@ public interface ThreadView extends View {
 
     void confirmPostReported();
 
+    void confirmBanned();
+
+    void confirmFollowingThread();
+
+    void confirmUnFollowingThread();
+
+    void confirmPostDeleted();
+
+    void refreshScores(Post post, long newScore);
+
     void confirmReplyPosted();
 
     /**

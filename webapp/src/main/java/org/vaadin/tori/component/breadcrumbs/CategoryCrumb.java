@@ -18,13 +18,16 @@ import com.vaadin.ui.Tree;
 abstract class CategoryCrumb extends CustomComponent {
 
     public static class Clickable extends CategoryCrumb {
+        private transient final Category category;
+
         public Clickable(final Category category,
                 final CategorySelectionListener listener) {
             super(category, listener);
+            this.category = category;
             setButtonClickListener(new SplitButtonClickListener() {
                 @Override
                 public void splitButtonClick(final SplitButtonClickEvent event) {
-                    listener.selectCategory(category);
+                    listener.selectCategory(Clickable.this.category);
                 }
             });
         }

@@ -39,4 +39,16 @@ public interface DebugAuthorizationService extends AuthorizationService {
 
     /** @see AuthorizationService#mayReplyIn(DiscussionThread) */
     void setMayReplyIn(DiscussionThread thread, boolean b);
+
+    /** @see AuthorizationService#mayBan() */
+    void setMayBan(boolean b);
+
+    /** @see AuthorizationService#mayFollow(DiscussionThread) */
+    void setMayFollow(DiscussionThread thread, boolean b);
+
+    /** @see AuthorizationService#mayDelete(Post) */
+    void setMayDelete(Post post, boolean b);
+
+    /** @see AuthorizationService#mayVote() */
+    void setMayVote(boolean b);
 }

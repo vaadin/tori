@@ -5,6 +5,8 @@ import java.util.List;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.PostVote;
+import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.service.post.PostReport;
 
 public class LiferayDataSource implements DataSource {
@@ -71,6 +73,56 @@ public class LiferayDataSource implements DataSource {
 
     @Override
     public void save(final Post post) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public void ban(final User user) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public void follow(final DiscussionThread thread) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public void unFollow(final DiscussionThread thread) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public boolean isFollowing(final DiscussionThread thread) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public void delete(final Post post) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public PostVote getPostVote(final Post post) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public void upvote(final Post post) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public void downvote(final Post post) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public void removeUserVote(final Post post) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public long getScore(final Post post) {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 

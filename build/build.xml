@@ -57,6 +57,8 @@
 		<path refid="common-classpath"/>
 		<pathelement location="${file.common.jar}"/>
 		<pathelement location="${file.servlet-api.jar}"/>
+		<pathelement location="${file.gwt-user.jar}"/>
+		<pathelement location="${file.gwt-dev.jar}"/>
 		<fileset dir="${dir.web-inf.lib}" includes="**/*.jar"/>
 	</path>
 
@@ -350,7 +352,7 @@
 		<property name="findbugs.outputfile" value="findbugs-ds-test.xml"/>
 		<property name="findbugs.acp.refid" value="ds-test-classpath"/>
 		<property name="findbugs.sourcepath" value="${dir.ds.test}/src"/>
-		<property name="findbugs.target" value="${file.ds.test.jar}}"/>
+		<property name="findbugs.target" value="${file.ds.test.jar}"/>
 		<antcall target="-findbugs-shared-target" inheritall="yes"/>
 	</target>
 	

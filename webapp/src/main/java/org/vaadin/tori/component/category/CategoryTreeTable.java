@@ -3,11 +3,13 @@ package org.vaadin.tori.component.category;
 import java.util.List;
 
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.component.ConfirmationDialog;
+import org.vaadin.tori.component.ConfirmationDialog.ConfirmationListener;
 import org.vaadin.tori.component.ContextMenu;
-import org.vaadin.tori.component.ContextMenu.Builder;
 import org.vaadin.tori.component.ContextMenu.ContextAction;
 import org.vaadin.tori.component.category.CategoryListing.Mode;
 import org.vaadin.tori.component.category.CategoryListingPresenter.ContextMenuOperation;
+import org.vaadin.tori.component.category.EditCategoryForm.EditCategoryListener;
 import org.vaadin.tori.data.entity.Category;
 
 import com.vaadin.data.Item;
@@ -172,29 +174,63 @@ class CategoryTreeTable extends TreeTable {
             final List<ContextMenuOperation> contextMenuOperations = presenter
                     .getContextMenuOperations(category);
 
-            final Builder builder = new ContextMenu.Builder();
+            final ContextMenu contextMenu = new ContextMenu();
             for (final ContextMenuOperation menuItem : contextMenuOperations) {
                 switch (menuItem) {
                 case EDIT:
-                    builder.add(new ThemeResource("images/icon-edit.png"),
-                            "Edit category", new ContextAction() {
+                    contextMenu.add(new ThemeResource("images/icon-edit.png"),
+                            "Edit category",
+                            new ContextMenu.ContextComponentSwapper() {
                                 @Override
-                                public void contextClicked() {
-                                    presenter.edit(category);
+                                public Component swapContextComponent() {
+                                    final EditCategoryListener listener = new EditCategoryListener() {
+                                        @Override
+                                        public void commit(final String name,
+                                                final String description) {
+                                            presenter.edit(category, name,
+                                                    description);
+                                        }
+                                    };
+                                    return new EditCategoryForm(listener,
+                                            category);
                                 }
                             });
                     break;
                 case DELETE:
-                    builder.add(new ThemeResource("images/icon-delete.png"),
-                            "Delete category" + '\u2026', new ContextAction() {
+                    contextMenu.add(
+                            new ThemeResource("images/icon-delete.png"),
+                            "Delete category",
+                            new ContextMenu.ContextComponentSwapper() {
                                 @Override
-                                public void contextClicked() {
-                                    presenter.confirmDelete(category);
+                                public Component swapContextComponent() {
+                                    final String title = String.format(String
+                                            .format("Really delete category \"%s\" and all of its contents?",
+                                                    category.getName()));
+                                    final String confirmCaption = "Yes, Delete";
+                                    final String cancelCaption = "No, Cancel!";
+                                    final ConfirmationListener listener = new ConfirmationListener() {
+
+                                        @Override
+                                        public void onConfirmed() {
+                                            presenter.delete(category);
+                                            contextMenu.close();
+                                        }
+
+                                        @Override
+                                        public void onCancel() {
+                                            contextMenu.close();
+                                        }
+                                    };
+                                    return new ConfirmationDialog(title,
+                                            confirmCaption, cancelCaption,
+                                            listener);
+
                                 }
                             });
                     break;
                 case FOLLOW:
-                    builder.add(new ThemeResource("images/icon-pin.png"),
+                    contextMenu.add(
+                            new ThemeResource("images/icon-follow.png"),
                             "Follow category", new ContextAction() {
                                 @Override
                                 public void contextClicked() {
@@ -204,7 +240,7 @@ class CategoryTreeTable extends TreeTable {
                     break;
                 }
             }
-            return builder.build();
+            return contextMenu;
         }
     }
 

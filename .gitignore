@@ -10,5 +10,7 @@ build
 /build/.project
 bin
 webapp/src/main/webapp/VAADIN/widgetsets
+webapp/GWT development mode for webapp.launch
 desktop.ini
+
 

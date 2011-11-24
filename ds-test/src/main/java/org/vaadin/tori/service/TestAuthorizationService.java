@@ -17,6 +17,10 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     private final Map<Category, Boolean> mayEditCategory = new HashMap<Category, Boolean>();;
     private final Map<DiscussionThread, Boolean> mayReplyInThread = new HashMap<DiscussionThread, Boolean>();
     private final Map<Post, Boolean> mayEditPost = new HashMap<Post, Boolean>();
+    private boolean mayBan = true;
+    private final Map<DiscussionThread, Boolean> mayFollow = new HashMap<DiscussionThread, Boolean>();
+    private final Map<Post, Boolean> mayDelete = new HashMap<Post, Boolean>();
+    private boolean mayVote = true;
 
     @Override
     public boolean isCategoryAdministrator() {
@@ -95,8 +99,47 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     }
 
     @Override
-    public void setMayReplyIn(final DiscussionThread thread,
-            final boolean b) {
+    public void setMayReplyIn(final DiscussionThread thread, final boolean b) {
         mayReplyInThread.put(thread, b);
+    }
+
+    @Override
+    public boolean mayBan() {
+        return mayBan;
+    }
+
+    @Override
+    public void setMayBan(final boolean b) {
+        mayBan = b;
+    }
+
+    @Override
+    public boolean mayFollow(final DiscussionThread currentThread) {
+        return get(mayFollow, currentThread, true);
+    }
+
+    @Override
+    public void setMayFollow(final DiscussionThread thread, final boolean b) {
+        mayFollow.put(thread, b);
+    }
+
+    @Override
+    public boolean mayDelete(final Post post) {
+        return get(mayDelete, post, true);
+    }
+
+    @Override
+    public void setMayDelete(final Post post, final boolean b) {
+        mayDelete.put(post, b);
+    }
+
+    @Override
+    public boolean mayVote() {
+        return mayVote;
+    }
+
+    @Override
+    public void setMayVote(final boolean b) {
+        mayVote = b;
     }
 }

@@ -1,5 +1,8 @@
 package org.vaadin.tori.component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
@@ -31,34 +34,13 @@ public class ContextMenu extends CustomComponent {
         Component swapContextComponent();
     }
 
-    public static class Builder {
-        private final ContextMenu contextMenu;
-
-        public Builder() {
-            contextMenu = new ContextMenu();
-        }
-
-        public Builder add(final Resource icon, final String caption,
-                final ContextAction action) {
-            contextMenu.add(icon, caption, action);
-            return this;
-        }
-
-        public Builder add(final Resource icon, final String caption,
-                final ContextComponentSwapper swapper) {
-            contextMenu.add(icon, caption, swapper);
-            return this;
-        }
-
-        public ContextMenu build() {
-            return contextMenu;
-        }
-    }
-
     private final HorizontalLayout layout;
     private final CssLayout popupLayout;
     private final PopupButton contextComponent;
     private final Button settingsIcon;
+
+    private final Map<ContextAction, Component> actions = new HashMap<ContextAction, Component>();
+    private final Map<ContextComponentSwapper, Component> swappers = new HashMap<ContextComponentSwapper, Component>();
 
     private final PopupVisibilityListener popupListener = new PopupVisibilityListener() {
         @Override
@@ -75,7 +57,7 @@ public class ContextMenu extends CustomComponent {
         }
     };
 
-    private ContextMenu() {
+    public ContextMenu() {
         setCompositionRoot(layout = new HorizontalLayout());
         layout.setSizeFull();
         setWidth("16px");
@@ -91,10 +73,16 @@ public class ContextMenu extends CustomComponent {
         layout.addComponent(contextComponent);
     }
 
-    protected void add(final Resource icon, final String caption,
+    public void add(final Resource icon, final String caption,
             final ContextAction action) {
         ToriUtil.checkForNull(action, "action may not be null");
+        final Button button = createButton(icon, caption, action);
+        actions.put(action, button);
+        popupLayout.addComponent(button);
+    }
 
+    private Button createButton(final Resource icon, final String caption,
+            final ContextAction action) {
         final Button button = new Button(caption, new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
@@ -104,13 +92,19 @@ public class ContextMenu extends CustomComponent {
         });
         button.setIcon(icon);
         button.setStyleName(Reindeer.BUTTON_LINK);
+        return button;
+    }
+
+    public void add(final Resource icon, final String caption,
+            final ContextComponentSwapper swapper) {
+        ToriUtil.checkForNull(swapper, "swapper may not be null");
+        final Button button = createButton(icon, caption, swapper);
+        swappers.put(swapper, button);
         popupLayout.addComponent(button);
     }
 
-    protected void add(final Resource icon, final String caption,
+    private Button createButton(final Resource icon, final String caption,
             final ContextComponentSwapper swapper) {
-        ToriUtil.checkForNull(swapper, "swapper may not be null");
-
         final Button button = new Button(caption + '\u2026',
                 new Button.ClickListener() {
                     @Override
@@ -122,7 +116,16 @@ public class ContextMenu extends CustomComponent {
                 });
         button.setIcon(icon);
         button.setStyleName(Reindeer.BUTTON_LINK);
-        popupLayout.addComponent(button);
+        return button;
+    }
+
+    public void swap(final ContextAction oldToSwapOut, final Resource icon,
+            final String caption, final ContextAction newAction) {
+        final Component oldComponent = actions.remove(oldToSwapOut);
+        if (oldComponent != null) {
+            popupLayout.replaceComponent(oldComponent,
+                    createButton(icon, caption, newAction));
+        }
     }
 
     private static Button newSettingsIcon(final PopupButton contextComponent) {
@@ -146,5 +149,10 @@ public class ContextMenu extends CustomComponent {
         popupButton.addPopupVisibilityListener(popupListener);
         popupLayout.setWidth("200px");
         return popupButton;
+    }
+
+    /** Closes the context menu */
+    public void close() {
+        contextComponent.setPopupVisible(false);
     }
 }

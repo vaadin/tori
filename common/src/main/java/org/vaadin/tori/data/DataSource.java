@@ -5,6 +5,8 @@ import java.util.List;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.PostVote;
+import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.service.post.PostReport;
 
 public interface DataSource {
@@ -106,4 +108,47 @@ public interface DataSource {
     void reportPost(PostReport report);
 
     void save(Post post);
+
+    void ban(User user);
+
+    void follow(DiscussionThread thread);
+
+    void unFollow(DiscussionThread thread);
+
+    boolean isFollowing(DiscussionThread thread);
+
+    void delete(Post post);
+
+    PostVote getPostVote(Post post);
+
+    /**
+     * Deletes the current user's possible vote on the given {@link Post}. If no
+     * such vote is given, this method does nothing.
+     */
+    void removeUserVote(Post post);
+
+    /**
+     * The current user upvotes the given {@link Post}.
+     * <p/>
+     * <em>Note:</em> This method must make sure that all previous votes on the
+     * given {@link Post} are removed before the new vote is given.
+     */
+    void upvote(Post post);
+
+    /**
+     * The current user downvotes the given {@link Post}
+     * <p/>
+     * <em>Note:</em> This method must make sure that all previous votes on the
+     * given {@link Post} are removed before the new vote is given.
+     */
+    void downvote(Post post);
+
+    /**
+     * Upvotes count as +1 points, downvotes count as -1 points.
+     * <p/>
+     * <strong>Note: This method is on probation. The calculations may change,
+     * or this method might be split in three: <code>getUpvotes</code>,
+     * <code>getDownvotes</code> and <code>getVoteCount</code>
+     */
+    long getScore(Post post);
 }
