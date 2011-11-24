@@ -60,4 +60,8 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         getView().confirmUnfollowing();
     }
 
+    public boolean userMayMove(final DiscussionThread thread) {
+        return authorizationService.mayMove(thread);
+    }
+
 }

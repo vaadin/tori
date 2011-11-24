@@ -6,6 +6,7 @@ import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.category.CategoryPresenter;
 import org.vaadin.tori.component.ContextMenu;
 import org.vaadin.tori.component.ContextMenu.ContextAction;
+import org.vaadin.tori.component.ContextMenu.ContextComponentSwapper;
 import org.vaadin.tori.data.entity.DiscussionThread;
 
 import com.vaadin.terminal.ExternalResource;
@@ -102,6 +103,16 @@ public class TopicComponent extends CustomComponent {
         } else if (presenter.userCanUnFollow(thread)) {
             menu.add(UNFOLLOW_ICON, UNFOLLOW_CAPTION,
                     new UnfollowAction(thread));
+        }
+
+        if (presenter.userMayMove(thread)) {
+            menu.add(new ExternalResource("images/icon-move.png"),
+                    "Move thread", new ContextComponentSwapper() {
+                        @Override
+                        public Component swapContextComponent() {
+                            return new ThreadMoveComponent(thread, menu);
+                        }
+                    });
         }
 
         return menu;

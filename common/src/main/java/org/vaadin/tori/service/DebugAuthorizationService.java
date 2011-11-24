@@ -51,4 +51,7 @@ public interface DebugAuthorizationService extends AuthorizationService {
 
     /** @see AuthorizationService#mayVote() */
     void setMayVote(boolean b);
+
+    /** @see AuthorizationService#mayMove(DiscussionThread) */
+    void setMayMove(DiscussionThread thread, boolean b);
 }
