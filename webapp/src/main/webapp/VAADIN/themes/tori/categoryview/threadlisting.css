@@ -14,8 +14,8 @@
 	background-image: none;
 }
 
-.threadTable .v-table-row td,
-.threadTable .v-table-row-odd td {
+.threadTable .v-table-row > td,
+.threadTable .v-table-row-odd > td {
 	background: #fff;
 	border-bottom: 1px solid #dfdfdf;
 	-moz-transition: background 0.2s;
@@ -23,7 +23,17 @@
 	transition: background 0.2s;
 }
 
-.threadTable .v-table-row:last-child td,
-.threadTable .v-table-row-odd:last-child td {
+.threadTable .v-table-row:last-child > td,
+.threadTable .v-table-row-odd:last-child > td {
 	border-bottom: 0;
+}
+
+.threadTable .v-table-row       .contextmenu,
+.threadTable .v-table-row-odd   .contextmenu { 
+	visibility: hidden; 
+}
+
+.threadTable .v-table-row:hover .contextmenu, 
+.threadTable .v-table-row-odd:hover .contextmenu { 
+	visibility: inherit; 
 }

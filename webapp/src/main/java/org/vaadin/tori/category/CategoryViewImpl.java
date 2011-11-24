@@ -13,6 +13,7 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.AbstractView;
 
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 
@@ -21,7 +22,7 @@ public class CategoryViewImpl extends
         AbstractView<CategoryView, CategoryPresenter> implements CategoryView {
 
     private VerticalLayout layout;
-    private ThreadListing threadListing;
+    private Component threadListing;
     private CategoryListing categoryListing;
     private VerticalLayout categoryLayout;
 
@@ -40,14 +41,19 @@ public class CategoryViewImpl extends
         layout.addComponent(categoryLayout);
 
         layout.addComponent(new HeadingLabel("Threads", HeadingLevel.H2));
-        layout.addComponent(threadListing = new ThreadListing());
+        layout.addComponent(threadListing = new Label("placeholder"));
     }
 
     @Override
     protected CategoryPresenter createPresenter() {
         final ToriApplication app = ToriApplication.getCurrent();
-        return new CategoryPresenter(app.getDataSource(),
-                app.getAuthorizationService());
+        final CategoryPresenter categoryPresenter = new CategoryPresenter(
+                app.getDataSource(), app.getAuthorizationService());
+
+        layout.replaceComponent(threadListing,
+                threadListing = new ThreadListing(categoryPresenter));
+
+        return categoryPresenter;
     }
 
     @Override
@@ -60,7 +66,7 @@ public class CategoryViewImpl extends
 
     @Override
     public void displayThreads(final List<DiscussionThread> threadsInCategory) {
-        threadListing.setThreads(threadsInCategory);
+        ((ThreadListing) threadListing).setThreads(threadsInCategory);
     }
 
     @Override

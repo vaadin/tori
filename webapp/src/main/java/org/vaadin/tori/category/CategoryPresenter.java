@@ -2,6 +2,7 @@ package org.vaadin.tori.category;
 
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
+import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 
@@ -37,6 +38,16 @@ public class CategoryPresenter extends Presenter<CategoryView> {
 
     public Category getCurrentCategory() {
         return currentCategory;
+    }
+
+    public boolean userCanFollow(final DiscussionThread thread) {
+        return authorizationService.mayFollow(thread)
+                && !dataSource.isFollowing(thread);
+    }
+
+    public boolean userCanUnFollow(final DiscussionThread thread) {
+        return authorizationService.mayFollow(thread)
+                && dataSource.isFollowing(thread);
     }
 
 }
