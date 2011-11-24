@@ -86,4 +86,14 @@ public class CategoryViewImpl extends
         return getPresenter().getCurrentCategory();
     }
 
+    @Override
+    public void confirmFollowing() {
+        getWindow().showNotification("following thread");
+    }
+
+    @Override
+    public void confirmUnfollowing() {
+        getWindow().showNotification("unfollowed thread");
+    }
+
 }

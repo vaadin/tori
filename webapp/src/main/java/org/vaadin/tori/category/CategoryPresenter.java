@@ -50,4 +50,14 @@ public class CategoryPresenter extends Presenter<CategoryView> {
                 && dataSource.isFollowing(thread);
     }
 
+    public void follow(final DiscussionThread thread) {
+        dataSource.follow(thread);
+        getView().confirmFollowing();
+    }
+
+    public void unfollow(final DiscussionThread thread) {
+        dataSource.unFollow(thread);
+        getView().confirmUnfollowing();
+    }
+
 }

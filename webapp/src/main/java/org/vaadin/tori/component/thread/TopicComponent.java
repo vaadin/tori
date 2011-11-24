@@ -28,6 +28,7 @@ public class TopicComponent extends CustomComponent {
 
         @Override
         public void contextClicked() {
+            presenter.follow(thread);
             menu.swap(this, UNFOLLOW_ICON, UNFOLLOW_CAPTION,
                     new UnfollowAction(thread));
         }
@@ -42,6 +43,7 @@ public class TopicComponent extends CustomComponent {
 
         @Override
         public void contextClicked() {
+            presenter.unfollow(thread);
             menu.swap(this, FOLLOW_ICON, FOLLOW_CAPTION, new FollowAction(
                     thread));
         }
