@@ -293,21 +293,17 @@ public class TestDataSource implements DataSource {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
+
+                final DiscussionThread thread = post.getThread();
+
                 final EntityTransaction transaction = em.getTransaction();
                 transaction.begin();
-                try {
-                    if (post.getId() == 0) {
-                        em.persist(post);
-                    } else {
-                        em.merge(post);
-                    }
-                    transaction.commit();
-                } catch (final Exception e) {
-                    e.printStackTrace();
-                    if (transaction.isActive()) {
-                        transaction.rollback();
-                    }
-                }
+
+                em.merge(thread);
+                thread.getPosts().add(post);
+                em.persist(thread);
+
+                transaction.commit();
                 return null;
             }
         });

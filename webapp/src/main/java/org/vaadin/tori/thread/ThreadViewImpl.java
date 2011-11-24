@@ -38,6 +38,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     };
 
     private final Map<Post, PostComponent> postsToComponents = new HashMap<Post, PostComponent>();
+    private final CssLayout postsLayout = new CssLayout();
 
     public ThreadViewImpl() {
         setStyleName("threadview");
@@ -68,52 +69,22 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public void displayPosts(final List<Post> posts) {
         layout.removeAllComponents();
-
         layout.addComponent(new HeadingLabel(getCurrentThread().getTopic(),
                 HeadingLevel.H2));
 
+        postsLayout.removeAllComponents();
+        layout.addComponent(postsLayout);
+
         boolean first = true;
         for (final Post post : posts) {
-            final PostComponent c = new PostComponent(post, getPresenter());
-            postsToComponents.put(post, c);
-
-            // main component permissions
-
-            if (getPresenter().userMayReportPosts()) {
-                c.enableReporting();
-            }
-            if (getPresenter().userMayEdit(post)) {
-                c.enableEditing();
-            }
-            if (getPresenter().userMayQuote(post)) {
-                c.enableQuoting();
-            }
-            if (getPresenter().userMayVote()) {
-                c.enableUpDownVoting(getPresenter().getPostVote(post));
-            }
-
-            // context menu permissions
-
-            if (getPresenter().userCanFollowThread()) {
-                c.enableThreadFollowing();
-            }
-            if (getPresenter().userCanUnFollowThread()) {
-                c.enableThreadUnFollowing();
-            }
-            if (getPresenter().userMayBan()) {
-                c.enableBanning();
-            }
-            if (getPresenter().userMayDelete(post)) {
-                c.enableDeleting();
-            }
-
-            layout.addComponent(c);
+            final PostComponent c = newPostComponent(post);
+            postsLayout.addComponent(c);
 
             if (first) {
                 // create the floating summary bar for the first post
                 final FloatingBar summaryBar = getPostSummaryBar(post);
                 summaryBar.setScrollComponent(c);
-                layout.addComponent(summaryBar);
+                postsLayout.addComponent(summaryBar);
                 first = false;
             }
 
@@ -135,6 +106,42 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
             layout.addComponent(quickReplyBar);
         }
+    }
+
+    private PostComponent newPostComponent(final Post post) {
+        final PostComponent c = new PostComponent(post, getPresenter());
+        postsToComponents.put(post, c);
+
+        // main component permissions
+
+        if (getPresenter().userMayReportPosts()) {
+            c.enableReporting();
+        }
+        if (getPresenter().userMayEdit(post)) {
+            c.enableEditing();
+        }
+        if (getPresenter().userMayQuote(post)) {
+            c.enableQuoting();
+        }
+        if (getPresenter().userMayVote()) {
+            c.enableUpDownVoting(getPresenter().getPostVote(post));
+        }
+
+        // context menu permissions
+
+        if (getPresenter().userCanFollowThread()) {
+            c.enableThreadFollowing();
+        }
+        if (getPresenter().userCanUnFollowThread()) {
+            c.enableThreadUnFollowing();
+        }
+        if (getPresenter().userMayBan()) {
+            c.enableBanning();
+        }
+        if (getPresenter().userMayDelete(post)) {
+            c.enableDeleting();
+        }
+        return c;
     }
 
     private FloatingBar getPostSummaryBar(final Post post) {
@@ -220,9 +227,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void confirmReplyPosted() {
-        // TODO make neater
+    public void confirmReplyPosted(final Post reply) {
         getWindow().showNotification("Replied!");
+        reloadPage();
     }
 
     @Override
