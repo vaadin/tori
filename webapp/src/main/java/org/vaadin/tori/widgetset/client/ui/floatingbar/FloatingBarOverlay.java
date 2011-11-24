@@ -26,8 +26,9 @@ class FloatingBarOverlay extends VOverlay {
     public FloatingBarOverlay(final VFloatingBar owner) {
         this.owner = owner;
 
+        // the shadow is defined in CSS instead of additional elements
+        setShadowEnabled(false);
         setStyleName(CLASSNAME);
-        setShadowEnabled(true);
         setShadowStyle(CLASSNAME_SHADOW);
         setModal(false);
     }

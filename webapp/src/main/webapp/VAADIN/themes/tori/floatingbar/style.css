@@ -1,9 +1,14 @@
 .v-floatingbar {
 	width: 100%;
 	position: fixed;
+	-moz-box-shadow: 0 1px 6px #555;
+	-webkit-box-shadow: 0 1px 6px #555;
+	box-shadow: 0 1px 6px #555;
 }
-
 .v-floatingbar.alignment-bottom {
 	top: auto !important;
 	bottom: 0;
+	-moz-box-shadow: 0 -1px 6px #555;
+	-webkit-box-shadow: 0 -1px 6px #555;
+	box-shadow: 0 -1px 6px #555;
 }
