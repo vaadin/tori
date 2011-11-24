@@ -123,8 +123,9 @@ public class ContextMenu extends CustomComponent {
             final String caption, final ContextAction newAction) {
         final Component oldComponent = actions.remove(oldToSwapOut);
         if (oldComponent != null) {
-            popupLayout.replaceComponent(oldComponent,
-                    createButton(icon, caption, newAction));
+            final Button newButton = createButton(icon, caption, newAction);
+            popupLayout.replaceComponent(oldComponent, newButton);
+            actions.put(newAction, newButton);
         }
     }
 
