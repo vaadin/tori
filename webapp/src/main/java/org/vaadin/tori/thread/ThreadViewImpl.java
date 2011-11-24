@@ -145,10 +145,18 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         return c;
     }
 
+    private PostComponent newPostSummaryComponent(final Post post) {
+        final PostComponent c = new PostComponent(post, getPresenter());
+        c.addStyleName("summary");
+        if (getPresenter().userMayQuote(post)) {
+            c.enableQuoting();
+        }
+        return c;
+    }
+
     private FloatingBar getPostSummaryBar(final Post post) {
-        // TODO the actual post summary
         final FloatingBar bar = new FloatingBar();
-        bar.setContent(new Label(post.getBodyRaw().substring(0, 100)));
+        bar.setContent(newPostSummaryComponent(post));
         return bar;
     }
 

@@ -9,8 +9,11 @@
 @import url(contextmenu/style.css);
 @import url(floatingbar/style.css);
 
-.v-app {
+.v-app,
+.v-popupview, .v-popupview:hover {
 	font-size: 14px;
+	color: #2f2f2f;
+	text-decoration: none;
 }
 
 a:link, 

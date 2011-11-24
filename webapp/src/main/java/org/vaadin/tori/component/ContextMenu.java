@@ -8,6 +8,8 @@ import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
 import org.vaadin.tori.ToriUtil;
 
+import com.vaadin.terminal.PaintException;
+import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
@@ -19,7 +21,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 /**
- * Use {@link ContextMenu.Builder} to build a new {@link ContextMenu}
+ * ContextMenu displays a context menu that can contain {@link ContextAction}
+ * items and {@link ContextComponentSwapper} items. Notice that this component
+ * is not visible until there are some actual items to display.
  * 
  * @author Henrik Paul
  */
@@ -71,6 +75,17 @@ public class ContextMenu extends CustomComponent {
         settingsIcon = newSettingsIcon(contextComponent);
         layout.addComponent(settingsIcon);
         layout.addComponent(contextComponent);
+    }
+
+    public boolean hasItems() {
+        return !actions.isEmpty() || !swappers.isEmpty();
+    }
+
+    @Override
+    public void paintContent(final PaintTarget target) throws PaintException {
+        // should be visible only if there are menu items
+        setVisible(hasItems());
+        super.paintContent(target);
     }
 
     public void add(final Resource icon, final String caption,
