@@ -509,4 +509,10 @@ public class TestDataSource implements DataSource {
         });
     }
 
+    @Override
+    public void saveAsCurrentUser(final Post post) {
+        post.setAuthor(currentUser);
+        save(post);
+    }
+
 }

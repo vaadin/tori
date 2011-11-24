@@ -149,12 +149,11 @@ public class ThreadPresenter extends Presenter<ThreadView> {
 
         if (userMayReply()) {
             final Post post = new Post();
-            // TODO: how did i get current user now again?
             post.setAuthor(null);
             post.setBodyRaw(rawBody);
             post.setThread(currentThread);
             post.setTime(new Date());
-            dataSource.save(post);
+            dataSource.saveAsCurrentUser(post);
             getView().confirmReplyPosted();
         } else {
             getView().displayUserCanNotReply();

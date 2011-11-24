@@ -126,4 +126,9 @@ public class LiferayDataSource implements DataSource {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
+    @Override
+    public void saveAsCurrentUser(final Post post) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
 }

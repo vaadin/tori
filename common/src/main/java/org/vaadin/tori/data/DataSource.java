@@ -151,4 +151,10 @@ public interface DataSource {
      * <code>getDownvotes</code> and <code>getVoteCount</code>
      */
     long getScore(Post post);
+
+    /**
+     * Same as {@link #save(Post)}, but makes sure that the <code>post</code>'s
+     * author is the current user.
+     */
+    void saveAsCurrentUser(Post post);
 }
