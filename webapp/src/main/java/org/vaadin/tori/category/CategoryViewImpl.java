@@ -24,6 +24,8 @@ public class CategoryViewImpl extends
     private ThreadListing threadListing;
     private CategoryListing categoryListing;
     private VerticalLayout categoryLayout;
+    private VerticalLayout threadLayout;
+    private HeadingLabel noThreadsInfo;
 
     @Override
     protected Component createCompositionRoot() {
@@ -33,14 +35,22 @@ public class CategoryViewImpl extends
     @Override
     public void initView() {
         categoryLayout = new VerticalLayout();
+        layout.addComponent(categoryLayout);
+
         categoryLayout.addComponent(new HeadingLabel("Contained Categories",
                 HeadingLevel.H2));
         categoryLayout.addComponent(categoryListing = new CategoryListing(
                 Mode.SINGLE_COLUMN));
-        layout.addComponent(categoryLayout);
 
-        layout.addComponent(new HeadingLabel("Threads", HeadingLevel.H2));
-        layout.addComponent(threadListing = new ThreadListing());
+        threadLayout = new VerticalLayout();
+        layout.addComponent(threadLayout);
+
+        threadLayout.addComponent(new HeadingLabel("Threads", HeadingLevel.H2));
+        threadLayout.addComponent(threadListing = new ThreadListing());
+
+        noThreadsInfo = new HeadingLabel(
+                "There are no threads in this category", HeadingLevel.H1);
+        layout.addComponent(noThreadsInfo);
     }
 
     @Override
@@ -60,6 +70,10 @@ public class CategoryViewImpl extends
 
     @Override
     public void displayThreads(final List<DiscussionThread> threadsInCategory) {
+        // show contained threads only if there are any
+        threadLayout.setVisible(!threadsInCategory.isEmpty());
+        noThreadsInfo.setVisible(threadsInCategory.isEmpty());
+
         threadListing.setThreads(threadsInCategory);
     }
 
