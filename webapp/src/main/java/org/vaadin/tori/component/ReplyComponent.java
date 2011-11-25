@@ -3,6 +3,9 @@ package org.vaadin.tori.component;
 import org.vaadin.hene.expandingtextarea.ExpandingTextArea;
 import org.vaadin.tori.ToriApplication;
 
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
@@ -42,9 +45,16 @@ public class ReplyComponent extends CustomComponent {
         @Override
         public void textChange(final TextChangeEvent event) {
             final String previewText = event.getText();
-            final String formattedPreview = ToriApplication.getCurrent()
-                    .getPostFormatter().format(previewText);
-            preview.setValue(formattedPreview + "<br/>");
+            updatePreview(previewText);
+        }
+    };
+
+    private final ValueChangeListener VALUE_CHANGE_LISTENER = new Property.ValueChangeListener() {
+        @Override
+        public void valueChange(final ValueChangeEvent event) {
+            // update the preview also on value change
+            final String previewText = (String) event.getProperty().getValue();
+            updatePreview(previewText);
         }
     };
 
@@ -85,6 +95,7 @@ public class ReplyComponent extends CustomComponent {
                 "clearbutton");
 
         input.addListener(INPUT_CHANGE_LISTENER);
+        input.addListener(VALUE_CHANGE_LISTENER);
         setCompactMode(false);
     }
 
@@ -102,6 +113,12 @@ public class ReplyComponent extends CustomComponent {
     private void resetInput() {
         input.setValue("");
         preview.setValue("<br/>");
+    }
+
+    private void updatePreview(final String unformattedText) {
+        final String formattedPreview = ToriApplication.getCurrent()
+                .getPostFormatter().format(unformattedText);
+        preview.setValue(formattedPreview + "<br/>");
     }
 
     public void setCompactMode(final boolean compact) {
