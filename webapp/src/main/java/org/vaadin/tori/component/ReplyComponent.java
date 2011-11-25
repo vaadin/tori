@@ -20,10 +20,12 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.PopupView;
-import com.vaadin.ui.TextField;
 
 @SuppressWarnings("serial")
 public class ReplyComponent extends CustomComponent {
+
+    private static final int MAX_ROWS_EXPANDED = 10;
+    private static final int MAX_ROWS_COMPACT = 2;
 
     public interface ReplyListener {
         void sendReply(String rawBody);
@@ -103,6 +105,7 @@ public class ReplyComponent extends CustomComponent {
                 getSyntaxLabel(formattingSyntaxXhtml)), "formattingsyntax");
 
         input = new ExpandingTextArea();
+        input.setMaxRows(MAX_ROWS_EXPANDED);
         input.setWidth("100%");
         input.setImmediate(true);
         layout.addComponent(input, "input");
@@ -119,7 +122,7 @@ public class ReplyComponent extends CustomComponent {
         setCompactMode(false);
     }
 
-    public TextField getInput() {
+    public ExpandingTextArea getInput() {
         return input;
     }
 
@@ -154,9 +157,11 @@ public class ReplyComponent extends CustomComponent {
     public void setCompactMode(final boolean compact) {
         if (compact) {
             input.setReadOnly(true);
+            input.setMaxRows(MAX_ROWS_COMPACT);
             addStyleName("compact");
         } else {
             input.setReadOnly(false);
+            input.setMaxRows(MAX_ROWS_EXPANDED);
             removeStyleName("compact");
         }
         compactMode = compact;
