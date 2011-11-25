@@ -40,8 +40,9 @@ public class ThreadMoveComponent extends CustomComponent {
                 new NativeButton.ClickListener() {
                     @Override
                     public void buttonClick(final ClickEvent event) {
-                        getApplication().getMainWindow().showNotification(
-                                "move not implemented");
+                        final Category newCategory = (Category) categories
+                                .getValue();
+                        presenter.move(thread, newCategory);
                         menu.close();
                     }
                 }));

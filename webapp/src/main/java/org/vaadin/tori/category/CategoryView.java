@@ -18,4 +18,6 @@ public interface CategoryView extends View {
     void confirmFollowing();
 
     void confirmUnfollowing();
+
+    void confirmThreadMoved();
 }

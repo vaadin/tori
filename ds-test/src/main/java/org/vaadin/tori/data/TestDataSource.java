@@ -509,4 +509,20 @@ public class TestDataSource implements DataSource {
         save(post);
     }
 
+    @Override
+    public void move(final DiscussionThread thread,
+            final Category destinationCategory) {
+        executeWithEntityManager(new Command<Void>() {
+
+            @Override
+            public Void execute(final EntityManager em) {
+                thread.setCategory(destinationCategory);
+                final EntityTransaction transaction = em.getTransaction();
+                transaction.begin();
+                em.merge(thread);
+                transaction.commit();
+                return null;
+            }
+        });
+    }
 }

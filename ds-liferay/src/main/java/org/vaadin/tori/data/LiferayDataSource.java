@@ -131,4 +131,10 @@ public class LiferayDataSource implements DataSource {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
+    @Override
+    public void move(final DiscussionThread thread,
+            final Category destinationCategory) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
 }

@@ -60,7 +60,6 @@ public class CategoryViewImpl extends
     public void displaySubCategories(final List<Category> subCategories) {
         // show contained categories only if there are any
         categoryLayout.setVisible(!subCategories.isEmpty());
-
         categoryListing.setCategories(subCategories);
     }
 
@@ -96,4 +95,8 @@ public class CategoryViewImpl extends
         getWindow().showNotification("unfollowed thread");
     }
 
+    @Override
+    public void confirmThreadMoved() {
+        getWindow().showNotification("thread moved");
+    }
 }

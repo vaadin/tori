@@ -74,4 +74,10 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         return dataSource.getSubCategories(category);
     }
 
+    public void move(final DiscussionThread thread,
+            final Category destinationCategory) {
+        dataSource.move(thread, destinationCategory);
+        getView().confirmThreadMoved();
+        getView().displayThreads(dataSource.getThreads(currentCategory));
+    }
 }

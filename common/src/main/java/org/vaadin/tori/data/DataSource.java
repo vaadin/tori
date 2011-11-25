@@ -157,4 +157,6 @@ public interface DataSource {
      * author is the current user.
      */
     void saveAsCurrentUser(Post post);
+
+    void move(DiscussionThread thread, Category destinationCategory);
 }
