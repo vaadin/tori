@@ -167,6 +167,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 getPresenter().getFormattingSyntax());
         quickReply.getInput().setPropertyDataSource(dataSource);
         quickReply.setCompactMode(true);
+        quickReply.setCollapsible(true);
         quickReply.getInput().addListener(new FieldEvents.FocusListener() {
             @Override
             public void focus(final FocusEvent event) {

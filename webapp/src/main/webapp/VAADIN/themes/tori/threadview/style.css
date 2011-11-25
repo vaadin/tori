@@ -181,3 +181,11 @@
 	-webkit-transition: height 0.2s ease-in-out;
 	transition: height 0.2s ease-in-out;
 }
+.v-floatingbar .reply.collapsible [location="captionlabel"] .v-label {
+	padding-right: 20px;
+	background: url(../images/icon-collapse-panel.png) center right no-repeat;
+	float: left;	
+}
+.v-floatingbar .reply.collapsible.compact [location="captionlabel"] .v-label {
+	background-image: url(../images/icon-expand-panel.png);	
+}

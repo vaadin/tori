@@ -9,8 +9,12 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
+import com.vaadin.event.LayoutEvents;
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
@@ -58,11 +62,21 @@ public class ReplyComponent extends CustomComponent {
         }
     };
 
+    private final LayoutClickListener COLLAPSE_LISTENER = new LayoutEvents.LayoutClickListener() {
+        @Override
+        public void layoutClick(final LayoutClickEvent event) {
+            // toggle compact mode
+            setCompactMode(!compactMode);
+        }
+    };
+
     private final CustomLayout layout = new CustomLayout(
             ToriApplication.CUSTOM_LAYOUT_PATH + "replylayout");
     private final ReplyListener listener;
     private final ExpandingTextArea input;
     private final Label preview;
+    private boolean compactMode;
+    private final CssLayout captionLayout;
 
     /**
      * @param formattingSyntaxXhtml
@@ -78,6 +92,12 @@ public class ReplyComponent extends CustomComponent {
         setStyleName("reply");
         layout.setWidth("100%");
         setWidth("100%");
+
+        captionLayout = new CssLayout();
+        final Label captionLabel = new Label("Your Reply");
+        captionLabel.setWidth(null);
+        captionLayout.addComponent(captionLabel);
+        layout.addComponent(captionLayout, "captionlabel");
 
         layout.addComponent(new PopupView("Show Formatting Syntax",
                 getSyntaxLabel(formattingSyntaxXhtml)), "formattingsyntax");
@@ -121,6 +141,16 @@ public class ReplyComponent extends CustomComponent {
         preview.setValue(formattedPreview + "<br/>");
     }
 
+    public void setCollapsible(final boolean collapsible) {
+        if (collapsible) {
+            addStyleName("collapsible");
+            captionLayout.addListener(COLLAPSE_LISTENER);
+        } else {
+            removeStyleName("collapsible");
+            captionLayout.removeListener(COLLAPSE_LISTENER);
+        }
+    }
+
     public void setCompactMode(final boolean compact) {
         if (compact) {
             input.setReadOnly(true);
@@ -129,5 +159,6 @@ public class ReplyComponent extends CustomComponent {
             input.setReadOnly(false);
             removeStyleName("compact");
         }
+        compactMode = compact;
     }
 }
