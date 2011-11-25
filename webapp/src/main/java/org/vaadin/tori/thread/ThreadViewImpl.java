@@ -16,13 +16,14 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.mvp.AbstractView;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.data.Property;
+import com.vaadin.event.FieldEvents;
+import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window.Notification;
 
 @SuppressWarnings("serial")
@@ -100,9 +101,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                     getPresenter().getFormattingSyntax());
             layout.addComponent(reply);
 
-            // add the floating quick reply bar
-            final FloatingBar quickReplyBar = getQuickReplyBar();
-            quickReplyBar.setAlignment(FloatingAlignment.BOTTOM);
+            // Add the floating quick reply bar, using the TextArea of the
+            // ReplyComponent as the property data source to keep the two
+            // editors in sync.
+            final FloatingBar quickReplyBar = getQuickReplyBar(reply.getInput());
             quickReplyBar.setScrollComponent(reply);
 
             layout.addComponent(quickReplyBar);
@@ -160,22 +162,49 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         return bar;
     }
 
-    private FloatingBar getQuickReplyBar() {
-        // TODO the actual quick reply bar
+    private FloatingBar getQuickReplyBar(final Property dataSource) {
+        final ReplyComponent quickReply = new ReplyComponent(replyListener,
+                getPresenter().getFormattingSyntax());
+        quickReply.getInput().setPropertyDataSource(dataSource);
+        quickReply.setCompactMode(true);
+        quickReply.getInput().addListener(new FieldEvents.FocusListener() {
+            @Override
+            public void focus(final FocusEvent event) {
+                quickReply.setCompactMode(false);
+            }
+        });
+
         final FloatingBar bar = new FloatingBar();
-        final VerticalLayout layout = new VerticalLayout();
+        bar.setAlignment(FloatingAlignment.BOTTOM);
+        bar.setContent(quickReply);
+        return bar;
+    }
+
+    @SuppressWarnings("unused")
+    private FloatingBar getQuickReplyBar2(final Property dataSource) {
+        final FloatingBar bar = new FloatingBar();
+        final HorizontalLayout layout = new HorizontalLayout();
+        layout.addStyleName("quickReply");
         layout.setWidth("100%");
 
-        final TextArea replyArea = new TextArea();
-        replyArea.setVisible(false);
-        layout.addComponent(new Button("Quick Reply",
-                new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(final ClickEvent event) {
-                        replyArea.setVisible(!replyArea.isVisible());
-                    }
-                }));
-        layout.addComponent(replyArea);
+        final TextField replyField = new TextField();
+        replyField.setReadOnly(true);
+        replyField.setPropertyDataSource(dataSource);
+        replyField.setWidth("100%");
+        replyField.addListener(new FieldEvents.FocusListener() {
+            @Override
+            public void focus(final FocusEvent event) {
+                final ReplyComponent expandedMode = new ReplyComponent(
+                        replyListener, getPresenter().getFormattingSyntax());
+                expandedMode.getInput().setPropertyDataSource(dataSource);
+                bar.setContent(expandedMode);
+            }
+        });
+        final Label replyLabel = new Label("Your Reply");
+        replyLabel.setWidth(null);
+        layout.addComponent(replyLabel);
+        layout.addComponent(replyField);
+        layout.setExpandRatio(replyField, 1.0f);
         bar.setContent(layout);
         return bar;
     }

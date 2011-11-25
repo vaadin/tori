@@ -159,3 +159,25 @@
 	padding: 1em 0;
 	font-style: italic;
 }
+
+.reply .buttons {
+	text-align: right;
+	margin: 5px 0;
+}
+.reply .previewcaption {
+	font-size: smaller;
+	padding: 0.5em 1em;
+}
+
+.reply.compact [location="formattingsyntax"],
+.reply.compact [location="preview"],
+.reply.compact .toolbar,
+.reply.compact .buttons,
+.reply.compact .previewcaption {
+	display: none;	
+}
+.v-floatingbar .reply {
+	-moz-transition: height 0.2s ease-in-out;
+	-webkit-transition: height 0.2s ease-in-out;
+	transition: height 0.2s ease-in-out;
+}

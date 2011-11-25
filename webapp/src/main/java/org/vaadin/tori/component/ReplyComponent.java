@@ -13,6 +13,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.PopupView;
+import com.vaadin.ui.TextField;
 
 @SuppressWarnings("serial")
 public class ReplyComponent extends CustomComponent {
@@ -73,6 +74,7 @@ public class ReplyComponent extends CustomComponent {
 
         input = new ExpandingTextArea();
         input.setWidth("100%");
+        input.setImmediate(true);
         layout.addComponent(input, "input");
 
         preview = new Label("<br/>", Label.CONTENT_XHTML);
@@ -83,7 +85,11 @@ public class ReplyComponent extends CustomComponent {
                 "clearbutton");
 
         input.addListener(INPUT_CHANGE_LISTENER);
+        setCompactMode(false);
+    }
 
+    public TextField getInput() {
+        return input;
     }
 
     private static Label getSyntaxLabel(final String formattingSyntaxXhtml) {
@@ -96,5 +102,15 @@ public class ReplyComponent extends CustomComponent {
     private void resetInput() {
         input.setValue("");
         preview.setValue("<br/>");
+    }
+
+    public void setCompactMode(final boolean compact) {
+        if (compact) {
+            input.setReadOnly(true);
+            addStyleName("compact");
+        } else {
+            input.setReadOnly(false);
+            removeStyleName("compact");
+        }
     }
 }
