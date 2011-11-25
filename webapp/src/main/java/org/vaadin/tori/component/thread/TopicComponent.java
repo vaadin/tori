@@ -106,11 +106,12 @@ public class TopicComponent extends CustomComponent {
         }
 
         if (presenter.userMayMove(thread)) {
-            menu.add(new ExternalResource("images/icon-move.png"),
-                    "Move thread", new ContextComponentSwapper() {
+            menu.add(new ThemeResource("images/icon-move.png"), "Move thread",
+                    new ContextComponentSwapper() {
                         @Override
                         public Component swapContextComponent() {
-                            return new ThreadMoveComponent(thread, menu);
+                            return new ThreadMoveComponent(thread, menu,
+                                    presenter);
                         }
                     });
         }

@@ -1,5 +1,7 @@
 package org.vaadin.tori.category;
 
+import java.util.List;
+
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -62,6 +64,14 @@ public class CategoryPresenter extends Presenter<CategoryView> {
 
     public boolean userMayMove(final DiscussionThread thread) {
         return authorizationService.mayMove(thread);
+    }
+
+    public List<Category> getRootCategories() {
+        return dataSource.getRootCategories();
+    }
+
+    public List<Category> getSubCategories(final Category category) {
+        return dataSource.getSubCategories(category);
     }
 
 }
