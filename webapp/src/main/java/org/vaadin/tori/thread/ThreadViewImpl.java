@@ -148,7 +148,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     private PostComponent newPostSummaryComponent(final Post post) {
-        final PostComponent c = new PostComponent(post, getPresenter());
+        final PostComponent c = new PostComponent(post, getPresenter(), false);
         c.addStyleName("summary");
         if (getPresenter().userMayQuote(post)) {
             c.enableQuoting();

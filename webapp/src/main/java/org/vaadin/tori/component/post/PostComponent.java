@@ -137,6 +137,15 @@ public class PostComponent extends CustomComponent {
      *             if any argument is <code>null</code>.
      */
     public PostComponent(final Post post, final ThreadPresenter presenter) {
+        this(post, presenter, true);
+    }
+
+    /**
+     * @throws IllegalArgumentException
+     *             if any argument is <code>null</code>.
+     */
+    public PostComponent(final Post post, final ThreadPresenter presenter,
+            final boolean allowHtml) {
 
         ToriUtil.checkForNull(post, "post may not be null");
         ToriUtil.checkForNull(presenter, "presenter may not be null");
@@ -164,8 +173,14 @@ public class PostComponent extends CustomComponent {
                 "authorname");
         root.addComponent(new Label(getPostedAgoText(post)), "postedtime");
         root.addComponent(getPermaLink(post), "permalink");
-        root.addComponent(new Label(getFormattedXhtmlBody(post),
-                Label.CONTENT_XHTML), "body");
+        final String formattedPost = getFormattedXhtmlBody(post);
+        if (allowHtml) {
+            root.addComponent(new Label(formattedPost, Label.CONTENT_XHTML),
+                    "body");
+        } else {
+            root.addComponent(new Label(presenter.stripTags(formattedPost),
+                    Label.CONTENT_XHTML), "body");
+        }
         root.addComponent(score, "score");
         root.addComponent(
                 reportComponent = buildReportPostComponent(post, presenter),
