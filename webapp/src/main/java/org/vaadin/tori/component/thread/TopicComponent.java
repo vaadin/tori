@@ -50,6 +50,36 @@ public class TopicComponent extends CustomComponent {
         }
     }
 
+    private class StickyAction implements ContextAction {
+        private final DiscussionThread thread;
+
+        public StickyAction(final DiscussionThread thread) {
+            this.thread = thread;
+        }
+
+        @Override
+        public void contextClicked() {
+            presenter.sticky(thread);
+            menu.swap(this, UNSTICKY_ICON, UNSTICKY_CAPTION,
+                    new UnstickyAction(thread));
+        }
+    }
+
+    private class UnstickyAction implements ContextAction {
+        private final DiscussionThread thread;
+
+        public UnstickyAction(final DiscussionThread thread) {
+            this.thread = thread;
+        }
+
+        @Override
+        public void contextClicked() {
+            presenter.unsticky(thread);
+            menu.swap(this, STICKY_ICON, STICKY_CAPTION, new StickyAction(
+                    thread));
+        }
+    }
+
     private static final String THREAD_URL = ToriNavigator.ApplicationView.THREADS
             .getUrl();
 
@@ -60,6 +90,14 @@ public class TopicComponent extends CustomComponent {
     private static final String UNFOLLOW_CAPTION = "Unfollow thread";
     private static final Resource UNFOLLOW_ICON = new ThemeResource(
             "images/icon-unfollow.png");
+
+    private static final String STICKY_CAPTION = "Make thread sticky";
+    private static final Resource STICKY_ICON = new ThemeResource(
+
+    "images/icon-sticky.png");
+    private static final String UNSTICKY_CAPTION = "Remove thread stickiness";
+    private static final Resource UNSTICKY_ICON = new ThemeResource(
+            "images/icon-unsticky.png");
 
     private final CustomLayout layout;
     private CategoryPresenter presenter;
@@ -114,6 +152,13 @@ public class TopicComponent extends CustomComponent {
                                     presenter);
                         }
                     });
+        }
+
+        if (presenter.userCanSticky(thread)) {
+            menu.add(STICKY_ICON, STICKY_CAPTION, new StickyAction(thread));
+        } else if (presenter.userCanUnSticky(thread)) {
+            menu.add(UNSTICKY_ICON, UNSTICKY_CAPTION,
+                    new UnstickyAction(thread));
         }
 
         return menu;

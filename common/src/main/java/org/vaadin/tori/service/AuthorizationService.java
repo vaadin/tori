@@ -39,4 +39,6 @@ public interface AuthorizationService {
     boolean mayVote();
 
     boolean mayMove(DiscussionThread thread);
+
+    boolean maySticky(DiscussionThread thread);
 }

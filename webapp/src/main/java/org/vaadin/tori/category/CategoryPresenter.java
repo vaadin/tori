@@ -80,4 +80,24 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         getView().confirmThreadMoved();
         getView().displayThreads(dataSource.getThreads(currentCategory));
     }
+
+    public void sticky(final DiscussionThread thread) {
+        // TODO Auto-generated method stub
+        System.out.println("CategoryPresenter.sticky()");
+        System.err.println("Not Done");
+    }
+
+    public void unsticky(final DiscussionThread thread) {
+        // TODO Auto-generated method stub
+        System.out.println("CategoryPresenter.unsticky()");
+        System.err.println("Not Done");
+    }
+
+    public boolean userCanSticky(final DiscussionThread thread) {
+        return authorizationService.maySticky(thread) && thread.isSticky();
+    }
+
+    public boolean userCanUnSticky(final DiscussionThread thread) {
+        return authorizationService.maySticky(thread) && !thread.isSticky();
+    }
 }
