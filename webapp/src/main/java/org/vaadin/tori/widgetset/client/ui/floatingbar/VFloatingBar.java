@@ -31,6 +31,7 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
 
     public static final String ATTR_SCROLL_COMPONENT = "scrollComponent";
     public static final String ATTR_ALIGNMENT = "alignment";
+    public static final String VAR_VISIBILITY = "visibility";
     public static final String ALIGNMENT_TOP = "top";
     public static final String ALIGNMENT_BOTTOM = "bottom";
 
@@ -225,6 +226,10 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
     @Override
     public boolean remove(final Widget w) {
         throw new UnsupportedOperationException();
+    }
+
+    public void visibilityChanged(final boolean visible) {
+        client.updateVariable(paintableId, VAR_VISIBILITY, visible, true);
     }
 
 }

@@ -86,6 +86,14 @@ class FloatingBarOverlay extends VOverlay {
         hiding = false;
     }
 
+    @Override
+    public void setVisible(final boolean visible) {
+        if (super.isVisible() != visible) {
+            super.setVisible(visible);
+            owner.visibilityChanged(visible);
+        }
+    }
+
     // overridden for method visibility
     @Override
     public void updateShadowSizeAndPosition() {

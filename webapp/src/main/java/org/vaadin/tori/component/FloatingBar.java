@@ -1,5 +1,8 @@
 package org.vaadin.tori.component;
 
+import java.lang.reflect.Method;
+import java.util.Map;
+
 import org.vaadin.tori.widgetset.client.ui.floatingbar.VFloatingBar;
 
 import com.vaadin.terminal.PaintException;
@@ -44,6 +47,22 @@ public class FloatingBar extends CustomComponent {
         }
     }
 
+    private static final Method ON_HIDE_METHOD;
+    private static final Method ON_DISPLAY_METHOD;
+    static {
+        try {
+            ON_HIDE_METHOD = VisibilityListener.class.getDeclaredMethod(
+                    "onHide", new Class[] { HideEvent.class });
+            ON_DISPLAY_METHOD = VisibilityListener.class.getDeclaredMethod(
+                    "onDisplay", new Class[] { DisplayEvent.class });
+        } catch (final java.lang.NoSuchMethodException e) {
+            // This should never happen
+            throw new java.lang.RuntimeException(
+                    "Internal error finding methods in "
+                            + FloatingBar.class.getSimpleName());
+        }
+    }
+
     private FloatingAlignment alignment = FloatingAlignment.getDefault();
     private Component scrollComponent;
 
@@ -59,6 +78,21 @@ public class FloatingBar extends CustomComponent {
 
         // add the alignment
         target.addAttribute(VFloatingBar.ATTR_ALIGNMENT, alignment.toString());
+    }
+
+    @Override
+    public void changeVariables(final Object source,
+            final Map<String, Object> variables) {
+        super.changeVariables(source, variables);
+
+        if (variables.containsKey(VFloatingBar.VAR_VISIBILITY)) {
+            // visibility has changed -> fire appropriate event
+            if ((Boolean) variables.get(VFloatingBar.VAR_VISIBILITY)) {
+                fireEvent(new DisplayEvent());
+            } else {
+                fireEvent(new HideEvent());
+            }
+        }
     }
 
     /**
@@ -105,5 +139,44 @@ public class FloatingBar extends CustomComponent {
     public void setAlignment(final FloatingAlignment alignment) {
         this.alignment = alignment;
         requestRepaint();
+    }
+
+    public void addListener(final VisibilityListener listener) {
+        addListener(HideEvent.class, listener, ON_HIDE_METHOD);
+        addListener(DisplayEvent.class, listener, ON_DISPLAY_METHOD);
+    }
+
+    public interface VisibilityListener {
+
+        void onHide(HideEvent event);
+
+        void onDisplay(DisplayEvent event);
+
+    }
+
+    public class HideEvent extends Component.Event {
+
+        public HideEvent() {
+            super(FloatingBar.this);
+        }
+
+        @Override
+        public FloatingBar getSource() {
+            return (FloatingBar) super.getSource();
+        }
+
+    }
+
+    public class DisplayEvent extends Component.Event {
+
+        public DisplayEvent() {
+            super(FloatingBar.this);
+        }
+
+        @Override
+        public FloatingBar getSource() {
+            return (FloatingBar) super.getSource();
+        }
+
     }
 }
