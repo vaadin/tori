@@ -21,9 +21,7 @@ import com.vaadin.event.FieldEvents;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window.Notification;
 
 @SuppressWarnings("serial")
@@ -178,35 +176,6 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         final FloatingBar bar = new FloatingBar();
         bar.setAlignment(FloatingAlignment.BOTTOM);
         bar.setContent(quickReply);
-        return bar;
-    }
-
-    @SuppressWarnings("unused")
-    private FloatingBar getQuickReplyBar2(final Property dataSource) {
-        final FloatingBar bar = new FloatingBar();
-        final HorizontalLayout layout = new HorizontalLayout();
-        layout.addStyleName("quickReply");
-        layout.setWidth("100%");
-
-        final TextField replyField = new TextField();
-        replyField.setReadOnly(true);
-        replyField.setPropertyDataSource(dataSource);
-        replyField.setWidth("100%");
-        replyField.addListener(new FieldEvents.FocusListener() {
-            @Override
-            public void focus(final FocusEvent event) {
-                final ReplyComponent expandedMode = new ReplyComponent(
-                        replyListener, getPresenter().getFormattingSyntax());
-                expandedMode.getInput().setPropertyDataSource(dataSource);
-                bar.setContent(expandedMode);
-            }
-        });
-        final Label replyLabel = new Label("Your Reply");
-        replyLabel.setWidth(null);
-        layout.addComponent(replyLabel);
-        layout.addComponent(replyField);
-        layout.setExpandRatio(replyField, 1.0f);
-        bar.setContent(layout);
         return bar;
     }
 
