@@ -99,4 +99,28 @@ public class CategoryViewImpl extends
     public void confirmThreadMoved() {
         getWindow().showNotification("thread moved");
     }
+
+    @Override
+    public void confirmThreadStickied() {
+        getWindow().showNotification("thread stickied");
+        // TODO make visual adjustments
+    }
+
+    @Override
+    public void confirmThreadUnstickied() {
+        getWindow().showNotification("thread unstickied");
+        // TODO make visual adjustments
+    }
+
+    @Override
+    public void confirmThreadLocked() {
+        getWindow().showNotification("thread locked");
+        // TODO make visual adjustments
+    }
+
+    @Override
+    public void confirmThreadUnlocked() {
+        getWindow().showNotification("thread unlocked");
+        // TODO make visual adjustments
+    }
 }

@@ -107,6 +107,10 @@ public class DiscussionThread extends AbstractEntity {
         return sticky;
     }
 
+    public void setLocked(final boolean locked) {
+        this.locked = locked;
+    }
+
     public boolean isLocked() {
         return locked;
     }

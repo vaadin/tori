@@ -20,4 +20,12 @@ public interface CategoryView extends View {
     void confirmUnfollowing();
 
     void confirmThreadMoved();
+
+    void confirmThreadStickied();
+
+    void confirmThreadUnstickied();
+
+    void confirmThreadLocked();
+
+    void confirmThreadUnlocked();
 }

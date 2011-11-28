@@ -443,7 +443,7 @@ public class TestDataSource implements DataSource {
         save(vote);
     }
 
-    private void save(final PostVote vote) {
+    public void save(final PostVote vote) {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
@@ -521,6 +521,43 @@ public class TestDataSource implements DataSource {
                 transaction.begin();
                 em.merge(thread);
                 transaction.commit();
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public void sticky(final DiscussionThread thread) {
+        thread.setSticky(true);
+        save(thread);
+    }
+
+    @Override
+    public void unsticky(final DiscussionThread thread) {
+        thread.setSticky(false);
+        save(thread);
+    }
+
+    @Override
+    public void lock(final DiscussionThread thread) {
+        thread.setLocked(true);
+        save(thread);
+    }
+
+    @Override
+    public void unlock(final DiscussionThread thread) {
+        thread.setLocked(false);
+        save(thread);
+    }
+
+    private static void save(final DiscussionThread thread) {
+        executeWithEntityManager(new Command<Void>() {
+            @Override
+            public Void execute(final EntityManager em) {
+                final EntityTransaction t = em.getTransaction();
+                t.begin();
+                em.merge(thread);
+                t.commit();
                 return null;
             }
         });

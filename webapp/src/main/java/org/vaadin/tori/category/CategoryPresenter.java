@@ -82,15 +82,13 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     }
 
     public void sticky(final DiscussionThread thread) {
-        // TODO Auto-generated method stub
-        System.out.println("CategoryPresenter.sticky()");
-        System.err.println("Not Done");
+        dataSource.sticky(thread);
+        getView().confirmThreadStickied();
     }
 
     public void unsticky(final DiscussionThread thread) {
-        // TODO Auto-generated method stub
-        System.out.println("CategoryPresenter.unsticky()");
-        System.err.println("Not Done");
+        dataSource.unsticky(thread);
+        getView().confirmThreadUnstickied();
     }
 
     public boolean userCanSticky(final DiscussionThread thread) {
@@ -101,24 +99,22 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         return authorizationService.maySticky(thread) && !thread.isSticky();
     }
 
+    public void lock(final DiscussionThread thread) {
+        dataSource.lock(thread);
+        getView().confirmThreadLocked();
+    }
+
+    public void unlock(final DiscussionThread thread) {
+        dataSource.unlock(thread);
+        getView().confirmThreadUnlocked();
+    }
+
     public boolean userCanLock(final DiscussionThread thread) {
         return authorizationService.mayLock(thread) && !thread.isLocked();
     }
 
     public boolean userCanUnLock(final DiscussionThread thread) {
         return authorizationService.mayLock(thread) && thread.isLocked();
-    }
-
-    public void lock(final DiscussionThread thread) {
-        // TODO Auto-generated method stub
-        System.out.println("CategoryPresenter.lock()");
-        System.err.println("not done");
-    }
-
-    public void unlock(final DiscussionThread thread) {
-        // TODO Auto-generated method stub
-        System.out.println("CategoryPresenter.unlock()");
-        System.err.println("not done");
     }
 
 }

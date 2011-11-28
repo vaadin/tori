@@ -159,4 +159,12 @@ public interface DataSource {
     void saveAsCurrentUser(Post post);
 
     void move(DiscussionThread thread, Category destinationCategory);
+
+    void sticky(DiscussionThread thread);
+
+    void unsticky(DiscussionThread thread);
+
+    void lock(DiscussionThread thread);
+
+    void unlock(DiscussionThread thread);
 }
