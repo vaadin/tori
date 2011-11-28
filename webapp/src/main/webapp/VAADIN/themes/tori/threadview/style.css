@@ -80,6 +80,9 @@
 }
 
 /* Summary post that is displayed in the floating bar */
+.post.summary table.container {
+	margin: 0;	
+}
 .post.summary [location="permalink"],
 .post.summary [location="postedtime"],
 .post.summary [location="score"] {
@@ -99,6 +102,12 @@
 .post.summary .author [location="avatar"] .v-embedded img {
 	width: 100% !important;
 	height: auto !important;
+}
+.post.summary .body .v-label {
+	height: 1.5em;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;	
 }
 
 .reportwindow .v-window-outerheader {
@@ -149,4 +158,34 @@
 	color: #666;
 	padding: 1em 0;
 	font-style: italic;
+}
+
+.reply .buttons {
+	text-align: right;
+	margin: 5px 0;
+}
+.reply .previewcaption {
+	font-size: smaller;
+	padding: 0.5em 1em;
+}
+
+.reply.compact [location="formattingsyntax"],
+.reply.compact [location="preview"],
+.reply.compact .toolbar,
+.reply.compact .buttons,
+.reply.compact .previewcaption {
+	display: none;	
+}
+.v-floatingbar .reply {
+	-moz-transition: height 0.2s ease-in-out;
+	-webkit-transition: height 0.2s ease-in-out;
+	transition: height 0.2s ease-in-out;
+}
+.v-floatingbar .reply.collapsible [location="captionlabel"] .v-label {
+	padding-right: 20px;
+	background: url(../images/icon-collapse-panel.png) center right no-repeat;
+	float: left;	
+}
+.v-floatingbar .reply.collapsible.compact [location="captionlabel"] .v-label {
+	background-image: url(../images/icon-expand-panel.png);	
 }

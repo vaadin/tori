@@ -164,4 +164,9 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     private void resetView() {
         getView().displayPosts(currentThread.getPosts());
     }
+
+    public String stripTags(final String html) {
+        return html.replaceAll("\\<.*?>", "");
+    }
+
 }

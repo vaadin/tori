@@ -15,6 +15,9 @@
 	color: #2f2f2f;
 	text-decoration: none;
 }
+.v-popupview {
+	cursor: default;
+}
 
 a:link, 
 .v-link a:link span,
