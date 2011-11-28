@@ -6,7 +6,10 @@ import java.util.Map;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.component.FloatingBar;
+import org.vaadin.tori.component.FloatingBar.DisplayEvent;
 import org.vaadin.tori.component.FloatingBar.FloatingAlignment;
+import org.vaadin.tori.component.FloatingBar.HideEvent;
+import org.vaadin.tori.component.FloatingBar.VisibilityListener;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.component.ReplyComponent;
@@ -16,7 +19,6 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.mvp.AbstractView;
 
-import com.vaadin.data.Property;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.ui.Component;
@@ -99,10 +101,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                     getPresenter().getFormattingSyntax());
             layout.addComponent(reply);
 
-            // Add the floating quick reply bar, using the TextArea of the
-            // ReplyComponent as the property data source to keep the two
-            // editors in sync.
-            final FloatingBar quickReplyBar = getQuickReplyBar(reply.getInput());
+            final FloatingBar quickReplyBar = getQuickReplyBar(reply);
             quickReplyBar.setScrollComponent(reply);
 
             layout.addComponent(quickReplyBar);
@@ -160,10 +159,15 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         return bar;
     }
 
-    private FloatingBar getQuickReplyBar(final Property dataSource) {
+    private FloatingBar getQuickReplyBar(
+            final ReplyComponent mirroredReplyComponent) {
         final ReplyComponent quickReply = new ReplyComponent(replyListener,
                 getPresenter().getFormattingSyntax());
-        quickReply.getInput().setPropertyDataSource(dataSource);
+
+        // Using the TextArea of the ReplyComponent as the property data source
+        // to keep the two editors in sync.
+        quickReply.getInput().setPropertyDataSource(
+                mirroredReplyComponent.getInput());
         quickReply.setCompactMode(true);
         quickReply.setCollapsible(true);
         quickReply.getInput().addListener(new FieldEvents.FocusListener() {
@@ -176,6 +180,18 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         final FloatingBar bar = new FloatingBar();
         bar.setAlignment(FloatingAlignment.BOTTOM);
         bar.setContent(quickReply);
+        bar.addListener(new VisibilityListener() {
+
+            @Override
+            public void onHide(final HideEvent event) {
+                quickReply.getInput().blur();
+            }
+
+            @Override
+            public void onDisplay(final DisplayEvent event) {
+                mirroredReplyComponent.getInput().blur();
+            }
+        });
         return bar;
     }
 

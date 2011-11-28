@@ -1,6 +1,5 @@
 package org.vaadin.tori.component;
 
-import org.vaadin.hene.expandingtextarea.ExpandingTextArea;
 import org.vaadin.tori.ToriApplication;
 
 import com.vaadin.data.Property;
@@ -75,7 +74,7 @@ public class ReplyComponent extends CustomComponent {
     private final CustomLayout layout = new CustomLayout(
             ToriApplication.CUSTOM_LAYOUT_PATH + "replylayout");
     private final ReplyListener listener;
-    private final ExpandingTextArea input;
+    private final ToriExpandingTextArea input;
     private final Label preview;
     private boolean compactMode;
     private final CssLayout captionLayout;
@@ -104,7 +103,7 @@ public class ReplyComponent extends CustomComponent {
         layout.addComponent(new PopupView("Show Formatting Syntax",
                 getSyntaxLabel(formattingSyntaxXhtml)), "formattingsyntax");
 
-        input = new ExpandingTextArea();
+        input = new ToriExpandingTextArea();
         input.setMaxRows(MAX_ROWS_EXPANDED);
         input.setWidth("100%");
         input.setImmediate(true);
@@ -122,7 +121,7 @@ public class ReplyComponent extends CustomComponent {
         setCompactMode(false);
     }
 
-    public ExpandingTextArea getInput() {
+    public ToriExpandingTextArea getInput() {
         return input;
     }
 
