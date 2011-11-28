@@ -28,6 +28,9 @@ public class DiscussionThread extends AbstractEntity {
     @Column(nullable = false)
     private boolean sticky;
 
+    @Column(nullable = false)
+    private boolean locked;
+
     public DiscussionThread() {
     }
 
@@ -102,6 +105,10 @@ public class DiscussionThread extends AbstractEntity {
 
     public boolean isSticky() {
         return sticky;
+    }
+
+    public boolean isLocked() {
+        return locked;
     }
 
 }

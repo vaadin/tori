@@ -80,6 +80,35 @@ public class TopicComponent extends CustomComponent {
         }
     }
 
+    private class LockAction implements ContextAction {
+        private final DiscussionThread thread;
+
+        public LockAction(final DiscussionThread thread) {
+            this.thread = thread;
+        }
+
+        @Override
+        public void contextClicked() {
+            presenter.lock(thread);
+            menu.swap(this, UNLOCK_ICON, UNLOCK_CAPTION, new UnlockAction(
+                    thread));
+        }
+    }
+
+    private class UnlockAction implements ContextAction {
+        private final DiscussionThread thread;
+
+        public UnlockAction(final DiscussionThread thread) {
+            this.thread = thread;
+        }
+
+        @Override
+        public void contextClicked() {
+            presenter.unlock(thread);
+            menu.swap(this, LOCK_ICON, LOCK_CAPTION, new LockAction(thread));
+        }
+    }
+
     private static final String THREAD_URL = ToriNavigator.ApplicationView.THREADS
             .getUrl();
 
@@ -98,6 +127,14 @@ public class TopicComponent extends CustomComponent {
     private static final String UNSTICKY_CAPTION = "Remove thread stickiness";
     private static final Resource UNSTICKY_ICON = new ThemeResource(
             "images/icon-unsticky.png");
+
+    private static final String LOCK_CAPTION = "Lock thread";
+    private static final Resource LOCK_ICON = new ThemeResource(
+            "images/lock.png");
+
+    private static final String UNLOCK_CAPTION = "Unlock thread";
+    private static final Resource UNLOCK_ICON = new ThemeResource(
+            "images/unlock.png");
 
     private final CustomLayout layout;
     private CategoryPresenter presenter;
@@ -159,6 +196,12 @@ public class TopicComponent extends CustomComponent {
         } else if (presenter.userCanUnSticky(thread)) {
             menu.add(UNSTICKY_ICON, UNSTICKY_CAPTION,
                     new UnstickyAction(thread));
+        }
+
+        if (presenter.userCanLock(thread)) {
+            menu.add(LOCK_ICON, LOCK_CAPTION, new LockAction(thread));
+        } else if (presenter.userCanUnLock(thread)) {
+            menu.add(UNLOCK_ICON, UNLOCK_CAPTION, new UnlockAction(thread));
         }
 
         return menu;

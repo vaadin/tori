@@ -100,4 +100,25 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     public boolean userCanUnSticky(final DiscussionThread thread) {
         return authorizationService.maySticky(thread) && !thread.isSticky();
     }
+
+    public boolean userCanLock(final DiscussionThread thread) {
+        return authorizationService.mayLock(thread) && !thread.isLocked();
+    }
+
+    public boolean userCanUnLock(final DiscussionThread thread) {
+        return authorizationService.mayLock(thread) && thread.isLocked();
+    }
+
+    public void lock(final DiscussionThread thread) {
+        // TODO Auto-generated method stub
+        System.out.println("CategoryPresenter.lock()");
+        System.err.println("not done");
+    }
+
+    public void unlock(final DiscussionThread thread) {
+        // TODO Auto-generated method stub
+        System.out.println("CategoryPresenter.unlock()");
+        System.err.println("not done");
+    }
+
 }
