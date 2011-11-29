@@ -84,7 +84,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
             if (first) {
                 // create the floating summary bar for the first post
-                final FloatingBar summaryBar = getPostSummaryBar(post);
+                final FloatingBar summaryBar = getPostSummaryBar(post, c);
                 summaryBar.setScrollComponent(c);
                 postsLayout.addComponent(summaryBar);
                 first = false;
@@ -153,9 +153,13 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         return c;
     }
 
-    private FloatingBar getPostSummaryBar(final Post post) {
+    private FloatingBar getPostSummaryBar(final Post post,
+            final PostComponent originalPost) {
+        final PostComponent summary = newPostSummaryComponent(post);
+        summary.setScrollToComponent(originalPost);
+
         final FloatingBar bar = new FloatingBar();
-        bar.setContent(newPostSummaryComponent(post));
+        bar.setContent(summary);
         return bar;
     }
 

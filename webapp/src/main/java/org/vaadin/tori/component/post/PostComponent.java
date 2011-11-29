@@ -25,6 +25,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
+import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
 @SuppressWarnings("serial")
@@ -111,9 +112,11 @@ public class PostComponent extends CustomComponent {
     private final Component reportComponent;
     private final NativeButton editButton;
     private final NativeButton quoteButton;
+    private final Button scrollToButton;
     private final ContextMenu contextMenu;
     private final ThreadPresenter presenter;
     private final PostScoreComponent score;
+    private Component scrollToComponent;
 
     private final ContextAction followAction = new ContextMenu.ContextAction() {
         @Override
@@ -168,6 +171,19 @@ public class PostComponent extends CustomComponent {
         score = new PostScoreComponent(post, presenter);
         score.setScore(presenter.getScore(post));
 
+        scrollToButton = new Button("Scroll to Post");
+        scrollToButton.setStyleName(BaseTheme.BUTTON_LINK);
+        scrollToButton.setVisible(false);
+        scrollToButton.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                if (scrollToComponent != null) {
+                    getWindow().scrollIntoView(scrollToComponent);
+                }
+            }
+        });
+        root.addComponent(scrollToButton, "scrollto");
+
         root.addComponent(getAvatarImage(post), "avatar");
         root.addComponent(new Label(post.getAuthor().getDisplayedName()),
                 "authorname");
@@ -188,6 +204,11 @@ public class PostComponent extends CustomComponent {
         root.addComponent(contextMenu, "settings");
         root.addComponent(editButton, "edit");
         root.addComponent(quoteButton, "quote");
+    }
+
+    public void setScrollToComponent(final Component scrollTo) {
+        scrollToComponent = scrollTo;
+        scrollToButton.setVisible(scrollTo != null);
     }
 
     public void enableReporting() {

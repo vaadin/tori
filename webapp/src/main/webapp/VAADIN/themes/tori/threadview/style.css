@@ -55,6 +55,11 @@
 	padding: 5px;
 }
 
+.post [location="scrollto"] .v-button {
+	padding-right: 18px;
+	background: url(../images/icon-scroll-to-top.png) center right no-repeat;
+}
+
 .post td.toolbar {
 	text-align: right;
 	width: 100%;
