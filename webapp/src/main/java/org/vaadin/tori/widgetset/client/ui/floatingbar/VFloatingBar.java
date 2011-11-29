@@ -49,11 +49,11 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
     private Widget scrollComponent;
     private String alignment;
 
-    private HandlerRegistration handlerRegistration;
+    private HandlerRegistration scrollHandlerRegistration;
+    private HandlerRegistration resizeHandlerRegistration;
 
     public VFloatingBar() {
         setElement(Document.get().createDivElement());
-        Window.addResizeHandler(this);
 
         // This method call of the Paintable interface sets the component
         // style name in DOM tree
@@ -80,6 +80,8 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
 
         // Save the client side identifier (paintable id) for the widget
         paintableId = uidl.getId();
+
+        attachResizeHandler();
 
         scrollComponent = getScrollComponent(uidl);
         attachScrollHandlerIfNeeded();
@@ -120,17 +122,27 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
         return null;
     }
 
+    private void attachResizeHandler() {
+        if (resizeHandlerRegistration == null) {
+            resizeHandlerRegistration = Window.addResizeHandler(this);
+        }
+    }
+
     private void attachScrollHandlerIfNeeded() {
-        if (scrollComponent != null && handlerRegistration == null) {
+        if (scrollComponent != null && scrollHandlerRegistration == null) {
             // Cannot use Window.addWindowScrollHandler() in Vaadin apps, but
             // we must listen for scroll events in the VView instance instead.
-            handlerRegistration = client.getView().addDomHandler(this,
+            scrollHandlerRegistration = client.getView().addDomHandler(this,
                     ScrollEvent.getType());
         }
     }
 
     @Override
     protected void onDetach() {
+        // remove all handlers
+        scrollHandlerRegistration.removeHandler();
+        resizeHandlerRegistration.removeHandler();
+
         overlay.hide();
         super.onDetach();
     }

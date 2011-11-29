@@ -12,7 +12,6 @@ import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.thread.ThreadViewImpl;
 
 import com.vaadin.Application;
-import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -509,7 +508,6 @@ public class ToriNavigator extends CustomComponent {
                     "application must also be an instance of "
                             + Application.class.getName());
         }
-        w.open(new ExternalResource(w.getURL()));
         return w;
     }
 
