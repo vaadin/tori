@@ -24,12 +24,18 @@ public class LatestPostComponent extends CustomComponent {
     }
 
     private static String getWhenPostedXhtml(final Post latestPost) {
+        if (latestPost == null) {
+            return "";
+        }
         final String prettifiedTime = new PrettyTime().format(latestPost
                 .getTime());
         return String.format("<div class=\"time\">%s</div>", prettifiedTime);
     }
 
     private static String getByWhomXhtml(final Post latestPost) {
+        if (latestPost == null) {
+            return "";
+        }
         final String latestAuthorName = latestPost.getAuthor()
                 .getDisplayedName();
         return String.format("<div class=\"author\">By %s</div>",
