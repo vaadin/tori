@@ -8,57 +8,68 @@ public class LiferayAuthorizationService implements AuthorizationService {
 
     @Override
     public boolean isCategoryAdministrator() {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        // TODO
+        return true;
     }
 
     @Override
     public boolean mayReportPosts() {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        // TODO
+        return true;
     }
 
     @Override
     public boolean mayFollow(final Category category) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        // TODO
+        return true;
     }
 
     @Override
     public boolean mayDelete(final Category category) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        // TODO
+        return true;
     }
 
     @Override
     public boolean mayEdit(final Category category) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        // TODO
+        return true;
     }
 
     @Override
     public boolean mayEdit(final Post post) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        // TODO
+        return true;
     }
 
     @Override
     public boolean mayReplyIn(final DiscussionThread thread) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        // TODO
+        return true;
     }
 
     @Override
     public boolean mayBan() {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        // TODO
+        return true;
     }
 
     @Override
     public boolean mayFollow(final DiscussionThread currentThread) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        // TODO
+        return true;
     }
 
     @Override
     public boolean mayDelete(final Post post) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        // TODO
+        return true;
     }
 
     @Override
     public boolean mayVote() {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        // TODO
+        return true;
     }
 
 }
