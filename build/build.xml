@@ -68,6 +68,9 @@
 	<path id="ds-liferay-classpath">
 		<path refid="common-classpath"/>
 		<pathelement location="${file.common.jar}"/>
+		<fileset dir="${dir.ds.liferay}/lib">
+		    <include name="*.jar" />
+		</fileset>
 	</path>
 
 	<path id="ds-test-classpath">
