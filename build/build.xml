@@ -139,9 +139,11 @@
 
 	<target name="package-liferay-war" depends="-check-widgetset-dependency, -package-webapp-jar, -package-ds-liferay-jar, test-all">
 		<war destfile="${file.tori.liferay.war}" webxml="${dir.web-inf}/web.xml" manifest="${dir.meta-inf}/MANIFEST.MF">
-			<webinf dir="${dir.web-inf}"/>
+			<webinf dir="${dir.web-inf}">
+				<exclude name="**/portlet.jar"/>
+				<exclude name="**/vaadin-*.jar"/>
+			</webinf>
 			<metainf dir="${dir.meta-inf}"/>
-			<lib dir="${dir.web-inf.lib}" includes="*.jar"/>
 			<lib dir="${dir.build-artifacts}" includes="*.jar"/>
 			<zipfileset dir="${dir.build-artifacts.widgetsets}"
 				includes="org.*"
