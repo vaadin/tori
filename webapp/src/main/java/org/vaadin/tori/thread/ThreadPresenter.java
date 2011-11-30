@@ -33,7 +33,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         if (requestedThread != null) {
             currentThread = requestedThread;
             final ThreadView view = getView();
-            view.displayPosts(currentThread.getPosts());
+            view.displayPosts(dataSource.getPosts(currentThread));
         } else {
             getView().displayThreadNotFoundError(threadIdString);
         }
@@ -161,8 +161,8 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         resetView();
     }
 
-    private void resetView() {
-        getView().displayPosts(currentThread.getPosts());
+    void resetView() {
+        getView().displayPosts(dataSource.getPosts(currentThread));
     }
 
     public String stripTags(final String html) {

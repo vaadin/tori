@@ -246,7 +246,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     private void reloadPage() {
-        displayPosts(getPresenter().getCurrentThread().getPosts());
+        getPresenter().resetView();
     }
 
     @Override
