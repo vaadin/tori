@@ -2,6 +2,7 @@ package org.vaadin.tori.component.category;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.component.ConfirmationDialog;
 import org.vaadin.tori.component.ConfirmationDialog.ConfirmationListener;
@@ -30,6 +31,8 @@ import com.vaadin.ui.TreeTable;
 
 @SuppressWarnings("serial")
 class CategoryTreeTable extends TreeTable {
+
+    private static final Logger log = Logger.getLogger(CategoryTreeTable.class);
 
     private static final String PROPERTY_ID_THREADS = "Threads";
     private static final String PROPERTY_ID_UNREAD = "Unread Threads";
@@ -79,6 +82,12 @@ class CategoryTreeTable extends TreeTable {
         final CategoryLayout categoryLayout = new CategoryLayout(category);
 
         final Item item = addItem(category);
+        if (item == null) {
+            log.warn("Cannot add category " + category.getName() + ", id "
+                    + category.getId() + " to the "
+                    + CategoryTreeTable.class.getSimpleName() + ".");
+            return;
+        }
         item.getItemProperty(PROPERTY_ID_CATEGORY).setValue(categoryLayout);
         if (mode == Mode.NORMAL) {
             item.getItemProperty(PROPERTY_ID_UNREAD).setValue(
