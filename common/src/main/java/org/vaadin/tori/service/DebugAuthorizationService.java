@@ -60,4 +60,7 @@ public interface DebugAuthorizationService extends AuthorizationService {
 
     /** @see AuthorizationService#mayLock(DiscussionThread) */
     void setMayLock(DiscussionThread thread, boolean b);
+
+    /** @see AuthorizationService#mayLock(DiscussionThread) */
+    void setMayDelete(DiscussionThread thread, boolean b);
 }

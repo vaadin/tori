@@ -178,7 +178,7 @@ public class TestDataSource implements DataSource {
             public List<Post> execute(final EntityManager em) {
                 final TypedQuery<Post> query = em.createQuery(
                         "select p from Post p where p.thread = :thread "
-                                + "orderby asc time", Post.class);
+                                + "order by p.time asc", Post.class);
                 query.setParameter("thread", thread);
                 return query.getResultList();
             }
@@ -557,6 +557,37 @@ public class TestDataSource implements DataSource {
                 final EntityTransaction t = em.getTransaction();
                 t.begin();
                 em.merge(thread);
+                t.commit();
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public void delete(final DiscussionThread thread) {
+        executeWithEntityManager(new Command<Void>() {
+            @Override
+            public Void execute(final EntityManager em) {
+                final EntityTransaction t = em.getTransaction();
+                t.begin();
+                final DiscussionThread mergedThread = em.merge(thread);
+
+                // remove all Following references
+                final Query followDelete = em
+                        .createQuery("delete from Following f where f.thread = :thread");
+                followDelete.setParameter("thread", thread);
+                followDelete.executeUpdate();
+
+                // remove all votes for posts inside thread.
+                for (final Post post : getPosts(mergedThread)) {
+                    // "in" is not supported :(
+                    final Query postDelete = em
+                            .createQuery("delete from PostVote where post = :post");
+                    postDelete.setParameter("post", post);
+                    postDelete.executeUpdate();
+                }
+
+                em.remove(mergedThread);
                 t.commit();
                 return null;
             }

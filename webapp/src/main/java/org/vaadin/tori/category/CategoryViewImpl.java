@@ -137,4 +137,9 @@ public class CategoryViewImpl extends
         getWindow().showNotification("thread unlocked");
         // TODO make visual adjustments
     }
+
+    @Override
+    public void confirmThreadDeleted() {
+        getWindow().showNotification("thread deleted");
+    }
 }

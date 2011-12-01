@@ -28,4 +28,6 @@ public interface CategoryView extends View {
     void confirmThreadLocked();
 
     void confirmThreadUnlocked();
+
+    void confirmThreadDeleted();
 }

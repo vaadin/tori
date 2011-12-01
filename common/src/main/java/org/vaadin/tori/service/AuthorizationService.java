@@ -43,4 +43,6 @@ public interface AuthorizationService {
     boolean maySticky(DiscussionThread thread);
 
     boolean mayLock(DiscussionThread thread);
+
+    boolean mayDelete(DiscussionThread thread);
 }

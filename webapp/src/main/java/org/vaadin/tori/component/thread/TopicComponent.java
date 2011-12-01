@@ -130,11 +130,11 @@ public class TopicComponent extends CustomComponent {
 
     private static final String LOCK_CAPTION = "Lock thread";
     private static final Resource LOCK_ICON = new ThemeResource(
-            "images/lock.png");
+            "images/icon-lock.png");
 
     private static final String UNLOCK_CAPTION = "Unlock thread";
     private static final Resource UNLOCK_ICON = new ThemeResource(
-            "images/unlock.png");
+            "images/icon-unlock.png");
 
     private final CustomLayout layout;
     private CategoryPresenter presenter;
@@ -202,6 +202,16 @@ public class TopicComponent extends CustomComponent {
             menu.add(LOCK_ICON, LOCK_CAPTION, new LockAction(thread));
         } else if (presenter.userCanUnLock(thread)) {
             menu.add(UNLOCK_ICON, UNLOCK_CAPTION, new UnlockAction(thread));
+        }
+
+        if (presenter.userMayDelete(thread)) {
+            menu.add(new ThemeResource("images/icon-delete.png"),
+                    "Delete thread", new ContextAction() {
+                        @Override
+                        public void contextClicked() {
+                            presenter.delete(thread);
+                        }
+                    });
         }
 
         return menu;

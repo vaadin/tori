@@ -117,4 +117,14 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         return authorizationService.mayLock(thread) && thread.isLocked();
     }
 
+    public boolean userMayDelete(final DiscussionThread thread) {
+        return authorizationService.mayDelete(thread);
+    }
+
+    public void delete(final DiscussionThread thread) {
+        dataSource.delete(thread);
+        getView().confirmThreadDeleted();
+        getView().displayThreads(dataSource.getThreads(currentCategory));
+    }
+
 }

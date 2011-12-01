@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
+import org.vaadin.tori.data.entity.Following;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
@@ -167,4 +168,19 @@ public interface DataSource {
     void lock(DiscussionThread thread);
 
     void unlock(DiscussionThread thread);
+
+    /**
+     * Deletes a thread.
+     * <p/>
+     * This cascades all the way to removing:
+     * <ul>
+     * <li>{@link Post Posts} in thread
+     * <li>Votes for each post
+     * <li>Following statuses for the thread
+     * </ul>
+     * 
+     * @see PostVote
+     * @see Following
+     */
+    void delete(DiscussionThread thread);
 }
