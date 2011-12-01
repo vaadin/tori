@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
-import org.vaadin.tori.data.entity.Following;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
@@ -179,8 +178,8 @@ public interface DataSource {
      * <li>Following statuses for the thread
      * </ul>
      * 
-     * @see PostVote
-     * @see Following
+     * @see org.vaadin.tori.data.entity.PostVote PostVote
+     * @see org.vaadin.tori.data.entity.Following Following
      */
     void delete(DiscussionThread thread);
 }
