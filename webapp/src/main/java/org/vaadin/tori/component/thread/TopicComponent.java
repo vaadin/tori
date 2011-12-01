@@ -1,6 +1,5 @@
 package org.vaadin.tori.component.thread;
 
-import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.category.CategoryPresenter;
@@ -148,8 +147,7 @@ public class TopicComponent extends CustomComponent {
 
         this.presenter = presenter;
 
-        setCompositionRoot(layout = new CustomLayout(
-                ToriApplication.CUSTOM_LAYOUT_PATH + "topiclayout"));
+        setCompositionRoot(layout = new CustomLayout("topiclayout"));
         setWidth("100%");
         setStyleName("topic");
 
