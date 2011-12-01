@@ -2,8 +2,8 @@ package org.vaadin.tori.category;
 
 import java.util.List;
 
-import org.mortbay.log.Log;
 import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.component.category.CategoryListing;
@@ -13,6 +13,7 @@ import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.AbstractView;
 
+import com.vaadin.Application;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -36,10 +37,18 @@ public class CategoryViewImpl extends
     private HeadingLabel threadsLabel;
     private Button newThreadButton1;
     private Button newThreadButton2;
+    private ToriNavigator navigator;
 
     @Override
     protected Component createCompositionRoot() {
         return layout = new VerticalLayout();
+    }
+
+    @Override
+    public void init(final ToriNavigator navigator,
+            final Application application) {
+        this.navigator = navigator;
+        super.init(navigator, application);
     }
 
     @Override
@@ -77,13 +86,15 @@ public class CategoryViewImpl extends
         threadLayout.addComponent(newThreadButton2);
     }
 
-    private static Button createNewThreadButton() {
+    private Button createNewThreadButton() {
         final Button button = new Button("Start a new thread");
         button.setIcon(new ThemeResource("images/icon-newthread.png"));
         button.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
-                Log.debug("creating new threads not implemented yet");
+                navigator.navigateTo(String.format("%s/new/%s",
+                        ToriNavigator.ApplicationView.THREADS.getUrl(),
+                        getPresenter().getCurrentCategory().getId()));
             }
         });
         button.setWidth("163px"); // same as
