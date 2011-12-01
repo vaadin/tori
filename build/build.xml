@@ -150,7 +150,7 @@
 			<lib dir="${dir.build-artifacts}" includes="*.jar"/>
 			<classes file="${dir.webapp}/src/main/resources/log4j.properties"/>
 			<zipfileset dir="${dir.build-artifacts.widgetsets}"
-				includes="org.*"
+				includes="org.*/**"
 				prefix="VAADIN/widgetsets"
 			/>
 		</war>
