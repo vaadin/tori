@@ -71,8 +71,7 @@ public class ReplyComponent extends CustomComponent {
         }
     };
 
-    private final CustomLayout layout = new CustomLayout(
-            ToriApplication.CUSTOM_LAYOUT_PATH + "replylayout");
+    private final CustomLayout layout = new CustomLayout("replylayout");
     private final ReplyListener listener;
     private final ToriExpandingTextArea input;
     private final Label preview;

@@ -153,6 +153,10 @@
 				includes="org.*/**"
 				prefix="VAADIN/widgetsets"
 			/>
+			<!-- see http://dev.vaadin.com/ticket/4191 before modifying this -->
+			<zipfileset dir="${dir.webapp}/src/main/webapp"
+				includes="VAADIN/themes/**"
+			/>
 		</war>
 	</target>
 	
