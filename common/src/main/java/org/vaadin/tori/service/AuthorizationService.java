@@ -45,4 +45,6 @@ public interface AuthorizationService {
     boolean mayLock(DiscussionThread thread);
 
     boolean mayDelete(DiscussionThread thread);
+
+    boolean mayCreateThreadIn(Category category);
 }

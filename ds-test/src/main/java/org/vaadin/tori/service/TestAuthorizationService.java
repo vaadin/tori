@@ -25,6 +25,7 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     private final Map<DiscussionThread, Boolean> maySticky = new HashMap<DiscussionThread, Boolean>();
     private final Map<DiscussionThread, Boolean> mayLock = new HashMap<DiscussionThread, Boolean>();
     private final Map<DiscussionThread, Boolean> mayDeleteThread = new HashMap<DiscussionThread, Boolean>();
+    private final Map<Category, Boolean> mayCreateThread = new HashMap<Category, Boolean>();
 
     @Override
     public boolean isCategoryAdministrator() {
@@ -185,5 +186,15 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     @Override
     public void setMayDelete(final DiscussionThread thread, final boolean b) {
         mayDeleteThread.put(thread, b);
+    }
+
+    @Override
+    public boolean mayCreateThreadIn(final Category category) {
+        return get(mayCreateThread, category, true);
+    }
+
+    @Override
+    public void setMayCreateThreadIn(final Category category, final boolean b) {
+        mayCreateThread.put(category, b);
     }
 }

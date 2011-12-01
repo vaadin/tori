@@ -127,4 +127,8 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         getView().displayThreads(dataSource.getThreads(currentCategory));
     }
 
+    public boolean userMayStartANewThread() {
+        return authorizationService.mayCreateThreadIn(currentCategory);
+    }
+
 }

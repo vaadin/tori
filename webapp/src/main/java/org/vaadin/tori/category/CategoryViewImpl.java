@@ -2,6 +2,7 @@ package org.vaadin.tori.category;
 
 import java.util.List;
 
+import org.mortbay.log.Log;
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
@@ -12,7 +13,13 @@ import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.AbstractView;
 
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
@@ -25,8 +32,10 @@ public class CategoryViewImpl extends
     private Component threadListing;
     private CategoryListing categoryListing;
     private VerticalLayout categoryLayout;
-    private VerticalLayout threadLayout;
     private HeadingLabel noThreadsInfo;
+    private HeadingLabel threadsLabel;
+    private Button newThreadButton1;
+    private Button newThreadButton2;
 
     @Override
     protected Component createCompositionRoot() {
@@ -43,15 +52,44 @@ public class CategoryViewImpl extends
         categoryLayout.addComponent(categoryListing = new CategoryListing(
                 Mode.SINGLE_COLUMN));
 
-         threadLayout = new VerticalLayout();
+        final VerticalLayout threadLayout = new VerticalLayout();
         layout.addComponent(threadLayout);
 
-        threadLayout.addComponent(new HeadingLabel("Threads", HeadingLevel.H2));
+        final HorizontalLayout threadHeaderLayout = new HorizontalLayout();
+        threadHeaderLayout.setWidth("100%");
+        threadLayout.addComponent(threadHeaderLayout);
+
+        threadsLabel = new HeadingLabel("Threads", HeadingLevel.H2);
+        threadHeaderLayout.addComponent(threadsLabel);
+
+        newThreadButton1 = createNewThreadButton();
+        threadHeaderLayout.addComponent(newThreadButton1);
+        threadHeaderLayout.setComponentAlignment(newThreadButton1,
+                Alignment.MIDDLE_RIGHT);
+
         threadLayout.addComponent(threadListing = new Label("placeholder"));
 
         noThreadsInfo = new HeadingLabel(
                 "There are no threads in this category", HeadingLevel.H1);
         layout.addComponent(noThreadsInfo);
+
+        newThreadButton2 = createNewThreadButton();
+        threadLayout.addComponent(newThreadButton2);
+    }
+
+    private static Button createNewThreadButton() {
+        final Button button = new Button("Start a new thread");
+        button.setIcon(new ThemeResource("images/icon-newthread.png"));
+        button.addListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                Log.debug("creating new threads not implemented yet");
+            }
+        });
+        button.setWidth("163px"); // same as
+                                  // org.vaadin.tori.component.thread.ThreadListing.PROPERTY_ID_LATESTPOST
+                                  // with padding and all
+        return button;
     }
 
     @Override
@@ -60,8 +98,13 @@ public class CategoryViewImpl extends
         final CategoryPresenter categoryPresenter = new CategoryPresenter(
                 app.getDataSource(), app.getAuthorizationService());
 
-        threadLayout.replaceComponent(threadListing,
+        final ComponentContainer parent = (ComponentContainer) threadListing
+                .getParent();
+        parent.replaceComponent(threadListing,
                 threadListing = new ThreadListing(categoryPresenter));
+
+        newThreadButton1.setEnabled(categoryPresenter.userMayStartANewThread());
+        newThreadButton2.setEnabled(categoryPresenter.userMayStartANewThread());
 
         return categoryPresenter;
     }
@@ -75,8 +118,9 @@ public class CategoryViewImpl extends
 
     @Override
     public void displayThreads(final List<DiscussionThread> threadsInCategory) {
-          // show contained threads only if there are any
-        threadLayout.setVisible(!threadsInCategory.isEmpty());
+        // show contained threads only if there are any
+        threadListing.setVisible(!threadsInCategory.isEmpty());
+        threadsLabel.setVisible(!threadsInCategory.isEmpty());
         noThreadsInfo.setVisible(threadsInCategory.isEmpty());
 
         ((ThreadListing) threadListing).setThreads(threadsInCategory);
