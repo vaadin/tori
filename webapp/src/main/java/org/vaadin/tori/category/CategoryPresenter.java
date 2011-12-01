@@ -92,11 +92,11 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     }
 
     public boolean userCanSticky(final DiscussionThread thread) {
-        return authorizationService.maySticky(thread) && thread.isSticky();
+        return authorizationService.maySticky(thread) && !thread.isSticky();
     }
 
     public boolean userCanUnSticky(final DiscussionThread thread) {
-        return authorizationService.maySticky(thread) && !thread.isSticky();
+        return authorizationService.maySticky(thread) && thread.isSticky();
     }
 
     public void lock(final DiscussionThread thread) {
