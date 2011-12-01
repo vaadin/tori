@@ -37,4 +37,12 @@ public interface AuthorizationService {
     boolean mayDelete(Post post);
 
     boolean mayVote();
+
+    boolean mayMove(DiscussionThread thread);
+
+    boolean maySticky(DiscussionThread thread);
+
+    boolean mayLock(DiscussionThread thread);
+
+    boolean mayDelete(DiscussionThread thread);
 }

@@ -14,4 +14,20 @@ public interface CategoryView extends View {
     void displayCategoryNotFoundError(String requestedCategoryId);
 
     Category getCurrentCategory();
+
+    void confirmFollowing();
+
+    void confirmUnfollowing();
+
+    void confirmThreadMoved();
+
+    void confirmThreadStickied();
+
+    void confirmThreadUnstickied();
+
+    void confirmThreadLocked();
+
+    void confirmThreadUnlocked();
+
+    void confirmThreadDeleted();
 }

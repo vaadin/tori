@@ -25,6 +25,12 @@ public class DiscussionThread extends AbstractEntity {
     @JoinColumn(nullable = false)
     private Category category;
 
+    @Column(nullable = false)
+    private boolean sticky;
+
+    @Column(nullable = false)
+    private boolean locked;
+
     public DiscussionThread() {
     }
 
@@ -91,6 +97,22 @@ public class DiscussionThread extends AbstractEntity {
 
     public void setCategory(final Category category) {
         this.category = category;
+    }
+
+    public void setSticky(final boolean sticky) {
+        this.sticky = sticky;
+    }
+
+    public boolean isSticky() {
+        return sticky;
+    }
+
+    public void setLocked(final boolean locked) {
+        this.locked = locked;
+    }
+
+    public boolean isLocked() {
+        return locked;
     }
 
 }

@@ -178,7 +178,7 @@ public class TestDataSource implements DataSource {
             public List<Post> execute(final EntityManager em) {
                 final TypedQuery<Post> query = em.createQuery(
                         "select p from Post p where p.thread = :thread "
-                                + "orderby asc time", Post.class);
+                                + "order by p.time asc", Post.class);
                 query.setParameter("thread", thread);
                 return query.getResultList();
             }
@@ -443,7 +443,7 @@ public class TestDataSource implements DataSource {
         save(vote);
     }
 
-    private void save(final PostVote vote) {
+    public void save(final PostVote vote) {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
@@ -509,4 +509,88 @@ public class TestDataSource implements DataSource {
         save(post);
     }
 
+    @Override
+    public void move(final DiscussionThread thread,
+            final Category destinationCategory) {
+        executeWithEntityManager(new Command<Void>() {
+
+            @Override
+            public Void execute(final EntityManager em) {
+                thread.setCategory(destinationCategory);
+                final EntityTransaction transaction = em.getTransaction();
+                transaction.begin();
+                em.merge(thread);
+                transaction.commit();
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public void sticky(final DiscussionThread thread) {
+        thread.setSticky(true);
+        save(thread);
+    }
+
+    @Override
+    public void unsticky(final DiscussionThread thread) {
+        thread.setSticky(false);
+        save(thread);
+    }
+
+    @Override
+    public void lock(final DiscussionThread thread) {
+        thread.setLocked(true);
+        save(thread);
+    }
+
+    @Override
+    public void unlock(final DiscussionThread thread) {
+        thread.setLocked(false);
+        save(thread);
+    }
+
+    private static void save(final DiscussionThread thread) {
+        executeWithEntityManager(new Command<Void>() {
+            @Override
+            public Void execute(final EntityManager em) {
+                final EntityTransaction t = em.getTransaction();
+                t.begin();
+                em.merge(thread);
+                t.commit();
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public void delete(final DiscussionThread thread) {
+        executeWithEntityManager(new Command<Void>() {
+            @Override
+            public Void execute(final EntityManager em) {
+                final EntityTransaction t = em.getTransaction();
+                t.begin();
+                final DiscussionThread mergedThread = em.merge(thread);
+
+                // remove all Following references
+                final Query followDelete = em
+                        .createQuery("delete from Following f where f.thread = :thread");
+                followDelete.setParameter("thread", thread);
+                followDelete.executeUpdate();
+
+                // remove all votes for posts inside thread.
+                for (final Post post : getPosts(mergedThread)) {
+                    // "in" is not supported :(
+                    final Query postDelete = em
+                            .createQuery("delete from PostVote where post = :post");
+                    postDelete.setParameter("post", post);
+                    postDelete.executeUpdate();
+                }
+
+                em.remove(mergedThread);
+                t.commit();
+                return null;
+            }
+        });
+    }
 }

@@ -13,6 +13,7 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.AbstractView;
 
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 
@@ -21,7 +22,7 @@ public class CategoryViewImpl extends
         AbstractView<CategoryView, CategoryPresenter> implements CategoryView {
 
     private VerticalLayout layout;
-    private ThreadListing threadListing;
+    private Component threadListing;
     private CategoryListing categoryListing;
     private VerticalLayout categoryLayout;
     private VerticalLayout threadLayout;
@@ -42,11 +43,11 @@ public class CategoryViewImpl extends
         categoryLayout.addComponent(categoryListing = new CategoryListing(
                 Mode.SINGLE_COLUMN));
 
-        threadLayout = new VerticalLayout();
+         threadLayout = new VerticalLayout();
         layout.addComponent(threadLayout);
 
         threadLayout.addComponent(new HeadingLabel("Threads", HeadingLevel.H2));
-        threadLayout.addComponent(threadListing = new ThreadListing());
+        threadLayout.addComponent(threadListing = new Label("placeholder"));
 
         noThreadsInfo = new HeadingLabel(
                 "There are no threads in this category", HeadingLevel.H1);
@@ -56,25 +57,29 @@ public class CategoryViewImpl extends
     @Override
     protected CategoryPresenter createPresenter() {
         final ToriApplication app = ToriApplication.getCurrent();
-        return new CategoryPresenter(app.getDataSource(),
-                app.getAuthorizationService());
+        final CategoryPresenter categoryPresenter = new CategoryPresenter(
+                app.getDataSource(), app.getAuthorizationService());
+
+        threadLayout.replaceComponent(threadListing,
+                threadListing = new ThreadListing(categoryPresenter));
+
+        return categoryPresenter;
     }
 
     @Override
     public void displaySubCategories(final List<Category> subCategories) {
         // show contained categories only if there are any
         categoryLayout.setVisible(!subCategories.isEmpty());
-
         categoryListing.setCategories(subCategories);
     }
 
     @Override
     public void displayThreads(final List<DiscussionThread> threadsInCategory) {
-        // show contained threads only if there are any
+          // show contained threads only if there are any
         threadLayout.setVisible(!threadsInCategory.isEmpty());
         noThreadsInfo.setVisible(threadsInCategory.isEmpty());
 
-        threadListing.setThreads(threadsInCategory);
+        ((ThreadListing) threadListing).setThreads(threadsInCategory);
     }
 
     @Override
@@ -94,4 +99,47 @@ public class CategoryViewImpl extends
         return getPresenter().getCurrentCategory();
     }
 
+    @Override
+    public void confirmFollowing() {
+        getWindow().showNotification("following thread");
+    }
+
+    @Override
+    public void confirmUnfollowing() {
+        getWindow().showNotification("unfollowed thread");
+    }
+
+    @Override
+    public void confirmThreadMoved() {
+        getWindow().showNotification("thread moved");
+    }
+
+    @Override
+    public void confirmThreadStickied() {
+        getWindow().showNotification("thread stickied");
+        // TODO make visual adjustments
+    }
+
+    @Override
+    public void confirmThreadUnstickied() {
+        getWindow().showNotification("thread unstickied");
+        // TODO make visual adjustments
+    }
+
+    @Override
+    public void confirmThreadLocked() {
+        getWindow().showNotification("thread locked");
+        // TODO make visual adjustments
+    }
+
+    @Override
+    public void confirmThreadUnlocked() {
+        getWindow().showNotification("thread unlocked");
+        // TODO make visual adjustments
+    }
+
+    @Override
+    public void confirmThreadDeleted() {
+        getWindow().showNotification("thread deleted");
+    }
 }
