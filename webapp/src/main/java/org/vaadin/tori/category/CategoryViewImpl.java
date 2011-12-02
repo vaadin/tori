@@ -102,9 +102,6 @@ public class CategoryViewImpl extends
         parent.replaceComponent(threadListing,
                 threadListing = new ThreadListing(categoryPresenter));
 
-        newThreadButton1.setEnabled(categoryPresenter.userMayStartANewThread());
-        newThreadButton2.setEnabled(categoryPresenter.userMayStartANewThread());
-
         return categoryPresenter;
     }
 
@@ -127,6 +124,9 @@ public class CategoryViewImpl extends
         } else {
             parent.replaceComponent(threadsLabel, threadsLabel = THREADS);
         }
+
+        newThreadButton1.setEnabled(getPresenter().userMayStartANewThread());
+        newThreadButton2.setEnabled(getPresenter().userMayStartANewThread());
 
         ((ThreadListing) threadListing).setThreads(threadsInCategory);
     }
