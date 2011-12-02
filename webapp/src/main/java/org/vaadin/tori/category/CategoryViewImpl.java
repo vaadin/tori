@@ -28,11 +28,14 @@ import com.vaadin.ui.Window.Notification;
 public class CategoryViewImpl extends
         AbstractView<CategoryView, CategoryPresenter> implements CategoryView {
 
+    private static final HeadingLabel NO_THREADS = new HeadingLabel(
+            "There are no threads in this category", HeadingLevel.H1);
+    private static final HeadingLabel THREADS = new HeadingLabel("Threads",
+            HeadingLevel.H2);
     private VerticalLayout layout;
     private Component threadListing;
     private CategoryListing categoryListing;
     private VerticalLayout categoryLayout;
-    private HeadingLabel noThreadsInfo;
     private HeadingLabel threadsLabel;
     private Button newThreadButton1;
     private Button newThreadButton2;
@@ -59,7 +62,7 @@ public class CategoryViewImpl extends
         threadHeaderLayout.setWidth("100%");
         threadLayout.addComponent(threadHeaderLayout);
 
-        threadsLabel = new HeadingLabel("Threads", HeadingLevel.H2);
+        threadsLabel = THREADS;
         threadHeaderLayout.addComponent(threadsLabel);
 
         newThreadButton1 = createNewThreadButton();
@@ -68,10 +71,6 @@ public class CategoryViewImpl extends
                 Alignment.MIDDLE_RIGHT);
 
         threadLayout.addComponent(threadListing = new Label("placeholder"));
-
-        noThreadsInfo = new HeadingLabel(
-                "There are no threads in this category", HeadingLevel.H1);
-        layout.addComponent(noThreadsInfo);
 
         newThreadButton2 = createNewThreadButton();
         threadLayout.addComponent(newThreadButton2);
@@ -120,8 +119,14 @@ public class CategoryViewImpl extends
     public void displayThreads(final List<DiscussionThread> threadsInCategory) {
         // show contained threads only if there are any
         threadListing.setVisible(!threadsInCategory.isEmpty());
-        threadsLabel.setVisible(!threadsInCategory.isEmpty());
-        noThreadsInfo.setVisible(threadsInCategory.isEmpty());
+
+        final ComponentContainer parent = (ComponentContainer) threadsLabel
+                .getParent();
+        if (threadsInCategory.isEmpty()) {
+            parent.replaceComponent(threadsLabel, threadsLabel = NO_THREADS);
+        } else {
+            parent.replaceComponent(threadsLabel, threadsLabel = THREADS);
+        }
 
         ((ThreadListing) threadListing).setThreads(threadsInCategory);
     }
