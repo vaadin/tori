@@ -1,11 +1,21 @@
 package org.vaadin.tori.data.entity;
 
+import org.apache.log4j.Logger;
+
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
+
 public class UserWrapper extends User {
 
-    public final com.liferay.portal.model.User liferayUser;
+    private static final Logger log = Logger.getLogger(UserWrapper.class);
 
-    private UserWrapper(final com.liferay.portal.model.User liferayUser) {
+    public final com.liferay.portal.model.User liferayUser;
+    private final String imagePath;
+
+    private UserWrapper(final com.liferay.portal.model.User liferayUser,
+            final String imagePath) {
         this.liferayUser = liferayUser;
+        this.imagePath = imagePath;
     }
 
     @Override
@@ -16,6 +26,22 @@ public class UserWrapper extends User {
     @Override
     public String getDisplayedName() {
         return liferayUser.getFullName();
+    }
+
+    @Override
+    public String getAvatarUrl() {
+        if (imagePath != null) {
+            try {
+                return imagePath + "/user_"
+                        + (liferayUser.isFemale() ? "female" : "male")
+                        + "_portrait?img_id=" + liferayUser.getPortraitId();
+            } catch (final PortalException e) {
+                log.warn("Cannot display avatar for user " + getId() + ".", e);
+            } catch (final SystemException e) {
+                log.warn("Cannot display avatar for user " + getId() + ".", e);
+            }
+        }
+        return null;
     }
 
     @Override
@@ -31,9 +57,10 @@ public class UserWrapper extends User {
         return liferayUser.hashCode();
     }
 
-    public static User wrap(final com.liferay.portal.model.User liferayUser) {
+    public static User wrap(final com.liferay.portal.model.User liferayUser,
+            final String imagePath) {
         if (liferayUser != null) {
-            return new UserWrapper(liferayUser);
+            return new UserWrapper(liferayUser, imagePath);
         } else {
             return null;
         }

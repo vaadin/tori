@@ -39,6 +39,7 @@ public class LiferayDataSource implements DataSource {
     private static final int QUERY_ALL = com.liferay.portal.kernel.dao.orm.QueryUtil.ALL_POS;
 
     private long scopeGroupId = -1;
+    private String imagePath;
 
     @Override
     public List<Category> getRootCategories() {
@@ -80,8 +81,9 @@ public class LiferayDataSource implements DataSource {
                 // must still get the root message of each thread
                 final MBMessage rootMessage = MBMessageLocalServiceUtil
                         .getMessage(liferayThread.getRootMessageId());
-                final User author = UserWrapper.wrap(UserLocalServiceUtil
-                        .getUser(rootMessage.getUserId()));
+                final User author = UserWrapper.wrap(
+                        UserLocalServiceUtil.getUser(rootMessage.getUserId()),
+                        imagePath);
 
                 final DiscussionThread wrappedThread = DiscussionThreadWrapper
                         .wrap(liferayThread, rootMessage, author);
@@ -152,8 +154,9 @@ public class LiferayDataSource implements DataSource {
                     .getMBThread(threadId);
             final MBMessage rootMessage = MBMessageLocalServiceUtil
                     .getMBMessage(thread.getRootMessageId());
-            final User author = UserWrapper.wrap(UserLocalServiceUtil
-                    .getUser(rootMessage.getUserId()));
+            final User author = UserWrapper.wrap(
+                    UserLocalServiceUtil.getUser(rootMessage.getUserId()),
+                    imagePath);
             final Category wrappedCategory = CategoryWrapper
                     .wrap(MBCategoryLocalServiceUtil.getCategory(thread
                             .getCategoryId()));
@@ -185,8 +188,9 @@ public class LiferayDataSource implements DataSource {
 
                 // get also the author
                 User wrappedUser;
-                wrappedUser = org.vaadin.tori.data.entity.UserWrapper
-                        .wrap(UserLocalServiceUtil.getUser(message.getUserId()));
+                wrappedUser = org.vaadin.tori.data.entity.UserWrapper.wrap(
+                        UserLocalServiceUtil.getUser(message.getUserId()),
+                        imagePath);
                 wrappedPost.setAuthor(wrappedUser);
                 wrappedPost.setThread(thread);
                 result.add(wrappedPost);
@@ -351,6 +355,7 @@ public class LiferayDataSource implements DataSource {
 
             if (themeDisplay != null) {
                 scopeGroupId = themeDisplay.getScopeGroupId();
+                imagePath = themeDisplay.getPathImage();
                 log.info("Using groupId " + scopeGroupId + " as the scope.");
             }
         }
