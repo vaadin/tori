@@ -13,6 +13,7 @@ import org.vaadin.tori.mvp.NullViewImpl;
 import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.thread.ThreadViewImpl;
 
+import com.google.common.base.Joiner;
 import com.vaadin.Application;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -210,7 +211,7 @@ public class ToriNavigator extends CustomComponent {
             final boolean noFragmentSetting) {
         currentFragment = classToUri.get(v.getClass());
         if (arguments != null) {
-            currentFragment += "/" + arguments;
+            currentFragment += "/" + Joiner.on('/').join(arguments);
         }
         if (!noFragmentSetting
                 && !currentFragment.equals(uriFragmentUtil.getFragment())) {
