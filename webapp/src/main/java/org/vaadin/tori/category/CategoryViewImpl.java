@@ -127,8 +127,8 @@ public class CategoryViewImpl extends
     }
 
     @Override
-    protected void navigationTo(final String requestedDataId) {
-        super.getPresenter().setCurrentCategoryById(requestedDataId);
+    protected void navigationTo(final String[] arguments) {
+        super.getPresenter().setCurrentCategoryById(arguments[0]);
     }
 
     @Override

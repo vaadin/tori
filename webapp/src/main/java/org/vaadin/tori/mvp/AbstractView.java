@@ -69,14 +69,12 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
     }
 
     @Override
-    public final void navigateTo(final String requestedDataId) {
+    public final void navigateTo(final String[] arguments) {
         if (log.isDebugEnabled()) {
-            log.debug("Activating view "
-                    + getClass().getName()
-                    + (requestedDataId != null ? " with params: "
-                            + requestedDataId : ""));
+            log.debug("Activating view " + getClass().getName()
+                    + (arguments != null ? " with params: " + arguments : ""));
         }
-        navigationTo(requestedDataId);
+        navigationTo(arguments);
     }
 
     /**
@@ -85,10 +83,10 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
      * <strong>Tip:</string> use this method to pass the viewed object id to the
      * presenter for parsing.
      * 
-     * @param requestedDataId
+     * @param arguments
      *            the {@link String} parameter passed to this view.
      */
-    protected abstract void navigationTo(String requestedDataId);
+    protected abstract void navigationTo(String[] arguments);
 
     @Override
     public String getWarningForNavigatingFrom() {

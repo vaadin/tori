@@ -48,7 +48,7 @@ public class DashboardViewImpl extends
     }
 
     @Override
-    protected void navigationTo(final String requestedDataId) {
+    protected void navigationTo(final String[] arguments) {
         // NOP
     }
 
