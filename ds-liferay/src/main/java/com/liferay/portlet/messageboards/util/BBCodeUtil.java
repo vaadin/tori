@@ -1,4 +1,5 @@
 // Copied from Liferay SVN @ revision 57916 (tagged Liferay 6.0.5)
+// Changed Integer constructors to valueOf calls to fix Findbugs warnings.
 /**
  * Copyright (c) 2000-2010 Liferay, Inc. All rights reserved.
  *
@@ -59,13 +60,13 @@ public class BBCodeUtil {
             { "wub.gif", ":wub:" } };
 
     static {
-        fontSizes.put(new Integer(1), "<span style='font-size: 0.7em;'>");
-        fontSizes.put(new Integer(2), "<span style='font-size: 0.8em;'>");
-        fontSizes.put(new Integer(3), "<span style='font-size: 0.9em;'>");
-        fontSizes.put(new Integer(4), "<span style='font-size: 1.0em;'>");
-        fontSizes.put(new Integer(5), "<span style='font-size: 1.1em;'>");
-        fontSizes.put(new Integer(6), "<span style='font-size: 1.3em;'>");
-        fontSizes.put(new Integer(7), "<span style='font-size: 1.5em;'>");
+        fontSizes.put(Integer.valueOf(1), "<span style='font-size: 0.7em;'>");
+        fontSizes.put(Integer.valueOf(2), "<span style='font-size: 0.8em;'>");
+        fontSizes.put(Integer.valueOf(3), "<span style='font-size: 0.9em;'>");
+        fontSizes.put(Integer.valueOf(4), "<span style='font-size: 1.0em;'>");
+        fontSizes.put(Integer.valueOf(5), "<span style='font-size: 1.1em;'>");
+        fontSizes.put(Integer.valueOf(6), "<span style='font-size: 1.3em;'>");
+        fontSizes.put(Integer.valueOf(7), "<span style='font-size: 1.5em;'>");
 
         listStyles.put("1", "<ol style='list-style: decimal inside;'>");
         listStyles.put("i", "<ol style='list-style: lower-roman inside;'>");
@@ -332,11 +333,11 @@ public class BBCodeUtil {
             }
 
             if (tag.hasParameter()) {
-                Integer size = new Integer(GetterUtil.getInteger(tag
+                Integer size = Integer.valueOf(GetterUtil.getInteger(tag
                         .getParameter()));
 
                 if (size.intValue() > 7) {
-                    size = new Integer(7);
+                    size = Integer.valueOf(7);
                 }
 
                 if (fontSizes.containsKey(size)) {
