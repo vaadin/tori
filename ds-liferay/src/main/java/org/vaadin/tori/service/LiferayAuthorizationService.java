@@ -74,27 +74,32 @@ public class LiferayAuthorizationService implements AuthorizationService {
 
     @Override
     public boolean mayMove(final DiscussionThread thread) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        // TODO
+        return true;
     }
 
     @Override
     public boolean maySticky(final DiscussionThread thread) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        // TODO
+        return true;
     }
 
     @Override
     public boolean mayLock(final DiscussionThread thread) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        // TODO
+        return true;
     }
 
     @Override
     public boolean mayDelete(final DiscussionThread thread) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        // TODO
+        return true;
     }
 
     @Override
     public boolean mayCreateThreadIn(final Category category) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        // TODO
+        return true;
     }
 
 }
