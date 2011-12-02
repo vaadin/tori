@@ -181,6 +181,9 @@
 .reply.compact .previewcaption {
 	display: none;	
 }
+.reply.compact textarea {
+	height: 1em;
+}
 .v-floatingbar .reply {
 	-moz-transition: height 0.2s ease-in-out;
 	-webkit-transition: height 0.2s ease-in-out;
@@ -193,4 +196,27 @@
 }
 .v-floatingbar .reply.collapsible.compact [location="captionlabel"] .v-label {
 	background-image: url(../images/icon-expand-panel.png);	
+}
+
+/* Post body formatting */
+.post .body .quote-title,
+.post .body .quote {
+	margin-left: 10px;
+}
+.post .body .quote-title {
+	font-weight: bold;	
+}
+.post .body .quote {
+	padding: 6px 3px;
+	border: 1px solid #9f9f9f;
+	background: #fff;
+}
+.post .body .code {
+	font-size: 12px;
+	font-family: Monaco, "Courier New", monospace	
+}
+.post .body .code .code-lines {
+	padding-right: 4px;
+	margin-right: 4px;
+	border-right: 1px solid #cfcfcf;	
 }

@@ -1,5 +1,6 @@
 package org.vaadin.tori;
 
+import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -27,6 +28,8 @@ public class ToriApplication extends Application implements
 
     private static Logger log = Logger.getLogger(ToriApplication.class);
     private static ThreadLocal<ToriApplication> currentApplication = new ThreadLocal<ToriApplication>();
+    private static ThreadLocal<HttpServletRequest> currentHttpServletRequest = new ThreadLocal<HttpServletRequest>();
+    private static ThreadLocal<PortletRequest> currentPortletRequest = new ThreadLocal<PortletRequest>();
 
     private DataSource ds;
     private PostFormatter postFormatter;
@@ -41,12 +44,23 @@ public class ToriApplication extends Application implements
         postFormatter = createPostFormatter(spi);
         authorizationService = createAuthorizationService(spi);
 
+        setRequestForDataSource();
         setCurrentInstance();
 
         setTheme("tori");
 
         final Window mainWindow = new ToriWindow();
         setMainWindow(mainWindow);
+    }
+
+    private void setRequestForDataSource() {
+        if (ds != null) {
+            if (currentHttpServletRequest.get() != null) {
+                ds.setRequest(currentHttpServletRequest.get());
+            } else if (currentPortletRequest.get() != null) {
+                ds.setRequest(currentPortletRequest.get());
+            }
+        }
     }
 
     /**
@@ -162,12 +176,16 @@ public class ToriApplication extends Application implements
     @Override
     public void onRequestStart(final HttpServletRequest request,
             final HttpServletResponse response) {
+        currentHttpServletRequest.set(request);
+        setRequestForDataSource();
         setCurrentInstance();
     }
 
     @Override
     public void onRequestStart(final javax.portlet.PortletRequest request,
             final javax.portlet.PortletResponse response) {
+        currentPortletRequest.set(request);
+        setRequestForDataSource();
         setCurrentInstance();
     }
 
@@ -175,11 +193,13 @@ public class ToriApplication extends Application implements
     public void onRequestEnd(final HttpServletRequest request,
             final HttpServletResponse response) {
         removeCurrentInstance();
+        currentHttpServletRequest.remove();
     }
 
     @Override
     public void onRequestEnd(final javax.portlet.PortletRequest request,
             final javax.portlet.PortletResponse response) {
         removeCurrentInstance();
+        currentPortletRequest.remove();
     }
 }

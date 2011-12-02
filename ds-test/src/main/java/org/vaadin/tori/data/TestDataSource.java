@@ -593,4 +593,9 @@ public class TestDataSource implements DataSource {
             }
         });
     }
+
+    @Override
+    public void setRequest(final Object request) {
+        // NOP - this data source is not interested in the request
+    }
 }

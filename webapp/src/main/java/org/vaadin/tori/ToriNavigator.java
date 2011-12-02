@@ -1,8 +1,10 @@
 package org.vaadin.tori;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.vaadin.tori.category.CategoryViewImpl;
 import org.vaadin.tori.dashboard.DashboardViewImpl;
@@ -11,6 +13,7 @@ import org.vaadin.tori.mvp.NullViewImpl;
 import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.thread.ThreadViewImpl;
 
+import com.google.common.base.Joiner;
 import com.vaadin.Application;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -28,15 +31,17 @@ import com.vaadin.ui.Window;
 @SuppressWarnings("serial")
 public class ToriNavigator extends CustomComponent {
 
+    private static final String URL_PREFIX = "!/";
+
     /**
      * All the views of Tori application that can be navigated to.
      */
     public enum ApplicationView {
         // @formatter:off
-        DASHBOARD("!dashboard", DashboardViewImpl.class),
-        CATEGORIES("!category", CategoryViewImpl.class),
-        THREADS("!thread", ThreadViewImpl.class),
-        USERS("!user", NullViewImpl.class)
+        DASHBOARD(URL_PREFIX+"dashboard", DashboardViewImpl.class),
+        CATEGORIES(URL_PREFIX+"category", CategoryViewImpl.class),
+        THREADS(URL_PREFIX+"thread", ThreadViewImpl.class),
+        USERS(URL_PREFIX+"user", NullViewImpl.class)
         ;
         // @formatter:on
 
@@ -94,17 +99,19 @@ public class ToriNavigator extends CustomComponent {
         if ("".equals(newFragment)) {
             newFragment = mainViewUri;
         }
-        final String uri = getUriFromFragment(newFragment);
-        final String requestedDataId = getDataIdFromFragment(newFragment);
+
+        final String[] dataFragment = getDataFromFragment(newFragment);
+        final String uri = dataFragment[0];
+        final String[] arguments = tail(dataFragment);
         if (uriToClass.containsKey(uri)) {
             final AbstractView<?, ?> newView = getOrCreateView(uri);
 
             final String warn = currentView == null ? null : currentView
                     .getWarningForNavigatingFrom();
             if (warn != null && warn.length() > 0) {
-                confirmedMoveToNewView(requestedDataId, newView, warn);
+                confirmedMoveToNewView(arguments, newView, warn);
             } else {
-                moveTo(newView, requestedDataId, false);
+                moveTo(newView, arguments, false);
             }
 
         } else {
@@ -112,26 +119,30 @@ public class ToriNavigator extends CustomComponent {
         }
     }
 
-    private static String getUriFromFragment(final String fragment) {
-        final int i = fragment.indexOf('/');
-        if (i < 0) {
-            return fragment;
-        } else {
-            return fragment.substring(0, i);
-        }
-    }
+    /** Remove the first object in an array */
+    private static String[] tail(final String[] array) {
+        ToriUtil.checkForNull(array, "array must not be null");
 
-    private static String getDataIdFromFragment(final String fragment) {
-        final int i = fragment.indexOf('/');
-        if (i < 0 || i + 1 == fragment.length()) {
-            return null;
-        } else {
-            return fragment.substring(i + 1);
+        final List<String> list = new ArrayList<String>();
+        for (int i = 1; i < array.length; i++) {
+            list.add(array[i]);
         }
 
+        return list.toArray(new String[list.size()]);
     }
 
-    private void confirmedMoveToNewView(final String requestedDataId,
+    /**
+     * parses the current fragment into the view address and its optional
+     * arguments. ^_^
+     */
+    private static String[] getDataFromFragment(final String fragment) {
+        final String trimmedFragment = fragment.substring(URL_PREFIX.length());
+        final String[] data = trimmedFragment.split("/");
+        data[0] = URL_PREFIX + data[0];
+        return data;
+    }
+
+    private void confirmedMoveToNewView(final String[] arguments,
             final AbstractView<?, ?> newView, final String warn) {
         final VerticalLayout lo = new VerticalLayout();
         lo.setMargin(true);
@@ -157,7 +168,7 @@ public class ToriNavigator extends CustomComponent {
             @Override
             public void buttonClick(final ClickEvent event) {
                 main.removeWindow(wDialog);
-                moveTo(newView, requestedDataId, false);
+                moveTo(newView, arguments, false);
             }
 
         });
@@ -196,11 +207,11 @@ public class ToriNavigator extends CustomComponent {
         }
     }
 
-    private void moveTo(final AbstractView<?, ?> v,
-            final String requestedDataId, final boolean noFragmentSetting) {
+    private void moveTo(final AbstractView<?, ?> v, final String[] arguments,
+            final boolean noFragmentSetting) {
         currentFragment = classToUri.get(v.getClass());
-        if (requestedDataId != null) {
-            currentFragment += "/" + requestedDataId;
+        if (arguments != null) {
+            currentFragment += "/" + Joiner.on('/').join(arguments);
         }
         if (!noFragmentSetting
                 && !currentFragment.equals(uriFragmentUtil.getFragment())) {
@@ -219,7 +230,7 @@ public class ToriNavigator extends CustomComponent {
         }
         layout.addComponent(v);
         layout.setExpandRatio(v, 1.0F);
-        v.navigateTo(requestedDataId);
+        v.navigateTo(arguments);
         final View previousView = currentView;
         currentView = v;
 
@@ -302,9 +313,9 @@ public class ToriNavigator extends CustomComponent {
                     "Each view class can only be added to Navigator with one uri");
         }
 
-        if (uri.indexOf('/') >= 0 || uri.indexOf('#') >= 0) {
+        if (uri.indexOf('#') >= 0) {
             throw new IllegalArgumentException(
-                    "Uri can not contain # or / characters");
+                    "Uri can not contain # characters");
         }
 
         uriToClass.put(uri, viewClass);
@@ -363,7 +374,7 @@ public class ToriNavigator extends CustomComponent {
      * 
      * Uri can be either the exact uri registered previously with addView() or
      * it can also contain data id passed to the view. In case data id is
-     * included, the format is 'uri/freeFormedDataIdString'.
+     * included, the format is 'uri/freeFormedArgumentsString'.
      * 
      * @param uri
      *            Uri where to navigate.
@@ -392,14 +403,14 @@ public class ToriNavigator extends CustomComponent {
         this.navigateTo(view, null);
     }
 
-    public void navigateTo(final ApplicationView view, final String dataId) {
-        final String parsedDataId;
-        if (dataId == null) {
-            parsedDataId = "";
+    public void navigateTo(final ApplicationView view, final String arguments) {
+        final String parsedArguments;
+        if (arguments == null) {
+            parsedArguments = "";
         } else {
-            parsedDataId = "/" + dataId;
+            parsedArguments = "/" + arguments;
         }
-        this.navigateTo(view.getUrl() + parsedDataId);
+        this.navigateTo(view.getUrl() + parsedArguments);
     }
 
     /**
@@ -518,7 +529,7 @@ public class ToriNavigator extends CustomComponent {
     public String getCurrentUri() {
         final String fragment = uriFragmentUtil.getFragment();
         if (fragment != null) {
-            return getUriFromFragment(fragment);
+            return getDataFromFragment(fragment)[0];
         } else {
             return null;
         }
@@ -528,10 +539,10 @@ public class ToriNavigator extends CustomComponent {
      * In a URI fragment of <code>#foo/bar</code>, this will return
      * <code>bar</code>. If no fragment is set, this returns <code>null</code>
      */
-    public String getCurrentDataId() {
+    public String[] getCurrentArguments() {
         final String fragment = uriFragmentUtil.getFragment();
         if (fragment != null) {
-            return getDataIdFromFragment(fragment);
+            return tail(getDataFromFragment(fragment));
         } else {
             return null;
         }
@@ -573,6 +584,6 @@ public class ToriNavigator extends CustomComponent {
         final Class<? extends AbstractView<?, ?>> viewClass = (Class<? extends AbstractView<?, ?>>) ((AbstractView<?, ?>) getCurrentView())
                 .getClass();
         final AbstractView<?, ?> view = createView(viewClass);
-        moveTo(view, getCurrentDataId(), true);
+        moveTo(view, getCurrentArguments(), true);
     }
 }

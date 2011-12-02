@@ -14,7 +14,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Container;
@@ -27,7 +26,7 @@ import com.vaadin.terminal.gwt.client.Util;
  * The client-side implementation for server-side {@code FloatingBar} component.
  */
 public class VFloatingBar extends Widget implements Container, HasWidgets,
-        ResizeHandler, ScrollHandler {
+        ResizeHandler {
 
     public static final String ATTR_SCROLL_COMPONENT = "scrollComponent";
     public static final String ATTR_ALIGNMENT = "alignment";
@@ -50,6 +49,7 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
     private String alignment;
 
     private HandlerRegistration scrollHandlerRegistration;
+    private HandlerRegistration scrollHandlerRegistrationWin;
     private HandlerRegistration resizeHandlerRegistration;
 
     public VFloatingBar() {
@@ -129,22 +129,53 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
     }
 
     private void attachScrollHandlerIfNeeded() {
-        if (scrollComponent != null && scrollHandlerRegistration == null) {
-            // Cannot use Window.addWindowScrollHandler() in Vaadin apps, but
-            // we must listen for scroll events in the VView instance instead.
-            scrollHandlerRegistration = client.getView().addDomHandler(this,
-                    ScrollEvent.getType());
+        if (scrollComponent != null) {
+            if (scrollHandlerRegistration == null) {
+                // Cannot use Window.addWindowScrollHandler() in Vaadin apps,
+                // but we must listen for scroll events in the VView instance
+                // instead...
+                final ScrollHandler handler = new ScrollHandler() {
+                    @Override
+                    public void onScroll(final ScrollEvent event) {
+                        overlay.setVisible(!isScrollComponentVisible());
+                    }
+                };
+                scrollHandlerRegistration = client.getView().addDomHandler(
+                        handler, ScrollEvent.getType());
+            }
+            if (scrollHandlerRegistrationWin == null) {
+                // ...but within embedded apps (portlet) we do actually scroll
+                // the Window, so we need also the ScrollHandler for the Window.
+                final Window.ScrollHandler handler = new Window.ScrollHandler() {
+                    @Override
+                    public void onWindowScroll(
+                            final com.google.gwt.user.client.Window.ScrollEvent event) {
+                        overlay.setVisible(!isScrollComponentVisible());
+                    }
+                };
+                scrollHandlerRegistrationWin = Window
+                        .addWindowScrollHandler(handler);
+            }
         }
     }
 
     @Override
     protected void onDetach() {
-        // remove all handlers
-        scrollHandlerRegistration.removeHandler();
-        resizeHandlerRegistration.removeHandler();
-
+        removeAllHandlers();
         overlay.hide();
         super.onDetach();
+    }
+
+    private void removeAllHandlers() {
+        if (scrollHandlerRegistration != null) {
+            scrollHandlerRegistration.removeHandler();
+        }
+        if (scrollHandlerRegistrationWin != null) {
+            scrollHandlerRegistrationWin.removeHandler();
+        }
+        if (resizeHandlerRegistration != null) {
+            resizeHandlerRegistration.removeHandler();
+        }
     }
 
     @Override
@@ -184,21 +215,33 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
         final int height = Util.getRequiredHeight(pe)
                 - Util.getRequiredHeight(ipe);
 
-        return new RenderSpace(RootPanel.get().getOffsetWidth() - width,
-                RootPanel.get().getOffsetHeight() - height);
+        return new RenderSpace(Window.getClientWidth() - width,
+                Window.getClientHeight() - height);
     }
 
     private boolean isScrollComponentVisible() {
         if (scrollComponent != null) {
-            final int componentTop = scrollComponent.getAbsoluteTop();
+            final Element scrollComponentElem = scrollComponent.getElement();
+            final int componentTop = scrollComponentElem.getOffsetTop();
+            final int componentHeight = scrollComponentElem.getClientHeight();
+
+            final Element vViewElem = client.getView().getElement();
+            final int vViewScrollTop = vViewElem.getScrollTop();
+            final int vViewTop = vViewElem.getAbsoluteTop();
+
+            // Decide whether to use:
+            // 1) VView scroll position (normal Vaadin app)
+            // -- or --
+            // 2) Window scroll minus VView top offset (embedded app, portlet).
+            final int windowScrollTop = (vViewScrollTop == 0 ? (Window
+                    .getScrollTop() - vViewTop) : vViewScrollTop);
 
             if (alignment.equals(ALIGNMENT_TOP)) {
-                final int componentHeight = scrollComponent.getOffsetHeight();
-                return componentTop > -componentHeight;
+                return windowScrollTop < (componentTop + componentHeight);
             } else {
                 // bottom alignment
-                final int viewPortHeight = client.getView().getOffsetHeight();
-                return componentTop < viewPortHeight;
+                final int windowHeight = Window.getClientHeight();
+                return (windowScrollTop + windowHeight) > (componentTop + componentHeight);
             }
         }
         return true;
@@ -211,11 +254,6 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
 
         client.runDescendentsLayout(this);
         overlay.updateShadowSizeAndPosition();
-    }
-
-    @Override
-    public void onScroll(final ScrollEvent event) {
-        overlay.setVisible(!isScrollComponentVisible());
     }
 
     @Override

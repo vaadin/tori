@@ -26,7 +26,7 @@ public class NullViewImpl extends AbstractView<NullView, NullPresenter>
     }
 
     @Override
-    protected void navigationTo(final String requestedDataId) {
+    protected void navigationTo(final String[] arguments) {
         // NOP
     }
 
