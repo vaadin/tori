@@ -2,6 +2,7 @@ package org.vaadin.tori.mvp;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriNavigator;
@@ -71,8 +72,10 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
     @Override
     public final void navigateTo(final String[] arguments) {
         if (log.isDebugEnabled()) {
-            log.debug("Activating view " + getClass().getName()
-                    + (arguments != null ? " with params: " + arguments : ""));
+            log.debug("Activating view "
+                    + getClass().getName()
+                    + (arguments != null ? " with params: "
+                            + Arrays.toString(arguments) : ""));
         }
         navigationTo(arguments);
     }
