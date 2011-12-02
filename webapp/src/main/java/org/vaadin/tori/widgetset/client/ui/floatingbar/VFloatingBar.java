@@ -14,7 +14,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.Container;
@@ -216,8 +215,8 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
         final int height = Util.getRequiredHeight(pe)
                 - Util.getRequiredHeight(ipe);
 
-        return new RenderSpace(RootPanel.get().getOffsetWidth() - width,
-                RootPanel.get().getOffsetHeight() - height);
+        return new RenderSpace(Window.getClientWidth() - width,
+                Window.getClientHeight() - height);
     }
 
     private boolean isScrollComponentVisible() {
