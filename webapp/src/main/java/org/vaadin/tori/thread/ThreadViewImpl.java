@@ -26,6 +26,8 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window.Notification;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+
 @SuppressWarnings("serial")
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD_STORE", justification = "We're ignoring serialization")
 public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
@@ -63,6 +65,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 app.getAuthorizationService());
     }
 
+    @CheckForNull
     @Override
     public DiscussionThread getCurrentThread() {
         return getPresenter().getCurrentThread();

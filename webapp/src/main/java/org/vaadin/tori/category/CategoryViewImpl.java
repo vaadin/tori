@@ -24,6 +24,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+
 @SuppressWarnings("serial")
 public class CategoryViewImpl extends
         AbstractView<CategoryView, CategoryPresenter> implements CategoryView {
@@ -138,12 +140,14 @@ public class CategoryViewImpl extends
 
     @Override
     public void displayCategoryNotFoundError(final String requestedCategoryId) {
+        log.error("No such category: " + requestedCategoryId);
         getWindow().showNotification(
                 "No category found for " + requestedCategoryId,
                 Notification.TYPE_ERROR_MESSAGE);
     }
 
     @Override
+    @CheckForNull
     public Category getCurrentCategory() {
         return getPresenter().getCurrentCategory();
     }

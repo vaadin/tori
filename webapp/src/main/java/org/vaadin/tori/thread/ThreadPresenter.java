@@ -12,8 +12,10 @@ import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.post.PostReport;
 
-public class ThreadPresenter extends Presenter<ThreadView> {
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
+public class ThreadPresenter extends Presenter<ThreadView> {
+    @CheckForNull
     private DiscussionThread currentThread;
 
     public ThreadPresenter(final DataSource dataSource,
@@ -39,6 +41,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         }
     }
 
+    @CheckForNull
     public DiscussionThread getCurrentThread() {
         return currentThread;
     }
