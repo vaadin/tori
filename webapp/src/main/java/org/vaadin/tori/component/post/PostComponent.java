@@ -312,7 +312,6 @@ public class PostComponent extends CustomComponent {
         final Embedded image = new Embedded(null, imageResource);
         image.setType(Embedded.TYPE_IMAGE);
         image.setWidth("100px");
-        image.setHeight("100px");
         return image;
     }
 

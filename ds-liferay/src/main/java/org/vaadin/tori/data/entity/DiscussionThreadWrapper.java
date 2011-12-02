@@ -8,12 +8,15 @@ public class DiscussionThreadWrapper extends DiscussionThread {
     public MBThread liferayThread;
     public MBMessage liferayRootMessage;
     public User threadAuthor;
+    public User lastPostAuthor;
 
     private DiscussionThreadWrapper(final MBThread thread,
-            final MBMessage rootMessage, final User threadAuthor) {
+            final MBMessage rootMessage, final User threadAuthor,
+            final User lastPostAuthor) {
         liferayThread = thread;
         liferayRootMessage = rootMessage;
         this.threadAuthor = threadAuthor;
+        this.lastPostAuthor = lastPostAuthor;
     }
 
     @Override
@@ -37,6 +40,14 @@ public class DiscussionThreadWrapper extends DiscussionThread {
     }
 
     @Override
+    public Post getLatestPost() {
+        final Post fakedLastPost = new Post();
+        fakedLastPost.setTime(liferayThread.getLastPostDate());
+        fakedLastPost.setAuthor(lastPostAuthor);
+        return fakedLastPost;
+    }
+
+    @Override
     public boolean equals(final Object obj) {
         if (obj instanceof DiscussionThreadWrapper) {
             return liferayThread
@@ -51,10 +62,11 @@ public class DiscussionThreadWrapper extends DiscussionThread {
     }
 
     public static DiscussionThread wrap(final MBThread threadToWrap,
-            final MBMessage threadRootMessage, final User threadAuthor) {
+            final MBMessage threadRootMessage, final User threadAuthor,
+            final User lastPostAuthor) {
         if (threadToWrap != null) {
             return new DiscussionThreadWrapper(threadToWrap, threadRootMessage,
-                    threadAuthor);
+                    threadAuthor, lastPostAuthor);
         } else {
             return null;
         }
