@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.portlet.PortletRequest;
+
 import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.data.entity.Category;
@@ -21,6 +23,7 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.service.UserLocalServiceUtil;
+import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBThread;
@@ -32,17 +35,16 @@ public class LiferayDataSource implements DataSource {
 
     private static final Logger log = Logger.getLogger(LiferayDataSource.class);
 
-    // TODO retrieve this from somewhere instead of using a constant
-    private static final long SCOPE_GROUP_ID = 10187;
-
     private static final long ROOT_CATEGORY_ID = 0;
     private static final int QUERY_ALL = com.liferay.portal.kernel.dao.orm.QueryUtil.ALL_POS;
+
+    private long scopeGroupId = -1;
 
     @Override
     public List<Category> getRootCategories() {
         try {
             final List<MBCategory> rootCategories = MBCategoryLocalServiceUtil
-                    .getCategories(SCOPE_GROUP_ID, ROOT_CATEGORY_ID, QUERY_ALL,
+                    .getCategories(scopeGroupId, ROOT_CATEGORY_ID, QUERY_ALL,
                             QUERY_ALL);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Found %d root level categories.",
@@ -103,7 +105,7 @@ public class LiferayDataSource implements DataSource {
         final int start = 0; // use QUERY_ALL if you'd like to get all
         final int end = 20; // use QUERY_ALL if you'd like to get all
         final List<MBThread> liferayThreads = MBThreadLocalServiceUtil
-                .getThreads(SCOPE_GROUP_ID, categoryId,
+                .getThreads(scopeGroupId, categoryId,
                         WorkflowConstants.STATUS_APPROVED, start, end);
         if (log.isDebugEnabled()) {
             log.debug(String.format(
@@ -133,8 +135,9 @@ public class LiferayDataSource implements DataSource {
     public long getThreadCount(final Category category) {
         ToriUtil.checkForNull(category, "Category must not be null.");
         try {
-            return MBThreadLocalServiceUtil.getCategoryThreadsCount(SCOPE_GROUP_ID,
-                    category.getId(), WorkflowConstants.STATUS_APPROVED);
+            return MBThreadLocalServiceUtil.getCategoryThreadsCount(
+                    scopeGroupId, category.getId(),
+                    WorkflowConstants.STATUS_APPROVED);
         } catch (final SystemException e) {
             // TODO error handling
             e.printStackTrace();
@@ -338,4 +341,18 @@ public class LiferayDataSource implements DataSource {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
+    @Override
+    public void setRequest(final Object request) {
+        if (scopeGroupId < 0 && request instanceof PortletRequest) {
+            // scope not defined yet -> get if from the request
+            final PortletRequest portletRequest = (PortletRequest) request;
+            final ThemeDisplay themeDisplay = (ThemeDisplay) portletRequest
+                    .getAttribute("THEME_DISPLAY");
+
+            if (themeDisplay != null) {
+                scopeGroupId = themeDisplay.getScopeGroupId();
+                log.info("Using groupId " + scopeGroupId + " as the scope.");
+            }
+        }
+    }
 }
