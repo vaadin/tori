@@ -35,12 +35,11 @@ public interface View {
      * is any additional id to data what should be shown in the view, it is also
      * optionally passed as parameter.
      * 
-     * @param requestedDataId
-     *            Id of the data extracted from URI fragment or null if not
-     *            given. This is the string that appeards in URI after
-     *            #viewname/
+     * @param arguments
+     *            The arguments passed to this view. If no arguments are passed,
+     *            the array is empty.
      */
-    public void navigateTo(String requestedDataId);
+    public void navigateTo(String[] arguments);
 
     /**
      * Get a warning that should be shown to user before navigating away from

@@ -206,8 +206,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    protected void navigationTo(final String requestedDataId) {
-        super.getPresenter().setCurrentThreadById(requestedDataId);
+    protected void navigationTo(final String[] arguments) {
+        super.getPresenter().setCurrentThreadById(arguments[0]);
     }
 
     @Override

@@ -218,7 +218,7 @@ public class CategoryListing extends
     }
 
     @Override
-    protected void navigationTo(final String requestedDataId) {
+    protected void navigationTo(final String[] arguments) {
         // NOP
     }
 
