@@ -78,16 +78,8 @@ public class LiferayDataSource implements DataSource {
             final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
                     liferayThreads.size());
             for (final MBThread liferayThread : liferayThreads) {
-                // must still get the root message of each thread
-                final MBMessage rootMessage = MBMessageLocalServiceUtil
-                        .getMessage(liferayThread.getRootMessageId());
-                final User author = UserWrapper.wrap(
-                        UserLocalServiceUtil.getUser(rootMessage.getUserId()),
-                        imagePath);
-
-                final DiscussionThread wrappedThread = DiscussionThreadWrapper
-                        .wrap(liferayThread, rootMessage, author);
-                wrappedThread.setCategory(category);
+                final DiscussionThread wrappedThread = wrapLiferayThread(
+                        liferayThread, category);
                 result.add(wrappedThread);
             }
             return result;
@@ -100,6 +92,25 @@ public class LiferayDataSource implements DataSource {
             e.printStackTrace();
             return Collections.emptyList();
         }
+    }
+
+    private DiscussionThread wrapLiferayThread(final MBThread liferayThread,
+            final Category category) throws PortalException, SystemException {
+        // get the root message of the thread
+        final MBMessage rootMessage = MBMessageLocalServiceUtil
+                .getMessage(liferayThread.getRootMessageId());
+        // get the author of the root message
+        final User author = UserWrapper.wrap(
+                UserLocalServiceUtil.getUser(rootMessage.getUserId()),
+                imagePath);
+        // get the author of the last post
+        final User lastPostAuthor = UserWrapper.wrap(UserLocalServiceUtil
+                .getUser(liferayThread.getLastPostByUserId()), imagePath);
+
+        final DiscussionThread wrappedThread = DiscussionThreadWrapper.wrap(
+                liferayThread, rootMessage, author, lastPostAuthor);
+        wrappedThread.setCategory(category);
+        return wrappedThread;
     }
 
     private List<MBThread> getLiferayThreads(final long categoryId)
@@ -152,19 +163,10 @@ public class LiferayDataSource implements DataSource {
         try {
             final MBThread thread = MBThreadLocalServiceUtil
                     .getMBThread(threadId);
-            final MBMessage rootMessage = MBMessageLocalServiceUtil
-                    .getMBMessage(thread.getRootMessageId());
-            final User author = UserWrapper.wrap(
-                    UserLocalServiceUtil.getUser(rootMessage.getUserId()),
-                    imagePath);
             final Category wrappedCategory = CategoryWrapper
                     .wrap(MBCategoryLocalServiceUtil.getCategory(thread
                             .getCategoryId()));
-
-            final DiscussionThread wrappedThread = DiscussionThreadWrapper
-                    .wrap(thread, rootMessage, author);
-            wrappedThread.setCategory(wrappedCategory);
-            return wrappedThread;
+            return wrapLiferayThread(thread, wrappedCategory);
         } catch (final PortalException e) {
             // TODO error handling
             e.printStackTrace();
