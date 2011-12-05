@@ -415,4 +415,10 @@ public class LiferayDataSource implements DataSource {
             log.error("Couldn't create ServiceContext.", e);
         }
     }
+
+    @Override
+    public void saveNewThread(final DiscussionThread newThread,
+            final Post firstPost) {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
 }

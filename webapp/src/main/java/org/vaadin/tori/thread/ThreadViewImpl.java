@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.component.FloatingBar;
 import org.vaadin.tori.component.FloatingBar.DisplayEvent;
 import org.vaadin.tori.component.FloatingBar.FloatingAlignment;
@@ -12,6 +13,8 @@ import org.vaadin.tori.component.FloatingBar.HideEvent;
 import org.vaadin.tori.component.FloatingBar.VisibilityListener;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
+import org.vaadin.tori.component.NewThreadComponent;
+import org.vaadin.tori.component.NewThreadComponent.NewThreadListener;
 import org.vaadin.tori.component.ReplyComponent;
 import org.vaadin.tori.component.ReplyComponent.ReplyListener;
 import org.vaadin.tori.component.post.PostComponent;
@@ -23,7 +26,9 @@ import com.vaadin.event.FieldEvents;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window.Notification;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -37,7 +42,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     private CssLayout layout;
     private final ReplyListener replyListener = new ReplyListener() {
         @Override
-        public void sendReply(final String rawBody) {
+        public void submit(final String rawBody) {
             getPresenter().sendReply(rawBody);
         }
     };
@@ -217,7 +222,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     protected void navigationTo(final String[] arguments) {
-        super.getPresenter().setCurrentThreadById(arguments[0]);
+        super.getPresenter().handleArguments(arguments);
     }
 
     @Override
@@ -274,5 +279,69 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     public void displayUserCanNotReply() {
         getWindow().showNotification(
                 "Unfortunately, you are not allowed to reply to this thread.");
+    }
+
+    @Override
+    public void redirectToDashboard() {
+        getNavigator().navigateTo(
+                ToriNavigator.ApplicationView.DASHBOARD.getUrl());
+    }
+
+    @Override
+    public void displayNewThreadFormForCategory(final String categoryId) {
+        layout.removeAllComponents();
+        final HeadingLabel heading = new HeadingLabel("Start a New Thread",
+                HeadingLevel.H2);
+        layout.addComponent(heading);
+        ToriApplication.getCurrent().getMainWindow().scrollIntoView(heading);
+
+        final HorizontalLayout topicLayout = new HorizontalLayout();
+        topicLayout.setSpacing(true);
+        topicLayout.setMargin(true, false, true, false);
+        topicLayout.setWidth("50em");
+        topicLayout.setStyleName("newthread");
+        layout.addComponent(topicLayout);
+
+        final HeadingLabel topicLabel = new HeadingLabel("Topic:",
+                HeadingLevel.H3);
+        topicLabel.addStyleName("topiclabel");
+        topicLabel.setWidth("140px");
+        topicLayout.addComponent(topicLabel);
+
+        final TextField topicField = new TextField();
+        topicField.setStyleName("topicfield");
+        topicField.setWidth("100%");
+        topicLayout.addComponent(topicField);
+        topicLayout.setExpandRatio(topicField, 1.0f);
+
+        layout.addComponent(new NewThreadComponent(new NewThreadListener() {
+            @Override
+            public void submit(final String rawBody) {
+                String messages = "";
+
+                final String topic = (String) topicField.getValue();
+                if (topic.isEmpty()) {
+                    messages += "You need a topic<br/>";
+                }
+                if (rawBody.isEmpty()) {
+                    messages += "You need a thread body<br/>";
+                }
+
+                if (messages.isEmpty()) {
+                    final DiscussionThread createdThread = getPresenter()
+                            .createNewThread(categoryId, topic, rawBody);
+                    getNavigator().navigateTo(
+                            ToriNavigator.ApplicationView.THREADS.getUrl()
+                                    + "/" + createdThread.getId());
+                } else {
+                    ToriApplication
+                            .getCurrent()
+                            .getMainWindow()
+                            .showNotification(messages,
+                                    Notification.TYPE_HUMANIZED_MESSAGE);
+                }
+            }
+        }, ToriApplication.getCurrent().getPostFormatter()
+                .getFormattingSyntaxXhtml()));
     }
 }

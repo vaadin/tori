@@ -165,37 +165,46 @@
 	font-style: italic;
 }
 
-.reply .buttons {
+.authoring .buttons {
 	text-align: right;
 	margin: 5px 0;
 }
-.reply .previewcaption {
+.authoring .previewcaption {
 	font-size: smaller;
 	padding: 0.5em 1em;
 }
 
-.reply.compact [location="formattingsyntax"],
-.reply.compact [location="preview"],
-.reply.compact .toolbar,
-.reply.compact .buttons,
-.reply.compact .previewcaption {
+.authoring.compact [location="formattingsyntax"],
+.authoring.compact [location="preview"],
+.authoring.compact .toolbar,
+.authoring.compact .buttons,
+.authoring.compact .previewcaption {
 	display: none;	
 }
-.reply.compact textarea {
+.authoring.compact textarea {
 	height: 1em;
 }
-.v-floatingbar .reply {
+
+.v-floatingbar .authoring {
 	-moz-transition: height 0.2s ease-in-out;
 	-webkit-transition: height 0.2s ease-in-out;
 	transition: height 0.2s ease-in-out;
 }
-.v-floatingbar .reply.collapsible [location="captionlabel"] .v-label {
+.v-floatingbar .authoring.collapsible [location="captionlabel"] .v-label {
 	padding-right: 20px;
 	background: url(../images/icon-collapse-panel.png) center right no-repeat;
 	float: left;	
 }
-.v-floatingbar .reply.collapsible.compact [location="captionlabel"] .v-label {
+.v-floatingbar .authoring.collapsible.compact [location="captionlabel"] .v-label {
 	background-image: url(../images/icon-expand-panel.png);	
+}
+
+.threadview .newthread .topiclabel {
+	text-align: right;
+}
+
+.threadview .newthread .topicfield {
+	font-size: 120%;
 }
 
 /* Post body formatting */

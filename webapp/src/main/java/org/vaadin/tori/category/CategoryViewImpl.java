@@ -3,6 +3,7 @@ package org.vaadin.tori.category;
 import java.util.List;
 
 import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.component.category.CategoryListing;
@@ -11,6 +12,7 @@ import org.vaadin.tori.component.thread.ThreadListing;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.AbstractView;
+import org.vaadin.tori.thread.ThreadPresenter;
 
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
@@ -82,8 +84,13 @@ public class CategoryViewImpl extends
         button.setIcon(new ThemeResource("images/icon-newthread.png"));
         button.addListener(new Button.ClickListener() {
             @Override
+            @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "This method is never called if the category isn't set")
             public void buttonClick(final ClickEvent event) {
-                log.debug("creating new threads not implemented yet");
+                getNavigator().navigateTo(
+                        String.format("%s/%s/%s",
+                                ToriNavigator.ApplicationView.THREADS.getUrl(),
+                                ThreadPresenter.NEW_THREAD_ARGUMENT,
+                                getPresenter().getCurrentCategory().getId()));
             }
         });
         button.setWidth("163px"); // same as

@@ -20,6 +20,8 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
     private P presenter;
     private Class<V> viewClass;
 
+    private ToriNavigator navigator;
+
     /**
      * Creates the composition root for this View, do the actual initialization
      * of the view components in {@link #initView()} method.
@@ -38,6 +40,7 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
     @Override
     public void init(final ToriNavigator navigator,
             final Application application) {
+        this.navigator = navigator;
         if (log.isDebugEnabled()) {
             log.debug("Initializing view " + getClass().getName());
         }
@@ -96,4 +99,7 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
         return null;
     }
 
+    protected ToriNavigator getNavigator() {
+        return navigator;
+    }
 }
