@@ -2,7 +2,6 @@ package org.vaadin.tori.category;
 
 import java.util.List;
 
-import org.mortbay.log.Log;
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
@@ -78,13 +77,13 @@ public class CategoryViewImpl extends
         threadLayout.addComponent(newThreadButton2);
     }
 
-    private static Button createNewThreadButton() {
+    private Button createNewThreadButton() {
         final Button button = new Button("Start a new thread");
         button.setIcon(new ThemeResource("images/icon-newthread.png"));
         button.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
-                Log.debug("creating new threads not implemented yet");
+                log.debug("creating new threads not implemented yet");
             }
         });
         button.setWidth("163px"); // same as
