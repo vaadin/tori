@@ -317,12 +317,29 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         layout.addComponent(new NewThreadComponent(new NewThreadListener() {
             @Override
             public void submit(final String rawBody) {
-                final DiscussionThread createdThread = getPresenter()
-                        .createNewThread(categoryId,
-                                (String) topicField.getValue(), rawBody);
-                getNavigator().navigateTo(
-                        ToriNavigator.ApplicationView.THREADS.getUrl() + "/"
-                                + createdThread.getId());
+                String messages = "";
+
+                final String topic = (String) topicField.getValue();
+                if (topic.isEmpty()) {
+                    messages += "You need a topic<br/>";
+                }
+                if (rawBody.isEmpty()) {
+                    messages += "You need a thread body<br/>";
+                }
+
+                if (messages.isEmpty()) {
+                    final DiscussionThread createdThread = getPresenter()
+                            .createNewThread(categoryId, topic, rawBody);
+                    getNavigator().navigateTo(
+                            ToriNavigator.ApplicationView.THREADS.getUrl()
+                                    + "/" + createdThread.getId());
+                } else {
+                    ToriApplication
+                            .getCurrent()
+                            .getMainWindow()
+                            .showNotification(messages,
+                                    Notification.TYPE_HUMANIZED_MESSAGE);
+                }
             }
         }, ToriApplication.getCurrent().getPostFormatter()
                 .getFormattingSyntaxXhtml()));
