@@ -19,6 +19,8 @@ import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.data.util.PersistenceUtil;
 import org.vaadin.tori.service.post.PostReport;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 public class TestDataSource implements DataSource {
 
     private static final long CURRENT_USER_ID = 3;
@@ -92,11 +94,16 @@ public class TestDataSource implements DataSource {
 
     @Override
     public List<Category> getRootCategories() {
-        return getSubCategories(null);
+        return _getSubCategories(null);
     }
 
     @Override
     public List<Category> getSubCategories(final Category category) {
+        return _getSubCategories(category);
+    }
+
+    @NonNull
+    private List<Category> _getSubCategories(final Category category) {
         return executeWithEntityManager(new Command<List<Category>>() {
             @Override
             @SuppressWarnings("unchecked")

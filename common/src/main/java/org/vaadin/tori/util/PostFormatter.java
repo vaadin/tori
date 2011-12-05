@@ -2,6 +2,8 @@ package org.vaadin.tori.util;
 
 import org.vaadin.tori.data.entity.Post;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 /**
  * Since formatting the posts depends on the back-end, this needs to be deferred
  * to the back-end specific projects.
@@ -18,11 +20,13 @@ public interface PostFormatter {
      * @return The XHTML to be rendered as-is.
      * @see Post#getBodyRaw()
      */
-    String format(String rawPostBody);
+    @NonNull
+    String format(@NonNull String rawPostBody);
 
     /**
      * The returned string should be an XHTML-formatted explanation of the
      * formatting currently being used to render the posts.
      */
+    @NonNull
     String getFormattingSyntaxXhtml();
 }

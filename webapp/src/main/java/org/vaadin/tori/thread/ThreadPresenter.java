@@ -16,22 +16,21 @@ import org.vaadin.tori.service.post.PostReport;
 import com.google.common.collect.Lists;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class ThreadPresenter extends Presenter<ThreadView> {
 
     public static final String NEW_THREAD_ARGUMENT = "new";
 
-    @CheckForNull
     private DiscussionThread currentThread;
-
     private Category categoryWhileCreatingNewThread;
 
-    public ThreadPresenter(final DataSource dataSource,
-            final AuthorizationService authorizationService) {
+    public ThreadPresenter(final @NonNull DataSource dataSource,
+            final @NonNull AuthorizationService authorizationService) {
         super(dataSource, authorizationService);
     }
 
-    public void setCurrentThreadById(final String threadIdString) {
+    public void setCurrentThreadById(final @NonNull String threadIdString) {
         DiscussionThread requestedThread = null;
         try {
             final long threadId = Long.valueOf(threadIdString);
@@ -59,7 +58,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         return currentThread;
     }
 
-    public void handlePostReport(final PostReport report) {
+    public void handlePostReport(final @NonNull PostReport report) {
         dataSource.reportPost(report);
         getView().confirmPostReported();
     }
@@ -68,15 +67,15 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         return authorizationService.mayReportPosts();
     }
 
-    public boolean userMayEdit(final Post post) {
+    public boolean userMayEdit(final @NonNull Post post) {
         return authorizationService.mayEdit(post);
     }
 
-    public boolean userMayQuote(final Post post) {
+    public boolean userMayQuote(final @NonNull Post post) {
         return authorizationService.mayReplyIn(currentThread);
     }
 
-    public void ban(final User user) {
+    public void ban(final @NonNull User user) {
         dataSource.ban(user);
         getView().confirmBanned();
     }
@@ -105,12 +104,12 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                 && dataSource.isFollowing(currentThread);
     }
 
-    public void delete(final Post post) {
+    public void delete(final @NonNull Post post) {
         dataSource.delete(post);
         getView().confirmPostDeleted();
     }
 
-    public boolean userMayDelete(final Post post) {
+    public boolean userMayDelete(final @NonNull Post post) {
         return authorizationService.mayDelete(post);
     }
 
@@ -118,7 +117,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         return authorizationService.mayVote();
     }
 
-    public void upvote(final Post post) {
+    public void upvote(final @NonNull Post post) {
         if (!getPostVote(post).isUpvote()) {
             dataSource.upvote(post);
         } else {
@@ -128,7 +127,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         getView().refreshScores(post, newScore);
     }
 
-    public void downvote(final Post post) {
+    public void downvote(final @NonNull Post post) {
         if (!getPostVote(post).isDownvote()) {
             dataSource.downvote(post);
         } else {
@@ -138,17 +137,18 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         getView().refreshScores(post, newScore);
     }
 
-    public void unvote(final Post post) {
+    public void unvote(final @NonNull Post post) {
         dataSource.removeUserVote(post);
         final long newScore = dataSource.getScore(post);
         getView().refreshScores(post, newScore);
     }
 
-    public PostVote getPostVote(final Post post) {
+    @NonNull
+    public PostVote getPostVote(final @NonNull Post post) {
         return dataSource.getPostVote(post);
     }
 
-    public long getScore(final Post post) {
+    public long getScore(final @NonNull Post post) {
         return dataSource.getScore(post);
     }
 
@@ -156,12 +156,13 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         return authorizationService.mayReplyIn(currentThread);
     }
 
+    @NonNull
     public String getFormattingSyntax() {
         return ToriApplication.getCurrent().getPostFormatter()
                 .getFormattingSyntaxXhtml();
     }
 
-    public void sendReply(final String rawBody) {
+    public void sendReply(final @NonNull String rawBody) {
 
         if (userMayReply()) {
             final Post post = new Post();
@@ -197,11 +198,11 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         }
     }
 
-    public String stripTags(final String html) {
+    public String stripTags(final @NonNull String html) {
         return html.replaceAll("\\<.*?>", "");
     }
 
-    public void handleArguments(final String[] arguments) {
+    public void handleArguments(final @NonNull String[] arguments) {
         if (arguments.length > 0) {
             if (!arguments[0].equals(NEW_THREAD_ARGUMENT)) {
                 setCurrentThreadById(arguments[0]);
@@ -222,7 +223,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         getView().redirectToDashboard();
     }
 
-    private boolean categoryExists(final String string) {
+    private boolean categoryExists(final @NonNull String string) {
         try {
             final long categoryId = Long.parseLong(string);
             return dataSource.getCategory(categoryId) != null;
@@ -231,8 +232,9 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         }
     }
 
-    public DiscussionThread createNewThread(final Category category,
-            final String topic, final String rawBody) {
+    public @NonNull
+    DiscussionThread createNewThread(final @NonNull Category category,
+            final @NonNull String topic, final @NonNull String rawBody) {
         final DiscussionThread thread = new DiscussionThread(topic);
         thread.setCategory(category);
 
@@ -246,6 +248,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         return dataSource.saveNewThread(thread, post);
     }
 
+    @CheckForNull
     public Category getCurrentCategory() {
         if (currentThread != null) {
             return currentThread.getCategory();

@@ -12,7 +12,6 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 public class CategoryPresenter extends Presenter<CategoryView> {
 
-    @CheckForNull
     private Category currentCategory;
 
     public CategoryPresenter(final DataSource dataSource,
