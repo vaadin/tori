@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
@@ -154,6 +155,7 @@ public class DebugControlPanel extends CustomComponent implements
     private final DebugAuthorizationService authorizationService;
     private final ToriNavigator navigator;
     private ContextData data;
+    private final Logger log = Logger.getLogger(getClass());
 
     public DebugControlPanel(
             final DebugAuthorizationService authorizationService,
@@ -190,9 +192,14 @@ public class DebugControlPanel extends CustomComponent implements
             final ThreadView threadView = (ThreadView) currentView;
             final DiscussionThread currentThread = threadView
                     .getCurrentThread();
-            data.setCategory(currentThread.getCategory());
-            data.setThread(currentThread);
-            data.setPosts(currentThread.getPosts());
+
+            if (currentThread != null) {
+                data.setCategory(currentThread.getCategory());
+                data.setThread(currentThread);
+                data.setPosts(currentThread.getPosts());
+            } else {
+                log.warn("currentThread was null");
+            }
         }
 
         return data;

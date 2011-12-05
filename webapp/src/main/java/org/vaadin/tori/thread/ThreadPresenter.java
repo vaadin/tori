@@ -12,8 +12,10 @@ import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.post.PostReport;
 
-public class ThreadPresenter extends Presenter<ThreadView> {
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
+public class ThreadPresenter extends Presenter<ThreadView> {
+    @CheckForNull
     private DiscussionThread currentThread;
 
     public ThreadPresenter(final DataSource dataSource,
@@ -32,13 +34,19 @@ public class ThreadPresenter extends Presenter<ThreadView> {
 
         if (requestedThread != null) {
             currentThread = requestedThread;
+
             final ThreadView view = getView();
-            view.displayPosts(dataSource.getPosts(currentThread));
+            view.displayPosts(dataSource.getPosts(requestedThread),
+                    requestedThread);
         } else {
             getView().displayThreadNotFoundError(threadIdString);
         }
     }
 
+    /**
+     * @return <code>null</code> if the URL is invalid.
+     */
+    @CheckForNull
     public DiscussionThread getCurrentThread() {
         return currentThread;
     }
@@ -161,8 +169,24 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         resetView();
     }
 
-    void resetView() {
-        getView().displayPosts(dataSource.getPosts(currentThread));
+    /**
+     * @throws IllegalStateException
+     *             if {@link #currentThread} is <code>null</code>.
+     */
+    public void resetView() {
+        /*
+         * findbugs doesn't understand the nullcheck for field references, so
+         * making it a local field instead. Probably because of possible
+         * multithread stuff.
+         */
+        final DiscussionThread thread = currentThread;
+
+        if (thread != null) {
+            getView().displayPosts(dataSource.getPosts(thread), thread);
+        } else {
+            throw new IllegalStateException(
+                    "This method may not be called while currentThread is null");
+        }
     }
 
     public String stripTags(final String html) {

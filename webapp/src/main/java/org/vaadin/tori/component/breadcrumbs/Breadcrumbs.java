@@ -71,18 +71,23 @@ public class Breadcrumbs extends CustomComponent implements
 
     private void paint(final ThreadView threadView) {
         final DiscussionThread currentThread = threadView.getCurrentThread();
-        final Component categoryCrumb = new CategoryCrumb.Clickable(
-                currentThread.getCategory(), this);
-        final Component threadCrumb = new ThreadCrumb(currentThread, this);
-        layout.addComponent(categoryCrumb);
-        layout.addComponent(threadCrumb);
+
+        if (currentThread != null) {
+            final Component categoryCrumb = new CategoryCrumb.Clickable(
+                    currentThread.getCategory(), this);
+            final Component threadCrumb = new ThreadCrumb(currentThread, this);
+            layout.addComponent(categoryCrumb);
+            layout.addComponent(threadCrumb);
+        }
     }
 
     private void paint(final CategoryView categoryView) {
         final Category currentCategory = categoryView.getCurrentCategory();
-        final CategoryCrumb crumb = new CategoryCrumb.UnClickable(
-                currentCategory, this);
-        layout.addComponent(crumb);
+        if (currentCategory != null) {
+            final CategoryCrumb crumb = new CategoryCrumb.UnClickable(
+                    currentCategory, this);
+            layout.addComponent(crumb);
+        }
     }
 
     @Override

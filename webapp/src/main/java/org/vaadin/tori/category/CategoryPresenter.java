@@ -8,8 +8,11 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+
 public class CategoryPresenter extends Presenter<CategoryView> {
 
+    @CheckForNull
     private Category currentCategory;
 
     public CategoryPresenter(final DataSource dataSource,
@@ -38,6 +41,11 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         }
     }
 
+    /**
+     * Might return <code>null</code> if the visited URL doesn't include a valid
+     * category id.
+     */
+    @CheckForNull
     public Category getCurrentCategory() {
         return currentCategory;
     }
