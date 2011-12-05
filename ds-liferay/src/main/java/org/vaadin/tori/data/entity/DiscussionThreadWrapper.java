@@ -47,6 +47,10 @@ public class DiscussionThreadWrapper extends DiscussionThread {
         return fakedLastPost;
     }
 
+    public long getRootMessageId() {
+        return liferayThread.getRootMessageId();
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if (obj instanceof DiscussionThreadWrapper) {

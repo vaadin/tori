@@ -21,14 +21,20 @@ import org.vaadin.tori.service.post.PostReport;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
+import com.liferay.portlet.messageboards.model.MBMessageConstants;
 import com.liferay.portlet.messageboards.model.MBThread;
+import com.liferay.portlet.messageboards.model.MBThreadConstants;
 import com.liferay.portlet.messageboards.service.MBCategoryLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
+import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
 
 public class LiferayDataSource implements DataSource {
@@ -40,6 +46,7 @@ public class LiferayDataSource implements DataSource {
 
     private long scopeGroupId = -1;
     private String imagePath;
+    private ServiceContext mbMessageServiceContext;
 
     @Override
     public List<Category> getRootCategories() {
@@ -222,48 +229,48 @@ public class LiferayDataSource implements DataSource {
 
     @Override
     public void save(final Iterable<Category> categoriesToSave) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
     public void save(final Category categoryToSave) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
     public void delete(final Category categoryToDelete) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
     public void reportPost(final PostReport report) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
     public long getUnreadThreadCount(final Category category) {
-        // TODO
+        log.warn("Not yet implemented.");
         return 0;
     }
 
     @Override
     public void save(final Post post) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
     public void ban(final User user) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
     public void follow(final DiscussionThread thread) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
     public void unFollow(final DiscussionThread thread) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
@@ -274,7 +281,7 @@ public class LiferayDataSource implements DataSource {
 
     @Override
     public void delete(final Post post) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
@@ -292,17 +299,17 @@ public class LiferayDataSource implements DataSource {
 
     @Override
     public void upvote(final Post post) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
     public void downvote(final Post post) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
     public void removeUserVote(final Post post) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
@@ -313,45 +320,82 @@ public class LiferayDataSource implements DataSource {
 
     @Override
     public void saveAsCurrentUser(final Post post) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        final DiscussionThreadWrapper thread = (DiscussionThreadWrapper) post
+                .getThread();
+
+        final long groupId = scopeGroupId;
+        final long categoryId = thread.getCategory().getId();
+        final long threadId = thread.getId();
+
+        // TODO actually decide between reply and a new thread
+        final boolean createNewThread = false;
+        long parentMessageId = MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID;
+        if (!createNewThread) {
+            // TODO can we actually use the root message here?
+            parentMessageId = thread.getRootMessageId();
+        }
+        final String subject = "RE: " + post.getThread().getTopic();
+        final String body = post.getBodyRaw();
+        final List<ObjectValuePair<String, byte[]>> files = Collections
+                .emptyList();
+        final boolean anonymous = false;
+        final double priority = MBThreadConstants.PRIORITY_NOT_GIVEN;
+        final boolean allowPingbacks = false;
+
+        try {
+            MBMessageServiceUtil.addMessage(groupId, categoryId, threadId,
+                    parentMessageId, subject, body, files, anonymous, priority,
+                    allowPingbacks, mbMessageServiceContext);
+        } catch (final PortalException e) {
+            // TODO error handling
+            e.printStackTrace();
+        } catch (final SystemException e) {
+            // TODO error handling
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void move(final DiscussionThread thread,
             final Category destinationCategory) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
     public void sticky(final DiscussionThread thread) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
     public void unsticky(final DiscussionThread thread) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
     public void lock(final DiscussionThread thread) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
     public void unlock(final DiscussionThread thread) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
     public void delete(final DiscussionThread thread) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        log.warn("Not yet implemented.");
     }
 
     @Override
     public void setRequest(final Object request) {
-        if (scopeGroupId < 0 && request instanceof PortletRequest) {
+        if (!(request instanceof PortletRequest)) {
+            log.warn("Given request was not an instance of PortletRequest.");
+            return;
+        }
+
+        final PortletRequest portletRequest = (PortletRequest) request;
+        if (scopeGroupId < 0) {
             // scope not defined yet -> get if from the request
-            final PortletRequest portletRequest = (PortletRequest) request;
             final ThemeDisplay themeDisplay = (ThemeDisplay) portletRequest
                     .getAttribute("THEME_DISPLAY");
 
@@ -360,6 +404,15 @@ public class LiferayDataSource implements DataSource {
                 imagePath = themeDisplay.getPathImage();
                 log.info("Using groupId " + scopeGroupId + " as the scope.");
             }
+        }
+
+        try {
+            mbMessageServiceContext = ServiceContextFactory.getInstance(
+                    MBMessage.class.getName(), portletRequest);
+        } catch (final PortalException e) {
+            log.error("Couldn't create ServiceContext.", e);
+        } catch (final SystemException e) {
+            log.error("Couldn't create ServiceContext.", e);
         }
     }
 }
