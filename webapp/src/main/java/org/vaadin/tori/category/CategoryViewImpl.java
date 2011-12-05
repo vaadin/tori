@@ -25,15 +25,20 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+
 @SuppressWarnings("serial")
 public class CategoryViewImpl extends
         AbstractView<CategoryView, CategoryPresenter> implements CategoryView {
 
+    private static final HeadingLabel NO_THREADS = new HeadingLabel(
+            "There are no threads in this category", HeadingLevel.H1);
+    private static final HeadingLabel THREADS = new HeadingLabel("Threads",
+            HeadingLevel.H2);
     private VerticalLayout layout;
     private Component threadListing;
     private CategoryListing categoryListing;
     private VerticalLayout categoryLayout;
-    private HeadingLabel noThreadsInfo;
     private HeadingLabel threadsLabel;
     private Button newThreadButton1;
     private Button newThreadButton2;
@@ -68,7 +73,7 @@ public class CategoryViewImpl extends
         threadHeaderLayout.setWidth("100%");
         threadLayout.addComponent(threadHeaderLayout);
 
-        threadsLabel = new HeadingLabel("Threads", HeadingLevel.H2);
+        threadsLabel = THREADS;
         threadHeaderLayout.addComponent(threadsLabel);
 
         newThreadButton1 = createNewThreadButton();
@@ -77,10 +82,6 @@ public class CategoryViewImpl extends
                 Alignment.MIDDLE_RIGHT);
 
         threadLayout.addComponent(threadListing = new Label("placeholder"));
-
-        noThreadsInfo = new HeadingLabel(
-                "There are no threads in this category", HeadingLevel.H1);
-        layout.addComponent(noThreadsInfo);
 
         newThreadButton2 = createNewThreadButton();
         threadLayout.addComponent(newThreadButton2);
@@ -114,9 +115,6 @@ public class CategoryViewImpl extends
         parent.replaceComponent(threadListing,
                 threadListing = new ThreadListing(categoryPresenter));
 
-        newThreadButton1.setEnabled(categoryPresenter.userMayStartANewThread());
-        newThreadButton2.setEnabled(categoryPresenter.userMayStartANewThread());
-
         return categoryPresenter;
     }
 
@@ -131,8 +129,17 @@ public class CategoryViewImpl extends
     public void displayThreads(final List<DiscussionThread> threadsInCategory) {
         // show contained threads only if there are any
         threadListing.setVisible(!threadsInCategory.isEmpty());
-        threadsLabel.setVisible(!threadsInCategory.isEmpty());
-        noThreadsInfo.setVisible(threadsInCategory.isEmpty());
+
+        final ComponentContainer parent = (ComponentContainer) threadsLabel
+                .getParent();
+        if (threadsInCategory.isEmpty()) {
+            parent.replaceComponent(threadsLabel, threadsLabel = NO_THREADS);
+        } else {
+            parent.replaceComponent(threadsLabel, threadsLabel = THREADS);
+        }
+
+        newThreadButton1.setEnabled(getPresenter().userMayStartANewThread());
+        newThreadButton2.setEnabled(getPresenter().userMayStartANewThread());
 
         ((ThreadListing) threadListing).setThreads(threadsInCategory);
     }
@@ -144,12 +151,14 @@ public class CategoryViewImpl extends
 
     @Override
     public void displayCategoryNotFoundError(final String requestedCategoryId) {
+        log.error("No such category: " + requestedCategoryId);
         getWindow().showNotification(
                 "No category found for " + requestedCategoryId,
                 Notification.TYPE_ERROR_MESSAGE);
     }
 
     @Override
+    @CheckForNull
     public Category getCurrentCategory() {
         return getPresenter().getCurrentCategory();
     }
