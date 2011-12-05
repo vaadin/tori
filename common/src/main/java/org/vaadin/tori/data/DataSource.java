@@ -34,8 +34,13 @@ public interface DataSource {
     List<Category> getSubCategories(@NonNull Category category);
 
     /**
-     * Get all threads in the given <code>category</code>, ordered by most
-     * recent activity first.
+     * Get all threads in the given <code>category</code>, in the following
+     * ordering priority:
+     * 
+     * <ul>
+     * <li>Primary: Stickied threads ({@link DiscussionThread#isSticky()})
+     * <li>Secondary: Recent activity, in descending order
+     * </ul>
      */
     @NonNull
     List<DiscussionThread> getThreads(@NonNull Category category);
