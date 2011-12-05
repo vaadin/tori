@@ -290,7 +290,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public void displayNewThreadFormForCategory(final String categoryId) {
         layout.removeAllComponents();
-        final HeadingLabel heading = new HeadingLabel("Create a New Thread",
+        final HeadingLabel heading = new HeadingLabel("Start a New Thread",
                 HeadingLevel.H2);
         layout.addComponent(heading);
         ToriApplication.getCurrent().getMainWindow().scrollIntoView(heading);
