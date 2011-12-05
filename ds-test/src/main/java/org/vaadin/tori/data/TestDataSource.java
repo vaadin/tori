@@ -598,4 +598,23 @@ public class TestDataSource implements DataSource {
     public void setRequest(final Object request) {
         // NOP - this data source is not interested in the request
     }
+
+    @Override
+    public DiscussionThread saveNewThread(final DiscussionThread newThread,
+            final Post firstPost) {
+        return executeWithEntityManager(new Command<DiscussionThread>() {
+            @Override
+            public DiscussionThread execute(final EntityManager em) {
+                firstPost.setAuthor(currentUser);
+
+                final EntityTransaction transaction = em.getTransaction();
+                transaction.begin();
+                final DiscussionThread mergedThread = em.merge(newThread);
+                em.merge(firstPost);
+                transaction.commit();
+
+                return mergedThread;
+            }
+        });
+    }
 }

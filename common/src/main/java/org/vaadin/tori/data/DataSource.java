@@ -193,4 +193,16 @@ public interface DataSource {
      *            {@code PortletRequest} or {@code HttpServletRequest}
      */
     void setRequest(Object request);
+
+    /**
+     * This method is responsible for making sure that a new thread is created,
+     * with a certain first post. It also needs to add "current user" as the
+     * author of that post.
+     * <p/>
+     * This method requires that the thread and post are already interlinked.
+     * 
+     * @return the newly created {@link DiscussionThread} that contains a proper
+     *         thread id.
+     */
+    DiscussionThread saveNewThread(DiscussionThread newThread, Post firstPost);
 }

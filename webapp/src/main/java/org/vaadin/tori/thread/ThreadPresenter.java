@@ -12,9 +12,14 @@ import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.post.PostReport;
 
+import com.google.common.collect.Lists;
+
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 public class ThreadPresenter extends Presenter<ThreadView> {
+
+    public static final String NEW_THREAD_ARGUMENT = "new";
+
     @CheckForNull
     private DiscussionThread currentThread;
 
@@ -193,4 +198,45 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         return html.replaceAll("\\<.*?>", "");
     }
 
+    public void handleArguments(final String[] arguments) {
+        if (arguments.length > 0) {
+            if (!arguments[0].equals(NEW_THREAD_ARGUMENT)) {
+                setCurrentThreadById(arguments[0]);
+                return;
+            } else if (arguments.length > 1 && categoryExists(arguments[1])) {
+                getView().displayNewThreadFormForCategory(arguments[1]);
+                return;
+            }
+        } else {
+            log.info("Tried to visit a thread without arguments");
+        }
+
+        // if some error occurred that really shouldn't have, just redirect back
+        // to dashboard.
+        getView().redirectToDashboard();
+    }
+
+    private boolean categoryExists(final String string) {
+        try {
+            final long categoryId = Long.parseLong(string);
+            return dataSource.getCategory(categoryId) != null;
+        } catch (final NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public DiscussionThread createNewThread(final String categoryId,
+            final String topic, final String rawBody) {
+        final DiscussionThread thread = new DiscussionThread(topic);
+        thread.setCategory(dataSource.getCategory(Long.parseLong(categoryId)));
+
+        final Post post = new Post();
+        post.setBodyRaw(rawBody);
+        post.setTime(new Date());
+
+        thread.setPosts(Lists.newArrayList(post));
+        post.setThread(thread);
+
+        return dataSource.saveNewThread(thread, post);
+    }
 }

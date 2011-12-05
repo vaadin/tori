@@ -12,8 +12,8 @@ import org.vaadin.tori.component.thread.ThreadListing;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.AbstractView;
+import org.vaadin.tori.thread.ThreadPresenter;
 
-import com.vaadin.Application;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -42,18 +42,10 @@ public class CategoryViewImpl extends
     private HeadingLabel threadsLabel;
     private Button newThreadButton1;
     private Button newThreadButton2;
-    private ToriNavigator navigator;
 
     @Override
     protected Component createCompositionRoot() {
         return layout = new VerticalLayout();
-    }
-
-    @Override
-    public void init(final ToriNavigator navigator,
-            final Application application) {
-        this.navigator = navigator;
-        super.init(navigator, application);
     }
 
     @Override
@@ -92,10 +84,13 @@ public class CategoryViewImpl extends
         button.setIcon(new ThemeResource("images/icon-newthread.png"));
         button.addListener(new Button.ClickListener() {
             @Override
+            @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "This method is never called if the category isn't set")
             public void buttonClick(final ClickEvent event) {
-                navigator.navigateTo(String.format("%s/new/%s",
-                        ToriNavigator.ApplicationView.THREADS.getUrl(),
-                        getPresenter().getCurrentCategory().getId()));
+                getNavigator().navigateTo(
+                        String.format("%s/%s/%s",
+                                ToriNavigator.ApplicationView.THREADS.getUrl(),
+                                ThreadPresenter.NEW_THREAD_ARGUMENT,
+                                getPresenter().getCurrentCategory().getId()));
             }
         });
         button.setWidth("163px"); // same as

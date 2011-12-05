@@ -41,4 +41,8 @@ public interface ThreadView extends View {
      * rights while the post was being authored.
      */
     void displayUserCanNotReply();
+
+    void redirectToDashboard();
+
+    void displayNewThreadFormForCategory(String categoryId);
 }
