@@ -2,6 +2,7 @@ package org.vaadin.tori.thread;
 
 import java.util.List;
 
+import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;
@@ -11,7 +12,10 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 public interface ThreadView extends View {
-    /** May return <code>null</code> if the user visited an invalid URL */
+    /**
+     * May return <code>null</code>, e.g. when the user visited an invalid URL,
+     * or a new thread is being created.
+     */
     @CheckForNull
     DiscussionThread getCurrentThread();
 
@@ -44,5 +48,9 @@ public interface ThreadView extends View {
 
     void redirectToDashboard();
 
-    void displayNewThreadFormForCategory(String categoryId);
+    void displayNewThreadFormFor(Category category);
+
+    /** May return <code>null</code>, e.g. when the user visited an invalid URL */
+    @CheckForNull
+    Category getCurrentCategory();
 }

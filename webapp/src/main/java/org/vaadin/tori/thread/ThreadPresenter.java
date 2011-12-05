@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.data.DataSource;
+import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
@@ -22,6 +23,8 @@ public class ThreadPresenter extends Presenter<ThreadView> {
 
     @CheckForNull
     private DiscussionThread currentThread;
+
+    private Category categoryWhileCreatingNewThread;
 
     public ThreadPresenter(final DataSource dataSource,
             final AuthorizationService authorizationService) {
@@ -204,7 +207,10 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                 setCurrentThreadById(arguments[0]);
                 return;
             } else if (arguments.length > 1 && categoryExists(arguments[1])) {
-                getView().displayNewThreadFormForCategory(arguments[1]);
+                final Category category = dataSource.getCategory(Long
+                        .parseLong(arguments[1]));
+                categoryWhileCreatingNewThread = category;
+                getView().displayNewThreadFormFor(category);
                 return;
             }
         } else {
@@ -225,10 +231,10 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         }
     }
 
-    public DiscussionThread createNewThread(final String categoryId,
+    public DiscussionThread createNewThread(final Category category,
             final String topic, final String rawBody) {
         final DiscussionThread thread = new DiscussionThread(topic);
-        thread.setCategory(dataSource.getCategory(Long.parseLong(categoryId)));
+        thread.setCategory(category);
 
         final Post post = new Post();
         post.setBodyRaw(rawBody);
@@ -238,5 +244,13 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         post.setThread(thread);
 
         return dataSource.saveNewThread(thread, post);
+    }
+
+    public Category getCurrentCategory() {
+        if (currentThread != null) {
+            return currentThread.getCategory();
+        } else {
+            return categoryWhileCreatingNewThread;
+        }
     }
 }

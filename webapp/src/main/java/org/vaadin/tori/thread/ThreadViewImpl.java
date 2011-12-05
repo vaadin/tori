@@ -18,6 +18,7 @@ import org.vaadin.tori.component.NewThreadComponent.NewThreadListener;
 import org.vaadin.tori.component.ReplyComponent;
 import org.vaadin.tori.component.ReplyComponent.ReplyListener;
 import org.vaadin.tori.component.post.PostComponent;
+import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.mvp.AbstractView;
@@ -72,13 +73,22 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     /**
-     * @return returns <code>null</code> is the visitor has entered an invalid
-     *         URL.
+     * @return returns <code>null</code> if the visitor has entered an invalid
+     *         URL or a new thread is being created.
      */
     @CheckForNull
     @Override
     public DiscussionThread getCurrentThread() {
         return getPresenter().getCurrentThread();
+    }
+
+    /**
+     * @return <code>null</code> if the visitor has entered an invalid URL.
+     */
+    @CheckForNull
+    @Override
+    public Category getCurrentCategory() {
+        return getPresenter().getCurrentCategory();
     }
 
     @Override
@@ -288,7 +298,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void displayNewThreadFormForCategory(final String categoryId) {
+    public void displayNewThreadFormFor(final Category category) {
         layout.removeAllComponents();
         final HeadingLabel heading = new HeadingLabel("Start a New Thread",
                 HeadingLevel.H2);
@@ -329,7 +339,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
                 if (messages.isEmpty()) {
                     final DiscussionThread createdThread = getPresenter()
-                            .createNewThread(categoryId, topic, rawBody);
+                            .createNewThread(category, topic, rawBody);
                     getNavigator().navigateTo(
                             ToriNavigator.ApplicationView.THREADS.getUrl()
                                     + "/" + createdThread.getId());
