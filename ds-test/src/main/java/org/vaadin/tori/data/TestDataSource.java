@@ -3,6 +3,7 @@ package org.vaadin.tori.data;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -125,12 +126,27 @@ public class TestDataSource implements DataSource {
         return executeWithEntityManager(new Command<List<DiscussionThread>>() {
             @Override
             public final List<DiscussionThread> execute(final EntityManager em) {
-                final TypedQuery<DiscussionThread> query = em
-                        .createQuery(
-                                "select t from DiscussionThread t where t.category = :category",
+                final List<DiscussionThread> threads = new ArrayList<DiscussionThread>();
+
+                final TypedQuery<DiscussionThread> stickyQuery = em
+                        .createQuery("select t from DiscussionThread t "
+                                + "where t.sticky = :sticky "
+                                + "and t.category = :category",
                                 DiscussionThread.class);
-                query.setParameter("category", category);
-                return query.getResultList();
+                stickyQuery.setParameter("sticky", true);
+                stickyQuery.setParameter("category", category);
+                threads.addAll(stickyQuery.getResultList());
+
+                final TypedQuery<DiscussionThread> nonStickyQuery = em
+                        .createQuery("select t from DiscussionThread t "
+                                + "where t.sticky = :sticky "
+                                + "and t.category = :category",
+                                DiscussionThread.class);
+                nonStickyQuery.setParameter("sticky", false);
+                nonStickyQuery.setParameter("category", category);
+                threads.addAll(nonStickyQuery.getResultList());
+
+                return threads;
             }
         });
     }
