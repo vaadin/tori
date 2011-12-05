@@ -27,6 +27,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Window.Notification;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 @SuppressWarnings("serial")
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD_STORE", justification = "We're ignoring serialization")
@@ -65,6 +66,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 app.getAuthorizationService());
     }
 
+    /**
+     * @return returns <code>null</code> is the visitor has entered an invalid
+     *         URL.
+     */
     @CheckForNull
     @Override
     public DiscussionThread getCurrentThread() {
@@ -72,9 +77,11 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void displayPosts(final List<Post> posts) {
+    public void displayPosts(final List<Post> posts,
+            @NonNull final DiscussionThread currentThread) {
         layout.removeAllComponents();
-        layout.addComponent(new HeadingLabel(getCurrentThread().getTopic(),
+
+        layout.addComponent(new HeadingLabel(currentThread.getTopic(),
                 HeadingLevel.H2));
 
         postsLayout.removeAllComponents();

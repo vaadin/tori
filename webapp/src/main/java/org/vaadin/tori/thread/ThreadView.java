@@ -8,13 +8,14 @@ import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.View;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 public interface ThreadView extends View {
     /** May return <code>null</code> if the user visited an invalid URL */
     @CheckForNull
     DiscussionThread getCurrentThread();
 
-    void displayPosts(List<Post> posts);
+    void displayPosts(List<Post> posts, @NonNull DiscussionThread currentThread);
 
     void displayThreadNotFoundError(String threadIdString);
 
