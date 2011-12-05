@@ -148,6 +148,7 @@
 			</webinf>
 			<metainf dir="${dir.meta-inf}"/>
 			<lib dir="${dir.build-artifacts}" includes="*.jar"/>
+			<lib file="${dir.common}/lib/guava-10.0.1.jar"/>
 			<classes file="${dir.webapp}/src/main/resources/log4j.properties"/>
 			<zipfileset dir="${dir.build-artifacts.widgetsets}"
 				includes="org.*/**"
@@ -169,6 +170,7 @@
 			<metainf dir="${dir.meta-inf}"/>
 			<lib dir="${dir.web-inf.lib}" includes="*.jar"/>
 			<lib dir="${dir.build-artifacts}" includes="*.jar"/>
+			<lib file="${dir.common}/lib/guava-10.0.1.jar"/>
 			<zipfileset dir="${dir.build-artifacts.widgetsets}"
 				includes="org.*"
 				prefix="VAADIN/widgetsets"
