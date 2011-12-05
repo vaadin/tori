@@ -304,7 +304,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
         final HeadingLabel topicLabel = new HeadingLabel("Topic:",
                 HeadingLevel.H3);
-        topicLabel.setStyleName("topiclabel");
+        topicLabel.addStyleName("topiclabel");
         topicLabel.setWidth("140px");
         topicLayout.addComponent(topicLabel);
 
