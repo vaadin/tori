@@ -197,4 +197,9 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     public void setMayCreateThreadIn(final Category category, final boolean b) {
         mayCreateThread.put(category, b);
     }
+
+    @Override
+    public void setRequest(final Object request) {
+        // NOP - TestAuthorizationService is not interested in the request.
+    }
 }

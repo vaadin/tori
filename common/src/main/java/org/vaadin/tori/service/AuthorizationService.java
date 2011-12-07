@@ -47,4 +47,15 @@ public interface AuthorizationService {
     boolean mayDelete(DiscussionThread thread);
 
     boolean mayCreateThreadIn(Category category);
+
+    /**
+     * Passes the current request to this DataSource. It can be an instance of
+     * {@code PortletRequest} or {@code HttpServletRequest} depending on the
+     * context. The implementation is free to ignore the request if it doesn't
+     * need any parameters from the request.
+     * 
+     * @param request
+     *            {@code PortletRequest} or {@code HttpServletRequest}
+     */
+    void setRequest(Object request);
 }
