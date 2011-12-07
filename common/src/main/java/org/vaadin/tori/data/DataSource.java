@@ -176,13 +176,17 @@ public interface DataSource {
     void move(@NonNull DiscussionThread thread,
             @NonNull Category destinationCategory);
 
-    void sticky(@NonNull DiscussionThread thread);
+    @NonNull
+    DiscussionThread sticky(@NonNull DiscussionThread thread);
 
-    void unsticky(@NonNull DiscussionThread thread);
+    @NonNull
+    DiscussionThread unsticky(@NonNull DiscussionThread thread);
 
-    void lock(@NonNull DiscussionThread thread);
+    @NonNull
+    DiscussionThread lock(@NonNull DiscussionThread thread);
 
-    void unlock(@NonNull DiscussionThread thread);
+    @NonNull
+    DiscussionThread unlock(@NonNull DiscussionThread thread);
 
     /**
      * Deletes a thread.

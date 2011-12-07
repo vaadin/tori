@@ -174,27 +174,33 @@ public class CategoryViewImpl extends
     }
 
     @Override
-    public void confirmThreadStickied() {
+    public void confirmThreadStickied(final DiscussionThread thread) {
         getWindow().showNotification("thread stickied");
-        // TODO make visual adjustments
+        refreshVisually(thread);
     }
 
     @Override
-    public void confirmThreadUnstickied() {
+    public void confirmThreadUnstickied(final DiscussionThread thread) {
         getWindow().showNotification("thread unstickied");
-        // TODO make visual adjustments
+        refreshVisually(thread);
     }
 
     @Override
-    public void confirmThreadLocked() {
+    public void confirmThreadLocked(final DiscussionThread thread) {
         getWindow().showNotification("thread locked");
-        // TODO make visual adjustments
+        refreshVisually(thread);
     }
 
     @Override
-    public void confirmThreadUnlocked() {
+    public void confirmThreadUnlocked(final DiscussionThread thread) {
         getWindow().showNotification("thread unlocked");
-        // TODO make visual adjustments
+        refreshVisually(thread);
+    }
+
+    private void refreshVisually(final DiscussionThread thread) {
+        if (threadListing instanceof ThreadListing) {
+            ((ThreadListing) threadListing).refresh(thread);
+        }
     }
 
     @Override

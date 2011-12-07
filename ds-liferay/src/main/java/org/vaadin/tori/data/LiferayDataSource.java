@@ -37,6 +37,8 @@ import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
 
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
+
 public class LiferayDataSource implements DataSource {
 
     private static final Logger log = Logger.getLogger(LiferayDataSource.class);
@@ -362,23 +364,31 @@ public class LiferayDataSource implements DataSource {
     }
 
     @Override
-    public void sticky(final DiscussionThread thread) {
+    @SuppressWarnings(value = "NP_NONNULL_RETURN_VIOLATION", justification = "Incomplete method")
+    public DiscussionThread sticky(final DiscussionThread thread) {
         log.warn("Not yet implemented.");
+        return null;
     }
 
     @Override
-    public void unsticky(final DiscussionThread thread) {
+    @SuppressWarnings(value = "NP_NONNULL_RETURN_VIOLATION", justification = "Incomplete method")
+    public DiscussionThread unsticky(final DiscussionThread thread) {
         log.warn("Not yet implemented.");
+        return null;
     }
 
     @Override
-    public void lock(final DiscussionThread thread) {
+    @SuppressWarnings(value = "NP_NONNULL_RETURN_VIOLATION", justification = "Incomplete method")
+    public DiscussionThread lock(final DiscussionThread thread) {
         log.warn("Not yet implemented.");
+        return null;
     }
 
     @Override
-    public void unlock(final DiscussionThread thread) {
+    @SuppressWarnings(value = "NP_NONNULL_RETURN_VIOLATION", justification = "Incomplete method")
+    public DiscussionThread unlock(final DiscussionThread thread) {
         log.warn("Not yet implemented.");
+        return null;
     }
 
     @Override

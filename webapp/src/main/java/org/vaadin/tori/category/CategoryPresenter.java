@@ -89,13 +89,13 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     }
 
     public void sticky(final DiscussionThread thread) {
-        dataSource.sticky(thread);
-        getView().confirmThreadStickied();
+        final DiscussionThread updatedThread = dataSource.sticky(thread);
+        getView().confirmThreadStickied(updatedThread);
     }
 
     public void unsticky(final DiscussionThread thread) {
-        dataSource.unsticky(thread);
-        getView().confirmThreadUnstickied();
+        final DiscussionThread updatedThread = dataSource.unsticky(thread);
+        getView().confirmThreadUnstickied(updatedThread);
     }
 
     public boolean userCanSticky(final DiscussionThread thread) {
@@ -107,13 +107,13 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     }
 
     public void lock(final DiscussionThread thread) {
-        dataSource.lock(thread);
-        getView().confirmThreadLocked();
+        final DiscussionThread updatedThread = dataSource.lock(thread);
+        getView().confirmThreadLocked(updatedThread);
     }
 
     public void unlock(final DiscussionThread thread) {
-        dataSource.unlock(thread);
-        getView().confirmThreadUnlocked();
+        final DiscussionThread updatedThread = dataSource.unlock(thread);
+        getView().confirmThreadUnlocked(updatedThread);
     }
 
     public boolean userCanLock(final DiscussionThread thread) {

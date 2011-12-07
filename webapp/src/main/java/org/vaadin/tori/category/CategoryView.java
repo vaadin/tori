@@ -30,13 +30,29 @@ public interface CategoryView extends View {
 
     void confirmThreadMoved();
 
-    void confirmThreadStickied();
+    /**
+     * @param thread
+     *            The updated {@link DiscussionThread}
+     */
+    void confirmThreadStickied(DiscussionThread thread);
 
-    void confirmThreadUnstickied();
+    /**
+     * @param thread
+     *            The updated {@link DiscussionThread}
+     */
+    void confirmThreadUnstickied(DiscussionThread thread);
 
-    void confirmThreadLocked();
+    /**
+     * @param thread
+     *            The updated {@link DiscussionThread}
+     */
+    void confirmThreadLocked(DiscussionThread thread);
 
-    void confirmThreadUnlocked();
+    /**
+     * @param thread
+     *            The updated {@link DiscussionThread}
+     */
+    void confirmThreadUnlocked(DiscussionThread thread);
 
     void confirmThreadDeleted();
 }

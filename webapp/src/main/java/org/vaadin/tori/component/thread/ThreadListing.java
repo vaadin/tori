@@ -57,4 +57,10 @@ public class ThreadListing extends Table {
             setPageLength(this.size());
         }
     }
+
+    public void refresh(final DiscussionThread thread) {
+        // TODO
+        System.out.println("ThreadListing.refresh()");
+        System.err.println("NOT DONE!");
+    }
 }

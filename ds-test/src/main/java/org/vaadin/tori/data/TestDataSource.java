@@ -550,38 +550,38 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void sticky(final DiscussionThread thread) {
+    public DiscussionThread sticky(final DiscussionThread thread) {
         thread.setSticky(true);
-        save(thread);
+        return save(thread);
     }
 
     @Override
-    public void unsticky(final DiscussionThread thread) {
+    public DiscussionThread unsticky(final DiscussionThread thread) {
         thread.setSticky(false);
-        save(thread);
+        return save(thread);
     }
 
     @Override
-    public void lock(final DiscussionThread thread) {
+    public DiscussionThread lock(final DiscussionThread thread) {
         thread.setLocked(true);
-        save(thread);
+        return save(thread);
     }
 
     @Override
-    public void unlock(final DiscussionThread thread) {
+    public DiscussionThread unlock(final DiscussionThread thread) {
         thread.setLocked(false);
-        save(thread);
+        return save(thread);
     }
 
-    private static void save(final DiscussionThread thread) {
-        executeWithEntityManager(new Command<Void>() {
+    private static DiscussionThread save(final DiscussionThread thread) {
+        return executeWithEntityManager(new Command<DiscussionThread>() {
             @Override
-            public Void execute(final EntityManager em) {
+            public DiscussionThread execute(final EntityManager em) {
                 final EntityTransaction t = em.getTransaction();
                 t.begin();
-                em.merge(thread);
+                final DiscussionThread mergedThread = em.merge(thread);
                 t.commit();
-                return null;
+                return mergedThread;
             }
         });
     }
