@@ -219,5 +219,4 @@ public class TopicComponent extends CustomComponent {
     public void setPresenter(final CategoryPresenter presenter) {
         this.presenter = presenter;
     }
-
 }

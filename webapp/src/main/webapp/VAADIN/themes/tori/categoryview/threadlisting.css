@@ -37,3 +37,7 @@
 .threadTable .v-table-row-odd:hover .contextmenu { 
 	visibility: inherit; 
 }
+
+.threadTable td#mods {
+	vertical-align: top;
+}

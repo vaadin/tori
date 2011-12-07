@@ -44,23 +44,26 @@ public class ThreadListing extends Table {
         removeAllItems();
 
         for (final DiscussionThread thread : threads) {
-            final Item item = addItem(thread);
-            item.getItemProperty(PROPERTY_ID_TOPIC).setValue(
-                    new TopicComponent(thread, presenter));
-            item.getItemProperty(PROPERTY_ID_STARTEDBY).setValue(
-                    thread.getOriginalPoster().getDisplayedName());
-            item.getItemProperty(PROPERTY_ID_POSTS).setValue(
-                    thread.getPostCount());
-            item.getItemProperty(PROPERTY_ID_LATESTPOST).setValue(
-                    new LatestPostComponent(thread));
+            addItem(thread);
 
-            setPageLength(this.size());
+            // this method conveniently adds all the needed stuff.
+            refresh(thread);
         }
+        setPageLength(this.size());
     }
 
+    /**
+     * Refresh the thread's visual representation according to the given
+     * <code>thread</code>.
+     */
     public void refresh(final DiscussionThread thread) {
-        // TODO
-        System.out.println("ThreadListing.refresh()");
-        System.err.println("NOT DONE!");
+        final Item item = getItem(thread);
+        item.getItemProperty(PROPERTY_ID_TOPIC).setValue(
+                new TopicComponent(thread, presenter));
+        item.getItemProperty(PROPERTY_ID_STARTEDBY).setValue(
+                thread.getOriginalPoster().getDisplayedName());
+        item.getItemProperty(PROPERTY_ID_POSTS).setValue(thread.getPostCount());
+        item.getItemProperty(PROPERTY_ID_LATESTPOST).setValue(
+                new LatestPostComponent(thread));
     }
 }
