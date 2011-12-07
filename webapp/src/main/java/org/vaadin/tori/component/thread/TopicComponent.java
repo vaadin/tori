@@ -153,6 +153,7 @@ public class TopicComponent extends CustomComponent {
 
         final long id = thread.getId();
         final String topic = thread.getTopic();
+        layout.addComponent(new ThreadModifiersComponent(thread), "modifiers");
         layout.addComponent(createCategoryLink(id, topic), "link");
 
         menu = createContextMenu(thread);
