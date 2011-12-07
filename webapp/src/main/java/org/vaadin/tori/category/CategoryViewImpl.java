@@ -176,13 +176,13 @@ public class CategoryViewImpl extends
     @Override
     public void confirmThreadStickied(final DiscussionThread thread) {
         getWindow().showNotification("thread stickied");
-        refreshVisually(thread);
+        // presenter will reset the view here
     }
 
     @Override
     public void confirmThreadUnstickied(final DiscussionThread thread) {
         getWindow().showNotification("thread unstickied");
-        refreshVisually(thread);
+        // presenter will reset the view here
     }
 
     @Override

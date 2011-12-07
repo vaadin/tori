@@ -85,17 +85,19 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             final Category destinationCategory) {
         dataSource.move(thread, destinationCategory);
         getView().confirmThreadMoved();
-        getView().displayThreads(dataSource.getThreads(currentCategory));
+        resetView();
     }
 
     public void sticky(final DiscussionThread thread) {
         final DiscussionThread updatedThread = dataSource.sticky(thread);
         getView().confirmThreadStickied(updatedThread);
+        resetView();
     }
 
     public void unsticky(final DiscussionThread thread) {
         final DiscussionThread updatedThread = dataSource.unsticky(thread);
         getView().confirmThreadUnstickied(updatedThread);
+        resetView();
     }
 
     public boolean userCanSticky(final DiscussionThread thread) {
@@ -131,11 +133,15 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     public void delete(final DiscussionThread thread) {
         dataSource.delete(thread);
         getView().confirmThreadDeleted();
-        getView().displayThreads(dataSource.getThreads(currentCategory));
+        resetView();
     }
 
     public boolean userMayStartANewThread() {
         return authorizationService.mayCreateThreadIn(currentCategory);
+    }
+
+    private void resetView() {
+        getView().displayThreads(dataSource.getThreads(currentCategory));
     }
 
 }
