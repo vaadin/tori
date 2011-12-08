@@ -361,7 +361,16 @@ public class LiferayDataSource implements DataSource {
 
     @Override
     public void removeUserVote(final Post post) {
-        log.warn("Not yet implemented.");
+        try {
+            RatingsEntryServiceUtil.deleteEntry(MBMessage.class.getName(),
+                    post.getId());
+        } catch (final PortalException e) {
+            // TODO error handling
+            e.printStackTrace();
+        } catch (final SystemException e) {
+            // TODO error handling
+            e.printStackTrace();
+        }
     }
 
     @Override
