@@ -36,6 +36,8 @@ import com.liferay.portlet.messageboards.service.MBCategoryLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
+import com.liferay.portlet.ratings.model.RatingsStats;
+import com.liferay.portlet.ratings.service.RatingsStatsLocalServiceUtil;
 
 public class LiferayDataSource implements DataSource {
 
@@ -322,8 +324,16 @@ public class LiferayDataSource implements DataSource {
 
     @Override
     public long getScore(final Post post) {
-        // TODO
-        return 0;
+        try {
+            final RatingsStats ratingsStats = RatingsStatsLocalServiceUtil
+                    .getStats(MBMessage.class.getName(), post.getId());
+            return (long) (ratingsStats.getAverageScore() * ratingsStats
+                    .getTotalEntries());
+        } catch (final SystemException e) {
+            // TODO error handling
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     @Override
