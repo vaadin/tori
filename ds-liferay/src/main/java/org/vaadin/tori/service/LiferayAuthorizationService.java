@@ -22,10 +22,8 @@ public class LiferayAuthorizationService implements AuthorizationService {
     private long scopeGroupId;
 
     @Override
-    public boolean isCategoryAdministrator() {
-        // TODO
-        log.warn("Not yet implemented.");
-        return true;
+    public boolean mayEditCategories() {
+        return hasPermission(MbAction.ADD_CATEGORY);
     }
 
     @Override
@@ -63,11 +61,7 @@ public class LiferayAuthorizationService implements AuthorizationService {
 
     @Override
     public boolean mayBan() {
-        final boolean permission = getPermissionChecker().hasPermission(
-                scopeGroupId, MbAction.getScope(), scopeGroupId,
-                MbAction.BAN_USER.toString());
-        log.debug("mayBan: " + permission);
-        return permission;
+        return hasPermission(MbAction.BAN_USER);
     }
 
     @Override
@@ -156,6 +150,16 @@ public class LiferayAuthorizationService implements AuthorizationService {
         if (log.isDebugEnabled()) {
             log.debug("hasMessagePermission(" + action.toString() + ", "
                     + messageId + "): " + permission);
+        }
+        return permission;
+    }
+
+    private boolean hasPermission(final MbAction action) {
+        final boolean permission = getPermissionChecker().hasPermission(
+                scopeGroupId, MbAction.getScope(), scopeGroupId,
+                action.toString());
+        if (log.isDebugEnabled()) {
+            log.debug("hasPermission(" + action.toString() + "): " + permission);
         }
         return permission;
     }

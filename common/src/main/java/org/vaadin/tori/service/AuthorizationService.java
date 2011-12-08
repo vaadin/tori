@@ -16,7 +16,7 @@ public interface AuthorizationService {
      * 
      * @return {@code true} if the user can create and rearrange categories.
      */
-    boolean isCategoryAdministrator();
+    boolean mayEditCategories();
 
     boolean mayReportPosts();
 

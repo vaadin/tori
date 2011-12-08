@@ -26,7 +26,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
     @Override
     public void init() {
         getView().setAdminControlsVisible(
-                authorizationService.isCategoryAdministrator());
+                authorizationService.mayEditCategories());
     }
 
     long getThreadCount(final Category category) {

@@ -19,8 +19,8 @@ import org.vaadin.tori.data.entity.Post;
  * </p>
  */
 public interface DebugAuthorizationService extends AuthorizationService {
-    /** @see AuthorizationService#isCategoryAdministrator() */
-    void setIsCategoryAdministrator(boolean b);
+    /** @see AuthorizationService#mayEditCategories() */
+    void setMayEditCategories(boolean b);
 
     /** @see AuthorizationService#mayReportPosts() */
     void setMayReportPosts(boolean b);
