@@ -40,6 +40,7 @@ import com.liferay.portlet.ratings.NoSuchEntryException;
 import com.liferay.portlet.ratings.model.RatingsEntry;
 import com.liferay.portlet.ratings.model.RatingsStats;
 import com.liferay.portlet.ratings.service.RatingsEntryLocalServiceUtil;
+import com.liferay.portlet.ratings.service.RatingsEntryServiceUtil;
 import com.liferay.portlet.ratings.service.RatingsStatsLocalServiceUtil;
 
 public class LiferayDataSource implements DataSource {
@@ -327,12 +328,35 @@ public class LiferayDataSource implements DataSource {
 
     @Override
     public void upvote(final Post post) {
-        log.warn("Not yet implemented.");
+        try {
+            ratePost(post, 1);
+        } catch (final PortalException e) {
+            // TODO error handling
+            e.printStackTrace();
+        } catch (final SystemException e) {
+            // TODO error handling
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void downvote(final Post post) {
-        log.warn("Not yet implemented.");
+        try {
+            ratePost(post, -1);
+        } catch (final PortalException e) {
+            // TODO error handling
+            e.printStackTrace();
+        } catch (final SystemException e) {
+            // TODO error handling
+            e.printStackTrace();
+        }
+    }
+
+    private void ratePost(final Post post, final int score)
+            throws PortalException, SystemException {
+        ToriUtil.checkForNull(post, "Post must not be null.");
+        RatingsEntryServiceUtil.updateEntry(MBMessage.class.getName(),
+                post.getId(), score);
     }
 
     @Override
