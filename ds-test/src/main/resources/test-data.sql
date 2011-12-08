@@ -23,8 +23,8 @@ insert into DISCUSSIONTHREAD set ID = 7, CATEGORY_ID = 3, TOPIC = "How to deploy
 insert into DISCUSSIONTHREAD set ID = 8, CATEGORY_ID = 3, TOPIC = "How to change the color of a Label";
 
 ## Users
-insert into `USER` set ID = 1, DISPLAYEDNAME = "John Doe";
-insert into `USER` set ID = 2, DISPLAYEDNAME = "Molly Townsend";
+insert into `USER` set ID = 1, DISPLAYEDNAME = "John Doe", RAWSIGNATURE = "I'm Doe. John Doe";
+insert into `USER` set ID = 2, DISPLAYEDNAME = "Molly Townsend", RAWSIGNATURE = "[b]bold[/b]";
 insert into `USER` set ID = 3, DISPLAYEDNAME = "Current User";
 insert into `USER` set ID = 4, DISPLAYEDNAME = "Timothy Test Guy";
 

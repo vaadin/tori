@@ -1,7 +1,10 @@
 package org.vaadin.tori.data.entity;
 
+import javax.annotation.CheckForNull;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+
+import edu.umd.cs.findbugs.annotations.Nullable;
 
 @Entity
 public class User extends AbstractEntity {
@@ -10,7 +13,12 @@ public class User extends AbstractEntity {
     private String displayedName;
 
     @Column(nullable = true)
+    @CheckForNull
     private String avatarUrl;
+
+    @Column(nullable = true)
+    @CheckForNull
+    private String rawSignature;
 
     public void setDisplayedName(final String displayedName) {
         this.displayedName = displayedName;
@@ -20,13 +28,18 @@ public class User extends AbstractEntity {
         return displayedName;
     }
 
-    public void setAvatarUrl(final String avatarUrl) {
+    /**
+     * Set the url for the avatar image for this user. A <code>null</code>
+     * argument indicates that this user has no personal avatar.
+     */
+    public void setAvatarUrl(@Nullable final String avatarUrl) {
         this.avatarUrl = avatarUrl;
     }
 
     /**
      * The URL to the avatar image for this user. May return <code>null</code>.
      */
+    @CheckForNull
     public String getAvatarUrl() {
         return avatarUrl;
     }
@@ -36,5 +49,22 @@ public class User extends AbstractEntity {
      */
     public boolean isAnonymous() {
         return false;
+    }
+
+    /**
+     * Get the unformatted signature for this user. <code>null</code> means that
+     * the user has no signature.
+     */
+    @CheckForNull
+    public String getRawSignature() {
+        return rawSignature;
+    }
+
+    /**
+     * Set the unformatted signature for this user. <code>null</code> clears the
+     * user's signature.
+     */
+    public void setRawSignature(final String rawSignature) {
+        this.rawSignature = rawSignature;
     }
 }
