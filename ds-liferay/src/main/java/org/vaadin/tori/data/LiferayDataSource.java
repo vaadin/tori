@@ -43,6 +43,7 @@ import com.liferay.portlet.ratings.service.RatingsEntryLocalServiceUtil;
 import com.liferay.portlet.ratings.service.RatingsEntryServiceUtil;
 import com.liferay.portlet.ratings.service.RatingsStatsLocalServiceUtil;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 public class LiferayDataSource implements DataSource {
@@ -59,12 +60,25 @@ public class LiferayDataSource implements DataSource {
 
     @Override
     public List<Category> getRootCategories() {
+        return internalGetSubCategories(null);
+    }
+
+    @Override
+    public List<Category> getSubCategories(final Category category) {
+        return internalGetSubCategories(category);
+    }
+
+    @NonNull
+    private List<Category> internalGetSubCategories(final Category category) {
+        final long parentCategoryId = (category != null ? category.getId()
+                : ROOT_CATEGORY_ID);
+
         try {
             final List<MBCategory> rootCategories = MBCategoryLocalServiceUtil
-                    .getCategories(scopeGroupId, ROOT_CATEGORY_ID, QUERY_ALL,
+                    .getCategories(scopeGroupId, parentCategoryId, QUERY_ALL,
                             QUERY_ALL);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Found %d root level categories.",
+                log.debug(String.format("Found %d categories.",
                         rootCategories.size()));
             }
             return CategoryWrapper.wrap(rootCategories);
@@ -73,13 +87,6 @@ public class LiferayDataSource implements DataSource {
             e.printStackTrace();
             return Collections.emptyList();
         }
-    }
-
-    @Override
-    public List<Category> getSubCategories(final Category category) {
-        ToriUtil.checkForNull(category, "Category must not be null.");
-        // TODO
-        return Collections.emptyList();
     }
 
     @Override
