@@ -4,7 +4,9 @@ import org.vaadin.tori.data.spi.ServiceProvider;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.LiferayAuthorizationService;
 import org.vaadin.tori.util.LiferayPostFormatter;
+import org.vaadin.tori.util.LiferaySignatureFormatter;
 import org.vaadin.tori.util.PostFormatter;
+import org.vaadin.tori.util.SignatureFormatter;
 
 public class ServiceProviderImpl implements ServiceProvider {
 
@@ -21,6 +23,11 @@ public class ServiceProviderImpl implements ServiceProvider {
     @Override
     public AuthorizationService createAuthorizationService() {
         return new LiferayAuthorizationService();
+    }
+
+    @Override
+    public SignatureFormatter createSignatureFormatter() {
+        return new LiferaySignatureFormatter();
     }
 
 }

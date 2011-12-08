@@ -4,6 +4,8 @@ import javax.annotation.CheckForNull;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
+import org.vaadin.tori.util.SignatureFormatter;
+
 @Entity
 public class User extends AbstractEntity {
 
@@ -52,6 +54,8 @@ public class User extends AbstractEntity {
     /**
      * Get the unformatted signature for this user. <code>null</code> means that
      * the user has no signature.
+     * 
+     * @see SignatureFormatter#format(String)
      */
     @CheckForNull
     public String getRawSignature() {

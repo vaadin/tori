@@ -10,6 +10,7 @@ import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.spi.ServiceProvider;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
+import org.vaadin.tori.util.SignatureFormatter;
 
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
@@ -33,6 +34,7 @@ public class ToriApplication extends Application implements
 
     private DataSource ds;
     private PostFormatter postFormatter;
+    private SignatureFormatter signatureFormatter;
     private AuthorizationService authorizationService;
 
     @Override
@@ -42,6 +44,7 @@ public class ToriApplication extends Application implements
         final ServiceProvider spi = createServiceProvider();
         ds = createDataSource(spi);
         postFormatter = createPostFormatter(spi);
+        signatureFormatter = createSignatureFormatter(spi);
         authorizationService = createAuthorizationService(spi);
 
         setRequestForDataSource();
@@ -117,6 +120,16 @@ public class ToriApplication extends Application implements
         return postFormatter;
     }
 
+    private static SignatureFormatter createSignatureFormatter(
+            final ServiceProvider spi) {
+        final SignatureFormatter signatureFormatter = spi
+                .createSignatureFormatter();
+        log.info(String.format("Using %s implementation: %s",
+                SignatureFormatter.class.getSimpleName(), signatureFormatter
+                        .getClass().getName()));
+        return signatureFormatter;
+    }
+
     private static AuthorizationService createAuthorizationService(
             final ServiceProvider spi) {
         final AuthorizationService authorizationService = spi
@@ -163,6 +176,10 @@ public class ToriApplication extends Application implements
 
     public PostFormatter getPostFormatter() {
         return postFormatter;
+    }
+
+    public SignatureFormatter getSignatureFormatter() {
+        return signatureFormatter;
     }
 
     private void setCurrentInstance() {

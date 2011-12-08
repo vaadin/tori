@@ -191,7 +191,12 @@ public class PostComponent extends CustomComponent {
 
         final String rawSignature = post.getAuthor().getRawSignature();
         if (rawSignature != null && !rawSignature.isEmpty()) {
-            root.addComponent(new Label(rawSignature), "signature");
+            final String formattedSignature = ToriApplication.getCurrent()
+                    .getSignatureFormatter().format(rawSignature);
+            final Label signatureLabel = new Label(formattedSignature,
+                    Label.CONTENT_XHTML);
+            signatureLabel.setStyleName("signature");
+            root.addComponent(signatureLabel, "signature");
         }
 
         final String formattedPost = getFormattedXhtmlBody(post);
