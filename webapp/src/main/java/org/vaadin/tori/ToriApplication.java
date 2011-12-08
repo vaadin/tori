@@ -61,6 +61,14 @@ public class ToriApplication extends Application implements
                 ds.setRequest(currentPortletRequest.get());
             }
         }
+        if (authorizationService != null) {
+            if (currentHttpServletRequest.get() != null) {
+                authorizationService
+                        .setRequest(currentHttpServletRequest.get());
+            } else if (currentPortletRequest.get() != null) {
+                authorizationService.setRequest(currentPortletRequest.get());
+            }
+        }
     }
 
     /**

@@ -20,6 +20,7 @@ public class LiferayAuthorizationService implements AuthorizationService {
     private static final Logger log = Logger
             .getLogger(LiferayAuthorizationService.class);
     private long scopeGroupId;
+    private String currentUser;
 
     @Override
     public boolean mayEditCategories() {
@@ -81,9 +82,7 @@ public class LiferayAuthorizationService implements AuthorizationService {
 
     @Override
     public boolean mayVote() {
-        // TODO should simply check if the user is logged in
-        log.warn("Not yet implemented.");
-        return true;
+        return isLoggedIn();
     }
 
     @Override
@@ -132,41 +131,37 @@ public class LiferayAuthorizationService implements AuthorizationService {
 
     private boolean hasCategoryPermission(final CategoryAction action,
             final Category category) {
-        final boolean permission = getPermissionChecker().hasPermission(
-                scopeGroupId, CategoryAction.getScope(), category.getId(),
-                action.toString());
-        if (log.isDebugEnabled()) {
-            log.debug("hasCategoryPermission(" + action.toString() + ", "
-                    + category.getId() + "): " + permission);
-        }
-        return permission;
+        return getPermissionChecker().hasPermission(scopeGroupId,
+                CategoryAction.getScope(), category.getId(), action.toString());
     }
 
     private boolean hasMessagePermission(final MessageAction action,
             final long messageId) {
-        final boolean permission = getPermissionChecker().hasPermission(
-                scopeGroupId, MessageAction.getScope(), messageId,
-                action.toString());
-        if (log.isDebugEnabled()) {
-            log.debug("hasMessagePermission(" + action.toString() + ", "
-                    + messageId + "): " + permission);
-        }
-        return permission;
+        return getPermissionChecker().hasPermission(scopeGroupId,
+                MessageAction.getScope(), messageId, action.toString());
     }
 
     private boolean hasPermission(final MbAction action) {
-        final boolean permission = getPermissionChecker().hasPermission(
-                scopeGroupId, MbAction.getScope(), scopeGroupId,
-                action.toString());
-        if (log.isDebugEnabled()) {
-            log.debug("hasPermission(" + action.toString() + "): " + permission);
-        }
-        return permission;
+        return getPermissionChecker().hasPermission(scopeGroupId,
+                MbAction.getScope(), scopeGroupId, action.toString());
     }
 
     private boolean hasMessagePermission(final MessageAction action,
             final Post message) {
         return hasMessagePermission(action, message.getId());
+    }
+
+    private boolean isLoggedIn() {
+        return currentUser != null;
+    }
+
+    private void setCurrentUser(final String user) {
+        if (currentUser == null && user != null || currentUser != null
+                && !currentUser.equals(user)) {
+            // user has changed
+            currentUser = user;
+            log.debug(String.format("Current user is now %s.", currentUser));
+        }
     }
 
     @Override
@@ -177,6 +172,7 @@ public class LiferayAuthorizationService implements AuthorizationService {
         }
 
         final PortletRequest portletRequest = (PortletRequest) request;
+        setCurrentUser(portletRequest.getRemoteUser());
         if (scopeGroupId < 0) {
             // scope not defined yet -> get if from the request
             final ThemeDisplay themeDisplay = (ThemeDisplay) portletRequest
