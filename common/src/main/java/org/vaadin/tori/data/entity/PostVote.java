@@ -21,6 +21,11 @@ public class PostVote {
     // this value is just an internal representation of the vote
     protected int vote;
 
+    /**
+     * @deprecated Do not use this getter as some data sources might do not
+     *             properly assign the voter (at least for now).
+     */
+    @Deprecated
     public User getVoter() {
         return voter;
     }
