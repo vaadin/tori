@@ -40,7 +40,7 @@ public class PostComponent extends CustomComponent {
     private static final ThemeResource FOLLOW_ICON = new ThemeResource(
             "images/icon-follow.png");
 
-    // trying a new pattern here
+    // trying a new pattern here by grouping auxiliray methods in an inner class
     private static class Util {
         private static Component newConfirmBanComponent(
                 final ThreadPresenter presenter, final User user,
@@ -188,6 +188,12 @@ public class PostComponent extends CustomComponent {
                 "authorname");
         root.addComponent(new Label(getPostedAgoText(post)), "postedtime");
         root.addComponent(getPermaLink(post), "permalink");
+
+        final String rawSignature = post.getAuthor().getRawSignature();
+        if (rawSignature != null && !rawSignature.isEmpty()) {
+            root.addComponent(new Label(rawSignature), "signature");
+        }
+
         final String formattedPost = getFormattedXhtmlBody(post);
         if (allowHtml) {
             root.addComponent(new Label(formattedPost, Label.CONTENT_XHTML),

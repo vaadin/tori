@@ -4,8 +4,6 @@ import javax.annotation.CheckForNull;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
-import edu.umd.cs.findbugs.annotations.Nullable;
-
 @Entity
 public class User extends AbstractEntity {
 
@@ -32,7 +30,7 @@ public class User extends AbstractEntity {
      * Set the url for the avatar image for this user. A <code>null</code>
      * argument indicates that this user has no personal avatar.
      */
-    public void setAvatarUrl(@Nullable final String avatarUrl) {
+    public void setAvatarUrl(final String avatarUrl) {
         this.avatarUrl = avatarUrl;
     }
 
