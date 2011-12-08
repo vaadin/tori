@@ -58,7 +58,7 @@ public class User extends AbstractEntity {
      * @see SignatureFormatter#format(String)
      */
     @CheckForNull
-    public String getRawSignature() {
+    public String getSignatureRaw() {
         return rawSignature;
     }
 

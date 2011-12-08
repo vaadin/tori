@@ -22,7 +22,7 @@ public interface SignatureFormatter {
      * XHTML, risking XSS and other security attacks.
      * 
      * @return The XHTML to be rendered as-is.
-     * @see User#getRawSignature()
+     * @see User#getSignatureRaw()
      */
     @NonNull
     String format(@NonNull String rawSignature);

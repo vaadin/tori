@@ -189,7 +189,7 @@ public class PostComponent extends CustomComponent {
         root.addComponent(new Label(getPostedAgoText(post)), "postedtime");
         root.addComponent(getPermaLink(post), "permalink");
 
-        final String rawSignature = post.getAuthor().getRawSignature();
+        final String rawSignature = post.getAuthor().getSignatureRaw();
         if (rawSignature != null && !rawSignature.isEmpty()) {
             final String formattedSignature = ToriApplication.getCurrent()
                     .getSignatureFormatter().format(rawSignature);
