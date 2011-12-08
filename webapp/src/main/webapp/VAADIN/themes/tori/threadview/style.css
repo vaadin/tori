@@ -207,6 +207,12 @@
 	font-size: 120%;
 }
 
+.post [location="signature"] {
+	font-size: smaller;
+	border-top: 1px solid #9f9f9f;
+	margin: 0.5em 1em;
+}
+
 /* Post body formatting */
 .post .body .quote-title,
 .post .body .quote {
