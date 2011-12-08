@@ -400,19 +400,20 @@ public class LiferayDataSource implements DataSource {
     public void saveAsCurrentUser(final Post post) {
         final DiscussionThreadWrapper thread = (DiscussionThreadWrapper) post
                 .getThread();
+        internalSaveAsCurrentUser(post, thread.getRootMessageId());
+    }
 
+    private MBMessage internalSaveAsCurrentUser(final Post post,
+            final long parentMessageId) {
+        final DiscussionThread thread = post.getThread();
         final long groupId = scopeGroupId;
         final long categoryId = thread.getCategory().getId();
         final long threadId = thread.getId();
 
-        // TODO actually decide between reply and a new thread
-        final boolean createNewThread = false;
-        long parentMessageId = MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID;
-        if (!createNewThread) {
-            // TODO can we actually use the root message here?
-            parentMessageId = thread.getRootMessageId();
+        String subject = post.getThread().getTopic();
+        if (parentMessageId != MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID) {
+            subject = "RE: " + subject;
         }
-        final String subject = "RE: " + post.getThread().getTopic();
         final String body = post.getBodyRaw();
         final List<ObjectValuePair<String, byte[]>> files = Collections
                 .emptyList();
@@ -421,9 +422,9 @@ public class LiferayDataSource implements DataSource {
         final boolean allowPingbacks = false;
 
         try {
-            MBMessageServiceUtil.addMessage(groupId, categoryId, threadId,
-                    parentMessageId, subject, body, files, anonymous, priority,
-                    allowPingbacks, mbMessageServiceContext);
+            return MBMessageServiceUtil.addMessage(groupId, categoryId,
+                    threadId, parentMessageId, subject, body, files, anonymous,
+                    priority, allowPingbacks, mbMessageServiceContext);
         } catch (final PortalException e) {
             // TODO error handling
             e.printStackTrace();
@@ -431,6 +432,7 @@ public class LiferayDataSource implements DataSource {
             // TODO error handling
             e.printStackTrace();
         }
+        return null;
     }
 
     @Override
@@ -506,6 +508,12 @@ public class LiferayDataSource implements DataSource {
     @Override
     public DiscussionThread saveNewThread(final DiscussionThread newThread,
             final Post firstPost) {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        final MBMessage savedRootMessage = internalSaveAsCurrentUser(firstPost,
+                MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID);
+        if (savedRootMessage != null) {
+            return getThread(savedRootMessage.getThreadId());
+        }
+        // TODO should throw an exception instead of returning null
+        return null;
     }
 }
