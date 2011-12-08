@@ -44,7 +44,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     private final ReplyListener replyListener = new ReplyListener() {
         @Override
         public void submit(final String rawBody) {
-            getPresenter().sendReply(rawBody);
+            if (!rawBody.trim().isEmpty()) {
+                getPresenter().sendReply(rawBody);
+            }
         }
     };
 
