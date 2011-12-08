@@ -114,9 +114,7 @@ public class LiferayAuthorizationService implements AuthorizationService {
 
     @Override
     public boolean mayCreateThreadIn(final Category category) {
-        // TODO
-        log.warn("Not yet implemented.");
-        return true;
+        return hasCategoryPermission(CategoryAction.ADD_MESSAGE, category);
     }
 
     private PermissionChecker getPermissionChecker() {
