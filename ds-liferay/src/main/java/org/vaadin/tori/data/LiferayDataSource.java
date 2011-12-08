@@ -281,7 +281,15 @@ public class LiferayDataSource implements DataSource {
 
     @Override
     public void delete(final Post post) {
-        log.warn("Not yet implemented.");
+        try {
+            MBMessageLocalServiceUtil.deleteMBMessage(post.getId());
+        } catch (final PortalException e) {
+            // TODO error handling
+            e.printStackTrace();
+        } catch (final SystemException e) {
+            // TODO error handling
+            e.printStackTrace();
+        }
     }
 
     @Override
