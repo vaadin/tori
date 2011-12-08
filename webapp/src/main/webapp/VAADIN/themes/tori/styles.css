@@ -59,3 +59,7 @@ a:visited,
 .v-verticallayout-halfMargin .v-verticallayout-margin {
 	padding: 9px;
 }
+
+.hidden {
+	visibility: hidden;
+}

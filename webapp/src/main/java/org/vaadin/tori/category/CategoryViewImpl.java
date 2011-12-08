@@ -13,6 +13,7 @@ import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.thread.ThreadPresenter;
+import org.vaadin.tori.util.StyleConstants;
 
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
@@ -122,8 +123,11 @@ public class CategoryViewImpl extends
 
     @Override
     public void displayThreads(final List<DiscussionThread> threadsInCategory) {
-        // show contained threads only if there are any
-        threadListing.setVisible(!threadsInCategory.isEmpty());
+        if (threadsInCategory.isEmpty()) {
+            threadListing.addStyleName(StyleConstants.HIDDEN);
+        } else {
+            threadListing.removeStyleName(StyleConstants.HIDDEN);
+        }
 
         final ComponentContainer parent = (ComponentContainer) threadsLabel
                 .getParent();
