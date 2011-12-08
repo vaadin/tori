@@ -36,6 +36,12 @@ import com.liferay.portlet.messageboards.service.MBCategoryLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
+import com.liferay.portlet.ratings.NoSuchEntryException;
+import com.liferay.portlet.ratings.model.RatingsEntry;
+import com.liferay.portlet.ratings.model.RatingsStats;
+import com.liferay.portlet.ratings.service.RatingsEntryLocalServiceUtil;
+import com.liferay.portlet.ratings.service.RatingsEntryServiceUtil;
+import com.liferay.portlet.ratings.service.RatingsStatsLocalServiceUtil;
 
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
@@ -47,6 +53,7 @@ public class LiferayDataSource implements DataSource {
     private static final int QUERY_ALL = com.liferay.portal.kernel.dao.orm.QueryUtil.ALL_POS;
 
     private long scopeGroupId = -1;
+    private long currentUserId;
     private String imagePath;
     private ServiceContext mbMessageServiceContext;
 
@@ -283,41 +290,103 @@ public class LiferayDataSource implements DataSource {
 
     @Override
     public void delete(final Post post) {
-        log.warn("Not yet implemented.");
+        try {
+            MBMessageLocalServiceUtil.deleteMBMessage(post.getId());
+        } catch (final PortalException e) {
+            // TODO error handling
+            e.printStackTrace();
+        } catch (final SystemException e) {
+            // TODO error handling
+            e.printStackTrace();
+        }
     }
 
     @Override
     public PostVote getPostVote(final Post post) {
+        final PostVote vote = new PostVote();
+        RatingsEntry entry = null;
+        try {
+            entry = RatingsEntryLocalServiceUtil.getEntry(currentUserId,
+                    MBMessage.class.getName(), post.getId());
+        } catch (final NoSuchEntryException e) {
+            return vote;
+        } catch (final PortalException e) {
+            // TODO error handling
+            e.printStackTrace();
+        } catch (final SystemException e) {
+            // TODO error handling
+            e.printStackTrace();
+        }
 
-        // TODO
-        final PostVote dummyVote = new PostVote();
-        dummyVote.setPost(post);
-        dummyVote.setUpvote();
-        final User dummyUser = new User();
-        dummyUser.setDisplayedName("Ville Voter");
-        dummyVote.setVoter(dummyUser);
-        return dummyVote;
+        if (entry != null) {
+            if (entry.getScore() > 0) {
+                vote.setUpvote();
+            } else {
+                vote.setDownvote();
+            }
+        }
+        return vote;
     }
 
     @Override
     public void upvote(final Post post) {
-        log.warn("Not yet implemented.");
+        try {
+            ratePost(post, 1);
+        } catch (final PortalException e) {
+            // TODO error handling
+            e.printStackTrace();
+        } catch (final SystemException e) {
+            // TODO error handling
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void downvote(final Post post) {
-        log.warn("Not yet implemented.");
+        try {
+            ratePost(post, -1);
+        } catch (final PortalException e) {
+            // TODO error handling
+            e.printStackTrace();
+        } catch (final SystemException e) {
+            // TODO error handling
+            e.printStackTrace();
+        }
+    }
+
+    private void ratePost(final Post post, final int score)
+            throws PortalException, SystemException {
+        ToriUtil.checkForNull(post, "Post must not be null.");
+        RatingsEntryServiceUtil.updateEntry(MBMessage.class.getName(),
+                post.getId(), score);
     }
 
     @Override
     public void removeUserVote(final Post post) {
-        log.warn("Not yet implemented.");
+        try {
+            RatingsEntryServiceUtil.deleteEntry(MBMessage.class.getName(),
+                    post.getId());
+        } catch (final PortalException e) {
+            // TODO error handling
+            e.printStackTrace();
+        } catch (final SystemException e) {
+            // TODO error handling
+            e.printStackTrace();
+        }
     }
 
     @Override
     public long getScore(final Post post) {
-        // TODO
-        return 0;
+        try {
+            final RatingsStats ratingsStats = RatingsStatsLocalServiceUtil
+                    .getStats(MBMessage.class.getName(), post.getId());
+            return (long) (ratingsStats.getAverageScore() * ratingsStats
+                    .getTotalEntries());
+        } catch (final SystemException e) {
+            // TODO error handling
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     @Override
@@ -411,6 +480,7 @@ public class LiferayDataSource implements DataSource {
 
             if (themeDisplay != null) {
                 scopeGroupId = themeDisplay.getScopeGroupId();
+                currentUserId = themeDisplay.getUserId();
                 imagePath = themeDisplay.getPathImage();
                 log.info("Using groupId " + scopeGroupId + " as the scope.");
             }

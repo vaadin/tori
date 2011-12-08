@@ -28,12 +28,12 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     private final Map<Category, Boolean> mayCreateThread = new HashMap<Category, Boolean>();
 
     @Override
-    public boolean isCategoryAdministrator() {
+    public boolean mayEditCategories() {
         return isCategoryAdministrator;
     }
 
     @Override
-    public void setIsCategoryAdministrator(final boolean b) {
+    public void setMayEditCategories(final boolean b) {
         isCategoryAdministrator = b;
     }
 
@@ -196,5 +196,10 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     @Override
     public void setMayCreateThreadIn(final Category category, final boolean b) {
         mayCreateThread.put(category, b);
+    }
+
+    @Override
+    public void setRequest(final Object request) {
+        // NOP - TestAuthorizationService is not interested in the request.
     }
 }

@@ -42,7 +42,7 @@ public class CategoryListingTest {
 
     @Test
     public void nonAdminUser() {
-        when(mockAuthorizationService.isCategoryAdministrator()).thenReturn(
+        when(mockAuthorizationService.mayEditCategories()).thenReturn(
                 false);
 
         presenter.init();
@@ -51,7 +51,7 @@ public class CategoryListingTest {
 
     @Test
     public void adminUser() {
-        when(mockAuthorizationService.isCategoryAdministrator()).thenReturn(
+        when(mockAuthorizationService.mayEditCategories()).thenReturn(
                 true);
 
         presenter.init();
