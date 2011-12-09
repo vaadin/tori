@@ -23,6 +23,7 @@ import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
+import com.liferay.portal.service.SubscriptionLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.messageboards.model.MBCategory;
@@ -316,19 +317,59 @@ public class LiferayDataSource implements DataSource {
     }
 
     @Override
-    public void follow(final DiscussionThread thread) {
-        log.warn("Not yet implemented.");
+    public void follow(final DiscussionThread thread)
+            throws DataSourceException {
+        try {
+            SubscriptionLocalServiceUtil.addSubscription(currentUserId,
+                    MBThread.class.getName(), thread.getId());
+        } catch (final PortalException e) {
+            log.error(String.format("Cannot follow thread %d", thread.getId()),
+                    e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error(String.format("Cannot follow thread %d", thread.getId()),
+                    e);
+            throw new DataSourceException(e);
+        }
     }
 
     @Override
     public void unFollow(final DiscussionThread thread) {
-        log.warn("Not yet implemented.");
+        try {
+            SubscriptionLocalServiceUtil.deleteSubscription(currentUserId,
+                    MBThread.class.getName(), thread.getId());
+        } catch (final PortalException e) {
+            log.error(
+                    String.format("Cannot unfollow thread %d", thread.getId()),
+                    e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error(
+                    String.format("Cannot unfollow thread %d", thread.getId()),
+                    e);
+            throw new DataSourceException(e);
+        }
     }
 
     @Override
     public boolean isFollowing(final DiscussionThread thread) {
-        // TODO
-        return false;
+        try {
+            final com.liferay.portal.model.User user = UserLocalServiceUtil
+                    .getUser(currentUserId);
+            return SubscriptionLocalServiceUtil.isSubscribed(
+                    user.getCompanyId(), user.getUserId(),
+                    MBThread.class.getName(), thread.getId());
+        } catch (final SystemException e) {
+            log.error(String.format(
+                    "Cannot check if user is following thread %d",
+                    thread.getId()), e);
+            throw new DataSourceException(e);
+        } catch (final PortalException e) {
+            log.error(String.format(
+                    "Cannot check if user is following thread %d",
+                    thread.getId()), e);
+            throw new DataSourceException(e);
+        }
     }
 
     @Override
