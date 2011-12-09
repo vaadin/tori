@@ -14,6 +14,7 @@ import org.vaadin.tori.data.entity.EntityFactoryUtil;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
+import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.post.PostReport;
 
 import com.liferay.portal.kernel.exception.PortalException;
@@ -55,25 +56,39 @@ public class LiferayDataSource implements DataSource {
     private ServiceContext mbMessageServiceContext;
 
     @Override
-    public List<Category> getRootCategories() {
+    public List<Category> getRootCategories() throws DataSourceException {
         return internalGetSubCategories(null);
     }
 
     @Override
-    public List<Category> getSubCategories(final Category category) {
+    public List<Category> getSubCategories(final Category category)
+            throws DataSourceException {
         return internalGetSubCategories(category);
     }
 
     public static long getRootMessageId(final DiscussionThread thread)
-            throws PortalException, SystemException {
-        final long threadId = thread.getId();
-        final MBThread liferayThread = MBThreadLocalServiceUtil
-                .getMBThread(threadId);
-        return liferayThread.getRootMessageId();
+            throws DataSourceException {
+        try {
+            final long threadId = thread.getId();
+            final MBThread liferayThread = MBThreadLocalServiceUtil
+                    .getMBThread(threadId);
+            return liferayThread.getRootMessageId();
+        } catch (final PortalException e) {
+            log.error(String.format(
+                    "Couldn't get root message id for thread %d.",
+                    thread.getId()), e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error(String.format(
+                    "Couldn't get root message id for thread %d.",
+                    thread.getId()), e);
+            throw new DataSourceException(e);
+        }
     }
 
     @NonNull
-    private List<Category> internalGetSubCategories(final Category category) {
+    private List<Category> internalGetSubCategories(final Category category)
+            throws DataSourceException {
         final long parentCategoryId = (category != null ? category.getId()
                 : ROOT_CATEGORY_ID);
 
@@ -87,14 +102,16 @@ public class LiferayDataSource implements DataSource {
             }
             return EntityFactoryUtil.createCategories(categories);
         } catch (final SystemException e) {
-            // TODO error handling
-            e.printStackTrace();
-            return Collections.emptyList();
+            log.error(String.format(
+                    "Couldn't get subcategories for parent category %d.",
+                    parentCategoryId), e);
+            throw new DataSourceException(e);
         }
     }
 
     @Override
-    public List<DiscussionThread> getThreads(final Category category) {
+    public List<DiscussionThread> getThreads(final Category category)
+            throws DataSourceException {
         ToriUtil.checkForNull(category, "Category must not be null.");
 
         try {
@@ -111,13 +128,13 @@ public class LiferayDataSource implements DataSource {
             }
             return result;
         } catch (final SystemException e) {
-            // TODO error handling
-            e.printStackTrace();
-            return Collections.emptyList();
+            log.error(String.format("Couldn't get threads for category %d.",
+                    category.getId()), e);
+            throw new DataSourceException(e);
         } catch (final PortalException e) {
-            // TODO error handling
-            e.printStackTrace();
-            return Collections.emptyList();
+            log.error(String.format("Couldn't get threads for category %d.",
+                    category.getId()), e);
+            throw new DataSourceException(e);
         }
     }
 
@@ -161,37 +178,41 @@ public class LiferayDataSource implements DataSource {
     }
 
     @Override
-    public Category getCategory(final long categoryId) {
+    public Category getCategory(final long categoryId)
+            throws DataSourceException {
         try {
             return EntityFactoryUtil.createCategory(MBCategoryLocalServiceUtil
                     .getCategory(categoryId));
         } catch (final PortalException e) {
-            // TODO error handling
-            e.printStackTrace();
-            return null;
+            log.error(String.format("Couldn't get category for id %d.",
+                    categoryId), e);
+            throw new DataSourceException(e);
         } catch (final SystemException e) {
-            // TODO error handling
-            e.printStackTrace();
-            return null;
+            log.error(String.format("Couldn't get category for id %d.",
+                    categoryId), e);
+            throw new DataSourceException(e);
         }
     }
 
     @Override
-    public long getThreadCount(final Category category) {
+    public long getThreadCount(final Category category)
+            throws DataSourceException {
         ToriUtil.checkForNull(category, "Category must not be null.");
         try {
             return MBThreadLocalServiceUtil.getCategoryThreadsCount(
                     scopeGroupId, category.getId(),
                     WorkflowConstants.STATUS_APPROVED);
         } catch (final SystemException e) {
-            // TODO error handling
-            e.printStackTrace();
-            return -1;
+            log.error(String.format(
+                    "Couldn't get thread count for category %d.",
+                    category.getId()), e);
+            throw new DataSourceException(e);
         }
     }
 
     @Override
-    public DiscussionThread getThread(final long threadId) {
+    public DiscussionThread getThread(final long threadId)
+            throws DataSourceException {
         try {
             final MBThread thread = MBThreadLocalServiceUtil
                     .getMBThread(threadId);
@@ -200,17 +221,21 @@ public class LiferayDataSource implements DataSource {
                             .getCategory(thread.getCategoryId()));
             return wrapLiferayThread(thread, category);
         } catch (final PortalException e) {
-            // TODO error handling
-            e.printStackTrace();
+            log.error(
+                    String.format("Couldn't get thread for id %d.", threadId),
+                    e);
+            throw new DataSourceException(e);
         } catch (final SystemException e) {
-            // TODO error handling
-            e.printStackTrace();
+            log.error(
+                    String.format("Couldn't get thread for id %d.", threadId),
+                    e);
+            throw new DataSourceException(e);
         }
-        return null;
     }
 
     @Override
-    public List<Post> getPosts(final DiscussionThread thread) {
+    public List<Post> getPosts(final DiscussionThread thread)
+            throws DataSourceException {
         ToriUtil.checkForNull(thread, "DiscussionThread must not be null.");
         try {
             final List<MBMessage> messages = getLiferayPostsForThread(thread
@@ -230,14 +255,16 @@ public class LiferayDataSource implements DataSource {
                 result.add(post);
             }
             return result;
-        } catch (final SystemException e) {
-            // TODO error handling
-            e.printStackTrace();
-            return Collections.emptyList();
         } catch (final PortalException e) {
-            // TODO error handling
-            e.printStackTrace();
-            return Collections.emptyList();
+            log.error(
+                    String.format("Couldn't get posts for thread %d.",
+                            thread.getId()), e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error(
+                    String.format("Couldn't get posts for thread %d.",
+                            thread.getId()), e);
+            throw new DataSourceException(e);
         }
     }
 
@@ -305,20 +332,22 @@ public class LiferayDataSource implements DataSource {
     }
 
     @Override
-    public void delete(final Post post) {
+    public void delete(final Post post) throws DataSourceException {
         try {
             MBMessageLocalServiceUtil.deleteMBMessage(post.getId());
         } catch (final PortalException e) {
-            // TODO error handling
-            e.printStackTrace();
+            log.error(String.format("Couldn't delete post %d.", post.getId()),
+                    e);
+            throw new DataSourceException(e);
         } catch (final SystemException e) {
-            // TODO error handling
-            e.printStackTrace();
+            log.error(String.format("Couldn't delete post %d.", post.getId()),
+                    e);
+            throw new DataSourceException(e);
         }
     }
 
     @Override
-    public PostVote getPostVote(final Post post) {
+    public PostVote getPostVote(final Post post) throws DataSourceException {
         final PostVote vote = new PostVote();
         try {
             return EntityFactoryUtil
@@ -328,91 +357,85 @@ public class LiferayDataSource implements DataSource {
         } catch (final NoSuchEntryException e) {
             return vote;
         } catch (final PortalException e) {
-            // TODO error handling
-            e.printStackTrace();
+            log.error(
+                    String.format("Couldn't get post vote for post %d.",
+                            post.getId()), e);
+            throw new DataSourceException(e);
         } catch (final SystemException e) {
-            // TODO error handling
-            e.printStackTrace();
-        }
-        return vote;
-    }
-
-    @Override
-    public void upvote(final Post post) {
-        try {
-            ratePost(post, 1);
-        } catch (final PortalException e) {
-            // TODO error handling
-            e.printStackTrace();
-        } catch (final SystemException e) {
-            // TODO error handling
-            e.printStackTrace();
+            log.error(
+                    String.format("Couldn't get post vote for post %d.",
+                            post.getId()), e);
+            throw new DataSourceException(e);
         }
     }
 
     @Override
-    public void downvote(final Post post) {
-        try {
-            ratePost(post, -1);
-        } catch (final PortalException e) {
-            // TODO error handling
-            e.printStackTrace();
-        } catch (final SystemException e) {
-            // TODO error handling
-            e.printStackTrace();
-        }
+    public void upvote(final Post post) throws DataSourceException {
+        ratePost(post, 1);
+    }
+
+    @Override
+    public void downvote(final Post post) throws DataSourceException {
+        ratePost(post, -1);
     }
 
     private void ratePost(final Post post, final int score)
-            throws PortalException, SystemException {
+            throws DataSourceException {
         ToriUtil.checkForNull(post, "Post must not be null.");
-        RatingsEntryServiceUtil.updateEntry(MBMessage.class.getName(),
-                post.getId(), score);
+        try {
+            RatingsEntryServiceUtil.updateEntry(MBMessage.class.getName(),
+                    post.getId(), score);
+        } catch (final PortalException e) {
+            log.error(String.format("Couldn't rate post %d.", post.getId()), e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error(
+                    String.format("Couldn't get post vote for post %d.",
+                            post.getId()), e);
+            throw new DataSourceException(e);
+        }
     }
 
     @Override
-    public void removeUserVote(final Post post) {
+    public void removeUserVote(final Post post) throws DataSourceException {
         try {
             RatingsEntryServiceUtil.deleteEntry(MBMessage.class.getName(),
                     post.getId());
         } catch (final PortalException e) {
-            // TODO error handling
-            e.printStackTrace();
+            log.error(String.format("Couldn't remove user vote for post %d.",
+                    post.getId()), e);
+            throw new DataSourceException(e);
         } catch (final SystemException e) {
-            // TODO error handling
-            e.printStackTrace();
+            log.error(String.format("Couldn't remove user vote for post %d.",
+                    post.getId()), e);
+            throw new DataSourceException(e);
         }
     }
 
     @Override
-    public long getScore(final Post post) {
+    public long getScore(final Post post) throws DataSourceException {
         try {
             final RatingsStats ratingsStats = RatingsStatsLocalServiceUtil
                     .getStats(MBMessage.class.getName(), post.getId());
             return (long) (ratingsStats.getAverageScore() * ratingsStats
                     .getTotalEntries());
         } catch (final SystemException e) {
-            // TODO error handling
-            e.printStackTrace();
-            return 0;
+            log.error(
+                    String.format("Couldn't get score for post %d.",
+                            post.getId()), e);
+            throw new DataSourceException(e);
         }
     }
 
     @Override
-    public void saveAsCurrentUser(final Post post) {
-        try {
-            internalSaveAsCurrentUser(post, getRootMessageId(post.getThread()));
-        } catch (final PortalException e) {
-            // TODO error handling
-            e.printStackTrace();
-        } catch (final SystemException e) {
-            // TODO error handling
-            e.printStackTrace();
-        }
+    public void saveAsCurrentUser(final Post post) throws DataSourceException {
+
+        internalSaveAsCurrentUser(post, getRootMessageId(post.getThread()));
+
     }
 
     private MBMessage internalSaveAsCurrentUser(final Post post,
-            final long parentMessageId) {
+            final long parentMessageId) throws DataSourceException {
         final DiscussionThread thread = post.getThread();
         final long groupId = scopeGroupId;
         final long categoryId = thread.getCategory().getId();
@@ -434,13 +457,12 @@ public class LiferayDataSource implements DataSource {
                     threadId, parentMessageId, subject, body, files, anonymous,
                     priority, allowPingbacks, mbMessageServiceContext);
         } catch (final PortalException e) {
-            // TODO error handling
-            e.printStackTrace();
+            log.error("Couldn't save post.", e);
+            throw new DataSourceException(e);
         } catch (final SystemException e) {
-            // TODO error handling
-            e.printStackTrace();
+            log.error("Couldn't save post.", e);
+            throw new DataSourceException(e);
         }
-        return null;
     }
 
     @Override
@@ -515,13 +537,10 @@ public class LiferayDataSource implements DataSource {
 
     @Override
     public DiscussionThread saveNewThread(final DiscussionThread newThread,
-            final Post firstPost) {
+            final Post firstPost) throws DataSourceException {
         final MBMessage savedRootMessage = internalSaveAsCurrentUser(firstPost,
                 MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID);
-        if (savedRootMessage != null) {
-            return getThread(savedRootMessage.getThreadId());
-        }
-        // TODO should throw an exception instead of returning null
-        return null;
+        return getThread(savedRootMessage.getThreadId());
     }
+
 }

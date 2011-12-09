@@ -7,12 +7,11 @@ import org.vaadin.tori.data.LiferayDataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.LiferayAuthorizationConstants.CategoryAction;
 import org.vaadin.tori.service.LiferayAuthorizationConstants.MbAction;
 import org.vaadin.tori.service.LiferayAuthorizationConstants.MessageAction;
 
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.security.permission.PermissionThreadLocal;
 import com.liferay.portal.theme.ThemeDisplay;
@@ -72,12 +71,8 @@ public class LiferayAuthorizationService implements AuthorizationService {
         try {
             return hasMessagePermission(MessageAction.SUBSCRIBE,
                     LiferayDataSource.getRootMessageId(thread));
-        } catch (final PortalException e) {
-            // TODO error handling
-            e.printStackTrace();
-        } catch (final SystemException e) {
-            // TODO error handling
-            e.printStackTrace();
+        } catch (final DataSourceException e) {
+            log.error(e.getMessage(), e);
         }
         return false;
     }
@@ -115,12 +110,8 @@ public class LiferayAuthorizationService implements AuthorizationService {
         try {
             return hasMessagePermission(MessageAction.DELETE,
                     LiferayDataSource.getRootMessageId(thread));
-        } catch (final PortalException e) {
-            // TODO error handling
-            e.printStackTrace();
-        } catch (final SystemException e) {
-            // TODO error handling
-            e.printStackTrace();
+        } catch (final DataSourceException e) {
+            log.error(e.getMessage(), e);
         }
         return false;
     }
