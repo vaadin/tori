@@ -3,6 +3,7 @@ package org.vaadin.tori.data.spi;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
+import org.vaadin.tori.util.SignatureFormatter;
 
 /**
  * This interface needs to be implemented for the datasource project included in
@@ -32,5 +33,10 @@ public interface ServiceProvider {
      * Returns a new {@link AuthorizationService} instance.
      */
     AuthorizationService createAuthorizationService();
+
+    /**
+     * Returns a new {@link SignatureFormatter} instance.
+     */
+    SignatureFormatter createSignatureFormatter();
 
 }
