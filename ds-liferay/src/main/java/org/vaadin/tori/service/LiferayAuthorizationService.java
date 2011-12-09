@@ -3,14 +3,16 @@ package org.vaadin.tori.service;
 import javax.portlet.PortletRequest;
 
 import org.apache.log4j.Logger;
+import org.vaadin.tori.data.LiferayDataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
-import org.vaadin.tori.data.entity.DiscussionThreadWrapper;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.service.LiferayAuthorizationConstants.CategoryAction;
 import org.vaadin.tori.service.LiferayAuthorizationConstants.MbAction;
 import org.vaadin.tori.service.LiferayAuthorizationConstants.MessageAction;
 
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.security.permission.PermissionThreadLocal;
 import com.liferay.portal.theme.ThemeDisplay;
@@ -66,11 +68,16 @@ public class LiferayAuthorizationService implements AuthorizationService {
     }
 
     @Override
-    public boolean mayFollow(final DiscussionThread currentThread) {
-        if (currentThread instanceof DiscussionThreadWrapper) {
+    public boolean mayFollow(final DiscussionThread thread) {
+        try {
             return hasMessagePermission(MessageAction.SUBSCRIBE,
-                    ((DiscussionThreadWrapper) currentThread)
-                            .getRootMessageId());
+                    LiferayDataSource.getRootMessageId(thread));
+        } catch (final PortalException e) {
+            // TODO error handling
+            e.printStackTrace();
+        } catch (final SystemException e) {
+            // TODO error handling
+            e.printStackTrace();
         }
         return false;
     }
@@ -105,9 +112,15 @@ public class LiferayAuthorizationService implements AuthorizationService {
 
     @Override
     public boolean mayDelete(final DiscussionThread thread) {
-        if (thread instanceof DiscussionThreadWrapper) {
+        try {
             return hasMessagePermission(MessageAction.DELETE,
-                    ((DiscussionThreadWrapper) thread).getRootMessageId());
+                    LiferayDataSource.getRootMessageId(thread));
+        } catch (final PortalException e) {
+            // TODO error handling
+            e.printStackTrace();
+        } catch (final SystemException e) {
+            // TODO error handling
+            e.printStackTrace();
         }
         return false;
     }

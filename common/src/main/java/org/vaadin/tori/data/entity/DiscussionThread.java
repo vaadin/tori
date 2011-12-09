@@ -21,6 +21,9 @@ public class DiscussionThread extends AbstractEntity {
     @JoinColumn(nullable = false)
     private List<Post> posts;
 
+    @Transient
+    private int postCount = -1;
+
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Category category;
@@ -57,11 +60,19 @@ public class DiscussionThread extends AbstractEntity {
 
     @Transient
     public int getPostCount() {
+        if (postCount >= 0) {
+            return postCount;
+        }
+
         if (posts != null) {
             return posts.size();
         } else {
             return 0;
         }
+    }
+
+    public void setPostCount(final int postCount) {
+        this.postCount = postCount;
     }
 
     public void setPosts(final List<Post> posts) {

@@ -9,14 +9,11 @@ import javax.portlet.PortletRequest;
 import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.data.entity.Category;
-import org.vaadin.tori.data.entity.CategoryWrapper;
 import org.vaadin.tori.data.entity.DiscussionThread;
-import org.vaadin.tori.data.entity.DiscussionThreadWrapper;
+import org.vaadin.tori.data.entity.EntityFactoryUtil;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
-import org.vaadin.tori.data.entity.PostWrapper;
 import org.vaadin.tori.data.entity.User;
-import org.vaadin.tori.data.entity.UserWrapper;
 import org.vaadin.tori.service.post.PostReport;
 
 import com.liferay.portal.kernel.exception.PortalException;
@@ -37,7 +34,6 @@ import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
 import com.liferay.portlet.ratings.NoSuchEntryException;
-import com.liferay.portlet.ratings.model.RatingsEntry;
 import com.liferay.portlet.ratings.model.RatingsStats;
 import com.liferay.portlet.ratings.service.RatingsEntryLocalServiceUtil;
 import com.liferay.portlet.ratings.service.RatingsEntryServiceUtil;
@@ -68,20 +64,28 @@ public class LiferayDataSource implements DataSource {
         return internalGetSubCategories(category);
     }
 
+    public static long getRootMessageId(final DiscussionThread thread)
+            throws PortalException, SystemException {
+        final long threadId = thread.getId();
+        final MBThread liferayThread = MBThreadLocalServiceUtil
+                .getMBThread(threadId);
+        return liferayThread.getRootMessageId();
+    }
+
     @NonNull
     private List<Category> internalGetSubCategories(final Category category) {
         final long parentCategoryId = (category != null ? category.getId()
                 : ROOT_CATEGORY_ID);
 
         try {
-            final List<MBCategory> rootCategories = MBCategoryLocalServiceUtil
+            final List<MBCategory> categories = MBCategoryLocalServiceUtil
                     .getCategories(scopeGroupId, parentCategoryId, QUERY_ALL,
                             QUERY_ALL);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Found %d categories.",
-                        rootCategories.size()));
+                        categories.size()));
             }
-            return CategoryWrapper.wrap(rootCategories);
+            return EntityFactoryUtil.createCategories(categories);
         } catch (final SystemException e) {
             // TODO error handling
             e.printStackTrace();
@@ -94,16 +98,16 @@ public class LiferayDataSource implements DataSource {
         ToriUtil.checkForNull(category, "Category must not be null.");
 
         try {
-            final List<MBThread> liferayThreads = getLiferayThreads(category
+            final List<MBThread> liferayThreads = getLiferayThreadsForCategory(category
                     .getId());
 
             // collection for the final result
             final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
                     liferayThreads.size());
             for (final MBThread liferayThread : liferayThreads) {
-                final DiscussionThread wrappedThread = wrapLiferayThread(
+                final DiscussionThread thread = wrapLiferayThread(
                         liferayThread, category);
-                result.add(wrappedThread);
+                result.add(thread);
             }
             return result;
         } catch (final SystemException e) {
@@ -123,20 +127,25 @@ public class LiferayDataSource implements DataSource {
         final MBMessage rootMessage = MBMessageLocalServiceUtil
                 .getMessage(liferayThread.getRootMessageId());
         // get the author of the root message
-        final User author = UserWrapper.wrap(
-                UserLocalServiceUtil.getUser(rootMessage.getUserId()),
-                imagePath);
+        final com.liferay.portal.model.User liferayThreadAuthor = UserLocalServiceUtil
+                .getUser(rootMessage.getUserId());
+        final User threadAuthor = EntityFactoryUtil.createUser(
+                liferayThreadAuthor, imagePath, liferayThreadAuthor.isFemale());
         // get the author of the last post
-        final User lastPostAuthor = UserWrapper.wrap(UserLocalServiceUtil
-                .getUser(liferayThread.getLastPostByUserId()), imagePath);
+        final com.liferay.portal.model.User lastPostAuthorLiferay = UserLocalServiceUtil
+                .getUser(liferayThread.getLastPostByUserId());
+        final User lastPostAuthor = EntityFactoryUtil.createUser(
+                lastPostAuthorLiferay, imagePath,
+                lastPostAuthorLiferay.isFemale());
 
-        final DiscussionThread wrappedThread = DiscussionThreadWrapper.wrap(
-                liferayThread, rootMessage, author, lastPostAuthor);
-        wrappedThread.setCategory(category);
-        return wrappedThread;
+        final DiscussionThread thread = EntityFactoryUtil
+                .createDiscussionThread(liferayThread, rootMessage,
+                        threadAuthor, lastPostAuthor);
+        thread.setCategory(category);
+        return thread;
     }
 
-    private List<MBThread> getLiferayThreads(final long categoryId)
+    private List<MBThread> getLiferayThreadsForCategory(final long categoryId)
             throws SystemException {
         final int start = 0; // use QUERY_ALL if you'd like to get all
         final int end = 20; // use QUERY_ALL if you'd like to get all
@@ -154,7 +163,7 @@ public class LiferayDataSource implements DataSource {
     @Override
     public Category getCategory(final long categoryId) {
         try {
-            return CategoryWrapper.wrap(MBCategoryLocalServiceUtil
+            return EntityFactoryUtil.createCategory(MBCategoryLocalServiceUtil
                     .getCategory(categoryId));
         } catch (final PortalException e) {
             // TODO error handling
@@ -186,10 +195,10 @@ public class LiferayDataSource implements DataSource {
         try {
             final MBThread thread = MBThreadLocalServiceUtil
                     .getMBThread(threadId);
-            final Category wrappedCategory = CategoryWrapper
-                    .wrap(MBCategoryLocalServiceUtil.getCategory(thread
-                            .getCategoryId()));
-            return wrapLiferayThread(thread, wrappedCategory);
+            final Category category = EntityFactoryUtil
+                    .createCategory(MBCategoryLocalServiceUtil
+                            .getCategory(thread.getCategoryId()));
+            return wrapLiferayThread(thread, category);
         } catch (final PortalException e) {
             // TODO error handling
             e.printStackTrace();
@@ -204,21 +213,21 @@ public class LiferayDataSource implements DataSource {
     public List<Post> getPosts(final DiscussionThread thread) {
         ToriUtil.checkForNull(thread, "DiscussionThread must not be null.");
         try {
-            final List<MBMessage> messages = getLiferayPosts(thread.getId());
+            final List<MBMessage> messages = getLiferayPostsForThread(thread
+                    .getId());
 
             final List<Post> result = new ArrayList<Post>(messages.size());
             for (final MBMessage message : messages) {
-                final Post wrappedPost = PostWrapper.wrap(message);
-                wrappedPost.setThread(thread);
+                final Post post = EntityFactoryUtil.createPost(message);
+                post.setThread(thread);
 
                 // get also the author
-                User wrappedUser;
-                wrappedUser = org.vaadin.tori.data.entity.UserWrapper.wrap(
-                        UserLocalServiceUtil.getUser(message.getUserId()),
-                        imagePath);
-                wrappedPost.setAuthor(wrappedUser);
-                wrappedPost.setThread(thread);
-                result.add(wrappedPost);
+                final com.liferay.portal.model.User liferayUser = UserLocalServiceUtil
+                        .getUser(message.getUserId());
+                final User author = EntityFactoryUtil.createUser(liferayUser,
+                        imagePath, liferayUser.isFemale());
+                post.setAuthor(author);
+                result.add(post);
             }
             return result;
         } catch (final SystemException e) {
@@ -232,7 +241,7 @@ public class LiferayDataSource implements DataSource {
         }
     }
 
-    private List<MBMessage> getLiferayPosts(final long threadId)
+    private List<MBMessage> getLiferayPostsForThread(final long threadId)
             throws SystemException {
         final List<MBMessage> liferayPosts = MBMessageLocalServiceUtil
                 .getThreadMessages(threadId, WorkflowConstants.STATUS_APPROVED);
@@ -311,10 +320,11 @@ public class LiferayDataSource implements DataSource {
     @Override
     public PostVote getPostVote(final Post post) {
         final PostVote vote = new PostVote();
-        RatingsEntry entry = null;
         try {
-            entry = RatingsEntryLocalServiceUtil.getEntry(currentUserId,
-                    MBMessage.class.getName(), post.getId());
+            return EntityFactoryUtil
+                    .createPostVote(RatingsEntryLocalServiceUtil.getEntry(
+                            currentUserId, MBMessage.class.getName(),
+                            post.getId()));
         } catch (final NoSuchEntryException e) {
             return vote;
         } catch (final PortalException e) {
@@ -323,14 +333,6 @@ public class LiferayDataSource implements DataSource {
         } catch (final SystemException e) {
             // TODO error handling
             e.printStackTrace();
-        }
-
-        if (entry != null) {
-            if (entry.getScore() > 0) {
-                vote.setUpvote();
-            } else {
-                vote.setDownvote();
-            }
         }
         return vote;
     }
@@ -398,9 +400,15 @@ public class LiferayDataSource implements DataSource {
 
     @Override
     public void saveAsCurrentUser(final Post post) {
-        final DiscussionThreadWrapper thread = (DiscussionThreadWrapper) post
-                .getThread();
-        internalSaveAsCurrentUser(post, thread.getRootMessageId());
+        try {
+            internalSaveAsCurrentUser(post, getRootMessageId(post.getThread()));
+        } catch (final PortalException e) {
+            // TODO error handling
+            e.printStackTrace();
+        } catch (final SystemException e) {
+            // TODO error handling
+            e.printStackTrace();
+        }
     }
 
     private MBMessage internalSaveAsCurrentUser(final Post post,
