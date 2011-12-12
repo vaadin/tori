@@ -5,6 +5,7 @@ import java.util.List;
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
+import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.component.category.CategoryListing;
 import org.vaadin.tori.component.category.CategoryListing.Mode;
 import org.vaadin.tori.data.entity.Category;
@@ -50,6 +51,12 @@ public class DashboardViewImpl extends
     @Override
     protected void navigationTo(final String[] arguments) {
         // NOP
+    }
+
+    @Override
+    public void panic() {
+        layout.removeAllComponents();
+        layout.addComponent(new PanicComponent());
     }
 
 }
