@@ -3,16 +3,12 @@ package org.vaadin.tori.data.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.ratings.model.RatingsEntry;
 
 public class EntityFactoryUtil {
-
-    private static final Logger log = Logger.getLogger(EntityFactoryUtil.class);
 
     public static Category createCategory(final MBCategory liferayCategory) {
         final Category entity = new Category();
