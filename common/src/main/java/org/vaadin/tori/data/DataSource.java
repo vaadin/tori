@@ -223,7 +223,7 @@ public interface DataSource {
      * @param request
      *            {@code PortletRequest} or {@code HttpServletRequest}
      */
-    void setRequest(@NonNull Object request) throws DataSourceException;
+    void setRequest(@NonNull Object request);
 
     /**
      * This method is responsible for making sure that a new thread is created,
