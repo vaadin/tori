@@ -9,6 +9,7 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
+import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.post.PostReport;
@@ -30,23 +31,29 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         super(dataSource, authorizationService);
     }
 
-    public void setCurrentThreadById(final @NonNull String threadIdString) {
-        DiscussionThread requestedThread = null;
+    public void setCurrentThreadById(final @NonNull String threadIdString)
+            throws DataSourceException {
         try {
-            final long threadId = Long.valueOf(threadIdString);
-            requestedThread = dataSource.getThread(threadId);
-        } catch (final NumberFormatException e) {
-            log.error("Invalid thread id format: " + threadIdString);
-        }
+            DiscussionThread requestedThread = null;
+            try {
+                final long threadId = Long.valueOf(threadIdString);
+                requestedThread = dataSource.getThread(threadId);
+            } catch (final NumberFormatException e) {
+                log.error("Invalid thread id format: " + threadIdString);
+            }
 
-        if (requestedThread != null) {
-            currentThread = requestedThread;
+            if (requestedThread != null) {
+                currentThread = requestedThread;
 
-            final ThreadView view = getView();
-            view.displayPosts(dataSource.getPosts(requestedThread),
-                    requestedThread);
-        } else {
-            getView().displayThreadNotFoundError(threadIdString);
+                final ThreadView view = getView();
+                view.displayPosts(dataSource.getPosts(requestedThread),
+                        requestedThread);
+            } else {
+                getView().displayThreadNotFoundError(threadIdString);
+            }
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
         }
     }
 
@@ -58,9 +65,16 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         return currentThread;
     }
 
-    public void handlePostReport(final @NonNull PostReport report) {
-        dataSource.reportPost(report);
-        getView().confirmPostReported();
+    public void handlePostReport(final @NonNull PostReport report)
+            throws DataSourceException {
+        try {
+            dataSource.reportPost(report);
+            getView().confirmPostReported();
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
     public boolean userMayReportPosts() {
@@ -75,38 +89,82 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         return authorizationService.mayReplyIn(currentThread);
     }
 
-    public void ban(final @NonNull User user) {
-        dataSource.ban(user);
-        getView().confirmBanned();
+    public void ban(final @NonNull User user) throws DataSourceException {
+        try {
+            dataSource.ban(user);
+            getView().confirmBanned();
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
     public boolean userMayBan() {
         return authorizationService.mayBan();
     }
 
-    public void followThread() {
-        dataSource.follow(currentThread);
-        getView().confirmFollowingThread();
+    public void followThread() throws DataSourceException {
+        try {
+            dataSource.follow(currentThread);
+            getView().confirmFollowingThread();
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
-    public void unFollowThread() {
-        dataSource.unFollow(currentThread);
-        getView().confirmUnFollowingThread();
+    public void unFollowThread() throws DataSourceException {
+        try {
+            dataSource.unFollow(currentThread);
+            getView().confirmUnFollowingThread();
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
-    public boolean userCanFollowThread() {
-        return authorizationService.mayFollow(currentThread)
-                && !dataSource.isFollowing(currentThread);
+    /**
+     * returns <code>true</code> iff the user doesn't currently follow this
+     * thread, and can follow threads.
+     */
+    public boolean userCanFollowThread() throws DataSourceException {
+        try {
+            return authorizationService.mayFollow(currentThread)
+                    && !dataSource.isFollowing(currentThread);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
-    public boolean userCanUnFollowThread() {
-        return authorizationService.mayFollow(currentThread)
-                && dataSource.isFollowing(currentThread);
+    /**
+     * returns <code>true</code> iff the user currently follows this thread, and
+     * can follow threads.
+     */
+    public boolean userCanUnFollowThread() throws DataSourceException {
+        try {
+            return authorizationService.mayFollow(currentThread)
+                    && dataSource.isFollowing(currentThread);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
-    public void delete(final @NonNull Post post) {
-        dataSource.delete(post);
-        getView().confirmPostDeleted();
+    public void delete(final @NonNull Post post) throws DataSourceException {
+        try {
+            dataSource.delete(post);
+            getView().confirmPostDeleted();
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
     public boolean userMayDelete(final @NonNull Post post) {
@@ -117,39 +175,66 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         return authorizationService.mayVote();
     }
 
-    public void upvote(final @NonNull Post post) {
-        if (!getPostVote(post).isUpvote()) {
-            dataSource.upvote(post);
-        } else {
-            dataSource.removeUserVote(post);
+    /**
+     * If the user hasn't upvoted a post, give it an upvote. If that user
+     * already has upvoted the post, remove the vote.
+     */
+    public void upvote(final @NonNull Post post) throws DataSourceException {
+        try {
+            if (!getPostVote(post).isUpvote()) {
+                dataSource.upvote(post);
+            } else {
+                dataSource.removeUserVote(post);
+            }
+            final long newScore = dataSource.getScore(post);
+            getView().refreshScores(post, newScore);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
         }
-        final long newScore = dataSource.getScore(post);
-        getView().refreshScores(post, newScore);
+
     }
 
-    public void downvote(final @NonNull Post post) {
-        if (!getPostVote(post).isDownvote()) {
-            dataSource.downvote(post);
-        } else {
-            dataSource.removeUserVote(post);
+    /**
+     * if the user hasn't downvoted a post, give it a downvote. Otherwise,
+     * remove this user's downvote.
+     */
+    public void downvote(final @NonNull Post post) throws DataSourceException {
+        try {
+            if (!getPostVote(post).isDownvote()) {
+                dataSource.downvote(post);
+            } else {
+                dataSource.removeUserVote(post);
+            }
+            final long newScore = dataSource.getScore(post);
+            getView().refreshScores(post, newScore);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
         }
-        final long newScore = dataSource.getScore(post);
-        getView().refreshScores(post, newScore);
-    }
 
-    public void unvote(final @NonNull Post post) {
-        dataSource.removeUserVote(post);
-        final long newScore = dataSource.getScore(post);
-        getView().refreshScores(post, newScore);
     }
 
     @NonNull
-    public PostVote getPostVote(final @NonNull Post post) {
-        return dataSource.getPostVote(post);
+    public PostVote getPostVote(final @NonNull Post post)
+            throws DataSourceException {
+        try {
+            return dataSource.getPostVote(post);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
-    public long getScore(final @NonNull Post post) {
-        return dataSource.getScore(post);
+    public long getScore(final @NonNull Post post) throws DataSourceException {
+        try {
+            return dataSource.getScore(post);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
     public boolean userMayReply() {
@@ -162,16 +247,22 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                 .getFormattingSyntaxXhtml();
     }
 
-    public void sendReply(final @NonNull String rawBody) {
-
+    public void sendReply(final @NonNull String rawBody)
+            throws DataSourceException {
         if (userMayReply()) {
-            final Post post = new Post();
-            post.setAuthor(null);
-            post.setBodyRaw(rawBody);
-            post.setThread(currentThread);
-            post.setTime(new Date());
-            dataSource.saveAsCurrentUser(post);
-            getView().confirmReplyPosted();
+            try {
+                final Post post = new Post();
+                post.setAuthor(null);
+                post.setBodyRaw(rawBody);
+                post.setThread(currentThread);
+                post.setTime(new Date());
+                dataSource.saveAsCurrentUser(post);
+                getView().confirmReplyPosted();
+            } catch (final DataSourceException e) {
+                log.error(e);
+                throw e;
+            }
+
         } else {
             getView().displayUserCanNotReply();
         }
@@ -179,30 +270,38 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     }
 
     /**
+     * @throws DataSourceException
      * @throws IllegalStateException
      *             if {@link #currentThread} is <code>null</code>.
      */
-    public void resetView() {
-        /*
-         * findbugs doesn't understand the nullcheck for field references, so
-         * making it a local field instead. Probably because of possible
-         * multithread stuff.
-         */
-        final DiscussionThread thread = currentThread;
+    public void resetView() throws DataSourceException {
+        try {
+            /*
+             * findbugs doesn't understand the nullcheck for field references,
+             * so making it a local field instead. Probably because of possible
+             * multithread stuff.
+             */
+            final DiscussionThread thread = currentThread;
 
-        if (thread != null) {
-            getView().displayPosts(dataSource.getPosts(thread), thread);
-        } else {
-            throw new IllegalStateException(
-                    "This method may not be called while currentThread is null");
+            if (thread != null) {
+                getView().displayPosts(dataSource.getPosts(thread), thread);
+            } else {
+                throw new IllegalStateException(
+                        "This method may not be called while currentThread is null");
+            }
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
         }
+
     }
 
     public String stripTags(final @NonNull String html) {
         return html.replaceAll("\\<.*?>", "");
     }
 
-    public void handleArguments(final @NonNull String[] arguments) {
+    public void handleArguments(final @NonNull String[] arguments)
+            throws DataSourceException {
         if (arguments.length > 0) {
             if (!arguments[0].equals(NEW_THREAD_ARGUMENT)) {
                 setCurrentThreadById(arguments[0]);
@@ -218,12 +317,16 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             log.info("Tried to visit a thread without arguments");
         }
 
-        // if some error occurred that really shouldn't have, just redirect back
-        // to dashboard.
+        /*
+         * if some error occurred that really shouldn't have, just redirect back
+         * to dashboard.
+         */
         getView().redirectToDashboard();
+
     }
 
-    private boolean categoryExists(final @NonNull String string) {
+    private boolean categoryExists(final @NonNull String string)
+            throws DataSourceException {
         try {
             final long categoryId = Long.parseLong(string);
             return dataSource.getCategory(categoryId) != null;
@@ -232,20 +335,27 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         }
     }
 
-    public @NonNull
-    DiscussionThread createNewThread(final @NonNull Category category,
-            final @NonNull String topic, final @NonNull String rawBody) {
-        final DiscussionThread thread = new DiscussionThread(topic);
-        thread.setCategory(category);
+    @NonNull
+    public DiscussionThread createNewThread(final @NonNull Category category,
+            final @NonNull String topic, final @NonNull String rawBody)
+            throws DataSourceException {
+        try {
+            final DiscussionThread thread = new DiscussionThread(topic);
+            thread.setCategory(category);
 
-        final Post post = new Post();
-        post.setBodyRaw(rawBody);
-        post.setTime(new Date());
+            final Post post = new Post();
+            post.setBodyRaw(rawBody);
+            post.setTime(new Date());
 
-        thread.setPosts(Lists.newArrayList(post));
-        post.setThread(thread);
+            thread.setPosts(Lists.newArrayList(post));
+            post.setThread(thread);
 
-        return dataSource.saveNewThread(thread, post);
+            return dataSource.saveNewThread(thread, post);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
     @CheckForNull

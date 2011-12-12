@@ -53,4 +53,7 @@ public interface ThreadView extends View {
     /** May return <code>null</code>, e.g. when the user visited an invalid URL */
     @CheckForNull
     Category getCurrentCategory();
+
+    /** For those occasions when a regular error message simply doesn't suffice. */
+    void panic();
 }
