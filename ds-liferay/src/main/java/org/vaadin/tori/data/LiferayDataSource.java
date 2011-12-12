@@ -581,7 +581,15 @@ public class LiferayDataSource implements DataSource {
             final Post firstPost) throws DataSourceException {
         final MBMessage savedRootMessage = internalSaveAsCurrentUser(firstPost,
                 MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID);
-        return getThread(savedRootMessage.getThreadId());
+        if (savedRootMessage != null) {
+            final DiscussionThread savedThread = getThread(savedRootMessage
+                    .getThreadId());
+            if (savedThread != null) {
+                return savedThread;
+            }
+        }
+        // if we get this far, saving has failed -> throw exception
+        throw new DataSourceException();
     }
 
 }
