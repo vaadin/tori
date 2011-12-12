@@ -1,12 +1,14 @@
 package org.vaadin.tori.component;
 
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
+import org.vaadin.tori.exception.DataSourceException;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.VerticalLayout;
 
@@ -35,7 +37,13 @@ public class ConfirmationDialog extends CustomComponent {
                 new ClickListener() {
                     @Override
                     public void buttonClick(final ClickEvent event) {
-                        listener.onConfirmed();
+                        try {
+                            listener.onConfirmed();
+                        } catch (final DataSourceException e) {
+                            layout.removeAllComponents();
+                            layout.addComponent(new Label(
+                                    DataSourceException.BORING_GENERIC_ERROR_MESSAGE));
+                        }
                     }
                 });
         buttonBar.addComponent(ban);
@@ -51,7 +59,7 @@ public class ConfirmationDialog extends CustomComponent {
     }
 
     public interface ConfirmationListener {
-        void onConfirmed();
+        void onConfirmed() throws DataSourceException;
 
         void onCancel();
     }

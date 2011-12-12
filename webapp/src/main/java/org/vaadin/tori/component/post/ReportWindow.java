@@ -1,6 +1,7 @@
 package org.vaadin.tori.component.post;
 
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.post.PostReport;
 import org.vaadin.tori.service.post.PostReport.Reason;
 import org.vaadin.tori.thread.ThreadPresenter;
@@ -93,8 +94,16 @@ class ReportWindow extends Window {
             public void buttonClick(final ClickEvent event) {
                 final PostReport report = new PostReport(post, (Reason) reason
                         .getValue(), (String) reasonText.getValue());
-                presenter.handlePostReport(report);
-                ReportWindow.this.close();
+
+                try {
+                    presenter.handlePostReport(report);
+                    ReportWindow.this.close();
+                } catch (final DataSourceException e) {
+                    layout.removeAllComponents();
+                    layout.addComponent(new Label(
+                            DataSourceException.BORING_GENERIC_ERROR_MESSAGE));
+                    ReportWindow.this.setClosable(true);
+                }
             }
         });
         reportButton.setEnabled(false);

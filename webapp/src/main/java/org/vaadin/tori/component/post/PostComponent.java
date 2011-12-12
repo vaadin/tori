@@ -10,6 +10,7 @@ import org.vaadin.tori.component.ContextMenu.ContextAction;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
+import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.thread.ThreadPresenter;
 
 import com.ocpsoft.pretty.time.PrettyTime;
@@ -52,7 +53,7 @@ public class PostComponent extends CustomComponent {
             final ConfirmationListener listener = new ConfirmationListener() {
 
                 @Override
-                public void onConfirmed() {
+                public void onConfirmed() throws DataSourceException {
                     presenter.ban(user);
                     menu.close();
                 }
@@ -75,7 +76,7 @@ public class PostComponent extends CustomComponent {
             final ConfirmationListener listener = new ConfirmationListener() {
 
                 @Override
-                public void onConfirmed() {
+                public void onConfirmed() throws DataSourceException {
                     presenter.delete(post);
                     menu.close();
                 }
@@ -121,14 +122,25 @@ public class PostComponent extends CustomComponent {
     private final ContextAction followAction = new ContextMenu.ContextAction() {
         @Override
         public void contextClicked() {
-            presenter.followThread();
+            try {
+                presenter.followThread();
+            } catch (final DataSourceException e) {
+                getApplication().getMainWindow().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            }
         }
     };
 
     private final ContextAction unfollowAction = new ContextMenu.ContextAction() {
         @Override
         public void contextClicked() {
-            presenter.unFollowThread();
+            try {
+                presenter.unFollowThread();
+            } catch (final DataSourceException e) {
+                getApplication().getMainWindow().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            }
+
         }
     };
 
@@ -168,7 +180,12 @@ public class PostComponent extends CustomComponent {
 
         contextMenu = new ContextMenu();
         score = new PostScoreComponent(post, presenter);
-        score.setScore(presenter.getScore(post));
+        try {
+            score.setScore(presenter.getScore(post));
+        } catch (final DataSourceException e) {
+            // NOP - logged, just showing a score of OVER 9000!!!!
+            score.setScore(9001);
+        }
 
         scrollToButton = new Button("Scroll to Post");
         scrollToButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -328,8 +345,13 @@ public class PostComponent extends CustomComponent {
     public void refreshScores(final long newScore) {
         score.setScore(newScore);
 
-        // just to refresh the up/down icon visuals. bad method name here.
-        score.enableUpDownVoting(presenter.getPostVote(post));
+        try {
+            // just to refresh the up/down icon visuals. bad method name here.
+            score.enableUpDownVoting(presenter.getPostVote(post));
+        } catch (final DataSourceException e) {
+            getApplication().getMainWindow().showNotification(
+                    DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+        }
     }
 
     public void swapFollowingMenu() {
