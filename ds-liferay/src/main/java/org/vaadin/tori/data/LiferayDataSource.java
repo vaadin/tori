@@ -7,6 +7,7 @@ import java.util.List;
 import javax.portlet.PortletRequest;
 
 import org.apache.log4j.Logger;
+import org.vaadin.tori.PortletRequestAware;
 import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -44,7 +45,7 @@ import com.liferay.portlet.ratings.service.RatingsStatsLocalServiceUtil;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
-public class LiferayDataSource implements DataSource {
+public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     private static final Logger log = Logger.getLogger(LiferayDataSource.class);
 
@@ -546,16 +547,10 @@ public class LiferayDataSource implements DataSource {
     }
 
     @Override
-    public void setRequest(final Object request) {
-        if (!(request instanceof PortletRequest)) {
-            log.warn("Given request was not an instance of PortletRequest.");
-            return;
-        }
-
-        final PortletRequest portletRequest = (PortletRequest) request;
+    public void setRequest(final PortletRequest request) {
         if (scopeGroupId < 0) {
             // scope not defined yet -> get if from the request
-            final ThemeDisplay themeDisplay = (ThemeDisplay) portletRequest
+            final ThemeDisplay themeDisplay = (ThemeDisplay) request
                     .getAttribute("THEME_DISPLAY");
 
             if (themeDisplay != null) {
@@ -568,7 +563,7 @@ public class LiferayDataSource implements DataSource {
 
         try {
             mbMessageServiceContext = ServiceContextFactory.getInstance(
-                    MBMessage.class.getName(), portletRequest);
+                    MBMessage.class.getName(), request);
         } catch (final PortalException e) {
             log.error("Couldn't create ServiceContext.", e);
         } catch (final SystemException e) {

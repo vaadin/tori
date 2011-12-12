@@ -618,11 +618,6 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void setRequest(final Object request) {
-        // NOP - this data source is not interested in the request
-    }
-
-    @Override
     public DiscussionThread saveNewThread(final DiscussionThread newThread,
             final Post firstPost) {
         return executeWithEntityManager(new Command<DiscussionThread>() {

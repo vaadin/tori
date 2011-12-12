@@ -3,6 +3,7 @@ package org.vaadin.tori.service;
 import javax.portlet.PortletRequest;
 
 import org.apache.log4j.Logger;
+import org.vaadin.tori.PortletRequestAware;
 import org.vaadin.tori.data.LiferayDataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -16,7 +17,8 @@ import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.security.permission.PermissionThreadLocal;
 import com.liferay.portal.theme.ThemeDisplay;
 
-public class LiferayAuthorizationService implements AuthorizationService {
+public class LiferayAuthorizationService implements AuthorizationService,
+        PortletRequestAware {
 
     private static final Logger log = Logger
             .getLogger(LiferayAuthorizationService.class);
@@ -167,17 +169,11 @@ public class LiferayAuthorizationService implements AuthorizationService {
     }
 
     @Override
-    public void setRequest(final Object request) {
-        if (!(request instanceof PortletRequest)) {
-            log.warn("Given request was not an instance of PortletRequest.");
-            return;
-        }
-
-        final PortletRequest portletRequest = (PortletRequest) request;
-        setCurrentUser(portletRequest.getRemoteUser());
+    public void setRequest(final PortletRequest request) {
+        setCurrentUser(request.getRemoteUser());
         if (scopeGroupId < 0) {
             // scope not defined yet -> get if from the request
-            final ThemeDisplay themeDisplay = (ThemeDisplay) portletRequest
+            final ThemeDisplay themeDisplay = (ThemeDisplay) request
                     .getAttribute("THEME_DISPLAY");
 
             if (themeDisplay != null) {
@@ -186,4 +182,5 @@ public class LiferayAuthorizationService implements AuthorizationService {
             }
         }
     }
+
 }

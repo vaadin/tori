@@ -57,20 +57,32 @@ public class ToriApplication extends Application implements
     }
 
     private void setRequestForDataSource() {
-        if (ds != null) {
-            if (currentHttpServletRequest.get() != null) {
-                ds.setRequest(currentHttpServletRequest.get());
-            } else if (currentPortletRequest.get() != null) {
-                ds.setRequest(currentPortletRequest.get());
-            }
+        if (ds instanceof PortletRequestAware) {
+            setRequest((PortletRequestAware) ds);
+        } else if (ds instanceof HttpServletRequestAware) {
+            setRequest((HttpServletRequestAware) ds);
         }
-        if (authorizationService != null) {
-            if (currentHttpServletRequest.get() != null) {
-                authorizationService
-                        .setRequest(currentHttpServletRequest.get());
-            } else if (currentPortletRequest.get() != null) {
-                authorizationService.setRequest(currentPortletRequest.get());
-            }
+
+        if (authorizationService instanceof PortletRequestAware) {
+            setRequest((PortletRequestAware) authorizationService);
+        } else if (authorizationService instanceof HttpServletRequestAware) {
+            setRequest((HttpServletRequestAware) authorizationService);
+        }
+    }
+
+    private void setRequest(final PortletRequestAware target) {
+        if (currentPortletRequest.get() != null) {
+            target.setRequest(currentPortletRequest.get());
+        } else {
+            log.warn("No PortletRequest set.");
+        }
+    }
+
+    private void setRequest(final HttpServletRequestAware target) {
+        if (currentHttpServletRequest.get() != null) {
+            target.setRequest(currentHttpServletRequest.get());
+        } else {
+            log.warn("No HttpServletRequest set.");
         }
     }
 

@@ -215,17 +215,6 @@ public interface DataSource {
     void delete(@NonNull DiscussionThread thread) throws DataSourceException;
 
     /**
-     * Passes the current request to this DataSource. It can be an instance of
-     * {@code PortletRequest} or {@code HttpServletRequest} depending on the
-     * context. The implementation is free to ignore the request if it doesn't
-     * need any parameters from the request.
-     * 
-     * @param request
-     *            {@code PortletRequest} or {@code HttpServletRequest}
-     */
-    void setRequest(@NonNull Object request) throws DataSourceException;
-
-    /**
      * This method is responsible for making sure that a new thread is created,
      * with a certain first post. It also needs to add "current user" as the
      * author of that post.
