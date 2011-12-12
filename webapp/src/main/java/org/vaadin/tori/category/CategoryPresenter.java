@@ -5,12 +5,22 @@ import java.util.List;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
+import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 public class CategoryPresenter extends Presenter<CategoryView> {
+
+    /** Something went wrong. Display a generic error message. */
+    public static final class CategoryPresenterException extends Exception {
+        private static final long serialVersionUID = 7051635753001642576L;
+
+        public CategoryPresenterException(final Throwable e) {
+            super(e);
+        }
+    }
 
     private Category currentCategory;
 
@@ -20,23 +30,28 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     }
 
     public void setCurrentCategoryById(final String categoryIdString) {
-        Category requestedCategory = null;
         try {
-            final long categoryId = Long.valueOf(categoryIdString);
-            requestedCategory = dataSource.getCategory(categoryId);
-        } catch (final NumberFormatException e) {
-            log.error("Invalid category id format: " + categoryIdString);
-        }
+            Category requestedCategory = null;
+            try {
+                final long categoryId = Long.valueOf(categoryIdString);
+                requestedCategory = dataSource.getCategory(categoryId);
+            } catch (final NumberFormatException e) {
+                log.error("Invalid category id format: " + categoryIdString);
+            }
 
-        if (requestedCategory != null) {
-            currentCategory = requestedCategory;
+            if (requestedCategory != null) {
+                currentCategory = requestedCategory;
 
-            final CategoryView view = getView();
-            view.displaySubCategories(dataSource
-                    .getSubCategories(currentCategory));
-            view.displayThreads(dataSource.getThreads(currentCategory));
-        } else {
-            getView().displayCategoryNotFoundError(categoryIdString);
+                final CategoryView view = getView();
+                view.displaySubCategories(dataSource
+                        .getSubCategories(currentCategory));
+                view.displayThreads(dataSource.getThreads(currentCategory));
+            } else {
+                getView().displayCategoryNotFoundError(categoryIdString);
+            }
+        } catch (final DataSourceException e) {
+            e.printStackTrace();
+            getView().panic();
         }
     }
 
@@ -49,19 +64,36 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         return currentCategory;
     }
 
-    public boolean userCanFollow(final DiscussionThread thread) {
-        return authorizationService.mayFollow(thread)
-                && !dataSource.isFollowing(thread);
+    public boolean userCanFollow(final DiscussionThread thread)
+            throws CategoryPresenterException {
+        try {
+            return authorizationService.mayFollow(thread)
+                    && !dataSource.isFollowing(thread);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw new CategoryPresenterException(e);
+        }
     }
 
-    public boolean userCanUnFollow(final DiscussionThread thread) {
-        return authorizationService.mayFollow(thread)
-                && dataSource.isFollowing(thread);
+    public boolean userCanUnFollow(final DiscussionThread thread)
+            throws CategoryPresenterException {
+        try {
+            return authorizationService.mayFollow(thread)
+                    && dataSource.isFollowing(thread);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw new CategoryPresenterException(e);
+        }
     }
 
-    public void follow(final DiscussionThread thread) {
-        dataSource.follow(thread);
-        getView().confirmFollowing();
+    public void follow(final DiscussionThread thread)
+            throws CategoryPresenterException {
+        try {
+            dataSource.follow(thread);
+            getView().confirmFollowing();
+        } catch (final DataSourceException e) {
+            throw new CategoryPresenterException(e);
+        }
     }
 
     public void unfollow(final DiscussionThread thread) {

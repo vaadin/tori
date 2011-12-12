@@ -6,6 +6,7 @@ import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
+import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.component.category.CategoryListing;
 import org.vaadin.tori.component.category.CategoryListing.Mode;
 import org.vaadin.tori.component.thread.ThreadListing;
@@ -210,5 +211,11 @@ public class CategoryViewImpl extends
     @Override
     public void confirmThreadDeleted() {
         getWindow().showNotification("thread deleted");
+    }
+
+    @Override
+    public void panic() {
+        layout.removeAllComponents();
+        layout.addComponent(new PanicComponent());
     }
 }
