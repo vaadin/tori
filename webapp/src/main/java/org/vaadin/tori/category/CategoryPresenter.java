@@ -55,6 +55,10 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         return currentCategory;
     }
 
+    /**
+     * Returns <code>true</code> iff the current user doesn't follow the thread,
+     * and is allowed to follow a thread.
+     */
     public boolean userCanFollow(final DiscussionThread thread)
             throws DataSourceException {
         try {
@@ -66,6 +70,10 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         }
     }
 
+    /**
+     * Returns <code>true</code> iff the current user follows the thread, and
+     * <em>is allowed to follow a thread</em>.
+     */
     public boolean userCanUnFollow(final DiscussionThread thread)
             throws DataSourceException {
         try {
