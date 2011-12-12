@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
+import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 
@@ -29,35 +30,59 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
                 authorizationService.mayEditCategories());
     }
 
-    long getThreadCount(final Category category) {
-        return dataSource.getThreadCount(category);
-    }
-
-    long getUnreadThreadCount(final Category category) {
-        return dataSource.getUnreadThreadCount(category);
-    }
-
-    void applyRearrangement() {
-        final Set<Category> modifiedCategories = getView()
-                .getModifiedCategories();
-        if (log.isDebugEnabled()) {
-            log.debug("Saving " + modifiedCategories.size()
-                    + " modified categories.");
-        }
-        if (!modifiedCategories.isEmpty()) {
-            dataSource.save(modifiedCategories);
-
-            // reload the new order from database
-            reloadCategoriesFromDataSource();
+    long getThreadCount(final Category category) throws DataSourceException {
+        try {
+            return dataSource.getThreadCount(category);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
         }
     }
 
-    private void reloadCategoriesFromDataSource() {
-        if (currentRoot == null) {
-            setCategories(dataSource.getRootCategories());
-        } else {
-            setCategories(dataSource.getSubCategories(currentRoot));
+    long getUnreadThreadCount(final Category category)
+            throws DataSourceException {
+        try {
+            return dataSource.getUnreadThreadCount(category);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
         }
+
+    }
+
+    void applyRearrangement() throws DataSourceException {
+        try {
+            final Set<Category> modifiedCategories = getView()
+                    .getModifiedCategories();
+            if (log.isDebugEnabled()) {
+                log.debug("Saving " + modifiedCategories.size()
+                        + " modified categories.");
+            }
+            if (!modifiedCategories.isEmpty()) {
+                dataSource.save(modifiedCategories);
+
+                // reload the new order from database
+                reloadCategoriesFromDataSource();
+            }
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
+    }
+
+    private void reloadCategoriesFromDataSource() throws DataSourceException {
+        try {
+            if (currentRoot == null) {
+                setCategories(dataSource.getRootCategories());
+            } else {
+                setCategories(dataSource.getSubCategories(currentRoot));
+            }
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
     void cancelRearrangement() {
@@ -75,27 +100,40 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         getView().displayCategories(categories);
     }
 
-    List<Category> getSubCategories(final Category category) {
-        return dataSource.getSubCategories(category);
+    List<Category> getSubCategories(final Category category)
+            throws DataSourceException {
+        try {
+            return dataSource.getSubCategories(category);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
     Category getCurrentRoot() {
         return currentRoot;
     }
 
-    void createNewCategory(final String name, final String description) {
-        final Category newCategory = new Category();
-        newCategory.setName(name);
-        newCategory.setDescription(description);
-        newCategory.setParentCategory(currentRoot);
-        newCategory.setDisplayOrder(getMaxDisplayOrder() + 1);
+    void createNewCategory(final String name, final String description)
+            throws DataSourceException {
+        try {
+            final Category newCategory = new Category();
+            newCategory.setName(name);
+            newCategory.setDescription(description);
+            newCategory.setParentCategory(currentRoot);
+            newCategory.setDisplayOrder(getMaxDisplayOrder() + 1);
 
-        // TODO validation, error handling
-        dataSource.save(newCategory);
-        getView().hideCreateCategoryForm();
+            dataSource.save(newCategory);
+            getView().hideCreateCategoryForm();
 
-        // refresh the categories
-        reloadCategoriesFromDataSource();
+            // refresh the categories
+            reloadCategoriesFromDataSource();
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
     /**
@@ -130,24 +168,37 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         return items;
     }
 
-    void delete(final Category category) {
-        if (log.isDebugEnabled()) {
-            log.debug("Deleting " + category.getName());
+    void delete(final Category category) throws DataSourceException {
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("Deleting " + category.getName());
+            }
+            dataSource.delete(category);
+            reloadCategoriesFromDataSource();
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
         }
-        dataSource.delete(category);
-        reloadCategoriesFromDataSource();
+
     }
 
     void edit(final Category category, final String name,
-            final String description) {
-        if (log.isDebugEnabled()) {
-            log.debug("Editing " + category.getName() + " -> " + name + ", "
-                    + category.getDescription() + " -> " + description);
+            final String description) throws DataSourceException {
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("Editing " + category.getName() + " -> " + name
+                        + ", " + category.getDescription() + " -> "
+                        + description);
+            }
+            category.setName(name);
+            category.setDescription(description);
+            dataSource.save(category);
+            reloadCategoriesFromDataSource();
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
         }
-        category.setName(name);
-        category.setDescription(description);
-        dataSource.save(category);
-        reloadCategoriesFromDataSource();
+
     }
 
     void follow(final Category category) {
