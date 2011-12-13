@@ -1,6 +1,11 @@
 package org.vaadin.tori.component;
 
+import java.util.Collection;
+
 import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.util.PostFormatter.FontsInfo;
+import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
+import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -13,15 +18,36 @@ import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
+import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.PopupView;
 
 @SuppressWarnings("serial")
 public abstract class AuthoringComponent extends CustomComponent {
+    public static final class ToolbarUtil {
+
+        public static Component createFontWidget(
+                final Collection<FontFace> fontFaces) {
+            final NativeSelect select = new NativeSelect();
+            // TODO Auto-generated method stub
+            return select;
+        }
+
+        public static Component createSizeWidget(
+                final Collection<FontSize> fontSizes) {
+            final NativeSelect select = new NativeSelect();
+            // TODO Auto-generated method stub
+            return select;
+        }
+
+    }
+
     private static final int MAX_ROWS_EXPANDED = 10;
     private static final int MAX_ROWS_COMPACT = 2;
 
@@ -98,6 +124,7 @@ public abstract class AuthoringComponent extends CustomComponent {
         captionLayout.addComponent(captionLabel);
         layout.addComponent(captionLayout, "captionlabel");
 
+        layout.addComponent(createToolbar(), "toolbar");
         layout.addComponent(new PopupView("Show Formatting Syntax",
                 getSyntaxLabel(formattingSyntaxXhtml)), "formattingsyntax");
 
@@ -117,6 +144,21 @@ public abstract class AuthoringComponent extends CustomComponent {
         input.addListener(INPUT_CHANGE_LISTENER);
         input.addListener(VALUE_CHANGE_LISTENER);
         setCompactMode(false);
+    }
+
+    private Component createToolbar() {
+
+        final HorizontalLayout layout = new HorizontalLayout();
+
+        final FontsInfo fontsInfo = ToriApplication.getCurrent()
+                .getPostFormatter().getFontsInfo();
+
+        layout.addComponent(ToolbarUtil.createFontWidget(fontsInfo
+                .getFontFaces()));
+        layout.addComponent(ToolbarUtil.createSizeWidget(fontsInfo
+                .getFontSizes()));
+
+        return layout;
     }
 
     public ToriExpandingTextArea getInput() {
