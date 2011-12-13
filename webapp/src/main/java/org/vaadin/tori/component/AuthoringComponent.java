@@ -3,6 +3,7 @@ package org.vaadin.tori.component;
 import java.util.Collection;
 
 import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.util.PostFormatter.FontsInfo;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
@@ -28,37 +29,51 @@ import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.PopupView;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 @SuppressWarnings("serial")
 public abstract class AuthoringComponent extends CustomComponent {
     public static final class ToolbarUtil {
 
+        @NonNull
         public static Component createFontWidget(
-                final Collection<FontFace> fontFaces) {
+                @NonNull final Collection<FontFace> fontFaces) {
+            ToriUtil.checkForNullAndEmpty(fontFaces,
+                    "fontFaces may not be null", "fontFaces may not be empty");
+
             final NativeSelect select = new NativeSelect();
             select.setImmediate(true);
+
+            final Object nullId = new Object();
+            select.addItem(nullId);
+            select.setItemCaption(nullId, "Font");
+            select.setNullSelectionItemId(nullId);
 
             for (final FontFace font : fontFaces) {
                 select.addItem(font);
                 select.setItemCaption(font, font.getFontName());
-                if (font.showAsDefault()) {
-                    select.select(font);
-                }
             }
 
             return select;
         }
 
+        @NonNull
         public static Component createSizeWidget(
-                final Collection<FontSize> fontSizes) {
+                @NonNull final Collection<FontSize> fontSizes) {
+            ToriUtil.checkForNullAndEmpty(fontSizes,
+                    "fontSizes may not be null", "fontSizes may not be empty");
+
             final NativeSelect select = new NativeSelect();
             select.setImmediate(true);
+
+            final Object nullId = new Object();
+            select.addItem(nullId);
+            select.setItemCaption(nullId, "Size");
+            select.setNullSelectionItemId(nullId);
 
             for (final FontSize size : fontSizes) {
                 select.addItem(size);
                 select.setItemCaption(size, size.getFontSizeName());
-                if (size.showAsDefault()) {
-                    select.select(size);
-                }
             }
 
             return select;
@@ -171,10 +186,15 @@ public abstract class AuthoringComponent extends CustomComponent {
         final FontsInfo fontsInfo = ToriApplication.getCurrent()
                 .getPostFormatter().getFontsInfo();
 
-        layout.addComponent(ToolbarUtil.createFontWidget(fontsInfo
-                .getFontFaces()));
-        layout.addComponent(ToolbarUtil.createSizeWidget(fontsInfo
-                .getFontSizes()));
+        final Collection<FontFace> fontFaces = fontsInfo.getFontFaces();
+        if (fontFaces != null && !fontFaces.isEmpty()) {
+            layout.addComponent(ToolbarUtil.createFontWidget(fontFaces));
+        }
+
+        final Collection<FontSize> fontSizes = fontsInfo.getFontSizes();
+        if (fontSizes != null && !fontSizes.isEmpty()) {
+            layout.addComponent(ToolbarUtil.createSizeWidget(fontSizes));
+        }
 
         return layout;
     }

@@ -21,9 +21,6 @@ public interface PostFormatter {
 
             @NonNull
             String getFontSyntax();
-
-            /** Indicate to the font size component to preselect this option. */
-            boolean showAsDefault();
         }
 
         public interface FontSize {
@@ -32,9 +29,6 @@ public interface PostFormatter {
 
             @NonNull
             String getFontSizeSyntax();
-
-            /** Indicate to the font size component to preselect this option. */
-            boolean showAsDefault();
         }
 
         /**
