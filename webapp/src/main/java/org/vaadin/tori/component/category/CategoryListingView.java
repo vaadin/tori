@@ -9,11 +9,18 @@ import org.vaadin.tori.mvp.View;
 interface CategoryListingView extends View {
 
     /**
-     * Displays or hides the administrative controls.
+     * Displays or hides the controls for rearranging categories.
      * 
      * @param visible
      */
-    void setAdminControlsVisible(boolean visible);
+    void setRearrangeVisible(boolean visible);
+
+    /**
+     * Displays or hides the controls for creating new categories.
+     * 
+     * @param visible
+     */
+    void setCreateVisible(boolean visible);
 
     /**
      * Displays all given categories in the hierarchical CategoryListing.

@@ -77,8 +77,13 @@ public class CategoryListing extends
     }
 
     @Override
-    public void setAdminControlsVisible(final boolean visible) {
-        adminControls.setVisible(visible);
+    public void setRearrangeVisible(final boolean visible) {
+        rearrangeCategoriesButton.setVisible(visible);
+    }
+
+    @Override
+    public void setCreateVisible(final boolean visible) {
+        createCategoryButton.setVisible(visible);
     }
 
     public void setCategories(final List<Category> categories) {

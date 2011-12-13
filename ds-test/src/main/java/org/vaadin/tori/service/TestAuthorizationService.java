@@ -33,6 +33,11 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     }
 
     @Override
+    public boolean mayRearrangeCategories() {
+        return isCategoryAdministrator;
+    }
+
+    @Override
     public void setMayEditCategories(final boolean b) {
         isCategoryAdministrator = b;
     }

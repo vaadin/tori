@@ -43,18 +43,24 @@ public class CategoryListingTest {
 
     @Test
     public void nonAdminUser() {
+        when(mockAuthorizationService.mayRearrangeCategories()).thenReturn(
+                false);
         when(mockAuthorizationService.mayEditCategories()).thenReturn(false);
 
         presenter.init();
-        verify(mockView).setAdminControlsVisible(false);
+        verify(mockView).setRearrangeVisible(false);
+        verify(mockView).setCreateVisible(false);
     }
 
     @Test
     public void adminUser() {
+        when(mockAuthorizationService.mayRearrangeCategories())
+                .thenReturn(true);
         when(mockAuthorizationService.mayEditCategories()).thenReturn(true);
 
         presenter.init();
-        verify(mockView).setAdminControlsVisible(true);
+        verify(mockView).setRearrangeVisible(true);
+        verify(mockView).setCreateVisible(true);
     }
 
     @Test(expected = IllegalStateException.class)

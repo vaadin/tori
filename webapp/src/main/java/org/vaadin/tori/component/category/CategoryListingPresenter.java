@@ -26,8 +26,9 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
 
     @Override
     public void init() {
-        getView().setAdminControlsVisible(
-                authorizationService.mayEditCategories());
+        getView().setRearrangeVisible(
+                authorizationService.mayRearrangeCategories());
+        getView().setCreateVisible(authorizationService.mayEditCategories());
     }
 
     long getThreadCount(final Category category) throws DataSourceException {
