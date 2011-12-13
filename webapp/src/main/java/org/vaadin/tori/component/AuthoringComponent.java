@@ -35,14 +35,32 @@ public abstract class AuthoringComponent extends CustomComponent {
         public static Component createFontWidget(
                 final Collection<FontFace> fontFaces) {
             final NativeSelect select = new NativeSelect();
-            // TODO Auto-generated method stub
+            select.setImmediate(true);
+
+            for (final FontFace font : fontFaces) {
+                select.addItem(font);
+                select.setItemCaption(font, font.getFontName());
+                if (font.showAsDefault()) {
+                    select.select(font);
+                }
+            }
+
             return select;
         }
 
         public static Component createSizeWidget(
                 final Collection<FontSize> fontSizes) {
             final NativeSelect select = new NativeSelect();
-            // TODO Auto-generated method stub
+            select.setImmediate(true);
+
+            for (final FontSize size : fontSizes) {
+                select.addItem(size);
+                select.setItemCaption(size, size.getFontSizeName());
+                if (size.showAsDefault()) {
+                    select.select(size);
+                }
+            }
+
             return select;
         }
 
