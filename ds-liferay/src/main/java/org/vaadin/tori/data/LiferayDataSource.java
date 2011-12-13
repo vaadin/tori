@@ -27,11 +27,13 @@ import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.SubscriptionLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.portlet.messageboards.model.MBBan;
 import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBMessageConstants;
 import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.model.MBThreadConstants;
+import com.liferay.portlet.messageboards.service.MBBanServiceUtil;
 import com.liferay.portlet.messageboards.service.MBCategoryLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBCategoryServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
@@ -57,6 +59,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     private long currentUserId;
     private String imagePath;
     private ServiceContext mbMessageServiceContext;
+    private ServiceContext mbBanServiceContext;
 
     @Override
     public List<Category> getRootCategories() throws DataSourceException {
@@ -328,8 +331,16 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public void ban(final User user) {
-        log.warn("Not yet implemented.");
+    public void ban(final User user) throws DataSourceException {
+        try {
+            MBBanServiceUtil.addBan(user.getId(), mbBanServiceContext);
+        } catch (final PortalException e) {
+            log.error(String.format("Cannot ban user %d", user.getId()), e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error(String.format("Cannot ban user %d", user.getId()), e);
+            throw new DataSourceException(e);
+        }
     }
 
     @Override
@@ -579,6 +590,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         try {
             mbMessageServiceContext = ServiceContextFactory.getInstance(
                     MBMessage.class.getName(), request);
+            mbBanServiceContext = ServiceContextFactory.getInstance(
+                    MBBan.class.getName(), request);
         } catch (final PortalException e) {
             log.error("Couldn't create ServiceContext.", e);
         } catch (final SystemException e) {
