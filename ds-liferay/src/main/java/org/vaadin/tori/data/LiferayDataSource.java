@@ -33,6 +33,7 @@ import com.liferay.portlet.messageboards.model.MBMessageConstants;
 import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.model.MBThreadConstants;
 import com.liferay.portlet.messageboards.service.MBCategoryLocalServiceUtil;
+import com.liferay.portlet.messageboards.service.MBCategoryServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
@@ -292,8 +293,22 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public void delete(final Category categoryToDelete) {
-        log.warn("Not yet implemented.");
+    public void delete(final Category categoryToDelete)
+            throws DataSourceException {
+        try {
+            MBCategoryServiceUtil.deleteCategory(scopeGroupId,
+                    categoryToDelete.getId());
+        } catch (final PortalException e) {
+            log.error(
+                    String.format("Cannot delete category %d",
+                            categoryToDelete.getId()), e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error(
+                    String.format("Cannot delete category %d",
+                            categoryToDelete.getId()), e);
+            throw new DataSourceException(e);
+        }
     }
 
     @Override
