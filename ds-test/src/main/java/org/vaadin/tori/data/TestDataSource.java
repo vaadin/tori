@@ -18,6 +18,7 @@ import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.data.util.PersistenceUtil;
+import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.post.PostReport;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -27,7 +28,7 @@ public class TestDataSource implements DataSource {
     private static final long CURRENT_USER_ID = 3;
     private final User currentUser;
 
-    public TestDataSource() {
+    public TestDataSource() throws DataSourceException {
         if (isEmptyDatabase()) {
             initDatabaseWithTestData();
         }
@@ -35,7 +36,7 @@ public class TestDataSource implements DataSource {
         currentUser = getUser(CURRENT_USER_ID);
     }
 
-    private User getUser(final long userId) {
+    private User getUser(final long userId) throws DataSourceException {
         return executeWithEntityManager(new Command<User>() {
             @Override
             public final User execute(final EntityManager em) {
@@ -44,7 +45,7 @@ public class TestDataSource implements DataSource {
         });
     }
 
-    private void initDatabaseWithTestData() {
+    private void initDatabaseWithTestData() throws DataSourceException {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public final Void execute(final EntityManager em) {
@@ -81,7 +82,7 @@ public class TestDataSource implements DataSource {
         });
     }
 
-    private boolean isEmptyDatabase() {
+    private boolean isEmptyDatabase() throws DataSourceException {
         return executeWithEntityManager(new Command<Boolean>() {
             @Override
             public final Boolean execute(final EntityManager em) {
@@ -94,17 +95,19 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public List<Category> getRootCategories() {
+    public List<Category> getRootCategories() throws DataSourceException {
         return _getSubCategories(null);
     }
 
     @Override
-    public List<Category> getSubCategories(final Category category) {
+    public List<Category> getSubCategories(final Category category)
+            throws DataSourceException {
         return _getSubCategories(category);
     }
 
     @NonNull
-    private List<Category> _getSubCategories(final Category category) {
+    private List<Category> _getSubCategories(final Category category)
+            throws DataSourceException {
         return executeWithEntityManager(new Command<List<Category>>() {
             @Override
             @SuppressWarnings("unchecked")
@@ -122,7 +125,8 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public List<DiscussionThread> getThreads(final Category category) {
+    public List<DiscussionThread> getThreads(final Category category)
+            throws DataSourceException {
         return executeWithEntityManager(new Command<List<DiscussionThread>>() {
             @Override
             public final List<DiscussionThread> execute(final EntityManager em) {
@@ -152,7 +156,8 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public Category getCategory(final long categoryId) {
+    public Category getCategory(final long categoryId)
+            throws DataSourceException {
         return executeWithEntityManager(new Command<Category>() {
             @Override
             public final Category execute(final EntityManager em) {
@@ -162,7 +167,8 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public long getThreadCount(final Category category) {
+    public long getThreadCount(final Category category)
+            throws DataSourceException {
         return executeWithEntityManager(new Command<Long>() {
             @Override
             public Long execute(final EntityManager em) {
@@ -175,9 +181,13 @@ public class TestDataSource implements DataSource {
                 long threadCount = query.getSingleResult();
 
                 // recursively add thread count of all sub categories
-                final List<Category> subCategories = getSubCategories(category);
-                for (final Category subCategory : subCategories) {
-                    threadCount += getThreadCount(subCategory);
+                try {
+                    final List<Category> subCategories = getSubCategories(category);
+                    for (final Category subCategory : subCategories) {
+                        threadCount += getThreadCount(subCategory);
+                    }
+                } catch (final DataSourceException e) {
+                    throw new RuntimeException(e);
                 }
                 return threadCount;
             }
@@ -185,7 +195,8 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public DiscussionThread getThread(final long threadId) {
+    public DiscussionThread getThread(final long threadId)
+            throws DataSourceException {
         return executeWithEntityManager(new Command<DiscussionThread>() {
             @Override
             public final DiscussionThread execute(final EntityManager em) {
@@ -195,7 +206,8 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public List<Post> getPosts(final DiscussionThread thread) {
+    public List<Post> getPosts(final DiscussionThread thread)
+            throws DataSourceException {
         return executeWithEntityManager(new Command<List<Post>>() {
             @Override
             public List<Post> execute(final EntityManager em) {
@@ -215,10 +227,13 @@ public class TestDataSource implements DataSource {
      * @param command
      * @return
      */
-    private static <T> T executeWithEntityManager(final Command<T> command) {
+    private static <T> T executeWithEntityManager(final Command<T> command)
+            throws DataSourceException {
         final EntityManager em = PersistenceUtil.createEntityManager();
         try {
             return command.execute(em);
+        } catch (final Throwable e) {
+            throw new DataSourceException(e);
         } finally {
             em.close();
         }
@@ -229,7 +244,8 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void save(final Iterable<Category> categoriesToSave) {
+    public void save(final Iterable<Category> categoriesToSave)
+            throws DataSourceException {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
@@ -249,7 +265,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void save(final Category categoryToSave) {
+    public void save(final Category categoryToSave) throws DataSourceException {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
@@ -274,7 +290,8 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void delete(final Category categoryToDelete) {
+    public void delete(final Category categoryToDelete)
+            throws DataSourceException {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
@@ -312,7 +329,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void save(final Post post) {
+    public void save(final Post post) throws DataSourceException {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
@@ -339,7 +356,8 @@ public class TestDataSource implements DataSource {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void follow(final DiscussionThread thread) {
+    public void follow(final DiscussionThread thread)
+            throws DataSourceException {
         if (!isFollowing(thread)) {
             final org.vaadin.tori.data.entity.Following following = new org.vaadin.tori.data.entity.Following();
             following.setFollower(currentUser);
@@ -349,7 +367,8 @@ public class TestDataSource implements DataSource {
     }
 
     @SuppressWarnings("deprecation")
-    private void save(final org.vaadin.tori.data.entity.Following following) {
+    private void save(final org.vaadin.tori.data.entity.Following following)
+            throws DataSourceException {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
@@ -363,7 +382,8 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void unFollow(final DiscussionThread thread) {
+    public void unFollow(final DiscussionThread thread)
+            throws DataSourceException {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
@@ -384,7 +404,8 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public boolean isFollowing(final DiscussionThread thread) {
+    public boolean isFollowing(final DiscussionThread thread)
+            throws DataSourceException {
         return executeWithEntityManager(new Command<Boolean>() {
             @Override
             public Boolean execute(final EntityManager em) {
@@ -405,7 +426,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void delete(final Post post) {
+    public void delete(final Post post) throws DataSourceException {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
@@ -431,7 +452,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public PostVote getPostVote(final Post post) {
+    public PostVote getPostVote(final Post post) throws DataSourceException {
         try {
             return executeWithEntityManager(new Command<PostVote>() {
                 @Override
@@ -453,20 +474,20 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void upvote(final Post post) {
+    public void upvote(final Post post) throws DataSourceException {
         final PostVote vote = getPostVote(post);
         vote.setUpvote();
         save(vote);
     }
 
     @Override
-    public void downvote(final Post post) {
+    public void downvote(final Post post) throws DataSourceException {
         final PostVote vote = getPostVote(post);
         vote.setDownvote();
         save(vote);
     }
 
-    public void save(final PostVote vote) {
+    public void save(final PostVote vote) throws DataSourceException {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
@@ -480,11 +501,11 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void removeUserVote(final Post post) {
+    public void removeUserVote(final Post post) throws DataSourceException {
         delete(getPostVote(post));
     }
 
-    private void delete(final PostVote postVote) {
+    private void delete(final PostVote postVote) throws DataSourceException {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
@@ -507,7 +528,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public long getScore(final Post post) {
+    public long getScore(final Post post) throws DataSourceException {
         return executeWithEntityManager(new Command<Long>() {
             @Override
             public Long execute(final EntityManager em) {
@@ -527,14 +548,14 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void saveAsCurrentUser(final Post post) {
+    public void saveAsCurrentUser(final Post post) throws DataSourceException {
         post.setAuthor(currentUser);
         save(post);
     }
 
     @Override
     public void move(final DiscussionThread thread,
-            final Category destinationCategory) {
+            final Category destinationCategory) throws DataSourceException {
         executeWithEntityManager(new Command<Void>() {
 
             @Override
@@ -550,30 +571,35 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public DiscussionThread sticky(final DiscussionThread thread) {
+    public DiscussionThread sticky(final DiscussionThread thread)
+            throws DataSourceException {
         thread.setSticky(true);
         return save(thread);
     }
 
     @Override
-    public DiscussionThread unsticky(final DiscussionThread thread) {
+    public DiscussionThread unsticky(final DiscussionThread thread)
+            throws DataSourceException {
         thread.setSticky(false);
         return save(thread);
     }
 
     @Override
-    public DiscussionThread lock(final DiscussionThread thread) {
+    public DiscussionThread lock(final DiscussionThread thread)
+            throws DataSourceException {
         thread.setLocked(true);
         return save(thread);
     }
 
     @Override
-    public DiscussionThread unlock(final DiscussionThread thread) {
+    public DiscussionThread unlock(final DiscussionThread thread)
+            throws DataSourceException {
         thread.setLocked(false);
         return save(thread);
     }
 
-    private static DiscussionThread save(final DiscussionThread thread) {
+    private static DiscussionThread save(final DiscussionThread thread)
+            throws DataSourceException {
         return executeWithEntityManager(new Command<DiscussionThread>() {
             @Override
             public DiscussionThread execute(final EntityManager em) {
@@ -587,7 +613,8 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void delete(final DiscussionThread thread) {
+    public void delete(final DiscussionThread thread)
+            throws DataSourceException {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
@@ -601,13 +628,17 @@ public class TestDataSource implements DataSource {
                 followDelete.setParameter("thread", thread);
                 followDelete.executeUpdate();
 
-                // remove all votes for posts inside thread.
-                for (final Post post : getPosts(mergedThread)) {
-                    // "in" is not supported :(
-                    final Query postDelete = em
-                            .createQuery("delete from PostVote where post = :post");
-                    postDelete.setParameter("post", post);
-                    postDelete.executeUpdate();
+                try {
+                    // remove all votes for posts inside thread.
+                    for (final Post post : getPosts(mergedThread)) {
+                        // "in" is not supported :(
+                        final Query postDelete = em
+                                .createQuery("delete from PostVote where post = :post");
+                        postDelete.setParameter("post", post);
+                        postDelete.executeUpdate();
+                    }
+                } catch (final DataSourceException e) {
+                    throw new RuntimeException(e);
                 }
 
                 em.remove(mergedThread);
@@ -619,7 +650,7 @@ public class TestDataSource implements DataSource {
 
     @Override
     public DiscussionThread saveNewThread(final DiscussionThread newThread,
-            final Post firstPost) {
+            final Post firstPost) throws DataSourceException {
         return executeWithEntityManager(new Command<DiscussionThread>() {
             @Override
             public DiscussionThread execute(final EntityManager em) {

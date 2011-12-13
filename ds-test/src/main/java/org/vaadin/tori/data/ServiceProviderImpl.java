@@ -1,6 +1,7 @@
 package org.vaadin.tori.data;
 
 import org.vaadin.tori.data.spi.ServiceProvider;
+import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.TestAuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
@@ -12,7 +13,11 @@ public class ServiceProviderImpl implements ServiceProvider {
 
     @Override
     public DataSource createDataSource() {
-        return new TestDataSource();
+        try {
+            return new TestDataSource();
+        } catch (final DataSourceException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

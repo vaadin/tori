@@ -2,16 +2,19 @@ package org.vaadin.tori.component.breadcrumbs;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.vaadin.hene.splitbutton.SplitButton;
 import org.vaadin.hene.splitbutton.SplitButton.SplitButtonClickEvent;
 import org.vaadin.hene.splitbutton.SplitButton.SplitButtonClickListener;
 import org.vaadin.hene.splitbutton.SplitButton.SplitButtonPopupVisibilityEvent;
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.data.entity.Category;
+import org.vaadin.tori.exception.DataSourceException;
 
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Tree;
 
 @SuppressWarnings("serial")
@@ -47,6 +50,7 @@ abstract class CategoryCrumb extends CustomComponent {
 
     private final CategorySelectionListener listener;
     private final SplitButton crumb;
+    private final Logger log = Logger.getLogger(getClass());
 
     public CategoryCrumb(final Category category,
             final CategorySelectionListener listener) {
@@ -85,10 +89,15 @@ abstract class CategoryCrumb extends CustomComponent {
         final Tree tree = new Tree();
         tree.setImmediate(true);
 
-        final List<Category> rootCategories = ToriApplication.getCurrent()
-                .getDataSource().getRootCategories();
-        for (final Category category : rootCategories) {
-            addCategory(tree, category, null);
+        try {
+            final List<Category> rootCategories = ToriApplication.getCurrent()
+                    .getDataSource().getRootCategories();
+            for (final Category category : rootCategories) {
+                addCategory(tree, category, null);
+            }
+        } catch (final DataSourceException e) {
+            log.error(e);
+            return new Label("Something went wrong :(");
         }
 
         tree.addListener(new ItemClickEvent.ItemClickListener() {
@@ -125,7 +134,7 @@ abstract class CategoryCrumb extends CustomComponent {
     }
 
     private static void addCategory(final Tree tree, final Category category,
-            final Category parent) {
+            final Category parent) throws DataSourceException {
         tree.addItem(category);
         tree.setItemCaption(category, category.getName());
 

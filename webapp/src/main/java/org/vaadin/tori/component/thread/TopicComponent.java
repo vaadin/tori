@@ -7,6 +7,7 @@ import org.vaadin.tori.component.ContextMenu;
 import org.vaadin.tori.component.ContextMenu.ContextAction;
 import org.vaadin.tori.component.ContextMenu.ContextComponentSwapper;
 import org.vaadin.tori.data.entity.DiscussionThread;
+import org.vaadin.tori.exception.DataSourceException;
 
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Resource;
@@ -28,9 +29,14 @@ public class TopicComponent extends CustomComponent {
 
         @Override
         public void contextClicked() {
-            presenter.follow(thread);
-            menu.swap(this, UNFOLLOW_ICON, UNFOLLOW_CAPTION,
-                    new UnfollowAction(thread));
+            try {
+                presenter.follow(thread);
+                menu.swap(this, UNFOLLOW_ICON, UNFOLLOW_CAPTION,
+                        new UnfollowAction(thread));
+            } catch (final DataSourceException e) {
+                getApplication().getMainWindow().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            }
         }
     }
 
@@ -43,9 +49,14 @@ public class TopicComponent extends CustomComponent {
 
         @Override
         public void contextClicked() {
-            presenter.unfollow(thread);
-            menu.swap(this, FOLLOW_ICON, FOLLOW_CAPTION, new FollowAction(
-                    thread));
+            try {
+                presenter.unfollow(thread);
+                menu.swap(this, FOLLOW_ICON, FOLLOW_CAPTION, new FollowAction(
+                        thread));
+            } catch (final DataSourceException e) {
+                getApplication().getMainWindow().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            }
         }
     }
 
@@ -58,9 +69,15 @@ public class TopicComponent extends CustomComponent {
 
         @Override
         public void contextClicked() {
-            presenter.sticky(thread);
-            menu.swap(this, UNSTICKY_ICON, UNSTICKY_CAPTION,
-                    new UnstickyAction(thread));
+            try {
+                presenter.sticky(thread);
+                menu.swap(this, UNSTICKY_ICON, UNSTICKY_CAPTION,
+                        new UnstickyAction(thread));
+            } catch (final DataSourceException e) {
+                getApplication().getMainWindow().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            }
+
         }
     }
 
@@ -73,9 +90,15 @@ public class TopicComponent extends CustomComponent {
 
         @Override
         public void contextClicked() {
-            presenter.unsticky(thread);
-            menu.swap(this, STICKY_ICON, STICKY_CAPTION, new StickyAction(
-                    thread));
+            try {
+                presenter.unsticky(thread);
+                menu.swap(this, STICKY_ICON, STICKY_CAPTION, new StickyAction(
+                        thread));
+            } catch (final DataSourceException e) {
+                getApplication().getMainWindow().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            }
+
         }
     }
 
@@ -88,9 +111,15 @@ public class TopicComponent extends CustomComponent {
 
         @Override
         public void contextClicked() {
-            presenter.lock(thread);
-            menu.swap(this, UNLOCK_ICON, UNLOCK_CAPTION, new UnlockAction(
-                    thread));
+            try {
+                presenter.lock(thread);
+                menu.swap(this, UNLOCK_ICON, UNLOCK_CAPTION, new UnlockAction(
+                        thread));
+            } catch (final DataSourceException e) {
+                getApplication().getMainWindow().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            }
+
         }
     }
 
@@ -103,8 +132,14 @@ public class TopicComponent extends CustomComponent {
 
         @Override
         public void contextClicked() {
-            presenter.unlock(thread);
-            menu.swap(this, LOCK_ICON, LOCK_CAPTION, new LockAction(thread));
+            try {
+                presenter.unlock(thread);
+                menu.swap(this, LOCK_ICON, LOCK_CAPTION, new LockAction(thread));
+            } catch (final DataSourceException e) {
+                getApplication().getMainWindow().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            }
+
         }
     }
 
@@ -138,7 +173,7 @@ public class TopicComponent extends CustomComponent {
     private final CustomLayout layout;
     private CategoryPresenter presenter;
 
-    private final ContextMenu menu;
+    private ContextMenu menu;
 
     public TopicComponent(final DiscussionThread thread,
             final CategoryPresenter presenter) {
@@ -156,7 +191,12 @@ public class TopicComponent extends CustomComponent {
         layout.addComponent(new ThreadModifiersComponent(thread), "modifiers");
         layout.addComponent(createCategoryLink(id, topic), "link");
 
-        menu = createContextMenu(thread);
+        try {
+            menu = createContextMenu(thread);
+        } catch (final DataSourceException e) {
+            menu = new ContextMenu();
+            menu.add(null, "database fubar :(", ContextAction.NULL);
+        }
         layout.addComponent(menu, "contextmenu");
     }
 
@@ -168,7 +208,8 @@ public class TopicComponent extends CustomComponent {
         return categoryLink;
     }
 
-    private ContextMenu createContextMenu(final DiscussionThread thread) {
+    private ContextMenu createContextMenu(final DiscussionThread thread)
+            throws DataSourceException {
         final ContextMenu menu = new ContextMenu();
         menu.setData(thread);
 
@@ -208,7 +249,14 @@ public class TopicComponent extends CustomComponent {
                     "Delete thread", new ContextAction() {
                         @Override
                         public void contextClicked() {
-                            presenter.delete(thread);
+                            try {
+                                presenter.delete(thread);
+                            } catch (final DataSourceException e) {
+                                getApplication()
+                                        .getMainWindow()
+                                        .showNotification(
+                                                DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                            }
                         }
                     });
         }

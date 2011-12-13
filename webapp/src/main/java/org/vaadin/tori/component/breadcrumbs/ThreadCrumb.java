@@ -2,15 +2,18 @@ package org.vaadin.tori.component.breadcrumbs;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.vaadin.hene.splitbutton.SplitButton;
 import org.vaadin.hene.splitbutton.SplitButton.SplitButtonPopupVisibilityEvent;
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.data.entity.DiscussionThread;
+import org.vaadin.tori.exception.DataSourceException;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.ListSelect;
 
 @SuppressWarnings("serial")
@@ -21,6 +24,7 @@ class ThreadCrumb extends CustomComponent {
 
     private final ThreadSelectionListener listener;
     private final SplitButton crumb;
+    private final Logger log = Logger.getLogger(getClass());
 
     public ThreadCrumb(final DiscussionThread thread,
             final ThreadSelectionListener listener) {
@@ -52,8 +56,14 @@ class ThreadCrumb extends CustomComponent {
         root.setImmediate(true);
         root.setNullSelectionAllowed(false);
 
-        final List<DiscussionThread> threads = ToriApplication.getCurrent()
-                .getDataSource().getThreads(thread.getCategory());
+        List<DiscussionThread> threads = null;
+        try {
+            threads = ToriApplication.getCurrent().getDataSource()
+                    .getThreads(thread.getCategory());
+        } catch (final DataSourceException e) {
+            log.error(e);
+            return new Label("Something went wrong :(");
+        }
 
         for (final DiscussionThread t : threads) {
             root.addItem(t);

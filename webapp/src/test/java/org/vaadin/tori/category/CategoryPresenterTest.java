@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
+import org.vaadin.tori.exception.DataSourceException;
 
 public class CategoryPresenterTest {
 
@@ -38,7 +39,7 @@ public class CategoryPresenterTest {
     }
 
     @Test
-    public void nonExistingCategoryId() {
+    public void nonExistingCategoryId() throws DataSourceException {
         when(mockDataSource.getCategory(-1)).thenReturn(null);
 
         presenter.setCurrentCategoryById("-1");
@@ -46,7 +47,7 @@ public class CategoryPresenterTest {
     }
 
     @Test
-    public void existingCategoryId() {
+    public void existingCategoryId() throws DataSourceException {
         final Category category = new Category();
         final List<Category> subCategories = Collections.emptyList();
         final List<org.vaadin.tori.data.entity.DiscussionThread> threads = Collections

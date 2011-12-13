@@ -31,6 +31,13 @@ import com.vaadin.ui.themes.Reindeer;
 public class ContextMenu extends CustomComponent {
 
     public interface ContextAction {
+        /** A {@link ContextAction} that does nothing upon activation. */
+        ContextAction NULL = new ContextAction() {
+            @Override
+            public void contextClicked() {
+            }
+        };
+
         void contextClicked();
     }
 

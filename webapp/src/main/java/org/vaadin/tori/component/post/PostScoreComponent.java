@@ -2,6 +2,7 @@ package org.vaadin.tori.component.post;
 
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
+import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.thread.ThreadPresenter;
 
 import com.vaadin.ui.Button.ClickEvent;
@@ -41,7 +42,12 @@ public class PostScoreComponent extends CustomComponent {
         upvote.addListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
-                presenter.upvote(post);
+                try {
+                    presenter.upvote(post);
+                } catch (final DataSourceException e) {
+                    getApplication().getMainWindow().showNotification(
+                            DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                }
             }
         });
         layout.addComponent(upvote);
@@ -55,7 +61,12 @@ public class PostScoreComponent extends CustomComponent {
         downvote.addListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
-                presenter.downvote(post);
+                try {
+                    presenter.downvote(post);
+                } catch (final DataSourceException e) {
+                    getApplication().getMainWindow().showNotification(
+                            DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                }
             }
         });
         layout.addComponent(downvote);

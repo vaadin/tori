@@ -3,6 +3,8 @@ package org.vaadin.tori.exception;
 public class DataSourceException extends Exception {
     private static final long serialVersionUID = 1924584777047434430L;
 
+    public static final String BORING_GENERIC_ERROR_MESSAGE = "Sorry, something seems to be wrong with our database :(";
+
     public DataSourceException() {
         super();
     }

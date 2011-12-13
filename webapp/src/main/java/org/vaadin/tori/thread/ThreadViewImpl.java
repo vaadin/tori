@@ -15,12 +15,14 @@ import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.component.NewThreadComponent;
 import org.vaadin.tori.component.NewThreadComponent.NewThreadListener;
+import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.component.ReplyComponent;
 import org.vaadin.tori.component.ReplyComponent.ReplyListener;
 import org.vaadin.tori.component.post.PostComponent;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.AbstractView;
 
 import com.vaadin.event.FieldEvents;
@@ -45,7 +47,12 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         @Override
         public void submit(final String rawBody) {
             if (!rawBody.trim().isEmpty()) {
-                getPresenter().sendReply(rawBody);
+                try {
+                    getPresenter().sendReply(rawBody);
+                } catch (final DataSourceException e) {
+                    getApplication().getMainWindow().showNotification(
+                            DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                }
             }
         }
     };
@@ -151,16 +158,25 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             c.enableQuoting();
         }
         if (getPresenter().userMayVote()) {
-            c.enableUpDownVoting(getPresenter().getPostVote(post));
+            try {
+                c.enableUpDownVoting(getPresenter().getPostVote(post));
+            } catch (final DataSourceException e) {
+                // NOP - everything's logged.
+            }
         }
 
         // context menu permissions
 
-        if (getPresenter().userCanFollowThread()) {
-            c.enableThreadFollowing();
-        }
-        if (getPresenter().userCanUnFollowThread()) {
-            c.enableThreadUnFollowing();
+        try {
+            if (getPresenter().userCanFollowThread()) {
+                c.enableThreadFollowing();
+            }
+            if (getPresenter().userCanUnFollowThread()) {
+                c.enableThreadUnFollowing();
+            }
+        } catch (final DataSourceException e) {
+            // NOP - everything's logged. I fyou can't follow, you can't
+            // unfollow either.
         }
         if (getPresenter().userMayBan()) {
             c.enableBanning();
@@ -234,7 +250,11 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     protected void navigationTo(final String[] arguments) {
-        super.getPresenter().handleArguments(arguments);
+        try {
+            super.getPresenter().handleArguments(arguments);
+        } catch (final DataSourceException e) {
+            panic();
+        }
     }
 
     @Override
@@ -273,7 +293,11 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     private void reloadPage() {
-        getPresenter().resetView();
+        try {
+            getPresenter().resetView();
+        } catch (final DataSourceException e) {
+            panic();
+        }
     }
 
     @Override
@@ -329,31 +353,44 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         layout.addComponent(new NewThreadComponent(new NewThreadListener() {
             @Override
             public void submit(final String rawBody) {
-                String messages = "";
+                String errorMessages = "";
 
                 final String topic = (String) topicField.getValue();
                 if (topic.isEmpty()) {
-                    messages += "You need a topic<br/>";
+                    errorMessages += "You need a topic<br/>";
                 }
                 if (rawBody.isEmpty()) {
-                    messages += "You need a thread body<br/>";
+                    errorMessages += "You need a thread body<br/>";
                 }
 
-                if (messages.isEmpty()) {
-                    final DiscussionThread createdThread = getPresenter()
-                            .createNewThread(category, topic, rawBody);
-                    getNavigator().navigateTo(
-                            ToriNavigator.ApplicationView.THREADS.getUrl()
-                                    + "/" + createdThread.getId());
+                if (errorMessages.isEmpty()) {
+                    try {
+                        final DiscussionThread createdThread = getPresenter()
+                                .createNewThread(category, topic, rawBody);
+                        getNavigator().navigateTo(
+                                ToriNavigator.ApplicationView.THREADS.getUrl()
+                                        + "/" + createdThread.getId());
+                    } catch (final DataSourceException e) {
+                        getApplication()
+                                .getMainWindow()
+                                .showNotification(
+                                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                    }
                 } else {
                     ToriApplication
                             .getCurrent()
                             .getMainWindow()
-                            .showNotification(messages,
+                            .showNotification(errorMessages,
                                     Notification.TYPE_HUMANIZED_MESSAGE);
                 }
             }
         }, ToriApplication.getCurrent().getPostFormatter()
                 .getFormattingSyntaxXhtml()));
+    }
+
+    @Override
+    public void panic() {
+        layout.removeAllComponents();
+        layout.addComponent(new PanicComponent());
     }
 }

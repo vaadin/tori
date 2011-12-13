@@ -13,15 +13,6 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 public class CategoryPresenter extends Presenter<CategoryView> {
 
-    /** Something went wrong. Display a generic error message. */
-    public static final class CategoryPresenterException extends Exception {
-        private static final long serialVersionUID = 7051635753001642576L;
-
-        public CategoryPresenterException(final Throwable e) {
-            super(e);
-        }
-    }
-
     private Category currentCategory;
 
     public CategoryPresenter(final DataSource dataSource,
@@ -64,72 +55,123 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         return currentCategory;
     }
 
+    /**
+     * Returns <code>true</code> iff the current user doesn't follow the thread,
+     * and is allowed to follow a thread.
+     */
     public boolean userCanFollow(final DiscussionThread thread)
-            throws CategoryPresenterException {
+            throws DataSourceException {
         try {
             return authorizationService.mayFollow(thread)
                     && !dataSource.isFollowing(thread);
         } catch (final DataSourceException e) {
             log.error(e);
-            throw new CategoryPresenterException(e);
+            throw e;
         }
     }
 
+    /**
+     * Returns <code>true</code> iff the current user follows the thread, and
+     * <em>is allowed to follow a thread</em>.
+     */
     public boolean userCanUnFollow(final DiscussionThread thread)
-            throws CategoryPresenterException {
+            throws DataSourceException {
         try {
             return authorizationService.mayFollow(thread)
                     && dataSource.isFollowing(thread);
         } catch (final DataSourceException e) {
             log.error(e);
-            throw new CategoryPresenterException(e);
+            throw e;
         }
+
     }
 
     public void follow(final DiscussionThread thread)
-            throws CategoryPresenterException {
+            throws DataSourceException {
         try {
             dataSource.follow(thread);
             getView().confirmFollowing();
         } catch (final DataSourceException e) {
-            throw new CategoryPresenterException(e);
+            log.error(e);
+            throw e;
         }
+
     }
 
-    public void unfollow(final DiscussionThread thread) {
-        dataSource.unFollow(thread);
-        getView().confirmUnfollowing();
+    public void unfollow(final DiscussionThread thread)
+            throws DataSourceException {
+        try {
+            dataSource.unFollow(thread);
+            getView().confirmUnfollowing();
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
     public boolean userMayMove(final DiscussionThread thread) {
         return authorizationService.mayMove(thread);
     }
 
-    public List<Category> getRootCategories() {
-        return dataSource.getRootCategories();
+    public List<Category> getRootCategories() throws DataSourceException {
+        try {
+            return dataSource.getRootCategories();
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
-    public List<Category> getSubCategories(final Category category) {
-        return dataSource.getSubCategories(category);
+    public List<Category> getSubCategories(final Category category)
+            throws DataSourceException {
+        try {
+            return dataSource.getSubCategories(category);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
     public void move(final DiscussionThread thread,
-            final Category destinationCategory) {
-        dataSource.move(thread, destinationCategory);
-        getView().confirmThreadMoved();
-        resetView();
+            final Category destinationCategory) throws DataSourceException {
+        try {
+            dataSource.move(thread, destinationCategory);
+            getView().confirmThreadMoved();
+            resetView();
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
-    public void sticky(final DiscussionThread thread) {
-        final DiscussionThread updatedThread = dataSource.sticky(thread);
-        getView().confirmThreadStickied(updatedThread);
-        resetView();
+    public void sticky(final DiscussionThread thread)
+            throws DataSourceException {
+        try {
+            final DiscussionThread updatedThread = dataSource.sticky(thread);
+            getView().confirmThreadStickied(updatedThread);
+            resetView();
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
-    public void unsticky(final DiscussionThread thread) {
-        final DiscussionThread updatedThread = dataSource.unsticky(thread);
-        getView().confirmThreadUnstickied(updatedThread);
-        resetView();
+    public void unsticky(final DiscussionThread thread)
+            throws DataSourceException {
+        try {
+            final DiscussionThread updatedThread = dataSource.unsticky(thread);
+            getView().confirmThreadUnstickied(updatedThread);
+            resetView();
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
     public boolean userCanSticky(final DiscussionThread thread) {
@@ -140,14 +182,27 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         return authorizationService.maySticky(thread) && thread.isSticky();
     }
 
-    public void lock(final DiscussionThread thread) {
-        final DiscussionThread updatedThread = dataSource.lock(thread);
-        getView().confirmThreadLocked(updatedThread);
+    public void lock(final DiscussionThread thread) throws DataSourceException {
+        try {
+            final DiscussionThread updatedThread = dataSource.lock(thread);
+            getView().confirmThreadLocked(updatedThread);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
-    public void unlock(final DiscussionThread thread) {
-        final DiscussionThread updatedThread = dataSource.unlock(thread);
-        getView().confirmThreadUnlocked(updatedThread);
+    public void unlock(final DiscussionThread thread)
+            throws DataSourceException {
+        try {
+            final DiscussionThread updatedThread = dataSource.unlock(thread);
+            getView().confirmThreadUnlocked(updatedThread);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
     public boolean userCanLock(final DiscussionThread thread) {
@@ -162,18 +217,30 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         return authorizationService.mayDelete(thread);
     }
 
-    public void delete(final DiscussionThread thread) {
-        dataSource.delete(thread);
-        getView().confirmThreadDeleted();
-        resetView();
+    public void delete(final DiscussionThread thread)
+            throws DataSourceException {
+        try {
+            dataSource.delete(thread);
+            getView().confirmThreadDeleted();
+            resetView();
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
+
     }
 
     public boolean userMayStartANewThread() {
         return authorizationService.mayCreateThreadIn(currentCategory);
     }
 
-    private void resetView() {
-        getView().displayThreads(dataSource.getThreads(currentCategory));
+    private void resetView() throws DataSourceException {
+        try {
+            getView().displayThreads(dataSource.getThreads(currentCategory));
+        } catch (final DataSourceException e) {
+            log.error(e);
+            throw e;
+        }
     }
 
 }

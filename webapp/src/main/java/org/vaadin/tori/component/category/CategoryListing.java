@@ -10,6 +10,7 @@ import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.component.category.EditCategoryForm.EditCategoryListener;
 import org.vaadin.tori.component.category.RearrangeControls.RearrangeListener;
 import org.vaadin.tori.data.entity.Category;
+import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.util.StyleConstants;
 
@@ -111,7 +112,16 @@ public class CategoryListing extends
                     @Override
                     public void commit(final String name,
                             final String description) {
-                        getPresenter().createNewCategory(name, description);
+                        try {
+                            getPresenter().createNewCategory(name, description);
+                        } catch (final DataSourceException e) {
+                            /*
+                             * FIXME: make sure that no categories were added to
+                             * the UI.
+                             */
+                            getApplication().getMainWindow().showNotification(
+                                    "Couldn't save your modifications :(");
+                        }
                     }
                 }));
 
@@ -119,7 +129,14 @@ public class CategoryListing extends
             @Override
             public void applyRearrangement() {
                 setRearranging(false);
-                getPresenter().applyRearrangement();
+
+                try {
+                    getPresenter().applyRearrangement();
+                } catch (final DataSourceException e) {
+                    /* FIXME: refresh view to show that nothing was rearranged? */
+                    getApplication().getMainWindow().showNotification(
+                            "Couldn't save new arrangement :(");
+                }
             }
 
             @Override

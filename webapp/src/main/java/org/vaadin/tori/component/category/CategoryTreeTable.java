@@ -1,5 +1,6 @@
 package org.vaadin.tori.component.category;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -12,6 +13,7 @@ import org.vaadin.tori.component.category.CategoryListing.Mode;
 import org.vaadin.tori.component.category.CategoryListingPresenter.ContextMenuOperation;
 import org.vaadin.tori.component.category.EditCategoryForm.EditCategoryListener;
 import org.vaadin.tori.data.entity.Category;
+import org.vaadin.tori.exception.DataSourceException;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
@@ -90,17 +92,32 @@ class CategoryTreeTable extends TreeTable {
         }
         item.getItemProperty(PROPERTY_ID_CATEGORY).setValue(categoryLayout);
         if (mode == Mode.NORMAL) {
-            item.getItemProperty(PROPERTY_ID_UNREAD).setValue(
-                    presenter.getUnreadThreadCount(category));
-            item.getItemProperty(PROPERTY_ID_THREADS).setValue(
-                    presenter.getThreadCount(category));
+            try {
+                item.getItemProperty(PROPERTY_ID_UNREAD).setValue(
+                        presenter.getUnreadThreadCount(category));
+            } catch (final DataSourceException e) {
+                item.getItemProperty(PROPERTY_ID_UNREAD).setValue(0);
+            }
+
+            try {
+                item.getItemProperty(PROPERTY_ID_THREADS).setValue(
+                        presenter.getThreadCount(category));
+            } catch (final DataSourceException e) {
+                item.getItemProperty(PROPERTY_ID_THREADS).setValue(0);
+            }
+
         }
         if (parent != null) {
             setParent(category, parent);
         }
 
-        final List<Category> subCategories = presenter
-                .getSubCategories(category);
+        List<Category> subCategories = new ArrayList<Category>();
+        try {
+            subCategories = presenter.getSubCategories(category);
+        } catch (final DataSourceException e) {
+            // NOP - arraylist is already initialized as empty
+        }
+
         if (subCategories.isEmpty()) {
             setChildrenAllowed(category, false);
         } else {
@@ -142,9 +159,14 @@ class CategoryTreeTable extends TreeTable {
             setData(category);
             setStyleName("category");
             if (mode == Mode.SINGLE_COLUMN) {
-                addComponent(createThreadCountLabel(
-                        presenter.getThreadCount(category),
-                        presenter.getUnreadThreadCount(category)));
+                try {
+                    addComponent(createThreadCountLabel(
+                            presenter.getThreadCount(category),
+                            presenter.getUnreadThreadCount(category)));
+                } catch (final DataSourceException e) {
+                    addComponent(new Label(
+                            "Something went wrong with the database :("));
+                }
             }
             addComponent(createCategoryLink(id, name));
             addComponent(createDescriptionLabel(description));
@@ -196,8 +218,19 @@ class CategoryTreeTable extends TreeTable {
                                         @Override
                                         public void commit(final String name,
                                                 final String description) {
-                                            presenter.edit(category, name,
-                                                    description);
+                                            try {
+                                                presenter.edit(category, name,
+                                                        description);
+                                            } catch (final DataSourceException e) {
+                                                /*
+                                                 * FIXME: make sure that edits
+                                                 * are reverted.
+                                                 */
+                                                getApplication()
+                                                        .getMainWindow()
+                                                        .showNotification(
+                                                                "Sorry, there's something wrong with the database :(");
+                                            }
                                         }
                                     };
                                     return new EditCategoryForm(listener,
@@ -221,7 +254,14 @@ class CategoryTreeTable extends TreeTable {
 
                                         @Override
                                         public void onConfirmed() {
-                                            presenter.delete(category);
+                                            try {
+                                                presenter.delete(category);
+                                            } catch (final DataSourceException e) {
+                                                getApplication()
+                                                        .getMainWindow()
+                                                        .showNotification(
+                                                                "Sorry, there's something wrong with the database :(");
+                                            }
                                             contextMenu.close();
                                         }
 
