@@ -335,7 +335,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public void unFollow(final DiscussionThread thread) {
+    public void unFollow(final DiscussionThread thread)
+            throws DataSourceException {
         try {
             SubscriptionLocalServiceUtil.deleteSubscription(currentUserId,
                     MBThread.class.getName(), thread.getId());
@@ -353,7 +354,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public boolean isFollowing(final DiscussionThread thread) {
+    public boolean isFollowing(final DiscussionThread thread)
+            throws DataSourceException {
         try {
             final com.liferay.portal.model.User user = UserLocalServiceUtil
                     .getUser(currentUserId);
