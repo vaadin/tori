@@ -40,6 +40,7 @@ import com.liferay.portlet.messageboards.service.MBCategoryServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
+import com.liferay.portlet.messageboards.service.MBThreadServiceUtil;
 import com.liferay.portlet.ratings.NoSuchEntryException;
 import com.liferay.portlet.ratings.model.RatingsStats;
 import com.liferay.portlet.ratings.service.RatingsEntryLocalServiceUtil;
@@ -576,17 +577,43 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    @SuppressWarnings(value = "NP_NONNULL_RETURN_VIOLATION", justification = "Incomplete method")
-    public DiscussionThread lock(final DiscussionThread thread) {
-        log.warn("Not yet implemented.");
-        return null;
+    public DiscussionThread lock(final DiscussionThread thread)
+            throws DataSourceException {
+        try {
+            MBThreadServiceUtil.lockThread(thread.getId());
+            thread.setLocked(true);
+            return thread;
+        } catch (final PortalException e) {
+            log.error(
+                    String.format("Couldn't lock thread %d.", thread.getId()),
+                    e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error(
+                    String.format("Couldn't lock thread %d.", thread.getId()),
+                    e);
+            throw new DataSourceException(e);
+        }
     }
 
     @Override
-    @SuppressWarnings(value = "NP_NONNULL_RETURN_VIOLATION", justification = "Incomplete method")
-    public DiscussionThread unlock(final DiscussionThread thread) {
-        log.warn("Not yet implemented.");
-        return null;
+    public DiscussionThread unlock(final DiscussionThread thread)
+            throws DataSourceException {
+        try {
+            MBThreadServiceUtil.unlockThread(thread.getId());
+            thread.setLocked(false);
+            return thread;
+        } catch (final PortalException e) {
+            log.error(
+                    String.format("Couldn't unlock thread %d.", thread.getId()),
+                    e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error(
+                    String.format("Couldn't unlock thread %d.", thread.getId()),
+                    e);
+            throw new DataSourceException(e);
+        }
     }
 
     @Override

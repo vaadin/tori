@@ -50,6 +50,7 @@ public class EntityFactoryUtil {
         entity.setId(liferayThread.getThreadId());
         entity.setTopic(threadRootMessage.getSubject());
         entity.setPostCount(liferayThread.getMessageCount());
+        entity.setLocked(liferayThread.isLocked());
         return entity;
     }
 
