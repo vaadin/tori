@@ -1,13 +1,11 @@
 .v-floatingbar {
-	width: 100%;
 	position: fixed !important;
+	left: auto !important;
+	padding: 0;
 	white-space: normal;
 	-moz-box-shadow: 0 1px 6px #555;
 	-webkit-box-shadow: 0 1px 6px #555;
 	box-shadow: 0 1px 6px #555;
-}
-.v-floatingbar .popupContent {
-	margin: 1px 15px;
 }
 .v-floatingbar.alignment-bottom {
 	top: auto !important;
