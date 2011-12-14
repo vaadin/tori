@@ -48,7 +48,6 @@ import com.liferay.portlet.ratings.service.RatingsEntryServiceUtil;
 import com.liferay.portlet.ratings.service.RatingsStatsLocalServiceUtil;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 public class LiferayDataSource implements DataSource, PortletRequestAware {
 
@@ -56,6 +55,9 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     private static final long ROOT_CATEGORY_ID = 0;
     private static final int QUERY_ALL = com.liferay.portal.kernel.dao.orm.QueryUtil.ALL_POS;
+
+    // TODO this should be dynamic as it can be customized in liferay
+    private static final double STICKY_PRIORITY = 2.0d;
 
     private long scopeGroupId = -1;
     private long currentUserId;
@@ -170,6 +172,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                 .createDiscussionThread(liferayThread, rootMessage,
                         threadAuthor, lastPostAuthor);
         thread.setCategory(category);
+        thread.setSticky(liferayThread.getPriority() >= STICKY_PRIORITY);
         return thread;
     }
 
@@ -577,17 +580,37 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    @SuppressWarnings(value = "NP_NONNULL_RETURN_VIOLATION", justification = "Incomplete method")
-    public DiscussionThread sticky(final DiscussionThread thread) {
-        log.warn("Not yet implemented.");
-        return null;
+    public DiscussionThread sticky(final DiscussionThread thread)
+            throws DataSourceException {
+        updateThreadPriority(thread, STICKY_PRIORITY);
+        thread.setSticky(true);
+        return thread;
     }
 
     @Override
-    @SuppressWarnings(value = "NP_NONNULL_RETURN_VIOLATION", justification = "Incomplete method")
-    public DiscussionThread unsticky(final DiscussionThread thread) {
-        log.warn("Not yet implemented.");
-        return null;
+    public DiscussionThread unsticky(final DiscussionThread thread)
+            throws DataSourceException {
+        updateThreadPriority(thread, MBThreadConstants.PRIORITY_NOT_GIVEN);
+        thread.setSticky(false);
+        return thread;
+    }
+
+    private void updateThreadPriority(final DiscussionThread thread,
+            final double newPriority) throws DataSourceException {
+        try {
+            final MBThread liferayThread = MBThreadLocalServiceUtil
+                    .getThread(thread.getId());
+            liferayThread.setPriority(newPriority);
+            MBThreadLocalServiceUtil.updateMBThread(liferayThread);
+        } catch (final PortalException e) {
+            log.error(String.format("Couldn't change priority for thread %d.",
+                    thread.getId()), e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error(String.format("Couldn't change priority for thread %d.",
+                    thread.getId()), e);
+            throw new DataSourceException(e);
+        }
     }
 
     @Override
