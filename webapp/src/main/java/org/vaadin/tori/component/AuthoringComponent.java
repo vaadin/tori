@@ -145,7 +145,7 @@ public abstract class AuthoringComponent extends CustomComponent {
                 @Override
                 public void buttonClick(final ClickEvent event) {
                     String text = (String) textArea.getValue();
-                    text += formatInfo.getFormatText();
+                    text += formatInfo.getFormatSyntax();
                     textArea.setValue(text);
                     textArea.focus();
                 }

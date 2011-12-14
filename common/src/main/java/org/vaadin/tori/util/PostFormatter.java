@@ -48,7 +48,7 @@ public interface PostFormatter {
     public interface FormatInfo {
         String getFormatName();
 
-        String getFormatText();
+        String getFormatSyntax();
     }
 
     /**

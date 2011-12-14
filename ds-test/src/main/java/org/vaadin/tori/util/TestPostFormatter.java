@@ -73,7 +73,7 @@ public class TestPostFormatter implements PostFormatter {
     };
     private static final FormatInfo BOLD_INFO = new FormatInfo() {
         @Override
-        public String getFormatText() {
+        public String getFormatSyntax() {
             return "[b][/b]";
         }
 
@@ -84,7 +84,7 @@ public class TestPostFormatter implements PostFormatter {
     };
     private static final FormatInfo ITALIC_INFO = new FormatInfo() {
         @Override
-        public String getFormatText() {
+        public String getFormatSyntax() {
             return "[i][/i]";
         }
 
@@ -125,7 +125,7 @@ public class TestPostFormatter implements PostFormatter {
     public Collection<FormatInfo> getOtherFormattingInfo() {
         final FormatInfo info = new FormatInfo() {
             @Override
-            public String getFormatText() {
+            public String getFormatSyntax() {
                 return "}>";
             }
 
