@@ -191,8 +191,10 @@ public abstract class AuthoringComponent extends CustomComponent {
             return button;
         }
 
-        public static void addBoldAndItalicWidgets(final TextArea textArea,
-                final HorizontalLayout layout, final PostFormatter postFormatter) {
+        public static void addBoldAndItalicWidgets(
+                @NonNull final TextArea textArea,
+                @NonNull final HorizontalLayout layout,
+                @NonNull final PostFormatter postFormatter) {
 
             final WebBrowser browser = ((AbstractWebApplicationContext) ToriApplication
                     .getCurrent().getContext()).getBrowser();
@@ -210,8 +212,9 @@ public abstract class AuthoringComponent extends CustomComponent {
             }
         }
 
-        public static void addFontWidgets(final TextArea textArea,
-                final HorizontalLayout layout, final PostFormatter postFormatter) {
+        public static void addFontWidgets(@NonNull final TextArea textArea,
+                @NonNull final HorizontalLayout layout,
+                @NonNull final PostFormatter postFormatter) {
             final FontsInfo fontsInfo = postFormatter.getFontsInfo();
 
             final Collection<FontFace> fontFaces = fontsInfo.getFontFaces();
@@ -227,14 +230,19 @@ public abstract class AuthoringComponent extends CustomComponent {
             }
         }
 
-        public static void addOtherWidgets(final TextArea textArea,
-                final HorizontalLayout layout, final PostFormatter postFormatter) {
-            // FIXME
-            System.out
-                    .println("AuthoringComponent.ToolbarUtil.addOtherWidgets()");
-            System.out.println("not yet implemented");
-        }
+        public static void addOtherWidgets(@NonNull final TextArea textArea,
+                @NonNull final HorizontalLayout layout,
+                @NonNull final PostFormatter postFormatter) {
 
+            final Collection<FormatInfo> info = postFormatter
+                    .getOtherFormattingInfo();
+
+            if (info != null) {
+                for (final FormatInfo format : info) {
+                    layout.addComponent(createButton(format, textArea));
+                }
+            }
+        }
     }
 
     private static final int MAX_ROWS_EXPANDED = 10;

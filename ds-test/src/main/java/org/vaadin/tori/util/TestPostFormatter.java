@@ -2,6 +2,7 @@ package org.vaadin.tori.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
@@ -122,7 +123,19 @@ public class TestPostFormatter implements PostFormatter {
 
     @Override
     public Collection<FormatInfo> getOtherFormattingInfo() {
-        return null;
+        final FormatInfo info = new FormatInfo() {
+            @Override
+            public String getFormatText() {
+                return "}>";
+            }
+
+            @Override
+            public String getFormatName() {
+                return "Vaadin";
+            }
+        };
+
+        return Collections.singleton(info);
     }
 
 }
