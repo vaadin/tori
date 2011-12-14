@@ -617,8 +617,21 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public void delete(final DiscussionThread thread) {
-        log.warn("Not yet implemented.");
+    public void delete(final DiscussionThread thread)
+            throws DataSourceException {
+        try {
+            MBThreadLocalServiceUtil.deleteMBThread(thread.getId());
+        } catch (final PortalException e) {
+            log.error(
+                    String.format("Couldn't delete thread %d.", thread.getId()),
+                    e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error(
+                    String.format("Couldn't delete thread %d.", thread.getId()),
+                    e);
+            throw new DataSourceException(e);
+        }
     }
 
     @Override
