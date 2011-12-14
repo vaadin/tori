@@ -558,8 +558,22 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     @Override
     public void move(final DiscussionThread thread,
-            final Category destinationCategory) {
-        log.warn("Not yet implemented.");
+            final Category destinationCategory) throws DataSourceException {
+        try {
+            MBThreadLocalServiceUtil.moveThread(scopeGroupId,
+                    destinationCategory.getId(), thread.getId());
+        } catch (final PortalException e) {
+            log.error(
+                    String.format("Couldn't move thread %d.", thread.getId()),
+                    e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error(
+                    String.format("Couldn't move thread %d.", thread.getId()),
+                    e);
+            throw new DataSourceException(e);
+        }
+
     }
 
     @Override
