@@ -18,6 +18,13 @@ public class EntityFactoryUtil {
         return entity;
     }
 
+    public static void copyFields(final Category from, final MBCategory to) {
+        to.setCategoryId(from.getId());
+        to.setName(from.getName());
+        to.setDescription(from.getDescription());
+        to.setParentCategoryId(from.getParentCategory().getId());
+    }
+
     public static List<Category> createCategories(
             final List<MBCategory> liferayCategories) {
         final List<Category> entities = new ArrayList<Category>(

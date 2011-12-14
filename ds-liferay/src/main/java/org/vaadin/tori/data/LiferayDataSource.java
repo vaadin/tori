@@ -299,8 +299,23 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public void save(final Category categoryToSave) {
-        log.warn("Not yet implemented.");
+    public void save(final Category categoryToSave) throws DataSourceException {
+        try {
+            final MBCategory category = MBCategoryLocalServiceUtil
+                    .getCategory(categoryToSave.getId());
+            EntityFactoryUtil.copyFields(categoryToSave, category);
+            MBCategoryLocalServiceUtil.updateMBCategory(category);
+        } catch (final PortalException e) {
+            log.error(
+                    String.format("Cannot save category %d",
+                            categoryToSave.getId()), e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error(
+                    String.format("Cannot save category %d",
+                            categoryToSave.getId()), e);
+            throw new DataSourceException(e);
+        }
     }
 
     @Override

@@ -57,7 +57,7 @@ public class Category extends AbstractEntity {
         this.subCategories = subCategories;
     }
 
-    public List<Category> getSubCategories() {
+    protected List<Category> getSubCategories() {
         return subCategories;
     }
 
