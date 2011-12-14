@@ -23,6 +23,7 @@ import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutAction.ModifierKey;
 import com.vaadin.terminal.gwt.server.AbstractWebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -42,22 +43,17 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 
 @SuppressWarnings("serial")
 public abstract class AuthoringComponent extends CustomComponent {
-    public static final class ToolbarUtil {
+    private static final class ToolbarUtil {
 
         @NonNull
-        public static Component createFontWidget(
-                @NonNull final Collection<FontFace> fontFaces) {
+        private static Component createFontWidget(
+                @NonNull final Collection<FontFace> fontFaces,
+                final TextArea textArea) {
             ToriUtil.checkForNullAndEmpty(fontFaces,
                     "fontFaces may not be null", "fontFaces may not be empty");
 
-            final NativeSelect select = new NativeSelect();
-            select.setImmediate(true);
-            select.setDescription("Font face");
-
-            final Object nullId = new Object();
-            select.addItem(nullId);
-            select.setItemCaption(nullId, "Font");
-            select.setNullSelectionItemId(nullId);
+            final AbstractSelect select = createSelect("Font face", "Font",
+                    textArea);
 
             for (final FontFace font : fontFaces) {
                 select.addItem(font);
@@ -67,20 +63,70 @@ public abstract class AuthoringComponent extends CustomComponent {
             return select;
         }
 
-        @NonNull
-        public static Component createSizeWidget(
-                @NonNull final Collection<FontSize> fontSizes) {
-            ToriUtil.checkForNullAndEmpty(fontSizes,
-                    "fontSizes may not be null", "fontSizes may not be empty");
-
+        private static AbstractSelect createSelect(final String description,
+                final String caption, final TextArea textArea) {
             final NativeSelect select = new NativeSelect();
             select.setImmediate(true);
-            select.setDescription("Font size");
+            select.setDescription(description);
 
             final Object nullId = new Object();
             select.addItem(nullId);
-            select.setItemCaption(nullId, "Size");
+            select.setItemCaption(nullId, caption);
             select.setNullSelectionItemId(nullId);
+
+            select.addListener(new ValueChangeListener() {
+                private boolean ignoreEvent = false;
+
+                @Override
+                public synchronized void valueChange(
+                        final ValueChangeEvent event) {
+                    if (!ignoreEvent) {
+                        ignoreEvent = true;
+                        try {
+                            final String appendedString;
+
+                            final Object value = event.getProperty().getValue();
+                            if (value instanceof FontFace) {
+                                appendedString = ((FontFace) value)
+                                        .getFontSyntax();
+                            } else if (value instanceof FontSize) {
+                                appendedString = ((FontSize) value)
+                                        .getFontSizeSyntax();
+                            } else {
+                                throw new IllegalStateException(value
+                                        .getClass() + " is an unexpected type");
+                            }
+
+                            final String text = (String) textArea.getValue();
+                            textArea.setValue(text + appendedString);
+
+                            // Reset selection.
+                            final Object nullId = select
+                                    .getNullSelectionItemId();
+                            select.select(nullId);
+
+                            textArea.focus();
+                        }
+
+                        finally {
+                            ignoreEvent = false;
+                        }
+                    }
+                }
+            });
+
+            return select;
+        }
+
+        @NonNull
+        private static Component createSizeWidget(
+                @NonNull final Collection<FontSize> fontSizes,
+                final TextArea textArea) {
+            ToriUtil.checkForNullAndEmpty(fontSizes,
+                    "fontSizes may not be null", "fontSizes may not be empty");
+
+            final AbstractSelect select = createSelect("Font size", "Size",
+                    textArea);
 
             for (final FontSize size : fontSizes) {
                 select.addItem(size);
@@ -90,7 +136,7 @@ public abstract class AuthoringComponent extends CustomComponent {
             return select;
         }
 
-        public static Button createButton(final FormatInfo formatInfo,
+        private static Button createButton(final FormatInfo formatInfo,
                 final TextArea textArea) {
             final NativeButton button = new NativeButton(
                     formatInfo.getFormatName());
@@ -108,7 +154,7 @@ public abstract class AuthoringComponent extends CustomComponent {
         }
 
         @CheckForNull
-        public static Component createBoldButton(
+        private static Component createBoldButton(
                 @CheckForNull final FormatInfo boldInfo,
                 @NonNull final WebBrowser browser,
                 @NonNull final TextArea textArea) {
@@ -127,7 +173,7 @@ public abstract class AuthoringComponent extends CustomComponent {
         }
 
         @CheckForNull
-        public static Component createItalicButton(
+        private static Component createItalicButton(
                 @CheckForNull final FormatInfo italicInfo,
                 @NonNull final WebBrowser browser,
                 @NonNull final TextArea textArea) {
@@ -143,6 +189,50 @@ public abstract class AuthoringComponent extends CustomComponent {
                 button.setClickShortcut(KeyCode.I, ModifierKey.META);
             }
             return button;
+        }
+
+        public static void addBoldAndItalicWidgets(final TextArea textArea,
+                final HorizontalLayout layout, final PostFormatter postFormatter) {
+
+            final WebBrowser browser = ((AbstractWebApplicationContext) ToriApplication
+                    .getCurrent().getContext()).getBrowser();
+
+            final Component boldButton = createBoldButton(
+                    postFormatter.getBoldInfo(), browser, textArea);
+            if (boldButton != null) {
+                layout.addComponent(boldButton);
+            }
+
+            final Component italicButton = createItalicButton(
+                    postFormatter.getItalicInfo(), browser, textArea);
+            if (italicButton != null) {
+                layout.addComponent(italicButton);
+            }
+        }
+
+        public static void addFontWidgets(final TextArea textArea,
+                final HorizontalLayout layout, final PostFormatter postFormatter) {
+            final FontsInfo fontsInfo = postFormatter.getFontsInfo();
+
+            final Collection<FontFace> fontFaces = fontsInfo.getFontFaces();
+            if (fontFaces != null && !fontFaces.isEmpty()) {
+                layout.addComponent(AuthoringComponent.ToolbarUtil
+                        .createFontWidget(fontFaces, textArea));
+            }
+
+            final Collection<FontSize> fontSizes = fontsInfo.getFontSizes();
+            if (fontSizes != null && !fontSizes.isEmpty()) {
+                layout.addComponent(AuthoringComponent.ToolbarUtil
+                        .createSizeWidget(fontSizes, textArea));
+            }
+        }
+
+        public static void addOtherWidgets(final TextArea textArea,
+                final HorizontalLayout layout, final PostFormatter postFormatter) {
+            // FIXME
+            System.out
+                    .println("AuthoringComponent.ToolbarUtil.addOtherWidgets()");
+            System.out.println("not yet implemented");
         }
 
     }
@@ -252,31 +342,10 @@ public abstract class AuthoringComponent extends CustomComponent {
 
         final PostFormatter postFormatter = ToriApplication.getCurrent()
                 .getPostFormatter();
-        final FontsInfo fontsInfo = postFormatter.getFontsInfo();
 
-        final Collection<FontFace> fontFaces = fontsInfo.getFontFaces();
-        if (fontFaces != null && !fontFaces.isEmpty()) {
-            layout.addComponent(ToolbarUtil.createFontWidget(fontFaces));
-        }
-
-        final Collection<FontSize> fontSizes = fontsInfo.getFontSizes();
-        if (fontSizes != null && !fontSizes.isEmpty()) {
-            layout.addComponent(ToolbarUtil.createSizeWidget(fontSizes));
-        }
-
-        final WebBrowser browser = ((AbstractWebApplicationContext) ToriApplication
-                .getCurrent().getContext()).getBrowser();
-        final Component boldButton = ToolbarUtil.createBoldButton(
-                postFormatter.getBoldInfo(), browser, textArea);
-        if (boldButton != null) {
-            layout.addComponent(boldButton);
-        }
-
-        final Component italicButton = ToolbarUtil.createItalicButton(
-                postFormatter.getItalicInfo(), browser, textArea);
-        if (italicButton != null) {
-            layout.addComponent(italicButton);
-        }
+        ToolbarUtil.addFontWidgets(textArea, layout, postFormatter);
+        ToolbarUtil.addBoldAndItalicWidgets(textArea, layout, postFormatter);
+        ToolbarUtil.addOtherWidgets(textArea, layout, postFormatter);
 
         return layout;
     }
