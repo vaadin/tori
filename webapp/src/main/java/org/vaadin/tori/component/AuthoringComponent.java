@@ -163,10 +163,13 @@ public abstract class AuthoringComponent extends CustomComponent {
             }
 
             final Button button = createButton(boldInfo, textArea);
+            final String description = button.getDescription();
             if (!browser.isMacOSX()) {
                 button.setClickShortcut(KeyCode.B, ModifierKey.CTRL);
+                button.setDescription(description + " <i>(Ctrl+B)</i>");
             } else {
                 button.setClickShortcut(KeyCode.B, ModifierKey.META);
+                button.setDescription(description + " <i>(\u2318-B)</i>");
             }
             return button;
         }
@@ -182,10 +185,13 @@ public abstract class AuthoringComponent extends CustomComponent {
             }
 
             final Button button = createButton(italicInfo, textArea);
+            final String description = button.getDescription();
             if (!browser.isMacOSX()) {
                 button.setClickShortcut(KeyCode.I, ModifierKey.CTRL);
+                button.setDescription(description + " <i>(Ctrl-I)</i>");
             } else {
                 button.setClickShortcut(KeyCode.I, ModifierKey.META);
+                button.setDescription(description + " <i>(\u2318-I)</i>");
             }
             return button;
         }
