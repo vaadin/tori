@@ -38,10 +38,10 @@ public class ToriNavigator extends CustomComponent {
      */
     public enum ApplicationView {
         // @formatter:off
-        DASHBOARD(URL_PREFIX+"dashboard", DashboardViewImpl.class),
-        CATEGORIES(URL_PREFIX+"category", CategoryViewImpl.class),
-        THREADS(URL_PREFIX+"thread", ThreadViewImpl.class),
-        USERS(URL_PREFIX+"user", NullViewImpl.class)
+        DASHBOARD(URL_PREFIX + "dashboard", DashboardViewImpl.class),
+        CATEGORIES(URL_PREFIX + "category", CategoryViewImpl.class),
+        THREADS(URL_PREFIX + "thread", ThreadViewImpl.class),
+        USERS(URL_PREFIX + "user", NullViewImpl.class)
         ;
         // @formatter:on
 
