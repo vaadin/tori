@@ -35,6 +35,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.PopupView;
+import com.vaadin.ui.TextArea;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -51,6 +52,7 @@ public abstract class AuthoringComponent extends CustomComponent {
 
             final NativeSelect select = new NativeSelect();
             select.setImmediate(true);
+            select.setDescription("Font face");
 
             final Object nullId = new Object();
             select.addItem(nullId);
@@ -73,6 +75,7 @@ public abstract class AuthoringComponent extends CustomComponent {
 
             final NativeSelect select = new NativeSelect();
             select.setImmediate(true);
+            select.setDescription("Font size");
 
             final Object nullId = new Object();
             select.addItem(nullId);
@@ -87,22 +90,34 @@ public abstract class AuthoringComponent extends CustomComponent {
             return select;
         }
 
-        public static Button createButton(final FormatInfo formatInfo) {
+        public static Button createButton(final FormatInfo formatInfo,
+                final TextArea textArea) {
             final NativeButton button = new NativeButton(
                     formatInfo.getFormatName());
-            // TODO: formatting
+            button.setDescription(formatInfo.getFormatName());
+            button.addListener(new ClickListener() {
+                @Override
+                public void buttonClick(final ClickEvent event) {
+                    String text = (String) textArea.getValue();
+                    text += formatInfo.getFormatText();
+                    textArea.setValue(text);
+                    textArea.focus();
+                }
+            });
             return button;
         }
 
         @CheckForNull
         public static Component createBoldButton(
                 @CheckForNull final FormatInfo boldInfo,
-                final WebBrowser browser) {
+                @NonNull final WebBrowser browser,
+                @NonNull final TextArea textArea) {
+
             if (boldInfo == null) {
                 return null;
             }
 
-            final Button button = createButton(boldInfo);
+            final Button button = createButton(boldInfo, textArea);
             if (!browser.isMacOSX()) {
                 button.setClickShortcut(KeyCode.B, ModifierKey.CTRL);
             } else {
@@ -114,12 +129,14 @@ public abstract class AuthoringComponent extends CustomComponent {
         @CheckForNull
         public static Component createItalicButton(
                 @CheckForNull final FormatInfo italicInfo,
-                final WebBrowser browser) {
+                @NonNull final WebBrowser browser,
+                @NonNull final TextArea textArea) {
+
             if (italicInfo == null) {
                 return null;
             }
 
-            final Button button = createButton(italicInfo);
+            final Button button = createButton(italicInfo, textArea);
             if (!browser.isMacOSX()) {
                 button.setClickShortcut(KeyCode.I, ModifierKey.CTRL);
             } else {
@@ -206,7 +223,6 @@ public abstract class AuthoringComponent extends CustomComponent {
         captionLayout.addComponent(captionLabel);
         layout.addComponent(captionLayout, "captionlabel");
 
-        layout.addComponent(createToolbar(), "toolbar");
         layout.addComponent(new PopupView("Show Formatting Syntax",
                 getSyntaxLabel(formattingSyntaxXhtml)), "formattingsyntax");
 
@@ -223,12 +239,14 @@ public abstract class AuthoringComponent extends CustomComponent {
         layout.addComponent(new NativeButton("Clear", CLEAR_LISTENER),
                 "clearbutton");
 
+        layout.addComponent(createToolbar(input), "toolbar");
+
         input.addListener(INPUT_CHANGE_LISTENER);
         input.addListener(VALUE_CHANGE_LISTENER);
         setCompactMode(false);
     }
 
-    private Component createToolbar() {
+    private Component createToolbar(final TextArea textArea) {
 
         final HorizontalLayout layout = new HorizontalLayout();
 
@@ -249,13 +267,13 @@ public abstract class AuthoringComponent extends CustomComponent {
         final WebBrowser browser = ((AbstractWebApplicationContext) ToriApplication
                 .getCurrent().getContext()).getBrowser();
         final Component boldButton = ToolbarUtil.createBoldButton(
-                postFormatter.getBoldInfo(), browser);
+                postFormatter.getBoldInfo(), browser, textArea);
         if (boldButton != null) {
             layout.addComponent(boldButton);
         }
 
         final Component italicButton = ToolbarUtil.createItalicButton(
-                postFormatter.getItalicInfo(), browser);
+                postFormatter.getItalicInfo(), browser, textArea);
         if (italicButton != null) {
             layout.addComponent(italicButton);
         }
