@@ -12,13 +12,10 @@ public class TestPostFormatter implements PostFormatter {
     private static class TestFontFace implements FontFace {
         private final String name;
         private final String syntax;
-        private final boolean isDefault;
 
-        public TestFontFace(final String name, final String syntax,
-                final boolean isDefault) {
+        public TestFontFace(final String name, final String syntax) {
             this.name = name;
             this.syntax = syntax;
-            this.isDefault = isDefault;
         }
 
         @Override
@@ -30,23 +27,15 @@ public class TestPostFormatter implements PostFormatter {
         public String getFontSyntax() {
             return syntax;
         }
-
-        @Override
-        public boolean showAsDefault() {
-            return isDefault;
-        }
     }
 
     private static class TestFontSize implements FontSize {
         private final String name;
         private final String syntax;
-        private final boolean isDefault;
 
-        public TestFontSize(final String name, final String syntax,
-                final boolean isDefault) {
+        public TestFontSize(final String name, final String syntax) {
             this.name = name;
             this.syntax = syntax;
-            this.isDefault = isDefault;
         }
 
         @Override
@@ -58,11 +47,6 @@ public class TestPostFormatter implements PostFormatter {
         public String getFontSizeSyntax() {
             return syntax;
         }
-
-        @Override
-        public boolean showAsDefault() {
-            return isDefault;
-        }
     }
 
     private static final FontsInfo FONTS_INFO = new FontsInfo() {
@@ -70,23 +54,43 @@ public class TestPostFormatter implements PostFormatter {
         @Override
         public Collection<FontFace> getFontFaces() {
             final List<FontFace> list = new ArrayList<FontFace>();
-            list.add(new TestFontFace("SANSSERIF!", "[font=sans-serif][/font]",
-                    true));
-            list.add(new TestFontFace("serif :(", "[font=serif][/font]", false));
-            list.add(new TestFontFace("monospace", "[font=monospace][/font]",
-                    false));
+            list.add(new TestFontFace("SANSSERIF!", "[font=sans-serif][/font]"));
+            list.add(new TestFontFace("serif :(", "[font=serif][/font]"));
+            list.add(new TestFontFace("monospace", "[font=monospace][/font]"));
             return list;
         }
 
         @Override
         public Collection<FontSize> getFontSizes() {
             final List<FontSize> list = new ArrayList<FontSize>();
-            list.add(new TestFontSize("Small", "[size=small][/size]", false));
-            list.add(new TestFontSize("Normal", "[size=normal][/size]", true));
-            list.add(new TestFontSize("Large", "[size=large][/size]", false));
+            list.add(new TestFontSize("Small", "[size=small][/size]"));
+            list.add(new TestFontSize("Normal", "[size=normal][/size]"));
+            list.add(new TestFontSize("Large", "[size=large][/size]"));
             return list;
         }
 
+    };
+    private static final FormatInfo BOLD_INFO = new FormatInfo() {
+        @Override
+        public String getFormatText() {
+            return "[b][/b]";
+        }
+
+        @Override
+        public String getFormatName() {
+            return "Bold";
+        }
+    };
+    private static final FormatInfo ITALIC_INFO = new FormatInfo() {
+        @Override
+        public String getFormatText() {
+            return "[i][/i]";
+        }
+
+        @Override
+        public String getFormatName() {
+            return "Italic";
+        }
     };
 
     @Override
@@ -104,6 +108,21 @@ public class TestPostFormatter implements PostFormatter {
     @Override
     public FontsInfo getFontsInfo() {
         return FONTS_INFO;
+    }
+
+    @Override
+    public FormatInfo getBoldInfo() {
+        return BOLD_INFO;
+    }
+
+    @Override
+    public FormatInfo getItalicInfo() {
+        return ITALIC_INFO;
+    }
+
+    @Override
+    public Collection<FormatInfo> getOtherFormattingInfo() {
+        return null;
     }
 
 }

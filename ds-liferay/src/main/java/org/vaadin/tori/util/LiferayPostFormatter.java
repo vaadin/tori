@@ -39,4 +39,28 @@ public class LiferayPostFormatter implements PostFormatter {
             }
         };
     }
+
+    @Override
+    public FormatInfo getBoldInfo() {
+        // FIXME
+        System.out.println("LiferayPostFormatter.getBoldInfo()");
+        System.out.println("not yet implemented");
+        return null;
+    }
+
+    @Override
+    public FormatInfo getItalicInfo() {
+        // FIXME
+        System.out.println("LiferayPostFormatter.getItalicInfo()");
+        System.out.println("not yet implemented");
+        return null;
+    }
+
+    @Override
+    public Collection<FormatInfo> getOtherFormattingInfo() {
+        // FIXME
+        System.out.println("LiferayPostFormatter.getOtherFormattingInfo()");
+        System.out.println("not yet implemneted");
+        return null;
+    }
 }

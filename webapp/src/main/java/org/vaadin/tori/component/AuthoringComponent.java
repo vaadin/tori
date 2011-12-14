@@ -4,9 +4,11 @@ import java.util.Collection;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriUtil;
+import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.PostFormatter.FontsInfo;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
+import org.vaadin.tori.util.PostFormatter.FormatInfo;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -17,6 +19,11 @@ import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.event.ShortcutAction.ModifierKey;
+import com.vaadin.terminal.gwt.server.AbstractWebApplicationContext;
+import com.vaadin.terminal.gwt.server.WebBrowser;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
@@ -29,6 +36,7 @@ import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.PopupView;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 @SuppressWarnings("serial")
@@ -77,6 +85,47 @@ public abstract class AuthoringComponent extends CustomComponent {
             }
 
             return select;
+        }
+
+        public static Button createButton(final FormatInfo formatInfo) {
+            final NativeButton button = new NativeButton(
+                    formatInfo.getFormatName());
+            // TODO: formatting
+            return button;
+        }
+
+        @CheckForNull
+        public static Component createBoldButton(
+                @CheckForNull final FormatInfo boldInfo,
+                final WebBrowser browser) {
+            if (boldInfo == null) {
+                return null;
+            }
+
+            final Button button = createButton(boldInfo);
+            if (!browser.isMacOSX()) {
+                button.setClickShortcut(KeyCode.B, ModifierKey.CTRL);
+            } else {
+                button.setClickShortcut(KeyCode.B, ModifierKey.META);
+            }
+            return button;
+        }
+
+        @CheckForNull
+        public static Component createItalicButton(
+                @CheckForNull final FormatInfo italicInfo,
+                final WebBrowser browser) {
+            if (italicInfo == null) {
+                return null;
+            }
+
+            final Button button = createButton(italicInfo);
+            if (!browser.isMacOSX()) {
+                button.setClickShortcut(KeyCode.I, ModifierKey.CTRL);
+            } else {
+                button.setClickShortcut(KeyCode.I, ModifierKey.META);
+            }
+            return button;
         }
 
     }
@@ -183,8 +232,9 @@ public abstract class AuthoringComponent extends CustomComponent {
 
         final HorizontalLayout layout = new HorizontalLayout();
 
-        final FontsInfo fontsInfo = ToriApplication.getCurrent()
-                .getPostFormatter().getFontsInfo();
+        final PostFormatter postFormatter = ToriApplication.getCurrent()
+                .getPostFormatter();
+        final FontsInfo fontsInfo = postFormatter.getFontsInfo();
 
         final Collection<FontFace> fontFaces = fontsInfo.getFontFaces();
         if (fontFaces != null && !fontFaces.isEmpty()) {
@@ -194,6 +244,20 @@ public abstract class AuthoringComponent extends CustomComponent {
         final Collection<FontSize> fontSizes = fontsInfo.getFontSizes();
         if (fontSizes != null && !fontSizes.isEmpty()) {
             layout.addComponent(ToolbarUtil.createSizeWidget(fontSizes));
+        }
+
+        final WebBrowser browser = ((AbstractWebApplicationContext) ToriApplication
+                .getCurrent().getContext()).getBrowser();
+        final Component boldButton = ToolbarUtil.createBoldButton(
+                postFormatter.getBoldInfo(), browser);
+        if (boldButton != null) {
+            layout.addComponent(boldButton);
+        }
+
+        final Component italicButton = ToolbarUtil.createItalicButton(
+                postFormatter.getItalicInfo(), browser);
+        if (italicButton != null) {
+            layout.addComponent(italicButton);
         }
 
         return layout;

@@ -2,10 +2,9 @@ package org.vaadin.tori.util;
 
 import java.util.Collection;
 
-import javax.annotation.CheckForNull;
-
 import org.vaadin.tori.data.entity.Post;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 /**
@@ -46,6 +45,12 @@ public interface PostFormatter {
         Collection<FontSize> getFontSizes();
     }
 
+    public interface FormatInfo {
+        String getFormatName();
+
+        String getFormatText();
+    }
+
     /**
      * Given a raw string of text for a {@link Post}, format it in the
      * appropriate way into valid XHTML.
@@ -69,4 +74,31 @@ public interface PostFormatter {
 
     @NonNull
     FontsInfo getFontsInfo();
+
+    /**
+     * Get the format info for "bold".
+     * 
+     * @return might be <code>null</code>, which indicates that there's no bold
+     *         format.
+     */
+    @CheckForNull
+    FormatInfo getBoldInfo();
+
+    /**
+     * Get the format info for "italic".
+     * 
+     * @return might be <code>null</code>, which indicates that there's no
+     *         italic format.
+     */
+    @CheckForNull
+    FormatInfo getItalicInfo();
+
+    /**
+     * All the other styles that are behind buttons.
+     * 
+     * @return might be <code>null</code>, which indicates that there's no other
+     *         formats. The same goes for an empty {@link Collection}
+     */
+    @CheckForNull
+    Collection<FormatInfo> getOtherFormattingInfo();
 }
