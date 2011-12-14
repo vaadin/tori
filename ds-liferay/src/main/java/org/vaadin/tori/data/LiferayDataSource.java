@@ -27,6 +27,7 @@ import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.SubscriptionLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.portlet.flags.service.FlagsEntryServiceUtil;
 import com.liferay.portlet.messageboards.model.MBBan;
 import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
@@ -57,9 +58,12 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     private long scopeGroupId = -1;
     private long currentUserId;
+    private com.liferay.portal.model.User currentUser;
     private String imagePath;
+
     private ServiceContext mbMessageServiceContext;
     private ServiceContext mbBanServiceContext;
+    private ServiceContext flagsServiceContext;
 
     @Override
     public List<Category> getRootCategories() throws DataSourceException {
@@ -316,7 +320,26 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     @Override
     public void reportPost(final PostReport report) {
-        log.warn("Not yet implemented.");
+        String reporterEmailAddress = "";
+        try {
+            reporterEmailAddress = getCurrentUser().getEmailAddress();
+        } catch (final PortalException e) {
+            log.error("Couldn't get the email address of current user.", e);
+        } catch (final SystemException e) {
+            log.error("Couldn't get the email address of current user.", e);
+        }
+
+        final long reportedUserId = report.getPost().getAuthor().getId();
+        final String contentTitle = report.getPost().getThread().getTopic();
+        final String contentURL = report.getPostUrl();
+        String reason = report.getReason().toString();
+        if (report.getAdditionalInfo().length() > 0) {
+            reason += ": " + report.getAdditionalInfo();
+        }
+
+        FlagsEntryServiceUtil.addEntry(MBMessage.class.getName(), report
+                .getPost().getId(), reporterEmailAddress, reportedUserId,
+                contentTitle, contentURL, reason, flagsServiceContext);
     }
 
     @Override
@@ -383,8 +406,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     public boolean isFollowing(final DiscussionThread thread)
             throws DataSourceException {
         try {
-            final com.liferay.portal.model.User user = UserLocalServiceUtil
-                    .getUser(currentUserId);
+            final com.liferay.portal.model.User user = getCurrentUser();
             return SubscriptionLocalServiceUtil.isSubscribed(
                     user.getCompanyId(), user.getUserId(),
                     MBThread.class.getName(), thread.getId());
@@ -574,16 +596,22 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     @Override
     public void setRequest(final PortletRequest request) {
-        if (scopeGroupId < 0) {
-            // scope not defined yet -> get if from the request
-            final ThemeDisplay themeDisplay = (ThemeDisplay) request
-                    .getAttribute("THEME_DISPLAY");
+        final ThemeDisplay themeDisplay = (ThemeDisplay) request
+                .getAttribute("THEME_DISPLAY");
 
-            if (themeDisplay != null) {
+        if (themeDisplay != null) {
+            if (scopeGroupId < 0) {
+                // scope not defined yet -> get if from the theme display
                 scopeGroupId = themeDisplay.getScopeGroupId();
-                currentUserId = themeDisplay.getUserId();
-                imagePath = themeDisplay.getPathImage();
                 log.info("Using groupId " + scopeGroupId + " as the scope.");
+            }
+            if (currentUserId != themeDisplay.getUserId()) {
+                // current user is changed
+                currentUserId = themeDisplay.getUserId();
+                currentUser = null;
+            }
+            if (imagePath == null) {
+                imagePath = themeDisplay.getPathImage();
             }
         }
 
@@ -592,11 +620,21 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                     MBMessage.class.getName(), request);
             mbBanServiceContext = ServiceContextFactory.getInstance(
                     MBBan.class.getName(), request);
+            flagsServiceContext = ServiceContextFactory.getInstance(
+                    "com.liferay.portlet.flags.model.FlagsEntry", request);
         } catch (final PortalException e) {
             log.error("Couldn't create ServiceContext.", e);
         } catch (final SystemException e) {
             log.error("Couldn't create ServiceContext.", e);
         }
+    }
+
+    private com.liferay.portal.model.User getCurrentUser()
+            throws PortalException, SystemException {
+        if (currentUser == null && currentUserId > 0) {
+            currentUser = UserLocalServiceUtil.getUser(currentUserId);
+        }
+        return currentUser;
     }
 
     @Override

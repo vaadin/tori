@@ -297,7 +297,8 @@ public class PostComponent extends CustomComponent {
                 final int x = event.getClientX();
                 final int y = event.getClientY();
                 getApplication().getMainWindow().addWindow(
-                        new ReportWindow(post, presenter, x, y));
+                        new ReportWindow(post, presenter, x, y,
+                                getPermaLinkUrl(post)));
             }
         });
         button.setVisible(false);
@@ -309,13 +310,26 @@ public class PostComponent extends CustomComponent {
                 .format(post.getBodyRaw());
     }
 
-    private static Component getPermaLink(final Post post) {
-        final String linkString = String.format(
-                "<a href=\"#%s/%s/%s\">Permalink</a>", //
-                ToriNavigator.ApplicationView.THREADS.getUrl(), //
-                post.getThread().getId(), //
-                post.getId() //
+    private static String getPermaLinkUrl(final Post post) {
+        // @formatter:off
+        final String linkUrl = String.format(
+                "#%s/%s/%s",
+                ToriNavigator.ApplicationView.THREADS.getUrl(), 
+                post.getThread().getId(),
+                post.getId()
                 );
+        // @formatter:on
+
+        return linkUrl;
+    }
+
+    private static Component getPermaLink(final Post post) {
+        // @formatter:off
+        final String linkString = String.format(
+                "<a href=\"%s\">Permalink</a>",
+                getPermaLinkUrl(post)
+                );
+        // @formatter:on
 
         final Label label = new Label(linkString, Label.CONTENT_XHTML);
         return label;

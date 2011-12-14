@@ -26,7 +26,7 @@ class ReportWindow extends Window {
     private final VerticalLayout layout = new VerticalLayout();
 
     public ReportWindow(final Post post, final ThreadPresenter presenter,
-            final int x, final int y) {
+            final int x, final int y, final String postPermalink) {
         super("Report Post");
         layout.setSpacing(true);
         layout.setMargin(true);
@@ -93,7 +93,8 @@ class ReportWindow extends Window {
             @Override
             public void buttonClick(final ClickEvent event) {
                 final PostReport report = new PostReport(post, (Reason) reason
-                        .getValue(), (String) reasonText.getValue());
+                        .getValue(), (String) reasonText.getValue(),
+                        postPermalink);
 
                 try {
                     presenter.handlePostReport(report);
