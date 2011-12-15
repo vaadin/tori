@@ -215,8 +215,8 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
         final int height = Util.getRequiredHeight(pe)
                 - Util.getRequiredHeight(ipe);
 
-        return new RenderSpace(Window.getClientWidth() - width,
-                Window.getClientHeight() - height);
+        return new RenderSpace(client.getView().getOffsetWidth() - width,
+                client.getView().getOffsetWidth() - height);
     }
 
     private boolean isScrollComponentVisible() {
