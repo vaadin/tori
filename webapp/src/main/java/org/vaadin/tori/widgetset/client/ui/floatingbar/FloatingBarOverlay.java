@@ -91,6 +91,11 @@ class FloatingBarOverlay extends VOverlay {
         if (super.isVisible() != visible) {
             super.setVisible(visible);
             owner.visibilityChanged(visible);
+            if (visible) {
+                removeStyleName("hidden");
+            } else {
+                addStyleName("hidden");
+            }
         }
     }
 
