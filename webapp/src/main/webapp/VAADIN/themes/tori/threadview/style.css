@@ -175,7 +175,6 @@
 .authoring [location="preview"] {
 	background: url(../images/preview-bg.png) #fff top left repeat;
 	padding: 18px 14px;
-	color: #464440;
 }
 
 .authoring.compact [location="formattingsyntax"],
