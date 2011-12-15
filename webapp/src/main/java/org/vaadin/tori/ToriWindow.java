@@ -5,6 +5,7 @@ import org.vaadin.tori.component.breadcrumbs.Breadcrumbs;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
 
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 /**
@@ -19,6 +20,10 @@ public class ToriWindow extends Window {
 
     public ToriWindow() {
         super("Tori");
+        final VerticalLayout windowLayout = new VerticalLayout();
+        windowLayout.setMargin(false);
+        setContent(windowLayout);
+
         addControlPanelIfInDevelopment();
         addComponent(new Breadcrumbs(navigator));
         addComponent(navigator);

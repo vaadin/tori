@@ -7,14 +7,12 @@
 }
 
 .post table.container {
-	border: 1px solid black; 
 	margin: 5px 0;
 }
 
 .post .author {
 	width: 140px; /* 150px - padding */ 
-	min-width: 140px; /* 150px - padding */
-	background-color: #ddd; 
+	min-width: 140px; /* 150px - padding */ 
 	padding: 5px;
 	vertical-align: top;
 }
@@ -248,14 +246,24 @@
 .post .body .quote-title,
 .post .body .quote {
 	margin-left: 10px;
+	padding-left: 37px;
+	padding-right: 37px;
 }
 .post .body .quote-title {
-	font-weight: bold;	
+	font-weight: bold;
+	min-height: 20px;
+	padding-top: 10px;
+	background: url(../images/quote.png) #e9e9e1 8px 10px no-repeat;
+	-moz-border-radius: 4px 4px 0 0;
+	-webkit-border-radius: 4px 4px 0 0;
+	border-radius: 4px 4px 0 0;
 }
 .post .body .quote {
-	padding: 6px 3px;
-	border: 1px solid #9f9f9f;
-	background: #fff;
+	background: #e9e9e1;
+	padding-bottom: 12px;
+	-moz-border-radius: 0 0 4px 4px;
+	-webkit-border-radius: 0 0 4px 4px;
+	border-radius: 0 0 4px 4px;
 }
 .post .body .code {
 	font-size: 12px;

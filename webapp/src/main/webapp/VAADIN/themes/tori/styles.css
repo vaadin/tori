@@ -11,6 +11,7 @@
 
 .v-app,
 .v-popupview, .v-popupview:hover {
+	background: #fff;
 	font-size: 14px;
 	color: #2f2f2f;
 	text-decoration: none;
