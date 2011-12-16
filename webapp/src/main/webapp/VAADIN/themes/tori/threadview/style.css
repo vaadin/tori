@@ -215,11 +215,11 @@
 	transition-timing-function: ease-in-out;
 }
 .v-floatingbar.hidden {
-	top: -80px !important;
+	top: -300px !important;
 	visibility: visible !important;
 }
 .v-floatingbar.alignment-bottom.hidden {
-	bottom: -150px !important;
+	bottom: -300px !important;
 	visibility: visible !important;
 }
 
@@ -295,5 +295,7 @@
 	float: left;
 	padding: 0px 9px 0px 18px;
 	margin-right: 12px;
-	color: #96c7d7;	
+	color: #96c7d7;
+    -moz-user-select: none;
+    -webkit-user-select: none;	
 }
