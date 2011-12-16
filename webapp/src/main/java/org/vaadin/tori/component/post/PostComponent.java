@@ -25,7 +25,6 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -111,8 +110,8 @@ public class PostComponent extends CustomComponent {
     };
 
     private final Component reportComponent;
-    private final NativeButton editButton;
-    private final NativeButton quoteButton;
+    private final Button editButton;
+    private final Button quoteButton;
     private final Button scrollToButton;
     private final ContextMenu contextMenu;
     private final ThreadPresenter presenter;
@@ -168,10 +167,14 @@ public class PostComponent extends CustomComponent {
         this.presenter = presenter;
         this.post = post;
 
-        editButton = new NativeButton("Edit Post", editListener);
+        editButton = new Button("Edit Post", editListener);
+        editButton.setStyleName(BaseTheme.BUTTON_LINK);
+        editButton.setIcon(new ThemeResource("images/icon-link-edit.png"));
         editButton.setVisible(false);
 
-        quoteButton = new NativeButton("Quote for Reply", replyListener);
+        quoteButton = new Button("Quote for Reply", replyListener);
+        quoteButton.setStyleName(BaseTheme.BUTTON_LINK);
+        quoteButton.setIcon(new ThemeResource("images/icon-link-reply.png"));
         quoteButton.setVisible(false);
 
         root = new CustomLayout("postlayout");
@@ -291,6 +294,7 @@ public class PostComponent extends CustomComponent {
             final ThreadPresenter presenter) {
         final Button button = new Button("Report Post");
         button.setStyleName(Reindeer.BUTTON_LINK);
+        button.setIcon(new ThemeResource("images/icon-link-report.png"));
         button.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {

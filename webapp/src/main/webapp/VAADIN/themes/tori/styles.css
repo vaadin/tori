@@ -23,9 +23,31 @@
 a:link, 
 .v-link a:link span,
 a:visited, 
-.v-link a:visited span {
+.v-link a:visited span,
+.v-button-link .v-button-caption {
 	color: #00b4f0;
 	text-decoration: none;
+}
+
+button.v-nativebutton .v-nativebutton-caption {
+	color: #fff;
+	font-size: 12px;
+	line-height: 1.4em;
+	font-weight: bold;
+	text-shadow: 0 1px 0 rgba(0, 0, 0, 0.23);
+	padding: 0 16px;
+}
+button.v-nativebutton {
+	border-top-color: #82c076;
+	border-right-color: #32981d;
+	border-bottom-color: #31961d;
+	border-left-color: #32981d;
+	background: -moz-linear-gradient(#51c831, #32a41e);
+	background: -webkit-linear-gradient(#51c831, #32a41e);
+	background: linear-gradient(#51c831, #32a41e);
+	-moz-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+	-webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+	box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
 }
 
 .v-label-h1 {
