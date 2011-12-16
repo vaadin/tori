@@ -276,11 +276,24 @@
 	border-radius: 0 0 4px 4px;
 }
 .post .body .code {
-	font-size: 12px;
-	font-family: Monaco, "Courier New", monospace	
+	white-space: nowrap;
+	background: url(../images/code-bg.png) #fff top left repeat-y;
+	padding: 5px 0;
+	margin: 20px 0 30px 0;
+	font-size: 13px;
+	font-family: Monaco, "Courier New", monospace;
+	border: 2px solid #00b4f0;
+	line-height: 1.6em;
+	max-height: 306px;
+	overflow: auto;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;	
 }
 .post .body .code .code-lines {
-	padding-right: 4px;
-	margin-right: 4px;
-	border-right: 1px solid #cfcfcf;	
+	display: block;
+	float: left;
+	padding: 0px 9px 0px 18px;
+	margin-right: 12px;
+	color: #96c7d7;	
 }
