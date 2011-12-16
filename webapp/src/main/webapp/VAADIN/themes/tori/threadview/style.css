@@ -35,11 +35,12 @@
 
 .post [location="postedtime"] {
 	color: #a09f91;
-	font-size: smaller;
+	font-size: 13px;
 }
 
 .post [location="permalink"] a {
-	font-size: smaller;
+	font-size: 12px;
+	margin-left: 5px;
 }
 
 .post [location="permalink"] a:hover {
@@ -62,10 +63,12 @@
 	border-radius: 4px 4px 0 0;	
 }
 .post .toolbar td {
-	padding: 5px;	
+	padding: 7px 0;
+	vertical-align: middle;	
 }
 
 .post td.actions {
+	padding-right: 16px;
 	text-align: right;
 	width: 100%;
 }
@@ -145,11 +148,14 @@
 
 .scorecomponent {
 	white-space: nowrap;
+	font-size: 13px;
 	font-weight: bold;
-	margin-left: 10px;
+	margin-left: 15px;
+	position: relative;
+	top: 1px;
 }
 .scorecomponent .vote {
-	margin-right: 10px;
+	margin-right: 11px;
 	padding: 0;
 	border: none;
 	height: 16px;
@@ -165,6 +171,11 @@
 .scorecomponent .done.upvote    { background-position:   0px -16px; }
 .scorecomponent .done.downvote  { background-position: -13px -16px; }
 
+.scorecomponent .v-label {
+	position: relative;
+	top: 1px;
+	left: 1px;
+}
 .scorecomponent .positive {
 	color: #40b527;
 }
