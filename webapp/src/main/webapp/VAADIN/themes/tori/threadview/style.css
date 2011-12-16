@@ -143,28 +143,34 @@
 	padding: 5px;
 }
 
-.scorecomponent .vote {
-	padding: 0;
-	border: 0;
-	height: 10px;
-	width: 16px;
-	display: inline-block;
-	clear: left;
-	float: left;
-	background-color: inherit;
-	background-image: url(../images/sprite-votearrows.png);
-	background-repeat: no-repeat;
+.scorecomponent {
+	white-space: nowrap;
+	font-weight: bold;
+	margin-left: 10px;
 }
-
+.scorecomponent .vote {
+	margin-right: 10px;
+	padding: 0;
+	border: none;
+	height: 16px;
+	width: 10px;
+	float: left;
+	background: url(../images/sprite-votearrows.png) top left no-repeat;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}
 .scorecomponent .upvote         { background-position:   0px   0px; }
-.scorecomponent .upvote:hover   { background-position: -16px   0px; }
-.scorecomponent .downvote       { background-position:   0px -10px; }
-.scorecomponent .downvote:hover { background-position: -16px -10px; }
+.scorecomponent .downvote       { background-position: -13px   0px; }
+.scorecomponent .done.upvote    { background-position:   0px -16px; }
+.scorecomponent .done.downvote  { background-position: -13px -16px; }
 
-.scorecomponent .done.upvote         { background-position: -32px   0px; }
-.scorecomponent .done.upvote:hover   { background-position: -48px   0px; }
-.scorecomponent .done.downvote       { background-position: -32px -10px; }
-.scorecomponent .done.downvote:hover { background-position: -48px -10px; }
+.scorecomponent .positive {
+	color: #40b527;
+}
+.scorecomponent .negative {
+	color: #ee7c08;
+}
 
 .threadview .spacer {
 	text-align: center;

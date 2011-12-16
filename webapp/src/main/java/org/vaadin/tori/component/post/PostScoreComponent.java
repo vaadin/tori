@@ -24,7 +24,7 @@ public class PostScoreComponent extends CustomComponent {
         this.presenter = presenter;
         setCompositionRoot(layout);
         layout.setWidth("100%");
-        setWidth("50px");
+        setWidth("75px");
         setStyleName("scorecomponent");
 
         score = new Label();
@@ -74,6 +74,18 @@ public class PostScoreComponent extends CustomComponent {
     }
 
     public void setScore(final long newScore) {
-        score.setValue(String.valueOf(newScore));
+        score.setVisible(newScore != 0);
+        score.setValue((newScore > 0 ? "+" : "") + String.valueOf(newScore));
+
+        // reset styles
+        score.removeStyleName("positive");
+        score.removeStyleName("negative");
+
+        // assign style name
+        if (newScore > 0) {
+            score.addStyleName("positive");
+        } else if (newScore < 0) {
+            score.addStyleName("negative");
+        }
     }
 }
