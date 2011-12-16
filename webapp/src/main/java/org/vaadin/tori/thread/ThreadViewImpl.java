@@ -140,6 +140,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
             layout.addComponent(quickReplyBar);
         }
+
+        final Label bottomSpacer = new Label("~~~~~~~~");
+        bottomSpacer.setStyleName("spacer");
+        layout.addComponent(bottomSpacer);
     }
 
     private PostComponent newPostComponent(final Post post) {
