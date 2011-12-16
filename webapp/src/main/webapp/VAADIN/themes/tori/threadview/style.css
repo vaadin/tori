@@ -254,8 +254,10 @@
 
 .post [location="signature"] {
 	font-size: smaller;
-	border-top: 1px solid #9f9f9f;
 	margin: 0.5em 1em;
+}
+.post [location="signature"] .v-label {
+	border-top: 1px solid #9f9f9f;	
 }
 
 /* Post body formatting */
