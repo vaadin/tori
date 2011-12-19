@@ -184,6 +184,9 @@
 .scorecomponent .negative {
 	color: #ee7c08;
 }
+.scorecomponent .zero {
+	visibility: hidden;	
+}
 
 .threadview .spacer {
 	text-align: center;

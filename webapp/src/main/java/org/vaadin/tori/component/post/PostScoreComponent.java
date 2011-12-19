@@ -75,18 +75,20 @@ public class PostScoreComponent extends CustomComponent {
     }
 
     public void setScore(final long newScore) {
-        score.setVisible(newScore != 0);
         score.setValue((newScore > 0 ? "+" : "") + String.valueOf(newScore));
 
         // reset styles
         score.removeStyleName("positive");
         score.removeStyleName("negative");
+        score.removeStyleName("zero");
 
         // assign style name
         if (newScore > 0) {
             score.addStyleName("positive");
         } else if (newScore < 0) {
             score.addStyleName("negative");
+        } else if (newScore == 0) {
+            score.addStyleName("zero");
         }
     }
 }
