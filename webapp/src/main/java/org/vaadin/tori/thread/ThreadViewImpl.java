@@ -105,9 +105,6 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             @NonNull final DiscussionThread currentThread) {
         layout.removeAllComponents();
 
-        layout.addComponent(new HeadingLabel(currentThread.getTopic(),
-                HeadingLevel.H2));
-
         postsLayout.removeAllComponents();
         layout.addComponent(postsLayout);
 

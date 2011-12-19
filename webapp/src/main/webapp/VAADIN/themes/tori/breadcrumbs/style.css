@@ -1,24 +1,58 @@
-
-/* 
- * making the main button part appear inactive
- */
-
-.breadcrumbs .crumb.unclickable .v-button:active {
-	background-position: left 0px;
+.breadcrumbs {
+	background: url(../images/breadcrumbs-bg.png) top left repeat-x;
+	margin: 0 0 10px 0;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
 }
 
-.breadcrumbs .crumb.unclickable .v-button:active .v-button-wrap {
-    background-position: left -26px;
+.breadcrumbs .v-button-wrap {
+	background: #a09f91 !important;
+	padding-top: 7px;
 }
 
-/*
- * ...but resetting the popup part's visuals to being clickable.
- */
-
-.breadcrumbs .crumb.unclickable .v-popupbutton:active {
-	background-position: left -52px;
+.breadcrumbs .v-button-caption {
+	font-size: 14px;
+	font-weight: normal;
+	color: #fff;
+	text-shadow: none;	
 }
 
-.breadcrumbs .crumb.unclickable .v-popupbutton:active .v-button-wrap {
-	background-position: right -78px;
+.breadcrumbs .v-button,
+.breadcrumbs .v-button:active {
+	background: url(../images/separator-breadcrumbs.png) transparent top right no-repeat;
+	padding-right: 10px;
+}
+.breadcrumbs .v-splitbutton .v-button:first-child,
+.breadcrumbs .last .v-splitbutton .v-button {
+	background-image: none;	
+	padding-right: 0;
+}
+
+.breadcrumbs .v-splitbutton .v-button:first-child .v-button-wrap {
+	padding-right: 0;
+}
+
+.breadcrumbs .v-splitbutton,
+.breadcrumbs .v-button {
+	height: 32px !important;
+}
+
+.breadcrumbs .v-splitbutton .v-popupbutton {
+	border-left: none;
+	padding-left: 6px;
+}
+
+.breadcrumbs .v-popupbutton .v-popup-indicator {
+	background: url(../images/dropdown-arrow.png) bottom right no-repeat;
+}
+
+.breadcrumbs .v-label {
+	background: #f4f4f0;
+	font-size: 24px;
+	font-weight: bold;
+	padding: 15px 17px 18px 17px;
+	-moz-border-radius: 0 0 4px 4px;
+	-webkit-border-radius: 0 0 4px 4px;
+	border-radius: 0 0 4px 4px;
 }

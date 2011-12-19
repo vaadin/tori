@@ -10,12 +10,13 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.thread.ThreadView;
 
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
 public class Breadcrumbs extends CustomComponent implements
@@ -27,6 +28,7 @@ public class Breadcrumbs extends CustomComponent implements
     static final String STYLE_UNCLICKABLE = "unclickable";
 
     private final HorizontalLayout layout;
+    private final Label viewCaption;
 
     private transient final ViewChangeListener viewListener = new ViewChangeListener() {
         @Override
@@ -41,16 +43,21 @@ public class Breadcrumbs extends CustomComponent implements
         setStyleName("breadcrumbs");
         this.navigator = navigator;
         navigator.addListener(viewListener);
-        setHeight("40px");
 
-        setCompositionRoot(layout = new HorizontalLayout());
+        viewCaption = new Label("");
+        layout = new HorizontalLayout();
+
+        final VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.addComponent(layout);
+        mainLayout.addComponent(viewCaption);
+        setCompositionRoot(mainLayout);
+
         renderBreadCrumb();
     }
 
     private void renderBreadCrumb() {
         layout.removeAllComponents();
         final Button dashboardButton = new Button("Dashboard");
-        dashboardButton.setIcon(new ThemeResource("images/icon-home.gif"));
         dashboardButton.addListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
@@ -66,7 +73,19 @@ public class Breadcrumbs extends CustomComponent implements
         } else if (currentView instanceof ThreadView) {
             final ThreadView threadView = (ThreadView) currentView;
             paint(threadView);
+        } else {
+            hideViewCaption();
         }
+    }
+
+    private void showViewCaption(final String caption) {
+        viewCaption.setValue(caption);
+        viewCaption.setVisible(true);
+    }
+
+    private void hideViewCaption() {
+        viewCaption.setValue("");
+        viewCaption.setVisible(false);
     }
 
     private void paint(final ThreadView threadView) {
@@ -77,12 +96,18 @@ public class Breadcrumbs extends CustomComponent implements
             final Component categoryCrumb = new CategoryCrumb.Clickable(
                     currentCategory, this);
             final Component threadCrumb = new ThreadCrumb(currentThread, this);
+            threadCrumb.setStyleName("last");
             layout.addComponent(categoryCrumb);
             layout.addComponent(threadCrumb);
+            showViewCaption(currentThread.getTopic());
         } else if (currentCategory != null) {
             final Component categoryCrumb = new CategoryCrumb.Clickable(
                     currentCategory, this);
+            categoryCrumb.setStyleName("last");
             layout.addComponent(categoryCrumb);
+            showViewCaption(currentCategory.getName());
+        } else {
+            hideViewCaption();
         }
     }
 
@@ -91,7 +116,11 @@ public class Breadcrumbs extends CustomComponent implements
         if (currentCategory != null) {
             final CategoryCrumb crumb = new CategoryCrumb.UnClickable(
                     currentCategory, this);
+            crumb.setStyleName("last");
             layout.addComponent(crumb);
+            showViewCaption(currentCategory.getName());
+        } else {
+            hideViewCaption();
         }
     }
 
