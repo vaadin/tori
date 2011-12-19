@@ -150,7 +150,7 @@
 	white-space: nowrap;
 	font-size: 13px;
 	font-weight: bold;
-	margin-left: 15px;
+	margin-left: 13px;
 	position: relative;
 	top: 1px;
 }
@@ -166,15 +166,17 @@
 	-webkit-box-shadow: none;
 	box-shadow: none;
 }
+.scorecomponent .v-nativebutton-caption {
+	display: none;
+}
 .scorecomponent .upvote         { background-position:   0px   0px; }
 .scorecomponent .downvote       { background-position: -13px   0px; }
 .scorecomponent .done.upvote    { background-position:   0px -16px; }
 .scorecomponent .done.downvote  { background-position: -13px -16px; }
 
 .scorecomponent .v-label {
-	position: relative;
-	top: 1px;
-	left: 1px;
+	margin-left: 1px;
+	float: left;
 }
 .scorecomponent .positive {
 	color: #40b527;

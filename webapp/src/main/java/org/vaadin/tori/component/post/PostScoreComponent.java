@@ -28,6 +28,7 @@ public class PostScoreComponent extends CustomComponent {
         setStyleName("scorecomponent");
 
         score = new Label();
+        score.setWidth(null);
         layout.addComponent(score);
     }
 
