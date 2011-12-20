@@ -63,8 +63,11 @@ public class FloatingBar extends CustomComponent {
         }
     }
 
+    private static final int DEFAULT_SCROLL_THRESHOLD = 200;
+
     private FloatingAlignment alignment = FloatingAlignment.getDefault();
     private Component scrollComponent;
+    private int scrollThreshold = DEFAULT_SCROLL_THRESHOLD;
 
     @Override
     public void paintContent(final PaintTarget target) throws PaintException {
@@ -74,6 +77,8 @@ public class FloatingBar extends CustomComponent {
         if (scrollComponent != null) {
             target.addAttribute(VFloatingBar.ATTR_SCROLL_COMPONENT,
                     scrollComponent);
+            target.addAttribute(VFloatingBar.ATTR_SCROLL_THRESHOLD,
+                    scrollThreshold);
         }
 
         // add the alignment
@@ -93,6 +98,24 @@ public class FloatingBar extends CustomComponent {
                 fireEvent(new HideEvent());
             }
         }
+    }
+
+    /**
+     * Sets the amount of pixels that must be scrolled past the scroll component
+     * so that content of this FloatingBar is fully visible. If no scroll
+     * component is set, this setting has no effect. The default setting for
+     * this is {@value #DEFAULT_SCROLL_THRESHOLD} pixels.
+     * 
+     * @param threshold
+     *            threshold in pixels, must be >= 0.
+     * @see #setScrollComponent(Component)
+     */
+    public void setScrollThreshold(final int threshold) {
+        if (threshold < 0) {
+            throw new IllegalArgumentException(
+                    "The threshold must be a positive integer.");
+        }
+        this.scrollThreshold = threshold;
     }
 
     /**

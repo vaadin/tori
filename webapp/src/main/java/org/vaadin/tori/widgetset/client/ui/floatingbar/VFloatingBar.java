@@ -29,6 +29,7 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
         ResizeHandler {
 
     public static final String ATTR_SCROLL_COMPONENT = "scrollComponent";
+    public static final String ATTR_SCROLL_THRESHOLD = "threshold";
     public static final String ATTR_ALIGNMENT = "alignment";
     public static final String VAR_VISIBILITY = "visibility";
     public static final String ALIGNMENT_TOP = "top";
@@ -47,6 +48,7 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
     private FloatingBarOverlay overlay;
     private Widget scrollComponent;
     private String alignment;
+    private int scrollThreshold;
 
     private HandlerRegistration scrollHandlerRegistration;
     private HandlerRegistration scrollHandlerRegistrationWin;
@@ -84,6 +86,9 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
         attachResizeHandler();
 
         scrollComponent = getScrollComponent(uidl);
+        if (uidl.hasAttribute(ATTR_SCROLL_THRESHOLD)) {
+            scrollThreshold = uidl.getIntAttribute(ATTR_SCROLL_THRESHOLD);
+        }
         attachScrollHandlerIfNeeded();
 
         if (overlay == null) {
@@ -92,7 +97,7 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
         updateAlignment(uidl);
         overlay.show();
         overlay.updateFromUIDL(uidl, client);
-        overlay.setVisible(!isScrollComponentVisible());
+        overlay.setVisible(getVisibilityPercentage());
     }
 
     private void updateAlignment(final UIDL uidl) {
@@ -129,6 +134,11 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
     }
 
     private void attachScrollHandlerIfNeeded() {
+        if (client == null) {
+            throw new IllegalStateException(
+                    "The client must be set before calling this method.");
+        }
+
         if (scrollComponent != null) {
             if (scrollHandlerRegistration == null) {
                 // Cannot use Window.addWindowScrollHandler() in Vaadin apps,
@@ -137,7 +147,7 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
                 final ScrollHandler handler = new ScrollHandler() {
                     @Override
                     public void onScroll(final ScrollEvent event) {
-                        overlay.setVisible(!isScrollComponentVisible());
+                        overlay.setVisible(getVisibilityPercentage());
                     }
                 };
                 scrollHandlerRegistration = client.getView().addDomHandler(
@@ -150,7 +160,7 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
                     @Override
                     public void onWindowScroll(
                             final com.google.gwt.user.client.Window.ScrollEvent event) {
-                        overlay.setVisible(!isScrollComponentVisible());
+                        overlay.setVisible(getVisibilityPercentage());
                     }
                 };
                 scrollHandlerRegistrationWin = Window
@@ -219,38 +229,78 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
                 client.getView().getOffsetWidth() - height);
     }
 
-    private boolean isScrollComponentVisible() {
+    /**
+     * Returns a visibility percentage depending on the {@code scrollComponent},
+     * {@code scrollThreshold} and the current scroll position.
+     */
+    private double getVisibilityPercentage() {
         if (scrollComponent != null) {
             final Element scrollComponentElem = scrollComponent.getElement();
             final int componentTop = scrollComponentElem.getOffsetTop();
-            final int componentHeight = scrollComponentElem.getClientHeight();
+            final int windowScrollTop = getWindowScrollTop();
 
-            final Element vViewElem = client.getView().getElement();
-            final int vViewScrollTop = vViewElem.getScrollTop();
-            final int vViewTop = vViewElem.getAbsoluteTop();
-
-            // Decide whether to use:
-            // 1) VView scroll position (normal Vaadin app)
-            // -- or --
-            // 2) Window scroll minus VView top offset (embedded app, portlet).
-            final int windowScrollTop = (vViewScrollTop == 0 ? (Window
-                    .getScrollTop() - vViewTop) : vViewScrollTop);
-
-            if (alignment.equals(ALIGNMENT_TOP)) {
-                return windowScrollTop < (componentTop + componentHeight);
+            if (isTopAlignment()) {
+                final int componentHeight = scrollComponentElem
+                        .getClientHeight();
+                if (scrollThreshold == 0) {
+                    // all or nothing
+                    return windowScrollTop < (componentTop + componentHeight) ? 0
+                            : 1;
+                } else {
+                    // partially visible
+                    return (windowScrollTop - componentTop - componentHeight)
+                            / (double) scrollThreshold;
+                }
             } else {
                 // bottom alignment
                 final int windowHeight = Window.getClientHeight();
-                return (windowScrollTop + windowHeight) > (componentTop + componentHeight);
+                if (scrollThreshold == 0) {
+                    // all or nothing
+                    return (windowScrollTop + windowHeight) > (componentTop) ? 0
+                            : 1;
+                } else {
+                    // partially visible
+                    return -(windowScrollTop + windowHeight - componentTop)
+                            / (double) scrollThreshold;
+                }
             }
         }
-        return true;
+        return 1;
+    }
+
+    /**
+     * Returns the scroll position on the Window or Vaadin's VView depending on
+     * which one is scrolled.
+     * 
+     * @return scroll position in pixels.
+     */
+    private int getWindowScrollTop() {
+        if (client == null) {
+            throw new IllegalStateException(
+                    "The client must be set before calling this method.");
+        }
+
+        final Element vViewElem = client.getView().getElement();
+        final int vViewScrollTop = vViewElem.getScrollTop();
+        final int vViewTop = vViewElem.getAbsoluteTop();
+
+        // Decide whether to use:
+        // 1) VView scroll position (normal Vaadin app)
+        // -- or --
+        // 2) Window scroll minus VView top offset (embedded app, portlet).
+        final int windowScrollTop = (vViewScrollTop == 0 ? (Window
+                .getScrollTop() - vViewTop) : vViewScrollTop);
+        return windowScrollTop;
+    }
+
+    boolean isTopAlignment() {
+        return alignment.equals(ALIGNMENT_TOP);
     }
 
     @Override
     public void onResize(final ResizeEvent event) {
         // resizing the window might also reveal/hide the scroll component
-        overlay.setVisible(!isScrollComponentVisible());
+        overlay.setVisible(getVisibilityPercentage());
 
         client.runDescendentsLayout(this);
         overlay.updateShadowSizeAndPosition();

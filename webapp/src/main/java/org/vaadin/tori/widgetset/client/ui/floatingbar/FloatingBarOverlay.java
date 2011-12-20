@@ -1,5 +1,6 @@
 package org.vaadin.tori.widgetset.client.ui.floatingbar;
 
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
@@ -16,6 +17,7 @@ class FloatingBarOverlay extends VOverlay {
     private Widget contentWidget;
     private final VFloatingBar owner;
     private boolean hiding = false;
+    private boolean currentVisibility = false;
 
     private static final String CLASSNAME = VPopupView.CLASSNAME + " "
             + VFloatingBar.CLASSNAME + " " + VPopupView.CLASSNAME + "-popup";
@@ -88,13 +90,47 @@ class FloatingBarOverlay extends VOverlay {
 
     @Override
     public void setVisible(final boolean visible) {
-        if (super.isVisible() != visible) {
-            super.setVisible(visible);
+        if (currentVisibility != visible) {
             owner.visibilityChanged(visible);
+            currentVisibility = visible;
+        }
+
+        if (owner.isTopAlignment()) {
             if (visible) {
-                removeStyleName("hidden");
+                getElement().getStyle().setTop(0, Unit.PX);
             } else {
-                addStyleName("hidden");
+                getElement().getStyle().setTop(
+                        -contentWidget.getOffsetHeight() - 10, Unit.PX);
+            }
+        } else {
+            if (visible) {
+                getElement().getStyle().setBottom(0, Unit.PX);
+            } else {
+                getElement().getStyle().setBottom(
+                        -contentWidget.getOffsetHeight() - 10, Unit.PX);
+            }
+        }
+    }
+
+    /**
+     * Set this overlay to be partially visible.
+     * 
+     * @param percentage
+     *            percentage of visibility ({@code >=1} means fully visible,
+     *            {@code <= 0} means fully hidden).
+     */
+    public void setVisible(final double percentage) {
+        if (percentage >= 1) {
+            setVisible(true);
+        } else if (percentage <= 0) {
+            setVisible(false);
+        } else {
+            // partially visible
+            final double visiblePixels = (contentWidget.getOffsetHeight() * (1 - percentage));
+            if (owner.isTopAlignment()) {
+                getElement().getStyle().setTop(-visiblePixels, Unit.PX);
+            } else {
+                getElement().getStyle().setBottom(-visiblePixels, Unit.PX);
             }
         }
     }
