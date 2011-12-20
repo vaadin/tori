@@ -22,6 +22,7 @@
 .breadcrumbs .v-button:active {
 	background: url(../images/separator-breadcrumbs.png) transparent top right no-repeat;
 	padding-right: 10px;
+	cursor: pointer;
 }
 .breadcrumbs .v-splitbutton .v-button:first-child,
 .breadcrumbs .last .v-splitbutton .v-button {
