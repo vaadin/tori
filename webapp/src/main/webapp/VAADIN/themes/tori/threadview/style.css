@@ -9,9 +9,9 @@
 }
 
 .post .author {
-	width: 140px; /* 150px - padding */ 
-	min-width: 140px; /* 150px - padding */ 
-	padding: 5px;
+	width: 153px; /* 158px - padding */ 
+	min-width: 153px; /* 158px - padding */ 
+	padding: 5px 5px 5px 0;
 	vertical-align: top;
 }
 
@@ -41,7 +41,6 @@
 
 .post [location="permalink"] a {
 	font-size: 12px;
-	margin-left: 5px;
 }
 
 .post [location="permalink"] a:hover {
@@ -95,6 +94,7 @@
 
 /* Summary post that is displayed in the floating bar */
 .post.summary {
+	padding: 0 8px;
 	margin-top: 0;
 	border: none;
 }
@@ -135,14 +135,16 @@
 	-webkit-border-radius: 0 0 4px 4px;
 	border-radius: 0 0 4px 4px;
 }
-.v-floatingbar.threadSummaryBar,
 .v-floatingbar.threadSummaryBar .popupContent
 .v-floatingbar.threadSummaryBar .threadSummary {
 	background: transparent;
 }
-.v-floatingbar.threadSummaryBar {
+.v-floatingbar.threadSummaryBar,
+.v-floatingbar.threadSummaryBar:hover {
+	padding: 0 8px;
+	margin-left: -8px !important;
+	background: url(../images/floatingbar-bg.png) #fff top left repeat-x;	
 	border: 2px solid #64635a;
-	margin-left: -2px !important;
 }
 .v-floatingbar .threadSummary {
 	-moz-transition: height 0.2s ease-in-out;
@@ -157,13 +159,14 @@
 	white-space: nowrap;
 }
 .threadSummary .topRow .v-horizontallayout-margin {
-	padding: 9px 17px;
+	padding: 9px;
 }
 .threadSummary .topRow .v-button-wrap {
 	width: 115px;
 }
 .threadSummary .topRow .v-button .v-icon {
-	margin-top: 3px;	
+	margin-top: 3px;
+	float: left;	
 }
 .threadSummary .topRow .v-button-caption {
 	float: right;
@@ -193,7 +196,7 @@
 	white-space: nowrap;
 	font-size: 13px;
 	font-weight: bold;
-	margin-left: 13px;
+	margin-left: 15px;
 	position: relative;
 	top: 1px;
 }
