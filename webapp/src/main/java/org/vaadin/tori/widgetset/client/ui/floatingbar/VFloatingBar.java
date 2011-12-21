@@ -98,6 +98,10 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
         overlay.show();
         overlay.updateFromUIDL(uidl, client);
         overlay.setVisible(getVisibilityPercentage());
+
+        // copy styles to the overlay and remove from this "placeholder" widget
+        overlay.addStyleName(getStyleName());
+        setStyleName("");
     }
 
     private void updateAlignment(final UIDL uidl) {

@@ -20,7 +20,7 @@ class FloatingBarOverlay extends VOverlay {
     private boolean currentVisibility = false;
 
     private static final String CLASSNAME = VPopupView.CLASSNAME + " "
-            + VFloatingBar.CLASSNAME + " " + VPopupView.CLASSNAME + "-popup";
+            + VPopupView.CLASSNAME + "-popup";
 
     private static final String CLASSNAME_SHADOW = "floatingbar "
             + VOverlay.CLASSNAME_SHADOW;

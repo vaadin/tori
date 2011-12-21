@@ -25,14 +25,22 @@ import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.AbstractView;
 
+import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.themes.BaseTheme;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -115,7 +123,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
             if (first) {
                 // create the floating summary bar for the first post
-                final FloatingBar summaryBar = getPostSummaryBar(post, c);
+                final FloatingBar summaryBar = getSummaryBar(post, c);
                 summaryBar.setScrollComponent(c);
                 postsLayout.addComponent(summaryBar);
                 first = false;
@@ -189,21 +197,66 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     private PostComponent newPostSummaryComponent(final Post post) {
-        final PostComponent c = new PostComponent(post, getPresenter(), false);
+        final PostComponent c = new PostComponent(post, getPresenter());
         c.addStyleName("summary");
-        if (getPresenter().userMayQuote(post)) {
-            c.enableQuoting();
-        }
         return c;
     }
 
-    private FloatingBar getPostSummaryBar(final Post post,
-            final PostComponent originalPost) {
-        final PostComponent summary = newPostSummaryComponent(post);
-        summary.setScrollToComponent(originalPost);
+    private Component getThreadSummary(final Post firstPost) {
+        final VerticalLayout summaryLayout = new VerticalLayout();
+        summaryLayout.addStyleName("threadSummary");
 
+        final PostComponent postSummary = newPostSummaryComponent(firstPost);
+        postSummary.setVisible(false);
+
+        final DiscussionThread thread = getPresenter().getCurrentThread();
+        final String topicXhtml = String
+                .format("Thread: <strong>%s</strong> started by <strong>%s</strong> %s",
+                        thread.getTopic(), firstPost.getAuthor()
+                                .getDisplayedName(), new PrettyTime()
+                                .format(firstPost.getTime()));
+        final Label topicLabel = new Label(topicXhtml, Label.CONTENT_XHTML);
+        topicLabel.setWidth(null);
+
+        final String showPostContentCaption = "Show post content";
+        final Resource collapseIcon = new ThemeResource(
+                "images/icon-collapse.png");
+        final Resource expandIcon = new ThemeResource("images/icon-expand.png");
+        final Button showPostButton = new Button(showPostContentCaption,
+                new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(final ClickEvent event) {
+                        postSummary.setVisible(!postSummary.isVisible());
+                        event.getButton().setCaption(
+                                postSummary.isVisible() ? "Hide post content"
+                                        : showPostContentCaption);
+                        event.getButton().setIcon(
+                                postSummary.isVisible() ? collapseIcon
+                                        : expandIcon);
+                    }
+                });
+        showPostButton.setIcon(expandIcon);
+        showPostButton.setStyleName(BaseTheme.BUTTON_LINK);
+
+        final HorizontalLayout topRow = new HorizontalLayout();
+        topRow.addStyleName("topRow");
+        topRow.setWidth("100%");
+        topRow.setMargin(true);
+        topRow.addComponent(topicLabel);
+        topRow.addComponent(showPostButton);
+        topRow.setComponentAlignment(showPostButton, Alignment.MIDDLE_RIGHT);
+
+        summaryLayout.addComponent(topRow);
+        summaryLayout.addComponent(postSummary);
+
+        return summaryLayout;
+    }
+
+    private FloatingBar getSummaryBar(final Post post,
+            final PostComponent originalPost) {
         final FloatingBar bar = new FloatingBar();
-        bar.setContent(summary);
+        bar.addStyleName("threadSummaryBar");
+        bar.setContent(getThreadSummary(post));
         return bar;
     }
 

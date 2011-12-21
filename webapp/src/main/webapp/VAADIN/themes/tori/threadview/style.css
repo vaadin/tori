@@ -1,6 +1,7 @@
 .post {
 	margin-top: 50px;
 	border-bottom: 2px solid #e9e9e1;
+	background: #fff;
 }
 
 .post table {
@@ -102,7 +103,8 @@
 }
 .post.summary [location="permalink"],
 .post.summary [location="postedtime"],
-.post.summary [location="score"] {
+.post.summary [location="score"],
+.post.summary .toolbar {
 	display: none;
 }
 .post.summary .author [location="avatar"] {
@@ -120,11 +122,54 @@
 	width: 100% !important;
 	height: auto !important;
 }
+/*-
 .post.summary .body .v-label {
 	height: 1.5em;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;	
+}*/
+.post.summary,
+.v-floatingbar.threadSummaryBar {
+	-moz-border-radius: 0 0 4px 4px;
+	-webkit-border-radius: 0 0 4px 4px;
+	border-radius: 0 0 4px 4px;
+}
+.v-floatingbar.threadSummaryBar,
+.v-floatingbar.threadSummaryBar .popupContent
+.v-floatingbar.threadSummaryBar .threadSummary {
+	background: transparent;
+}
+.v-floatingbar.threadSummaryBar {
+	border: 2px solid #64635a;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+.v-floatingbar .threadSummary {
+	-moz-transition: height 0.2s ease-in-out;
+	-webkit-transition: height 0.2s ease-in-out;
+	-o-transition: height 0.2s ease-in-out;
+	transition: height 0.2s ease-in-out;	
+}
+.threadSummary .topRow {
+	background: #64635a;
+	color: #fff;
+	font-size: 13px;
+	white-space: nowrap;
+}
+.threadSummary .topRow .v-horizontallayout-margin {
+	padding: 9px 17px;
+}
+.threadSummary .topRow .v-button-wrap {
+	width: 115px;
+}
+.threadSummary .topRow .v-button .v-icon {
+	margin-top: 3px;	
+}
+.threadSummary .topRow .v-button-caption {
+	float: right;
+	color: #fff;	
 }
 
 .reportwindow .v-window-outerheader {
