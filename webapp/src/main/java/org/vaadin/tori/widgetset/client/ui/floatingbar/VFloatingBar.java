@@ -20,7 +20,6 @@ import com.vaadin.terminal.gwt.client.Container;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.RenderSpace;
 import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.Util;
 
 /**
  * The client-side implementation for server-side {@code FloatingBar} component.
@@ -220,17 +219,8 @@ public class VFloatingBar extends Widget implements Container, HasWidgets,
 
     @Override
     public RenderSpace getAllocatedSpace(final Widget child) {
-        final Element pe = overlay.getElement();
-        final Element ipe = overlay.getContainerElement();
-
-        // border + padding
-        final int width = Util.getRequiredWidth(pe)
-                - Util.getRequiredWidth(ipe);
-        final int height = Util.getRequiredHeight(pe)
-                - Util.getRequiredHeight(ipe);
-
-        return new RenderSpace(client.getView().getOffsetWidth() - width,
-                client.getView().getOffsetWidth() - height);
+        return new RenderSpace(client.getView().getOffsetWidth(), client
+                .getView().getOffsetHeight());
     }
 
     /**

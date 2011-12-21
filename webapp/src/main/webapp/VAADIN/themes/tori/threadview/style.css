@@ -142,9 +142,7 @@
 }
 .v-floatingbar.threadSummaryBar {
 	border: 2px solid #64635a;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
+	margin-left: -2px !important;
 }
 .v-floatingbar .threadSummary {
 	-moz-transition: height 0.2s ease-in-out;
