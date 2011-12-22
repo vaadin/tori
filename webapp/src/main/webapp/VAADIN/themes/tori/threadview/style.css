@@ -243,9 +243,17 @@
 }
 
 .authoring .buttons {
-	text-align: right;
+	text-align: left;
 	margin: 5px 0;
 }
+
+.authoring .buttons > div {
+	display: inline-block;
+}
+.authoring .buttons [location="clearbutton"] {
+	display: none !important;
+}
+
 .authoring .previewcaption {
 	font-size: smaller;
 	padding: 0.5em 1em;
