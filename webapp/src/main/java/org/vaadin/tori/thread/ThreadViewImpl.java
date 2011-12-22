@@ -203,13 +203,17 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     private Component getThreadSummary(final Post firstPost) {
+        final DiscussionThread thread = getPresenter().getCurrentThread();
+        if (thread == null) {
+            return new Label("No thread selected");
+        }
+
         final VerticalLayout summaryLayout = new VerticalLayout();
         summaryLayout.addStyleName("threadSummary");
 
         final PostComponent postSummary = newPostSummaryComponent(firstPost);
         postSummary.setVisible(false);
 
-        final DiscussionThread thread = getPresenter().getCurrentThread();
         final String topicXhtml = String
                 .format("Thread: <strong>%s</strong> started by <strong>%s</strong> %s",
                         thread.getTopic(), firstPost.getAuthor()
