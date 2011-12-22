@@ -242,9 +242,19 @@
 	font-style: italic;
 }
 
+.authoring table {
+	width: 100%;
+	border-spacing: 0;
+}
+
+.authoring td {
+	vertical-align: top;
+	padding: 0;
+}
+
 .authoring .buttons {
 	text-align: left;
-	margin: 5px 0;
+	margin: 11px 0;
 }
 
 .authoring .buttons > div {
@@ -254,9 +264,37 @@
 	display: none !important;
 }
 
+.authoring [location="formattingsyntax"] {
+	float: right;	
+}
+
+.authoring [location="input"] {
+	margin-bottom: 8px;
+}
+.authoring [location="input"] textarea {
+	width: 100%;
+	font-size: 14px;
+	color: #464440;
+	border: none;
+	border: 2px solid #c8c7b5;
+	padding: 12px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.authoring [location="captionlabel"] {
+	color: #64635a;
+	font-size: 18px;
+	font-weight: bold;	
+}
+
 .authoring .previewcaption {
-	font-size: smaller;
-	padding: 0.5em 1em;
+	font-size: 18px;
+	color: #8c8b7e;
 }
 
 .authoring [location="preview"] {

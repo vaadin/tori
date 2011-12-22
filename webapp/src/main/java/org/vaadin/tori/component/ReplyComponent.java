@@ -8,7 +8,7 @@ public class ReplyComponent extends AuthoringComponent {
 
     public ReplyComponent(final ReplyListener listener,
             final String formattingSyntaxXhtml) {
-        super(listener, formattingSyntaxXhtml, "Your Reply");
+        super(listener, formattingSyntaxXhtml, "Post Reply");
     }
 
     @Override

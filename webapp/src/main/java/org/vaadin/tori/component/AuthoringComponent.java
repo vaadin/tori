@@ -331,11 +331,11 @@ public abstract class AuthoringComponent extends CustomComponent {
 
         input = new ToriExpandingTextArea();
         input.setMaxRows(MAX_ROWS_EXPANDED);
-        input.setWidth("100%");
         input.setImmediate(true);
         layout.addComponent(input, "input");
 
         preview = new Label("<br/>", Label.CONTENT_XHTML);
+        preview.setWidth(null);
         layout.addComponent(preview, "preview");
         layout.addComponent(new NativeButton("Post", POST_LISTENER),
                 "postbutton");
