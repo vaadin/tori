@@ -9,7 +9,7 @@ import org.vaadin.tori.util.SignatureFormatter;
 import org.vaadin.tori.util.TestPostFormatter;
 import org.vaadin.tori.util.TestSignatureFormatter;
 
-public class ServiceProviderImpl implements ServiceProvider {
+public class TestServiceProvider implements ServiceProvider {
 
     @Override
     public DataSource createDataSource() {

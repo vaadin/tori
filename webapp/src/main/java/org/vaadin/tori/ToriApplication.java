@@ -1,5 +1,7 @@
 package org.vaadin.tori;
 
+import java.util.ServiceLoader;
+
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -103,25 +105,15 @@ public class ToriApplication extends Application implements
     }
 
     private static ServiceProvider createServiceProvider() {
-        try {
-            final ServiceProvider dsFactory = (ServiceProvider) Class.forName(
-                    ServiceProvider.IMPLEMENTING_CLASSNAME).newInstance();
-            return dsFactory;
-        } catch (final InstantiationException e) {
-            throw new RuntimeException(
-                    "Can't use the constructor for the current datasource's "
-                            + ServiceProvider.IMPLEMENTING_CLASSNAME
-                            + ". Make sure it is a non-abstract class with "
-                            + "a public no-argument constructor.", e);
-        } catch (final IllegalAccessException e) {
-            throw new RuntimeException(
-                    "DataSource's no-argument constructor seems non-public. "
-                            + "It needs to be publicly accessible.", e);
-        } catch (final ClassNotFoundException e) {
+        final ServiceLoader<ServiceProvider> loader = ServiceLoader
+                .load(ServiceProvider.class);
+        if (loader.iterator().hasNext()) {
+            return loader.iterator().next();
+        } else {
             throw new RuntimeException(
                     "It seems you don't have a DataSource in your classpath, "
                             + "or the added data source is misconfigured (see JavaDoc for "
-                            + ServiceProvider.class.getName() + ")", e);
+                            + ServiceProvider.class.getName() + ").");
         }
     }
 

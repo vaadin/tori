@@ -8,7 +8,7 @@ import org.vaadin.tori.util.LiferaySignatureFormatter;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.SignatureFormatter;
 
-public class ServiceProviderImpl implements ServiceProvider {
+public class LiferayServiceProvider implements ServiceProvider {
 
     @Override
     public DataSource createDataSource() {

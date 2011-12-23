@@ -122,6 +122,10 @@
          	debug="on"
     		includeantruntime="false"
 		/>
+		<!-- copy resources -->
+		<copy todir="${dir.build-artifacts.ds.liferay}">
+			<fileset dir="${dir.ds.liferay}/src/main/resources" />
+		</copy>
 		<jar destfile="${file.ds.liferay.jar}"
 			basedir="${dir.build-artifacts.ds.liferay}"
 		/>
@@ -135,6 +139,10 @@
          	debug="on"
     		includeantruntime="false"
 		/>
+		<!-- copy resources -->
+		<copy todir="${dir.build-artifacts.ds.test}">
+			<fileset dir="${dir.ds.test}/src/main/resources" />
+		</copy>
 		<jar destfile="${file.ds.test.jar}"
 			basedir="${dir.build-artifacts.ds.test}"
 		/>
