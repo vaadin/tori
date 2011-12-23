@@ -305,6 +305,11 @@ public abstract class AuthoringComponent extends CustomComponent {
     private boolean compactMode;
     private final CssLayout captionLayout;
 
+    public AuthoringComponent(final AuthoringListener listener,
+            final String formattingSyntaxXhtml, final String captionText) {
+        this(listener, formattingSyntaxXhtml, captionText, null);
+    }
+
     /**
      * @param formattingSyntaxXhtml
      *            The forum post formatting reference that will be shown as-is
@@ -312,7 +317,8 @@ public abstract class AuthoringComponent extends CustomComponent {
      *            The string must be formatted in valid XHTML.
      */
     public AuthoringComponent(final AuthoringListener listener,
-            final String formattingSyntaxXhtml, final String captionText) {
+            final String formattingSyntaxXhtml, final String captionText,
+            final String inputPrompt) {
         this.listener = listener;
 
         setCompositionRoot(layout);
@@ -330,6 +336,9 @@ public abstract class AuthoringComponent extends CustomComponent {
                 getSyntaxLabel(formattingSyntaxXhtml)), "formattingsyntax");
 
         input = new ToriExpandingTextArea();
+        if (inputPrompt != null) {
+            input.setInputPrompt(inputPrompt);
+        }
         input.setMaxRows(MAX_ROWS_EXPANDED);
         input.setImmediate(true);
         layout.addComponent(input, "input");
@@ -397,11 +406,9 @@ public abstract class AuthoringComponent extends CustomComponent {
 
     protected void setCompactMode(final boolean compact) {
         if (compact) {
-            input.setReadOnly(true);
             input.setMaxRows(MAX_ROWS_COMPACT);
             addStyleName("compact");
         } else {
-            input.setReadOnly(false);
             input.setMaxRows(MAX_ROWS_EXPANDED);
             removeStyleName("compact");
         }

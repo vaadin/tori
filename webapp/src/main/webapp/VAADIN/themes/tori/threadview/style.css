@@ -262,9 +262,6 @@
 	float: right;	
 }
 
-.authoring [location="input"] {
-	margin-bottom: 8px;
-}
 .authoring [location="input"] textarea {
 	width: 100%;
 	font-size: 14px;
@@ -272,6 +269,7 @@
 	border: none;
 	border: 2px solid #c8c7b5;
 	padding: 12px;
+	margin-bottom: 8px;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
@@ -296,6 +294,26 @@
 	padding: 18px 14px;
 }
 
+.v-floatingbar.alignment-bottom.quickReply {
+	-moz-border-radius: 4px 4px 0 0;
+	-webkit-border-radius: 4px 4px 0 0;
+	border-radius: 4px 4px 0 0;
+	-moz-box-shadow: 0 0 10px rgba(200, 199, 181, 0.3);
+	-webkit-box-shadow: 0 0 10px rgba(200, 199, 181, 0.3);
+	box-shadow: 0 0 10px rgba(200, 199, 181, 0.3);
+}
+.v-floatingbar.quickReply,
+.v-floatingbar.quickReply:hover {
+	padding: 0 8px;
+	margin-left: -8px !important;
+	background: #a09f91;	
+	border: 2px solid #a09f91;
+}
+
+.authoring.compact td {
+	vertical-align: middle;
+}
+
 .authoring.compact [location="formattingsyntax"],
 .authoring.compact [location="preview"],
 .authoring.compact .toolbar,
@@ -303,8 +321,16 @@
 .authoring.compact .previewcaption {
 	display: none;	
 }
-.authoring.compact textarea {
-	height: 1em;
+.authoring.compact [location="input"] textarea {
+	height: 1.8em;
+	padding: 4px 12px;
+	margin-top: 8px;
+	margin-bottom: 8px;
+	border: none;
+	color: #999992;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
 }
 .v-floatingbar .authoring {
 	-moz-transition: height 0.2s ease-in-out;
@@ -312,13 +338,13 @@
 	-o-transition: height 0.2s ease-in-out;
 	transition: height 0.2s ease-in-out;
 }
-.v-floatingbar .authoring.collapsible [location="captionlabel"] .v-label {
-	padding-right: 20px;
-	background: url(../images/icon-collapse-panel.png) center right no-repeat;
-	float: left;	
-}
-.v-floatingbar .authoring.collapsible.compact [location="captionlabel"] .v-label {
-	background-image: url(../images/icon-expand-panel.png);	
+.v-floatingbar .authoring [location="captionlabel"] .v-label,
+.v-floatingbar .authoring .previewcaption {
+	color: #fff;
+	font-size: 13px;
+	font-weight: bold;
+	float: left;
+	margin-left: 9px;
 }
 
 .threadview .newthread .topiclabel {

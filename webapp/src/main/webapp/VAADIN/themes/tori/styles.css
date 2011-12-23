@@ -16,6 +16,11 @@
 	color: #464440;
 	text-decoration: none;
 }
+
+.v-floatingbar .v-popupview {
+	background: transparent;
+}
+
 .v-popupview {
 	cursor: default;
 }
