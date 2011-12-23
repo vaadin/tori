@@ -379,7 +379,7 @@ public abstract class AuthoringComponent extends CustomComponent {
     private static Label getSyntaxLabel(final String formattingSyntaxXhtml) {
         final Label label = new Label(formattingSyntaxXhtml,
                 Label.CONTENT_XHTML);
-        label.setWidth("200px");
+        label.setWidth("250px");
         return label;
     }
 
