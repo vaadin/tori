@@ -46,6 +46,23 @@ public abstract class AuthoringComponent extends CustomComponent {
     private static final class ToolbarUtil {
 
         @NonNull
+        public static Component createToolbar(final @NonNull TextArea textArea) {
+
+            final HorizontalLayout layout = new HorizontalLayout();
+            layout.setSpacing(true);
+
+            final PostFormatter postFormatter = ToriApplication.getCurrent()
+                    .getPostFormatter();
+
+            ToolbarUtil.addFontWidgets(textArea, layout, postFormatter);
+            ToolbarUtil
+                    .addBoldAndItalicWidgets(textArea, layout, postFormatter);
+            ToolbarUtil.addOtherWidgets(textArea, layout, postFormatter);
+
+            return layout;
+        }
+
+        @NonNull
         private static Component createFontWidget(
                 @NonNull final Collection<FontFace> fontFaces,
                 final TextArea textArea) {
@@ -351,25 +368,11 @@ public abstract class AuthoringComponent extends CustomComponent {
         layout.addComponent(new NativeButton("Clear", CLEAR_LISTENER),
                 "clearbutton");
 
-        layout.addComponent(createToolbar(input), "toolbar");
+        layout.addComponent(ToolbarUtil.createToolbar(input), "toolbar");
 
         input.addListener(INPUT_CHANGE_LISTENER);
         input.addListener(VALUE_CHANGE_LISTENER);
         setCompactMode(false);
-    }
-
-    private Component createToolbar(final TextArea textArea) {
-
-        final HorizontalLayout layout = new HorizontalLayout();
-
-        final PostFormatter postFormatter = ToriApplication.getCurrent()
-                .getPostFormatter();
-
-        ToolbarUtil.addFontWidgets(textArea, layout, postFormatter);
-        ToolbarUtil.addBoldAndItalicWidgets(textArea, layout, postFormatter);
-        ToolbarUtil.addOtherWidgets(textArea, layout, postFormatter);
-
-        return layout;
     }
 
     public ToriExpandingTextArea getInput() {
