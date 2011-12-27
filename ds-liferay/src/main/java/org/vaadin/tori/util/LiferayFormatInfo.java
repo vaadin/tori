@@ -5,9 +5,9 @@ import org.vaadin.tori.util.PostFormatter.FormatInfo;
 public enum LiferayFormatInfo implements FormatInfo {
     // @formatter:off
     BOLD("Bold", "[b][/b]", "bold.png"), 
-    ITALIC("Italic", "[i][/i]","italic.png"),
-    UNDERLINE("Underline", "[u][/u]","underline.png"),
-    STRIKETHROUGH("Strikethrough", "[s][/s]","strikethrough.png");
+    ITALIC("Italic", "[i][/i]", "italic.png"),
+    UNDERLINE("Underline", "[u][/u]", "underline.png"),
+    STRIKETHROUGH("Strikethrough", "[s][/s]", "strikethrough.png");
     // @formatter:on
 
     private String name;
