@@ -86,7 +86,7 @@ public class LiferayPostFormatter implements PostFormatter {
     }
 
     @Override
-    public Collection<FormatInfo> getOtherFormattingInfo() {
+    public Collection<? extends FormatInfo> getOtherFormattingInfo() {
         return otherFormatInfos;
     }
 }

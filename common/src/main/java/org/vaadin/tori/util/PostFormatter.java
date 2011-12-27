@@ -46,9 +46,18 @@ public interface PostFormatter {
     }
 
     public interface FormatInfo {
+        public static final String ICON_PACKAGE = "/icons/";
+
         String getFormatName();
 
         String getFormatSyntax();
+
+        /**
+         * The image file name that is located in the DataSource project's
+         * classpath, relative to {@value #ICON_PACKAGE}. Usually only the file
+         * name itself.
+         */
+        String getFormatIcon();
     }
 
     /**
@@ -100,5 +109,5 @@ public interface PostFormatter {
      *         formats. The same goes for an empty {@link Collection}
      */
     @CheckForNull
-    Collection<FormatInfo> getOtherFormattingInfo();
+    Collection<? extends FormatInfo> getOtherFormattingInfo();
 }

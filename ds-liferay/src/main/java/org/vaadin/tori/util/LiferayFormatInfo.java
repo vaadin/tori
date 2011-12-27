@@ -4,18 +4,21 @@ import org.vaadin.tori.util.PostFormatter.FormatInfo;
 
 public enum LiferayFormatInfo implements FormatInfo {
     // @formatter:off
-    BOLD("Bold", "[b][/b]"), 
-    ITALIC("Italic", "[i][/i]"),
-    UNDERLINE("Underline", "[u][/u]"),
-    STRIKETHROUGH("Strikethrough", "[s][/s]");
+    BOLD("Bold", "[b][/b]", "bold.png"), 
+    ITALIC("Italic", "[i][/i]","italic.png"),
+    UNDERLINE("Underline", "[u][/u]","underline.png"),
+    STRIKETHROUGH("Strikethrough", "[s][/s]","strikethrough.png");
     // @formatter:on
 
     private String name;
     private String syntax;
+    private String icon;
 
-    private LiferayFormatInfo(final String name, final String syntax) {
+    private LiferayFormatInfo(final String name, final String syntax,
+            final String icon) {
         this.name = name;
         this.syntax = syntax;
+        this.icon = icon;
     }
 
     @Override
@@ -26,6 +29,11 @@ public enum LiferayFormatInfo implements FormatInfo {
     @Override
     public String getFormatSyntax() {
         return syntax;
+    }
+
+    @Override
+    public String getFormatIcon() {
+        return icon;
     }
 
 }

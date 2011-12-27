@@ -21,6 +21,7 @@ import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.event.ShortcutAction.ModifierKey;
+import com.vaadin.terminal.ClassResource;
 import com.vaadin.terminal.gwt.server.AbstractWebApplicationContext;
 import com.vaadin.terminal.gwt.server.WebBrowser;
 import com.vaadin.ui.AbstractSelect;
@@ -45,11 +46,15 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 public abstract class AuthoringComponent extends CustomComponent {
     private static final class ToolbarUtil {
 
+        private static final String TOOLBAR_ICON_HEIGHT = "18px";
+        private static final String TOOLBAR_ICON_WIDTH = TOOLBAR_ICON_HEIGHT;
+
         @NonNull
         public static Component createToolbar(final @NonNull TextArea textArea) {
 
             final HorizontalLayout layout = new HorizontalLayout();
             layout.setSpacing(true);
+            layout.setMargin(true);
 
             final PostFormatter postFormatter = ToriApplication.getCurrent()
                     .getPostFormatter();
@@ -155,8 +160,12 @@ public abstract class AuthoringComponent extends CustomComponent {
 
         private static Button createButton(final FormatInfo formatInfo,
                 final TextArea textArea) {
-            final NativeButton button = new NativeButton(
-                    formatInfo.getFormatName());
+            final NativeButton button = new NativeButton();
+            button.setWidth(TOOLBAR_ICON_WIDTH);
+            button.setHeight(TOOLBAR_ICON_HEIGHT);
+            button.setIcon(new ClassResource(FormatInfo.ICON_PACKAGE
+                    + formatInfo.getFormatIcon(), ToriApplication.getCurrent()));
+
             button.setDescription(formatInfo.getFormatName());
             button.addListener(new ClickListener() {
                 @Override
@@ -256,7 +265,7 @@ public abstract class AuthoringComponent extends CustomComponent {
                 @NonNull final HorizontalLayout layout,
                 @NonNull final PostFormatter postFormatter) {
 
-            final Collection<FormatInfo> info = postFormatter
+            final Collection<? extends FormatInfo> info = postFormatter
                     .getOtherFormattingInfo();
 
             if (info != null) {

@@ -262,6 +262,24 @@
 	float: right;	
 }
 
+.authoring [location="toolbar"] select {
+	border: 2px solid #c8c7b5;
+}
+
+.authoring [location="toolbar"] .v-nativebutton {
+	border: none;
+	background: none;
+	border-radius: 0;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	padding: 0;
+}
+
+.authoring [location="toolbar"] .v-horizontallayout-margin {
+	padding: 0px;
+	padding-bottom: 2px;
+}
+
 .authoring [location="input"] textarea {
 	width: 100%;
 	font-size: 14px;

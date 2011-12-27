@@ -10,6 +10,36 @@ import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
 
 public class TestPostFormatter implements PostFormatter {
 
+    private static class TestFormatInfo implements FormatInfo {
+
+        private final String formatIconThemeId;
+        private final String formatName;
+        private final String formatSyntax;
+
+        public TestFormatInfo(final String formatName,
+                final String formatSyntax, final String formatIconThemeId) {
+            this.formatName = formatName;
+            this.formatSyntax = formatSyntax;
+            this.formatIconThemeId = formatIconThemeId;
+        }
+
+        @Override
+        public String getFormatName() {
+            return formatName;
+        }
+
+        @Override
+        public String getFormatSyntax() {
+            return formatSyntax;
+        }
+
+        @Override
+        public String getFormatIcon() {
+            return formatIconThemeId;
+        }
+
+    }
+
     private static class TestFontFace implements FontFace {
         private final String name;
         private final String syntax;
@@ -71,28 +101,13 @@ public class TestPostFormatter implements PostFormatter {
         }
 
     };
-    private static final FormatInfo BOLD_INFO = new FormatInfo() {
-        @Override
-        public String getFormatSyntax() {
-            return "[b][/b]";
-        }
 
-        @Override
-        public String getFormatName() {
-            return "Bold";
-        }
-    };
-    private static final FormatInfo ITALIC_INFO = new FormatInfo() {
-        @Override
-        public String getFormatSyntax() {
-            return "[i][/i]";
-        }
-
-        @Override
-        public String getFormatName() {
-            return "Italic";
-        }
-    };
+    private static final FormatInfo BOLD_INFO = new TestFormatInfo("Bold",
+            "[b][/b]", "bold.png");
+    private static final FormatInfo ITALIC_INFO = new TestFormatInfo("Italic",
+            "[i][/i]", "italic.png");
+    private static final Collection<? extends FormatInfo> OTHER_FORMAT_INFO = Collections
+            .singleton(new TestFormatInfo("Vaadin", "}>", "vaadin.png"));
 
     @Override
     public String format(final String rawPostBody) {
@@ -122,20 +137,8 @@ public class TestPostFormatter implements PostFormatter {
     }
 
     @Override
-    public Collection<FormatInfo> getOtherFormattingInfo() {
-        final FormatInfo info = new FormatInfo() {
-            @Override
-            public String getFormatSyntax() {
-                return "}>";
-            }
-
-            @Override
-            public String getFormatName() {
-                return "Vaadin";
-            }
-        };
-
-        return Collections.singleton(info);
+    public Collection<? extends FormatInfo> getOtherFormattingInfo() {
+        return OTHER_FORMAT_INFO;
     }
 
 }
