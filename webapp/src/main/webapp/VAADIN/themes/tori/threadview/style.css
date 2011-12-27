@@ -266,6 +266,18 @@
 	border: 2px solid #c8c7b5;
 }
 
+.authoring [location="toolbar"] button {
+	box-shadow: none;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	padding: 0;
+}
+
+.authoring [location="toolbar"] button img {
+	margin: 0;
+	padding: 0;
+}
+
 .authoring [location="toolbar"] .v-nativebutton {
 	border: none;
 	background: none;

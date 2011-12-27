@@ -48,8 +48,10 @@ public interface PostFormatter {
     public interface FormatInfo {
         public static final String ICON_PACKAGE = "/icons/";
 
+        @NonNull
         String getFormatName();
 
+        @NonNull
         String getFormatSyntax();
 
         /**
@@ -57,6 +59,7 @@ public interface PostFormatter {
          * classpath, relative to {@value #ICON_PACKAGE}. Usually only the file
          * name itself.
          */
+        @NonNull
         String getFormatIcon();
     }
 
