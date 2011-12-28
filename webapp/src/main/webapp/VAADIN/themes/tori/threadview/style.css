@@ -322,6 +322,8 @@
 .authoring [location="preview"] {
 	background: url(../images/preview-bg.png) #fff top left repeat;
 	padding: 18px 14px;
+	max-height: 180px;
+	overflow: auto;
 }
 
 .v-floatingbar.alignment-bottom.quickReply {
