@@ -66,6 +66,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
                     && !dataSource.isFollowing(thread);
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
     }
@@ -81,6 +82,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
                     && dataSource.isFollowing(thread);
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -93,6 +95,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             getView().confirmFollowing();
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -105,6 +108,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             getView().confirmUnfollowing();
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -119,6 +123,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             return dataSource.getRootCategories();
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -130,6 +135,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             return dataSource.getSubCategories(category);
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -143,6 +149,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             resetView();
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -156,6 +163,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             resetView();
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -169,6 +177,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             resetView();
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -188,6 +197,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             getView().confirmThreadLocked(updatedThread);
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -200,6 +210,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             getView().confirmThreadUnlocked(updatedThread);
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -225,6 +236,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             resetView();
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -239,6 +251,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             getView().displayThreads(dataSource.getThreads(currentCategory));
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
     }

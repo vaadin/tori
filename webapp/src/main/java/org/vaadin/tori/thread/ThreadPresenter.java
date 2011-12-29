@@ -53,6 +53,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             }
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
     }
@@ -72,6 +73,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             getView().confirmPostReported();
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -95,6 +97,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             getView().confirmBanned();
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -110,6 +113,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             getView().confirmFollowingThread();
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -121,6 +125,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             getView().confirmUnFollowingThread();
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -136,6 +141,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                     && !dataSource.isFollowing(currentThread);
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -151,6 +157,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                     && dataSource.isFollowing(currentThread);
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -162,6 +169,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             getView().confirmPostDeleted();
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -190,6 +198,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             getView().refreshScores(post, newScore);
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -210,6 +219,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             getView().refreshScores(post, newScore);
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -222,6 +232,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             return dataSource.getPostVote(post);
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -232,6 +243,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             return dataSource.getScore(post);
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -260,6 +272,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                 getView().confirmReplyPosted();
             } catch (final DataSourceException e) {
                 log.error(e);
+                e.printStackTrace();
                 throw e;
             }
 
@@ -291,6 +304,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             }
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -353,6 +367,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             return dataSource.saveNewThread(thread, post);
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 

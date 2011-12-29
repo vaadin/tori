@@ -36,6 +36,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
             return dataSource.getThreadCount(category);
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
     }
@@ -46,6 +47,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
             return dataSource.getUnreadThreadCount(category);
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -67,6 +69,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
             }
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -81,6 +84,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
             }
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -107,6 +111,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
             return dataSource.getSubCategories(category);
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -132,6 +137,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
             reloadCategoriesFromDataSource();
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -178,6 +184,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
             reloadCategoriesFromDataSource();
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 
@@ -197,6 +204,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
             reloadCategoriesFromDataSource();
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             throw e;
         }
 

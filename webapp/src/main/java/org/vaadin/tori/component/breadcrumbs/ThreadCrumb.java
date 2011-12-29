@@ -62,6 +62,7 @@ class ThreadCrumb extends CustomComponent {
                     .getThreads(thread.getCategory());
         } catch (final DataSourceException e) {
             log.error(e);
+            e.printStackTrace();
             return new Label("Something went wrong :(");
         }
 
