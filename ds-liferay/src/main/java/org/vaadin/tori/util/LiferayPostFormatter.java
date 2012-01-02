@@ -52,7 +52,7 @@ public class LiferayPostFormatter implements PostFormatter {
 
     @Override
     public String format(final String rawPostBody) {
-        return BBCodeUtil.getHTML(rawPostBody);
+        return BBCodeUtil.getHTML(rawPostBody.trim());
     }
 
     @Override
