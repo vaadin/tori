@@ -234,6 +234,23 @@
 	color: #666;
 	padding: 1em 0;
 	font-style: italic;
+	border-bottom: 2px solid #f4f4f0;
+	margin-bottom: 105px;
+}
+
+.threadview .spacer .eof {
+	font-size: 46px;
+	font-family: Courier New, monospace;
+	font-style: normal;
+	color: #deddd3;
+	padding: 0 26px;
+	background: #fff;
+	border: 2px solid #f4f4f0;
+	position: relative;
+	top: 0.7em;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
 }
 
 .authoring table {
