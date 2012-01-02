@@ -112,10 +112,12 @@
 	float: left;
 }
 .post.summary .author [location="authorname"] {
-	margin-top: 5px;	
+	margin-left: 10px;
+	width: 100px;
+	float: left;
 }
 .post.summary .author [location="authorname"] .v-label {
-	text-indent: 5px;	
+	white-space: normal;	
 }
 .post.summary .author [location="avatar"] .v-embedded,
 .post.summary .author [location="avatar"] .v-embedded img {
