@@ -184,7 +184,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 c.enableThreadUnFollowing();
             }
         } catch (final DataSourceException e) {
-            // NOP - everything's logged. I fyou can't follow, you can't
+            // NOP - everything's logged. If you can't follow, you can't
             // unfollow either.
         }
         if (getPresenter().userMayBan()) {
