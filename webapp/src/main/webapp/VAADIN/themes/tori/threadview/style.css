@@ -341,6 +341,16 @@
 	background: #a09f91;	
 	border: 2px solid #a09f91;
 }
+.v-floatingbar.quickReply .v-panel-content > div {
+	background: transparent;
+}
+.v-floatingbar.quickReply .v-panel-content {
+	border: none;
+}
+.v-floatingbar.quickReply .v-panel-deco,
+.v-floatingbar.quickReply .v-panel-captionwrap {
+	display: none;
+}
 
 .authoring.compact td {
 	vertical-align: middle;
