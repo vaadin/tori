@@ -67,6 +67,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     private ServiceContext mbMessageServiceContext;
     private ServiceContext mbBanServiceContext;
     private ServiceContext flagsServiceContext;
+    private ServiceContext mbCategoryServiceContext;
 
     @Override
     public List<Category> getRootCategories() throws DataSourceException {
@@ -301,10 +302,25 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     @Override
     public void save(final Category categoryToSave) throws DataSourceException {
         try {
-            final MBCategory category = MBCategoryLocalServiceUtil
-                    .getCategory(categoryToSave.getId());
-            EntityFactoryUtil.copyFields(categoryToSave, category);
-            MBCategoryLocalServiceUtil.updateMBCategory(category);
+            if (categoryToSave.getId() > 0) {
+                log.debug("Updating existing category: "
+                        + categoryToSave.getName());
+                final MBCategory category = MBCategoryLocalServiceUtil
+                        .getCategory(categoryToSave.getId());
+                EntityFactoryUtil.copyFields(categoryToSave, category);
+                MBCategoryLocalServiceUtil.updateMBCategory(category);
+            } else {
+                log.debug("Adding new category: " + categoryToSave.getName());
+                final long parentCategoryId = categoryToSave
+                        .getParentCategory() != null ? categoryToSave
+                        .getParentCategory().getId() : ROOT_CATEGORY_ID;
+
+                MBCategoryServiceUtil.addCategory(parentCategoryId,
+                        categoryToSave.getName(),
+                        categoryToSave.getDescription(), null, null, null, 0,
+                        false, null, null, 0, null, false, null, 0, false,
+                        null, null, false, mbCategoryServiceContext);
+            }
         } catch (final PortalException e) {
             log.error(
                     String.format("Cannot save category %d",
@@ -712,6 +728,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                     MBMessage.class.getName(), request);
             mbBanServiceContext = ServiceContextFactory.getInstance(
                     MBBan.class.getName(), request);
+            mbCategoryServiceContext = ServiceContextFactory.getInstance(
+                    MBCategory.class.getName(), request);
             flagsServiceContext = ServiceContextFactory.getInstance(
                     "com.liferay.portlet.flags.model.FlagsEntry", request);
         } catch (final PortalException e) {
