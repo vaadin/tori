@@ -39,25 +39,27 @@ public class BBCodeUtil {
 
     static Map<String, String> listStyles = new HashMap<String, String>();
 
-    static String[][] emoticons = { { "angry.gif", ":angry:" },
-            { "bashful.gif", ":bashful:" }, { "big_grin.gif", ":grin:" },
-            { "blink.gif", ":blink:" }, { "blush.gif", ":*)" },
-            { "bored.gif", ":bored:" }, { "closed_eyes.gif", "-_-" },
-            { "cold.gif", ":cold:" }, { "cool.gif", "B)" },
-            { "darth_vader.gif", ":vader:" }, { "dry.gif", "<_<" },
-            { "exclamation.gif", ":what:" }, { "girl.gif", ":girl:" },
-            { "glare.gif", ">_>" }, { "happy.gif", ":)" },
-            { "huh.gif", ":huh:" }, { "in_love.gif", "<3" },
-            { "karate_kid.gif", ":kid:" }, { "kiss.gif", ":#" },
-            { "laugh.gif", ":lol:" }, { "mad.gif", ":mad:" },
-            { "mellow.gif", ":mellow:" }, { "ninja.gif", ":ph34r:" },
-            { "oh_my.gif", ":O" }, { "pac_man.gif", ":V" },
-            { "roll_eyes.gif", ":rolleyes:" }, { "sad.gif", ":(" },
-            { "sleep.gif", ":sleep:" }, { "smile.gif", ":D" },
-            { "smug.gif", ":smug:" }, { "suspicious.gif", "8o" },
-            { "tongue.gif", ":P" }, { "unsure.gif", ":unsure:" },
-            { "wacko.gif", ":wacko:" }, { "wink.gif", ":wink:" },
-            { "wub.gif", ":wub:" } };
+    static String[][] emoticons = {};
+    /* Emoticons are disabled for now. */
+    // { "angry.gif", ":angry:" },
+    // { "bashful.gif", ":bashful:" }, { "big_grin.gif", ":grin:" },
+    // { "blink.gif", ":blink:" }, { "blush.gif", ":*)" },
+    // { "bored.gif", ":bored:" }, { "closed_eyes.gif", "-_-" },
+    // { "cold.gif", ":cold:" }, { "cool.gif", "B)" },
+    // { "darth_vader.gif", ":vader:" }, { "dry.gif", "<_<" },
+    // { "exclamation.gif", ":what:" }, { "girl.gif", ":girl:" },
+    // { "glare.gif", ">_>" }, { "happy.gif", ":)" },
+    // { "huh.gif", ":huh:" }, { "in_love.gif", "<3" },
+    // { "karate_kid.gif", ":kid:" }, { "kiss.gif", ":#" },
+    // { "laugh.gif", ":lol:" }, { "mad.gif", ":mad:" },
+    // { "mellow.gif", ":mellow:" }, { "ninja.gif", ":ph34r:" },
+    // { "oh_my.gif", ":O" }, { "pac_man.gif", ":V" },
+    // { "roll_eyes.gif", ":rolleyes:" }, { "sad.gif", ":(" },
+    // { "sleep.gif", ":sleep:" }, { "smile.gif", ":D" },
+    // { "smug.gif", ":smug:" }, { "suspicious.gif", "8o" },
+    // { "tongue.gif", ":P" }, { "unsure.gif", ":unsure:" },
+    // { "wacko.gif", ":wacko:" }, { "wink.gif", ":wink:" },
+    // { "wub.gif", ":wub:" } };
 
     static {
         fontSizes.put(Integer.valueOf(1), "<span style='font-size: 0.7em;'>");
