@@ -451,8 +451,7 @@
 }
 .post .body .code {
 	white-space: nowrap;
-	background: url(../images/code-bg.png) #fff top left repeat-y;
-	padding: 5px 0;
+	padding: 0;
 	margin: 20px 0 30px 0;
 	font-size: 13px;
 	font-family: Monaco, "Courier New", monospace;
@@ -470,6 +469,7 @@
 	padding: 0px 9px 0px 18px;
 	margin-right: 12px;
 	color: #96c7d7;
+	background: #e6f8fe;
     -moz-user-select: none;
     -webkit-user-select: none;	
 }
