@@ -39,8 +39,8 @@ public class LiferayAuthorizationService implements AuthorizationService,
     @Override
     public boolean mayReportPosts() {
         // Liferay doesn't provide any checks for this permission.
-        // Always allowed.
-        return true;
+        // Allow for all logged in users.
+        return isLoggedIn();
     }
 
     @Override
