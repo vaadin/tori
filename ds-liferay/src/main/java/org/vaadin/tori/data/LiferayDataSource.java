@@ -2,6 +2,7 @@ package org.vaadin.tori.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.portlet.PortletRequest;
@@ -41,6 +42,7 @@ import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadServiceUtil;
+import com.liferay.portlet.messageboards.util.comparator.MessageCreateDateComparator;
 import com.liferay.portlet.ratings.NoSuchEntryException;
 import com.liferay.portlet.ratings.model.RatingsStats;
 import com.liferay.portlet.ratings.service.RatingsEntryLocalServiceUtil;
@@ -285,8 +287,13 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     private List<MBMessage> getLiferayPostsForThread(final long threadId)
             throws SystemException {
+        @SuppressWarnings("unchecked")
+        final Comparator<MBMessage> comparator = new MessageCreateDateComparator(
+                true);
+
         final List<MBMessage> liferayPosts = MBMessageLocalServiceUtil
-                .getThreadMessages(threadId, WorkflowConstants.STATUS_APPROVED);
+                .getThreadMessages(threadId, WorkflowConstants.STATUS_APPROVED,
+                        comparator);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Found %d messages for thread with id %d.",
                     liferayPosts.size(), threadId));
