@@ -20,7 +20,7 @@ public class ConfirmationDialog extends CustomComponent {
 
     public ConfirmationDialog(final String title, final String confirmCaption,
             final String cancelCaption, final ConfirmationListener listener) {
-        setWidth("200px");
+        setWidth("310px");
 
         final VerticalLayout layout = new VerticalLayout();
         layout.setMargin(true);
