@@ -1,5 +1,8 @@
 package org.vaadin.tori.component.post;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUtil;
@@ -39,6 +42,10 @@ public class PostComponent extends CustomComponent {
     private static final String FOLLOW_CAPTION = "Follow Thread";
     private static final ThemeResource FOLLOW_ICON = new ThemeResource(
             "images/icon-follow.png");
+
+    private final PrettyTime prettyTime = new PrettyTime();
+    private final DateFormat dateFormat = new SimpleDateFormat(
+            "MM/dd/yyyy kk:mm");
 
     // trying a new pattern here by grouping auxiliray methods in an inner class
     private static class Util {
@@ -206,7 +213,7 @@ public class PostComponent extends CustomComponent {
         root.addComponent(getAvatarImage(post), "avatar");
         root.addComponent(new Label(post.getAuthor().getDisplayedName()),
                 "authorname");
-        root.addComponent(new Label(getPostedAgoText(post)), "postedtime");
+        root.addComponent(getPostedAgoLabel(post), "postedtime");
         root.addComponent(getPermaLink(post), "permalink");
 
         final String rawSignature = post.getAuthor().getSignatureRaw();
@@ -339,8 +346,14 @@ public class PostComponent extends CustomComponent {
         return label;
     }
 
-    private static String getPostedAgoText(final Post post) {
-        return "posted " + new PrettyTime().format(post.getTime());
+    private Label getPostedAgoLabel(final Post post) {
+        final StringBuilder xhtml = new StringBuilder();
+        xhtml.append("<span class=\"prettytime\">");
+        xhtml.append(prettyTime.format(post.getTime()));
+        xhtml.append("</span><span class=\"timestamp\">");
+        xhtml.append(dateFormat.format(post.getTime()));
+        xhtml.append("</span>");
+        return new Label(xhtml.toString(), Label.CONTENT_XHTML);
     }
 
     private Embedded getAvatarImage(final Post post) {

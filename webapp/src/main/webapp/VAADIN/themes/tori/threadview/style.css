@@ -34,9 +34,33 @@
 	font-weight: bold;
 }
 
-.post [location="postedtime"] {
+.post [location="postedtime"] span {
+	white-space: nowrap;	
 	color: #a09f91;
 	font-size: 13px;
+	position: absolute;
+	-moz-transition: all 0.2s ease-in-out;
+	-webkit-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;	
+
+}
+.post [location="postedtime"] {
+	position: relative;
+	height: 1.2em;
+	overflow: hidden;
+}
+.post [location="postedtime"] .timestamp {
+	top: 1.5em;
+}
+.post .author:hover [location="postedtime"] .timestamp {
+	top: 0;	
+}
+.post [location="postedtime"] .prettytime {
+	top: 0;
+}
+.post .author:hover [location="postedtime"] .prettytime {
+	top: -1.5em;
 }
 
 .post [location="permalink"] a {
