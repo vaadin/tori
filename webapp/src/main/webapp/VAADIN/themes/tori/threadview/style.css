@@ -94,7 +94,7 @@
 
 /* Summary post that is displayed in the floating bar */
 .post.summary {
-	padding: 0 8px;
+	padding: 0;
 	margin-top: 0;
 	border: none;
 }
@@ -107,11 +107,17 @@
 .post.summary .toolbar {
 	display: none;
 }
+.post.summary .author {
+	width: 151px;
+	min-width: 151px;
+	padding: 11px 0 0 5px;
+}
 .post.summary .author [location="avatar"] {
-	width: 30px;
+	width: 23px;
 	float: left;
 }
 .post.summary .author [location="authorname"] {
+	margin-top: 0.2em;
 	margin-left: 10px;
 	width: 100px;
 	float: left;
@@ -123,6 +129,9 @@
 .post.summary .author [location="avatar"] .v-embedded img {
 	width: 100% !important;
 	height: auto !important;
+}
+.post.summary td.body {
+	padding: 9px 0;	
 }
 
 .post.summary,
