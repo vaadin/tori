@@ -453,24 +453,24 @@ public class TestDataSource implements DataSource {
 
     @Override
     public PostVote getPostVote(final Post post) throws DataSourceException {
-        try {
-            return executeWithEntityManager(new Command<PostVote>() {
-                @Override
-                public PostVote execute(final EntityManager em) {
+        return executeWithEntityManager(new Command<PostVote>() {
+            @Override
+            public PostVote execute(final EntityManager em) {
+                try {
                     final TypedQuery<PostVote> query = em.createQuery(
                             "select v from PostVote v where v.voter = :voter "
                                     + "and v.post = :post", PostVote.class);
                     query.setParameter("voter", currentUser);
                     query.setParameter("post", post);
                     return query.getSingleResult();
+                } catch (final NoResultException e) {
+                    final PostVote vote = new PostVote();
+                    vote.setPost(post);
+                    vote.setVoter(currentUser);
+                    return vote;
                 }
-            });
-        } catch (final NoResultException e) {
-            final PostVote vote = new PostVote();
-            vote.setPost(post);
-            vote.setVoter(currentUser);
-            return vote;
-        }
+            }
+        });
     }
 
     @Override
