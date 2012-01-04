@@ -2,6 +2,7 @@ package org.vaadin.tori.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.portlet.PortletRequest;
@@ -41,6 +42,7 @@ import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadServiceUtil;
+import com.liferay.portlet.messageboards.util.comparator.MessageCreateDateComparator;
 import com.liferay.portlet.ratings.NoSuchEntryException;
 import com.liferay.portlet.ratings.model.RatingsStats;
 import com.liferay.portlet.ratings.service.RatingsEntryLocalServiceUtil;
@@ -67,6 +69,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     private ServiceContext mbMessageServiceContext;
     private ServiceContext mbBanServiceContext;
     private ServiceContext flagsServiceContext;
+    private ServiceContext mbCategoryServiceContext;
 
     @Override
     public List<Category> getRootCategories() throws DataSourceException {
@@ -284,8 +287,13 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     private List<MBMessage> getLiferayPostsForThread(final long threadId)
             throws SystemException {
+        @SuppressWarnings("unchecked")
+        final Comparator<MBMessage> comparator = new MessageCreateDateComparator(
+                true);
+
         final List<MBMessage> liferayPosts = MBMessageLocalServiceUtil
-                .getThreadMessages(threadId, WorkflowConstants.STATUS_APPROVED);
+                .getThreadMessages(threadId, WorkflowConstants.STATUS_APPROVED,
+                        comparator);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Found %d messages for thread with id %d.",
                     liferayPosts.size(), threadId));
@@ -301,10 +309,25 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     @Override
     public void save(final Category categoryToSave) throws DataSourceException {
         try {
-            final MBCategory category = MBCategoryLocalServiceUtil
-                    .getCategory(categoryToSave.getId());
-            EntityFactoryUtil.copyFields(categoryToSave, category);
-            MBCategoryLocalServiceUtil.updateMBCategory(category);
+            if (categoryToSave.getId() > 0) {
+                log.debug("Updating existing category: "
+                        + categoryToSave.getName());
+                final MBCategory category = MBCategoryLocalServiceUtil
+                        .getCategory(categoryToSave.getId());
+                EntityFactoryUtil.copyFields(categoryToSave, category);
+                MBCategoryLocalServiceUtil.updateMBCategory(category);
+            } else {
+                log.debug("Adding new category: " + categoryToSave.getName());
+                final long parentCategoryId = categoryToSave
+                        .getParentCategory() != null ? categoryToSave
+                        .getParentCategory().getId() : ROOT_CATEGORY_ID;
+
+                MBCategoryServiceUtil.addCategory(parentCategoryId,
+                        categoryToSave.getName(),
+                        categoryToSave.getDescription(), null, null, null, 0,
+                        false, null, null, 0, null, false, null, 0, false,
+                        null, null, false, mbCategoryServiceContext);
+            }
         } catch (final PortalException e) {
             log.error(
                     String.format("Cannot save category %d",
@@ -712,6 +735,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                     MBMessage.class.getName(), request);
             mbBanServiceContext = ServiceContextFactory.getInstance(
                     MBBan.class.getName(), request);
+            mbCategoryServiceContext = ServiceContextFactory.getInstance(
+                    MBCategory.class.getName(), request);
             flagsServiceContext = ServiceContextFactory.getInstance(
                     "com.liferay.portlet.flags.model.FlagsEntry", request);
         } catch (final PortalException e) {

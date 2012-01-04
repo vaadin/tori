@@ -22,7 +22,9 @@ public class EntityFactoryUtil {
         to.setCategoryId(from.getId());
         to.setName(from.getName());
         to.setDescription(from.getDescription());
-        to.setParentCategoryId(from.getParentCategory().getId());
+        if (from.getParentCategory() != null) {
+            to.setParentCategoryId(from.getParentCategory().getId());
+        }
     }
 
     public static List<Category> createCategories(

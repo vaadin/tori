@@ -5,21 +5,35 @@
 	font-weight: bold;
 }
 
+.categoryTree .v-table-body {
+	border: 3px solid #deddd3;
+}
+
+.categoryTree .v-table-body,
+.categoryTree .v-table-row td {
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	border-radius: 8px;
+}
+
 .categoryTree .v-table-row td,
 .categoryTree .v-table-row-odd td {
-	background: #fff;
-	border-bottom: 1px solid #dfdfdf;
+	padding: 8px;
+	border: none;	
 	-moz-transition: background 0.3s;
 	-webkit-transition: background 0.3s;
 	transition: background 0.3s;
 }
+.categoryTree .v-table-row-odd {
+	background: #f4f4f0;
+}
 .categoryTree .v-table-row td:first-child,
 .categoryTree .v-table-row-odd td:first-child {
-	background: url(../images/icon-rearranging.png) #fff 10px -10px no-repeat;
+	background: url(../images/icon-rearranging.png) transparent 10px -10px no-repeat;
 }
 .categoryTree.rearranging .v-table-row td:first-child,
 .categoryTree.rearranging .v-table-row-odd td:first-child {
-	background-position: 10px 23px;
+	background-position: 10px 31px;
 }
 
 .categoryTree.rearranging .v-table-row-odd * {
@@ -31,11 +45,6 @@
 .categoryTree .v-table-row:last-child td,
 .categoryTree .v-table-row-odd:last-child td {
 	border-bottom: 0;
-}
-
-.categoryTree .v-table-row:hover td,
-.categoryTree .v-table-row-odd:hover td {
-	background-color: #f6f6f6;	
 }
 
 .categoryTree .v-treetable-treespacer {

@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.apache.log4j.Logger;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
 
 import com.liferay.portlet.messageboards.util.BBCodeUtil;
 
 public class LiferayPostFormatter implements PostFormatter {
+
+    private static final Logger log = Logger
+            .getLogger(LiferayPostFormatter.class);
 
     private static final String formattingHelp;
     private static Collection<FontFace> fontFaces;
@@ -52,7 +56,12 @@ public class LiferayPostFormatter implements PostFormatter {
 
     @Override
     public String format(final String rawPostBody) {
-        return BBCodeUtil.getHTML(rawPostBody);
+        try {
+            return BBCodeUtil.getHTML(rawPostBody.trim());
+        } catch (final Exception e) {
+            log.warn("Couldn't parse the given post body: " + rawPostBody);
+        }
+        return rawPostBody;
     }
 
     @Override

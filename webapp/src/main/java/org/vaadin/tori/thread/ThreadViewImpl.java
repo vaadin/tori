@@ -133,7 +133,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         }
 
         if (getPresenter().userMayReply()) {
-            final Label spacer = new Label("~~ FIN ~~");
+            final Label spacer = new Label("<span class=\"eof\">eof</span>",
+                    Label.CONTENT_XHTML);
             spacer.setStyleName("spacer");
             layout.addComponent(spacer);
 
@@ -147,7 +148,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             layout.addComponent(quickReplyBar);
         }
 
-        final Label bottomSpacer = new Label("~~~~~~~~");
+        final Label bottomSpacer = new Label("");
         bottomSpacer.setStyleName("spacer");
         layout.addComponent(bottomSpacer);
     }
@@ -185,7 +186,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 c.enableThreadUnFollowing();
             }
         } catch (final DataSourceException e) {
-            // NOP - everything's logged. I fyou can't follow, you can't
+            // NOP - everything's logged. If you can't follow, you can't
             // unfollow either.
         }
         if (getPresenter().userMayBan()) {
