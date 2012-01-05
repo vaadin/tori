@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.google.gwt.event.dom.client.ScrollEvent;
+import com.google.gwt.event.dom.client.ScrollHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
@@ -131,7 +134,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
     private static class FlowPane extends FlowPanel {
 
         private static final int SECONDARY_FETCH_DELAY_MILLIS = 500;
-        private static final int SCROLL_POLLING_PERIOD_MILLIS = 250;
+        private static final int SCROLL_POLLING_PERIOD_MILLIS = 500;
 
         private final HashMap<Widget, VCaption> widgetToCaption = new HashMap<Widget, VCaption>();
         private ApplicationConnection client;
@@ -152,6 +155,8 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 startSecondaryLoading();
             }
         };
+        private HandlerRegistration scrollHandlerRegistration;
+        private HandlerRegistration scrollHandlerRegistrationWin;
 
         public FlowPane() {
             super();
@@ -177,14 +182,9 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 startSecondaryLoading();
             } else {
                 initialize(uidl);
+                attachScrollHandlersIfNeeded();
                 findAllThingsToFetchAndFetchThem(primaryDistance);
             }
-
-            /*
-             * We've gone through the client-server-client cycle. All rendering
-             * is done. It's okay to start polling again
-             */
-            scrollPoller.scheduleRepeating(SCROLL_POLLING_PERIOD_MILLIS);
         }
 
         private void checkAndUpdatePlaceholderSizes(final UIDL uidl) {
@@ -275,6 +275,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
             for (final Widget child : getChildren()) {
                 final boolean isAPlaceholderWidget = child.getClass() == PlaceholderWidget.class;
                 if (isAPlaceholderWidget && isBeingShown(child, distance)) {
+                    child.getOffsetHeight();
                     componentsToLoad.add(child);
                 }
             }
@@ -289,20 +290,8 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 }
 
                 client.updateVariable(id, VAR_LOAD_INDEXES_INTARR, idsToLoad,
-                        false);
-                sendToServer();
+                        true);
             }
-        }
-
-        private void sendToServer() {
-            /*
-             * We're going to the server. Let's stop the scroll poller, since
-             * it's unnecessary to do that. And we don't want two requests going
-             * out simultaneously. So stop, until we come back to the client
-             * side.
-             */
-            scrollPoller.cancel();
-            client.sendPendingVariableChanges();
         }
 
         private boolean isBeingShown(final Widget child, final int proximity) {
@@ -471,6 +460,49 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 widgetToCaption.remove(component);
             }
         }
+
+        private void attachScrollHandlersIfNeeded() {
+            if (scrollHandlerRegistration == null) {
+                // Cannot use Window.addWindowScrollHandler() in Vaadin apps,
+                // but we must listen for scroll events in the VView instance
+                // instead...
+                final ScrollHandler handler = new ScrollHandler() {
+                    @Override
+                    public void onScroll(final ScrollEvent event) {
+                        scrollPoller.cancel();
+                        scrollPoller.schedule(SCROLL_POLLING_PERIOD_MILLIS);
+                    }
+                };
+                scrollHandlerRegistration = client.getView().addDomHandler(
+                        handler, ScrollEvent.getType());
+            }
+            if (scrollHandlerRegistrationWin == null) {
+                // ...but within embedded apps (portlet) we do actually scroll
+                // the Window, so we need also the ScrollHandler for the Window.
+                final Window.ScrollHandler handler = new Window.ScrollHandler() {
+                    @Override
+                    public void onWindowScroll(
+                            final com.google.gwt.user.client.Window.ScrollEvent event) {
+                        scrollPoller.cancel();
+                        scrollPoller.schedule(SCROLL_POLLING_PERIOD_MILLIS);
+                    }
+                };
+                scrollHandlerRegistrationWin = Window
+                        .addWindowScrollHandler(handler);
+            }
+        }
+
+        @Override
+        protected void onDetach() {
+            if (scrollHandlerRegistration != null) {
+                scrollHandlerRegistration.removeHandler();
+            }
+            if (scrollHandlerRegistrationWin != null) {
+                scrollHandlerRegistrationWin.removeHandler();
+            }
+            super.onDetach();
+        }
+
     }
 
     private RenderSpace space;
