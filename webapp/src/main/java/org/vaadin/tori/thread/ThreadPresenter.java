@@ -33,8 +33,8 @@ public class ThreadPresenter extends Presenter<ThreadView> {
 
     public void setCurrentThreadById(final @NonNull String threadIdString)
             throws DataSourceException {
+        DiscussionThread requestedThread = null;
         try {
-            DiscussionThread requestedThread = null;
             try {
                 final long threadId = Long.valueOf(threadIdString);
                 requestedThread = dataSource.getThread(threadId);
@@ -55,6 +55,16 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             log.error(e);
             e.printStackTrace();
             throw e;
+        }
+
+        if (requestedThread != null) {
+            try {
+                dataSource.incrementViewCount(requestedThread);
+            } catch (final DataSourceException e) {
+                // Just log the exception, we don't want an exception in view
+                // count incrementing to stop us here.
+                log.error("Couldn't increment view count for thread.", e);
+            }
         }
     }
 

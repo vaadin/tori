@@ -251,6 +251,30 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
+    public void incrementViewCount(final DiscussionThread thread)
+            throws DataSourceException {
+        try {
+            // Reload the thread to get the latest view count.
+            // Here we have a race condition, but this is the same way Liferay
+            // handles the view count incrementation.
+            final MBThread liferayThread = MBThreadLocalServiceUtil
+                    .getThread(thread.getId());
+            MBThreadLocalServiceUtil.updateThread(liferayThread.getThreadId(),
+                    liferayThread.getViewCount() + 1);
+        } catch (final PortalException e) {
+            log.error(String.format(
+                    "Couldn't increment view count for thread %d.",
+                    thread.getId()), e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error(String.format(
+                    "Couldn't increment view count for thread %d.",
+                    thread.getId()), e);
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Override
     public List<Post> getPosts(final DiscussionThread thread)
             throws DataSourceException {
         ToriUtil.checkForNull(thread, "DiscussionThread must not be null.");

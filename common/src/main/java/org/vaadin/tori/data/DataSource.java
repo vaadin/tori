@@ -227,4 +227,14 @@ public interface DataSource {
     @NonNull
     DiscussionThread saveNewThread(@NonNull DiscussionThread newThread,
             @NonNull Post firstPost) throws DataSourceException;
+
+    /**
+     * Increments the view count of the given thread by one. This method should
+     * be always used instead of directly incrementing the view count property
+     * of the {@link DiscussionThread}.
+     * 
+     * @param thread
+     * @throws DataSourceException
+     */
+    void incrementViewCount(DiscussionThread thread) throws DataSourceException;
 }
