@@ -26,11 +26,12 @@ public class LazyLayout extends AbstractLayout {
      * Custom layout slots containing the components.
      */
     protected List<Component> components = new ArrayList<Component>();
-
-    private final String placeholderWidth = "100%";
-    private final String placeholderHeight = "400px";
-
     private List<Integer> componentIndexesToSend = null;
+    private String placeholderWidth = "100%";
+    private String placeholderHeight = "200px";
+
+    private int primaryDistance = 200;
+    private int secondaryDistance = 600;
 
     /**
      * Add a component into this container. The component is added to the right
@@ -89,6 +90,10 @@ public class LazyLayout extends AbstractLayout {
                 placeholderWidth);
         target.addAttribute(VLazyLayout.ATT_TOTAL_COMPONENTS_INT,
                 components.size());
+        target.addAttribute(VLazyLayout.ATT_PRIMARY_DISTANCE_INT,
+                primaryDistance);
+        target.addAttribute(VLazyLayout.ATT_SECONDARY_DISTANCE_INT,
+                secondaryDistance);
 
         if (componentIndexesToSend != null) {
             Collections.sort(componentIndexesToSend);
@@ -130,5 +135,26 @@ public class LazyLayout extends AbstractLayout {
             }
             requestRepaint();
         }
+    }
+
+    public void setPlaceholderSize(final String height, final String width) {
+        placeholderWidth = width;
+        placeholderHeight = height;
+        requestRepaint();
+    }
+
+    /**
+     * 
+     * @param primary
+     * @param secondary
+     */
+    public void setRenderDistances(final int primary, final int secondary) {
+        if (primary > secondary) {
+            throw new IllegalArgumentException(
+                    "secondary distance must be equal to or larger than the primary distance");
+        }
+        primaryDistance = primary;
+        secondaryDistance = secondary;
+        requestRepaint();
     }
 }

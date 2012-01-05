@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -27,12 +28,14 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
     public static final String TAGNAME = "lazylayout";
     public static final String CLASSNAME = "v-" + TAGNAME;
 
-    public static final String VAR_LOAD_INDEXES_INTARR = "p";
+    public static final String VAR_LOAD_INDEXES_INTARR = "l";
     public static final String ATT_PAINT_INDICES_MAP = "p";
     public static final String ATT_PLACEHOLDER_HEIGHT_STRING = "h";
     public static final String ATT_PLACEHOLDER_WIDTH_STRING = "w";
     public static final String ATT_FETCH_INDEX_INT = "ff";
     public static final String ATT_TOTAL_COMPONENTS_INT = "c";
+    public static final String ATT_PRIMARY_DISTANCE_INT = "pd";
+    public static final String ATT_SECONDARY_DISTANCE_INT = "sd";
 
     private final FlowPane panel = new FlowPane();
 
@@ -118,14 +121,37 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
         panel.updateCaption(component, uidl);
     }
 
+    private static class PlaceholderWidget extends Label {
+
+        public PlaceholderWidget(final String string) {
+            super(string);
+        }
+    }
+
     private static class FlowPane extends FlowPanel {
+
+        private static final int SECONDARY_FETCH_DELAY_MILLIS = 500;
+        private static final int SCROLL_POLLING_PERIOD_MILLIS = 250;
 
         private final HashMap<Widget, VCaption> widgetToCaption = new HashMap<Widget, VCaption>();
         private ApplicationConnection client;
         private String id;
         private int lastIndex;
 
-        private final int proximity = 0;
+        private int primaryDistance;
+        private int secondaryDistance;
+        private String placeholderHeight;
+        private String placeholderWidth;
+
+        private int secondaryLoadGoingOn;
+
+        private final Timer scrollPoller = new Timer() {
+            @Override
+            public void run() {
+                findAllThingsToFetchAndFetchThem(primaryDistance);
+                startSecondaryLoading();
+            }
+        };
 
         public FlowPane() {
             super();
@@ -146,53 +172,109 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
             this.id = uidl.getId();
 
             if (uidl.hasAttribute(ATT_PAINT_INDICES_MAP)) {
-
-                /*
-                 * this initializes the widgets so that they are actually
-                 * created from the UIDL
-                 */
-                final Iterator<Object> children = uidl.getChildIterator();
-                while (children.hasNext()) {
-                    final UIDL child = (UIDL) children.next();
-                    final Paintable paintable = client.getPaintable(child);
-                    paintable.updateFromUIDL(child, client);
-                }
-
-                final ValueMap componentPlaceMap = uidl
-                        .getMapAttribute(ATT_PAINT_INDICES_MAP);
-                for (final String key : componentPlaceMap.getKeySet()) {
-                    final Paintable paintable = client.getPaintable(key);
-                    final int placeIndex = componentPlaceMap.getInt(key);
-                    remove(placeIndex);
-                    insert((Widget) paintable, placeIndex);
-                }
-                updateRelativeSizes();
-                return;
+                addLazyLoadedWidgets(uidl, client);
+                checkAndUpdatePlaceholderSizes(uidl);
+                startSecondaryLoading();
             } else {
-                final int componentAmount = uidl
-                        .getIntAttribute(ATT_TOTAL_COMPONENTS_INT);
-                final String placeholderHeight = uidl
-                        .getStringAttribute(ATT_PLACEHOLDER_HEIGHT_STRING);
-                final String placeholderWidth = uidl
-                        .getStringAttribute(ATT_PLACEHOLDER_WIDTH_STRING);
+                initialize(uidl);
+                findAllThingsToFetchAndFetchThem(primaryDistance);
+            }
 
-                for (int i = getChildren().size(); i < componentAmount; i++) {
-                    final Widget placeholder = new Label("Loading...");
-                    placeholder.setWidth(placeholderWidth);
-                    placeholder.setHeight(placeholderHeight);
-                    placeholder.getElement().getStyle()
-                            .setBackgroundColor("#ccc");
-                    add(placeholder);
+            /*
+             * We've gone through the client-server-client cycle. All rendering
+             * is done. It's okay to start polling again
+             */
+            scrollPoller.scheduleRepeating(SCROLL_POLLING_PERIOD_MILLIS);
+        }
+
+        private void checkAndUpdatePlaceholderSizes(final UIDL uidl) {
+            final String newPlaceholderHeight = uidl
+                    .getStringAttribute(ATT_PLACEHOLDER_HEIGHT_STRING);
+            final String newPlaceholderWidth = uidl
+                    .getStringAttribute(ATT_PLACEHOLDER_WIDTH_STRING);
+
+            if (!placeholderHeight.equals(newPlaceholderHeight)
+                    || !placeholderWidth.equals(newPlaceholderWidth)) {
+                placeholderHeight = newPlaceholderHeight;
+                placeholderWidth = newPlaceholderWidth;
+
+                for (final Widget placeholder : getChildren()) {
+                    if (placeholder.getClass().equals(PlaceholderWidget.class)) {
+                        placeholder.setWidth(placeholderWidth);
+                        placeholder.setHeight(placeholderHeight);
+                    }
                 }
-
-                findAllThingsToFetchAndFetchThem();
             }
         }
 
-        private void findAllThingsToFetchAndFetchThem() {
+        private void initialize(final UIDL uidl) {
+            final int componentAmount = uidl
+                    .getIntAttribute(ATT_TOTAL_COMPONENTS_INT);
+            placeholderHeight = uidl
+                    .getStringAttribute(ATT_PLACEHOLDER_HEIGHT_STRING);
+            placeholderWidth = uidl
+                    .getStringAttribute(ATT_PLACEHOLDER_WIDTH_STRING);
+            primaryDistance = uidl.getIntAttribute(ATT_PRIMARY_DISTANCE_INT);
+            secondaryDistance = uidl
+                    .getIntAttribute(ATT_SECONDARY_DISTANCE_INT);
+
+            for (int i = getChildren().size(); i < componentAmount; i++) {
+                add(createPlaceholderWidget());
+            }
+        }
+
+        private PlaceholderWidget createPlaceholderWidget() {
+            final PlaceholderWidget placeholder = new PlaceholderWidget(
+                    "Loading...");
+            placeholder.setWidth(placeholderWidth);
+            placeholder.setHeight(placeholderHeight);
+            placeholder.setStyleName(CLASSNAME + "-placeholder");
+            placeholder.getElement().getStyle().setBackgroundColor("#ccc");
+            return placeholder;
+        }
+
+        private void addLazyLoadedWidgets(final UIDL uidl,
+                final ApplicationConnection client) {
+            /*
+             * this initializes the widgets so that they are actually created
+             * from the UIDL
+             */
+            final Iterator<Object> children = uidl.getChildIterator();
+            while (children.hasNext()) {
+                final UIDL child = (UIDL) children.next();
+                final Paintable paintable = client.getPaintable(child);
+                paintable.updateFromUIDL(child, client);
+            }
+
+            final ValueMap componentPlaceMap = uidl
+                    .getMapAttribute(ATT_PAINT_INDICES_MAP);
+            for (final String key : componentPlaceMap.getKeySet()) {
+                final Paintable paintable = client.getPaintable(key);
+                final int placeIndex = componentPlaceMap.getInt(key);
+                remove(placeIndex);
+                insert((Widget) paintable, placeIndex);
+            }
+            updateRelativeSizes();
+        }
+
+        private void startSecondaryLoading() {
+            if (secondaryLoadGoingOn == 0) {
+                secondaryLoadGoingOn++;
+                new Timer() {
+                    @Override
+                    public void run() {
+                        secondaryLoadGoingOn--;
+                        findAllThingsToFetchAndFetchThem(secondaryDistance);
+                    }
+                }.schedule(SECONDARY_FETCH_DELAY_MILLIS);
+            }
+        }
+
+        private void findAllThingsToFetchAndFetchThem(final int distance) {
             final Set<Widget> componentsToLoad = new HashSet<Widget>();
             for (final Widget child : getChildren()) {
-                if (isBeingShown2(child)) {
+                final boolean isAPlaceholderWidget = child.getClass() == PlaceholderWidget.class;
+                if (isAPlaceholderWidget && isBeingShown(child, distance)) {
                     componentsToLoad.add(child);
                 }
             }
@@ -207,15 +289,23 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 }
 
                 client.updateVariable(id, VAR_LOAD_INDEXES_INTARR, idsToLoad,
-                        true);
+                        false);
+                sendToServer();
             }
         }
 
-        private boolean isBeingShown2(final Widget child) {
-            return true;
+        private void sendToServer() {
+            /*
+             * We're going to the server. Let's stop the scroll poller, since
+             * it's unnecessary to do that. And we don't want two requests going
+             * out simultaneously. So stop, until we come back to the client
+             * side.
+             */
+            scrollPoller.cancel();
+            client.sendPendingVariableChanges();
         }
 
-        private boolean isBeingShown(final Widget child) {
+        private boolean isBeingShown(final Widget child, final int proximity) {
 
             final Element element = child.getElement();
 
@@ -229,7 +319,8 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
             final int originalWidth = element.getOffsetWidth() + proximity;
 
             com.google.gwt.dom.client.Element childElement = element;
-            com.google.gwt.dom.client.Element parentElement = getElement();
+            com.google.gwt.dom.client.Element parentElement = element
+                    .getParentElement();
 
             while (parentElement != null) {
 
@@ -343,64 +434,6 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
             return true;
         }
 
-        // public void updateFromUIDL(final UIDL uidl,
-        // final ApplicationConnection client) {
-        //
-        // // for later requests
-        // this.client = client;
-        //
-        // final Collection<Widget> oldWidgets = new HashSet<Widget>();
-        // for (final Widget widget2 : this) {
-        // oldWidgets.add(widget2);
-        // }
-        //
-        // lastIndex = 0;
-        // for (final Iterator<Object> i = uidl.getChildIterator(); i
-        // .hasNext();) {
-        // final UIDL r = (UIDL) i.next();
-        // final Paintable child = client.getPaintable(r);
-        // final Widget widget = (Widget) child;
-        // if (widget.getParent() == this) {
-        // oldWidgets.remove(child);
-        // final VCaption vCaption = widgetToCaption.get(child);
-        // if (vCaption != null) {
-        // addOrMove(vCaption, lastIndex++);
-        // oldWidgets.remove(vCaption);
-        // }
-        // }
-        //
-        // addOrMove(widget, lastIndex++);
-        //
-        // if (!r.getBooleanAttribute("cached")) {
-        // child.updateFromUIDL(r, client);
-        // }
-        // }
-        //
-        // // loop oldWidgetWrappers that where not re-attached and unregister
-        // // them
-        // for (final Widget w : oldWidgets) {
-        // remove(w);
-        // if (w instanceof Paintable) {
-        // final Paintable p = (Paintable) w;
-        // client.unregisterPaintable(p);
-        // }
-        // final VCaption vCaption = widgetToCaption.remove(w);
-        // if (vCaption != null) {
-        // remove(vCaption);
-        // }
-        // }
-        // }
-
-        private void addOrMove(final Widget child, final int index) {
-            if (child.getParent() == this) {
-                final int currentIndex = getWidgetIndex(child);
-                if (index == currentIndex) {
-                    return;
-                }
-            }
-            insert(child, index);
-        }
-
         public boolean hasChildComponent(final Widget component) {
             return component.getParent() == this;
         }
@@ -484,24 +517,6 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
 
     private boolean hasSize() {
         return hasWidth && hasHeight;
-    }
-
-    private static final String makeCamelCase(String cssProperty) {
-        // TODO this might be cleaner to implement with regexp
-        while (cssProperty.contains("-")) {
-            final int indexOf = cssProperty.indexOf("-");
-            cssProperty = cssProperty.substring(0, indexOf)
-                    + String.valueOf(cssProperty.charAt(indexOf + 1))
-                            .toUpperCase() + cssProperty.substring(indexOf + 2);
-        }
-        if ("float".equals(cssProperty)) {
-            if (BrowserInfo.get().isIE()) {
-                return "styleFloat";
-            } else {
-                return "cssFloat";
-            }
-        }
-        return cssProperty;
     }
 
 }
