@@ -3,6 +3,7 @@ package org.vaadin.tori.widgetset.client.ui;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.gwt.event.dom.client.ScrollEvent;
@@ -24,6 +25,7 @@ import com.vaadin.terminal.gwt.client.RenderSpace;
 import com.vaadin.terminal.gwt.client.StyleConstants;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.VCaption;
+import com.vaadin.terminal.gwt.client.VConsole;
 import com.vaadin.terminal.gwt.client.ValueMap;
 import com.vaadin.terminal.gwt.client.ui.VMarginInfo;
 
@@ -158,6 +160,16 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
         private HandlerRegistration scrollHandlerRegistration;
         private HandlerRegistration scrollHandlerRegistrationWin;
 
+        /**
+         * This map contains the height of the old placeholder widget, having a
+         * key of the new widget that replaced it. Later on, as the new widget
+         * gets its real height, we know how much to adjust the scroll position
+         * with.
+         * 
+         * @see #fixScrollPosition(Set)
+         */
+        private final Map<Paintable, Integer> scrollAdjustmentMap = new HashMap<Paintable, Integer>();
+
         public FlowPane() {
             super();
             setStyleName(CLASSNAME + "-container");
@@ -251,23 +263,28 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
             for (final String key : componentPlaceMap.getKeySet()) {
                 final Paintable paintable = client.getPaintable(key);
                 final int placeIndex = componentPlaceMap.getInt(key);
+
+                scrollAdjustmentMap.put(paintable, getWidget(placeIndex)
+                        .getOffsetHeight());
+
                 remove(placeIndex);
                 insert((Widget) paintable, placeIndex);
+                client.handleComponentRelativeSize((Widget) paintable);
             }
-            updateRelativeSizes();
+            // updateRelativeSizes();
         }
 
         private void startSecondaryLoading() {
-            if (secondaryLoadGoingOn == 0) {
-                secondaryLoadGoingOn++;
-                new Timer() {
-                    @Override
-                    public void run() {
-                        secondaryLoadGoingOn--;
-                        findAllThingsToFetchAndFetchThem(secondaryDistance);
-                    }
-                }.schedule(SECONDARY_FETCH_DELAY_MILLIS);
-            }
+            // if (secondaryLoadGoingOn == 0) {
+            // secondaryLoadGoingOn++;
+            // new Timer() {
+            // @Override
+            // public void run() {
+            // secondaryLoadGoingOn--;
+            // findAllThingsToFetchAndFetchThem(secondaryDistance);
+            // }
+            // }.schedule(SECONDARY_FETCH_DELAY_MILLIS);
+            // }
         }
 
         private void findAllThingsToFetchAndFetchThem(final int distance) {
@@ -503,6 +520,70 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
             super.onDetach();
         }
 
+        /**
+         * @param sizemodifiedChildren
+         *            The Paintables that have received their final height.
+         */
+        public void fixScrollPosition(final Set<Paintable> sizemodifiedChildren) {
+            VConsole.log("** SIZE CHANGE");
+            final int scrollPos = getCurrentScrollPos();
+            int requiredScrollAdjustment = 0;
+            for (final Paintable paintable : sizemodifiedChildren) {
+                if (scrollAdjustmentMap.get(paintable) != null) {
+                    final Widget widget = (Widget) paintable;
+                    final Integer oldHeight = scrollAdjustmentMap
+                            .remove(paintable);
+
+                    if (widget.getElement().getOffsetTop() < scrollPos) {
+                        final int newHeight = ((Widget) paintable)
+                                .getOffsetHeight();
+                        requiredScrollAdjustment = newHeight - oldHeight;
+                        VConsole.log("old: " + oldHeight + ", new: "
+                                + newHeight + ", adjust: "
+                                + requiredScrollAdjustment);
+                    } else {
+                        VConsole.log("Element is below scroll pos ^_^!");
+                    }
+                } else {
+                    VConsole.error("No record of such child needing height adjustment! "
+                            + paintable);
+                }
+            }
+
+            adjustScrollBy(requiredScrollAdjustment);
+        }
+
+        private void adjustScrollBy(final int requiredScrollAdjustment) {
+            com.google.gwt.dom.client.Element parent = getElement()
+                    .getOffsetParent();
+            while (parent != null && parent.getScrollTop() <= 0) {
+                parent = parent.getOffsetParent();
+            }
+
+            if (parent != null) {
+                final int currentScroll = parent.getScrollTop();
+                parent.setScrollTop(currentScroll + requiredScrollAdjustment);
+            } else {
+                final int currentScrollTop = Window.getScrollTop();
+                final int currentScrollLeft = Window.getScrollLeft();
+                Window.scrollTo(currentScrollLeft, currentScrollTop
+                        + requiredScrollAdjustment);
+            }
+        }
+
+        private int getCurrentScrollPos() {
+            com.google.gwt.dom.client.Element parent = getElement()
+                    .getOffsetParent();
+            while (parent != null && parent.getScrollTop() <= 0) {
+                parent = parent.getOffsetParent();
+            }
+
+            if (parent != null) {
+                return parent.getScrollTop();
+            } else {
+                return Window.getScrollTop();
+            }
+        }
     }
 
     private RenderSpace space;
@@ -537,6 +618,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
 
     @Override
     public boolean requestLayout(final Set<Paintable> children) {
+        panel.fixScrollPosition(children);
         if (hasSize()) {
             return true;
         } else {

@@ -28,7 +28,7 @@ public class LazyLayout extends AbstractLayout {
     protected List<Component> components = new ArrayList<Component>();
     private List<Integer> componentIndexesToSend = null;
     private String placeholderWidth = "100%";
-    private String placeholderHeight = "200px";
+    private String placeholderHeight = "181px";
 
     private int primaryDistance = 200;
     private int secondaryDistance = 600;
