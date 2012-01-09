@@ -235,6 +235,11 @@ public class PostComponent extends CustomComponent {
         root.addComponent(contextMenu, "settings");
         root.addComponent(editButton, "edit");
         root.addComponent(quoteButton, "quote");
+
+        setHeight("181px");
+        setWidth("100%");
+        root.setHeight("181px");
+        root.setWidth("100%");
     }
 
     public void setScrollToComponent(final Component scrollTo) {

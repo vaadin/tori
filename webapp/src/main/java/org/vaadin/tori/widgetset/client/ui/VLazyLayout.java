@@ -271,6 +271,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 insert((Widget) paintable, placeIndex);
                 client.handleComponentRelativeSize((Widget) paintable);
             }
+            fixScrollPosition(scrollAdjustmentMap.keySet());
             // updateRelativeSizes();
         }
 
@@ -545,7 +546,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                         VConsole.log("Element is below scroll pos ^_^!");
                     }
                 } else {
-                    VConsole.error("No record of such child needing height adjustment! "
+                    VConsole.log("No record of such child needing height adjustment! "
                             + paintable);
                 }
             }
