@@ -686,4 +686,18 @@ public class TestDataSource implements DataSource {
             }
         });
     }
+
+    @Override
+    public boolean isRead(final DiscussionThread thread) {
+        // TODO actual implementation
+        return true;
+    }
+
+    @Override
+    public void markRead(final DiscussionThread thread)
+            throws DataSourceException {
+        System.out.println(String.format(
+                "Marking thread %d as read. Not actually implemented in "
+                        + getClass().getSimpleName() + ".", thread.getId()));
+    }
 }

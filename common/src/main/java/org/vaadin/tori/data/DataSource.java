@@ -237,4 +237,25 @@ public interface DataSource {
      * @throws DataSourceException
      */
     void incrementViewCount(DiscussionThread thread) throws DataSourceException;
+
+    /**
+     * Returns true if the current user has read the given thread. If no user is
+     * logged in, this method will return true for any thread.
+     * 
+     * @param thread
+     * @return
+     * @throws DataSourceException
+     * @see {@link #markRead(DiscussionThread)}
+     */
+    boolean isRead(DiscussionThread thread) throws DataSourceException;
+
+    /**
+     * Marks the given thread as read. If no user is logged in, this method
+     * doesn't do anything.
+     * 
+     * @param thread
+     * @throws DataSourceException
+     * @see {@link #isRead(DiscussionThread)}
+     */
+    void markRead(DiscussionThread thread) throws DataSourceException;
 }

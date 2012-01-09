@@ -256,4 +256,15 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         }
     }
 
+    public boolean userHasRead(final DiscussionThread thread) {
+        try {
+            return dataSource.isRead(thread);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            // Just log the error and return true, not considering this a
+            // serious problem.
+            return true;
+        }
+    }
+
 }

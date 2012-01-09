@@ -38,6 +38,7 @@ import com.liferay.portlet.messageboards.model.MBThreadConstants;
 import com.liferay.portlet.messageboards.service.MBBanServiceUtil;
 import com.liferay.portlet.messageboards.service.MBCategoryLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBCategoryServiceUtil;
+import com.liferay.portlet.messageboards.service.MBMessageFlagLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
@@ -487,6 +488,48 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                     thread.getId()), e);
             throw new DataSourceException(e);
         }
+    }
+
+    @Override
+    public void markRead(final DiscussionThread thread)
+            throws DataSourceException {
+        if (currentUserId > 0) {
+            try {
+                MBMessageFlagLocalServiceUtil.addReadFlags(currentUserId,
+                        MBThreadLocalServiceUtil.getThread(thread.getId()));
+            } catch (final PortalException e) {
+                log.error(String.format("Couldn't mark thread %d as read.",
+                        thread.getId()), e);
+                throw new DataSourceException(e);
+            } catch (final SystemException e) {
+                log.error(String.format("Couldn't mark thread %d as read.",
+                        thread.getId()), e);
+                throw new DataSourceException(e);
+            }
+        }
+    }
+
+    @Override
+    public boolean isRead(final DiscussionThread thread)
+            throws DataSourceException {
+        if (currentUserId > 0) {
+            try {
+                return MBMessageFlagLocalServiceUtil.hasReadFlag(currentUserId,
+                        MBThreadLocalServiceUtil.getThread(thread.getId()));
+            } catch (final PortalException e) {
+                log.error(String.format(
+                        "Couldn't check for read flag on thread %d.",
+                        thread.getId()), e);
+                throw new DataSourceException(e);
+            } catch (final SystemException e) {
+                log.error(String.format(
+                        "Couldn't check for read flag on thread %d.",
+                        thread.getId()), e);
+                throw new DataSourceException(e);
+            }
+        }
+        // default to read in case of an anonymous user
+        return true;
     }
 
     @Override

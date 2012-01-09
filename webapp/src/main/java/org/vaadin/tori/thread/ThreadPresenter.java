@@ -60,10 +60,12 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         if (requestedThread != null) {
             try {
                 dataSource.incrementViewCount(requestedThread);
+                dataSource.markRead(requestedThread);
             } catch (final DataSourceException e) {
                 // Just log the exception, we don't want an exception in view
-                // count incrementing to stop us here.
-                log.error("Couldn't increment view count for thread.", e);
+                // count incrementing or marking as read to stop us here.
+                log.error("Couldn't increment view count and "
+                        + "mark thread as read.", e);
             }
         }
     }

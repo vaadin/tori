@@ -198,6 +198,10 @@ public class TopicComponent extends CustomComponent {
             menu.add(null, "database fubar :(", ContextAction.NULL);
         }
         layout.addComponent(menu, "contextmenu");
+
+        if (!presenter.userHasRead(thread)) {
+            layout.addStyleName("unread");
+        }
     }
 
     private Component createCategoryLink(final long id, final String name) {
