@@ -46,6 +46,7 @@ class CategoryTreeTable extends TreeTable {
     public CategoryTreeTable(final Mode mode) {
         this.mode = mode;
         setStyleName("categoryTree");
+        addStyleName(mode.toString().toLowerCase());
 
         // set container properties
         addContainerProperty(PROPERTY_ID_CATEGORY, Component.class, null);
@@ -62,14 +63,7 @@ class CategoryTreeTable extends TreeTable {
         setPageLength(0);
         setSortDisabled(true);
         setDropHandler(new CategoryTreeDropHandler());
-        if (mode == Mode.NORMAL) {
-            // icons
-            setColumnIcon(PROPERTY_ID_UNREAD, new ThemeResource(
-                    "images/icon-unread.png"));
-            setColumnIcon(PROPERTY_ID_THREADS, new ThemeResource(
-                    "images/icon-threads.png"));
-            setColumnHeaderMode(COLUMN_HEADER_MODE_EXPLICIT);
-        } else {
+        if (mode == Mode.SINGLE_COLUMN) {
             setColumnHeaderMode(COLUMN_HEADER_MODE_HIDDEN);
         }
     }
