@@ -271,21 +271,22 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 insert((Widget) paintable, placeIndex);
                 client.handleComponentRelativeSize((Widget) paintable);
             }
-            fixScrollPosition(scrollAdjustmentMap.keySet());
+            fixScrollPosition(new HashSet<Paintable>(
+                    scrollAdjustmentMap.keySet()));
             // updateRelativeSizes();
         }
 
         private void startSecondaryLoading() {
-            // if (secondaryLoadGoingOn == 0) {
-            // secondaryLoadGoingOn++;
-            // new Timer() {
-            // @Override
-            // public void run() {
-            // secondaryLoadGoingOn--;
-            // findAllThingsToFetchAndFetchThem(secondaryDistance);
-            // }
-            // }.schedule(SECONDARY_FETCH_DELAY_MILLIS);
-            // }
+            if (secondaryLoadGoingOn == 0) {
+                secondaryLoadGoingOn++;
+                new Timer() {
+                    @Override
+                    public void run() {
+                        secondaryLoadGoingOn--;
+                        findAllThingsToFetchAndFetchThem(secondaryDistance);
+                    }
+                }.schedule(SECONDARY_FETCH_DELAY_MILLIS);
+            }
         }
 
         private void findAllThingsToFetchAndFetchThem(final int distance) {
@@ -533,7 +534,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 if (scrollAdjustmentMap.get(paintable) != null) {
                     final Widget widget = (Widget) paintable;
                     final Integer oldHeight = scrollAdjustmentMap
-                            .remove(paintable);
+                            .get(paintable);
 
                     if (widget.getElement().getOffsetTop() < scrollPos) {
                         final int newHeight = ((Widget) paintable)
@@ -542,12 +543,12 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                         VConsole.log("old: " + oldHeight + ", new: "
                                 + newHeight + ", adjust: "
                                 + requiredScrollAdjustment);
+                        scrollAdjustmentMap.put(paintable, newHeight);
                     } else {
                         VConsole.log("Element is below scroll pos ^_^!");
                     }
                 } else {
-                    VConsole.log("No record of such child needing height adjustment! "
-                            + paintable);
+                    VConsole.error("No record of such child needing height adjustment!");
                 }
             }
 
