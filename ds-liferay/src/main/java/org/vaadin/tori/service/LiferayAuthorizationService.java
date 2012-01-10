@@ -13,11 +13,14 @@ import org.vaadin.tori.service.LiferayAuthorizationConstants.CategoryAction;
 import org.vaadin.tori.service.LiferayAuthorizationConstants.MbAction;
 import org.vaadin.tori.service.LiferayAuthorizationConstants.MessageAction;
 
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.security.permission.PermissionThreadLocal;
 import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.service.MBBanLocalServiceUtil;
+import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 
 public class LiferayAuthorizationService implements AuthorizationService,
         PortletRequestAware {
@@ -61,7 +64,7 @@ public class LiferayAuthorizationService implements AuthorizationService,
 
     @Override
     public boolean mayEdit(final Post post) {
-        return hasMessagePermission(MessageAction.UPDATE, post);
+        return hasMessagePermission(MessageAction.UPDATE, post.getId());
     }
 
     @Override
@@ -81,14 +84,14 @@ public class LiferayAuthorizationService implements AuthorizationService,
             return hasMessagePermission(MessageAction.SUBSCRIBE,
                     LiferayDataSource.getRootMessageId(thread));
         } catch (final DataSourceException e) {
-            log.error(e.getMessage(), e);
+            log.error(e);
         }
         return false;
     }
 
     @Override
     public boolean mayDelete(final Post post) {
-        return hasMessagePermission(MessageAction.DELETE, post);
+        return hasMessagePermission(MessageAction.DELETE, post.getId());
     }
 
     @Override
@@ -120,7 +123,7 @@ public class LiferayAuthorizationService implements AuthorizationService,
             return hasMessagePermission(MessageAction.DELETE,
                     LiferayDataSource.getRootMessageId(thread));
         } catch (final DataSourceException e) {
-            log.error(e.getMessage(), e);
+            log.error(e);
         }
         return false;
     }
@@ -154,8 +157,30 @@ public class LiferayAuthorizationService implements AuthorizationService,
         if (isBanned()) {
             return false;
         }
-        return getPermissionChecker().hasPermission(scopeGroupId,
-                MessageAction.getScope(), messageId, action.toString());
+
+        try {
+            final MBMessage message = MBMessageLocalServiceUtil
+                    .getMBMessage(messageId);
+
+            // check for owner permission
+            if (getPermissionChecker().hasOwnerPermission(
+                    message.getCompanyId(), MBMessage.class.getName(),
+                    message.getRootMessageId(), message.getUserId(),
+                    action.toString())) {
+                return true;
+            }
+
+            // check for other permissions
+            return getPermissionChecker().hasPermission(message.getGroupId(),
+                    MBMessage.class.getName(), message.getRootMessageId(),
+                    action.toString());
+        } catch (final PortalException e) {
+            log.error(e);
+        } catch (final SystemException e) {
+            log.error(e);
+        }
+        // default to false
+        return false;
     }
 
     private boolean hasPermission(final MbAction action) {
@@ -164,11 +189,6 @@ public class LiferayAuthorizationService implements AuthorizationService,
         }
         return getPermissionChecker().hasPermission(scopeGroupId,
                 MbAction.getScope(), scopeGroupId, action.toString());
-    }
-
-    private boolean hasMessagePermission(final MessageAction action,
-            final Post message) {
-        return hasMessagePermission(action, message.getId());
     }
 
     private boolean isBanned() {
