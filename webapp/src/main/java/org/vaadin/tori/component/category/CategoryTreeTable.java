@@ -52,6 +52,9 @@ class CategoryTreeTable extends TreeTable {
         if (mode == Mode.NORMAL) {
             addContainerProperty(PROPERTY_ID_UNREAD, Integer.class, 0);
             addContainerProperty(PROPERTY_ID_THREADS, Integer.class, 0);
+
+            setColumnAlignment(PROPERTY_ID_UNREAD, ALIGN_RIGHT);
+            setColumnAlignment(PROPERTY_ID_THREADS, ALIGN_RIGHT);
         }
 
         // set visual properties
