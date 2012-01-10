@@ -32,6 +32,7 @@ public class LazyLayout extends AbstractLayout {
 
     private int primaryDistance = 200;
     private int secondaryDistance = 600;
+    private int renderDelay = 500;
 
     /**
      * Add a component into this container. The component is added to the right
@@ -94,6 +95,7 @@ public class LazyLayout extends AbstractLayout {
                 primaryDistance);
         target.addAttribute(VLazyLayout.ATT_SECONDARY_DISTANCE_INT,
                 secondaryDistance);
+        target.addAttribute(VLazyLayout.ATT_RENDER_DELAY, renderDelay);
 
         if (componentIndexesToSend != null) {
             Collections.sort(componentIndexesToSend);
@@ -155,6 +157,19 @@ public class LazyLayout extends AbstractLayout {
         }
         primaryDistance = primary;
         secondaryDistance = secondary;
+        requestRepaint();
+    }
+
+    /**
+     * @param renderDelayMillis
+     * @throws IllegalArgumentException
+     *             if <code>renderDelayMillis</code> is negative.
+     */
+    public void setRenderDelay(final int renderDelayMillis) {
+        if (renderDelayMillis < 0) {
+            throw new IllegalArgumentException("delay can't be negative");
+        }
+        renderDelay = renderDelayMillis;
         requestRepaint();
     }
 }

@@ -39,8 +39,6 @@ public class PostComponent extends CustomComponent {
     private static final String FOLLOW_CAPTION = "Follow Thread";
     private static final ThemeResource FOLLOW_ICON = new ThemeResource(
             "images/icon-follow.png");
-    private static final String PLACEHOLDER_HEIGHT = "400px";
-    private static final int PLACEHOLDER_DELAY_MILLIS = 500;
 
     // trying a new pattern here by grouping auxiliray methods in an inner class
     private static class Util {

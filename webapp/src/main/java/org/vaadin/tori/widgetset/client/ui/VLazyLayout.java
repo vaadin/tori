@@ -41,6 +41,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
     public static final String ATT_TOTAL_COMPONENTS_INT = "c";
     public static final String ATT_PRIMARY_DISTANCE_INT = "pd";
     public static final String ATT_SECONDARY_DISTANCE_INT = "sd";
+    public static final String ATT_RENDER_DELAY = "d";
 
     private final FlowPane panel = new FlowPane();
 
@@ -136,17 +137,17 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
     private static class FlowPane extends FlowPanel {
 
         private static final int SECONDARY_FETCH_DELAY_MILLIS = 500;
-        private static final int SCROLL_POLLING_PERIOD_MILLIS = 500;
 
         private final HashMap<Widget, VCaption> widgetToCaption = new HashMap<Widget, VCaption>();
         private ApplicationConnection client;
         private String id;
-        private int lastIndex;
 
         private int primaryDistance;
         private int secondaryDistance;
         private String placeholderHeight;
         private String placeholderWidth;
+
+        private int renderDelay;
 
         private int secondaryLoadGoingOn;
 
@@ -229,6 +230,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
             primaryDistance = uidl.getIntAttribute(ATT_PRIMARY_DISTANCE_INT);
             secondaryDistance = uidl
                     .getIntAttribute(ATT_SECONDARY_DISTANCE_INT);
+            renderDelay = uidl.getIntAttribute(ATT_RENDER_DELAY);
 
             for (int i = getChildren().size(); i < componentAmount; i++) {
                 add(createPlaceholderWidget());
@@ -258,6 +260,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 paintable.updateFromUIDL(child, client);
             }
 
+            final Set<Paintable> newlyAddedPaintables = new HashSet<Paintable>();
             final ValueMap componentPlaceMap = uidl
                     .getMapAttribute(ATT_PAINT_INDICES_MAP);
             for (final String key : componentPlaceMap.getKeySet()) {
@@ -266,13 +269,13 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
 
                 scrollAdjustmentMap.put(paintable, getWidget(placeIndex)
                         .getOffsetHeight());
+                newlyAddedPaintables.add(paintable);
 
                 remove(placeIndex);
                 insert((Widget) paintable, placeIndex);
                 client.handleComponentRelativeSize((Widget) paintable);
             }
-            fixScrollPosition(new HashSet<Paintable>(
-                    scrollAdjustmentMap.keySet()));
+            fixScrollPosition(newlyAddedPaintables);
             // updateRelativeSizes();
         }
 
@@ -468,10 +471,8 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                     caption = new VCaption(component, client);
                     widgetToCaption.put(widget, caption);
                     insert(caption, getWidgetIndex(widget));
-                    lastIndex++;
                 } else if (!caption.isAttached()) {
                     insert(caption, getWidgetIndex(widget));
-                    lastIndex++;
                 }
                 caption.updateCaption(uidl);
             } else if (caption != null) {
@@ -489,7 +490,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                     @Override
                     public void onScroll(final ScrollEvent event) {
                         scrollPoller.cancel();
-                        scrollPoller.schedule(SCROLL_POLLING_PERIOD_MILLIS);
+                        scrollPoller.schedule(renderDelay);
                     }
                 };
                 scrollHandlerRegistration = client.getView().addDomHandler(
@@ -503,7 +504,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                     public void onWindowScroll(
                             final com.google.gwt.user.client.Window.ScrollEvent event) {
                         scrollPoller.cancel();
-                        scrollPoller.schedule(SCROLL_POLLING_PERIOD_MILLIS);
+                        scrollPoller.schedule(renderDelay);
                     }
                 };
                 scrollHandlerRegistrationWin = Window
