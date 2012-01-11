@@ -34,6 +34,12 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
     public static final String CLASSNAME = "v-" + TAGNAME;
 
     public static final String VAR_LOAD_INDEXES_INTARR = "l";
+
+    /**
+     * A map telling which component belongs to which place index (pid &rarr;
+     * index). The components themselves are enbedded with the same request in
+     * their own tags.
+     */
     public static final String ATT_PAINT_INDICES_MAP = "p";
     public static final String ATT_PLACEHOLDER_HEIGHT_STRING = "h";
     public static final String ATT_PLACEHOLDER_WIDTH_STRING = "w";
