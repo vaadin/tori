@@ -155,10 +155,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
         private final Timer scrollPoller = new Timer() {
             @Override
             public void run() {
-                VConsole.log("*** SCROLL!");
-                if (findAllThingsToFetchAndFetchThem(distance)) {
-                    VConsole.log("**** SCROLL FOUND STUFF!");
-                }
+                findAllThingsToFetchAndFetchThem(distance);
                 startSecondaryLoading();
             }
         };
@@ -176,7 +173,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
         private final Map<Paintable, Integer> scrollAdjustmentMap = new HashMap<Paintable, Integer>();
 
         private boolean scrollingWasProgrammaticallyAdjusted = false;
-        private boolean secondaryLoadHasBeenAlreadyCalled;
+        private boolean secondaryLoadHasBeenAlreadyCalled = false;
 
         public FlowPane() {
             super();
@@ -203,7 +200,6 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
             } else {
                 initialize(uidl);
                 attachScrollHandlersIfNeeded();
-                VConsole.log("*** INIT FETCH");
                 findAllThingsToFetchAndFetchThem(distance);
             }
         }
@@ -270,10 +266,10 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
 
                 remove(placeIndex);
                 insert((Widget) paintable, placeIndex);
-                client.handleComponentRelativeSize((Widget) paintable);
             }
+
+            updateRelativeSizes();
             fixScrollPosition(newlyAddedPaintables);
-            // updateRelativeSizes();
         }
 
         private void startSecondaryLoading() {
@@ -568,8 +564,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 return;
             }
 
-            com.google.gwt.dom.client.Element parent = getElement()
-                    .getOffsetParent();
+            com.google.gwt.dom.client.Element parent = getElement();
             while (parent != null && parent.getScrollTop() <= 0) {
                 parent = parent.getOffsetParent();
             }
