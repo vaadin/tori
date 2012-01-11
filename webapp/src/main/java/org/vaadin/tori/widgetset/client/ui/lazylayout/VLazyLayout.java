@@ -1,4 +1,4 @@
-package org.vaadin.tori.widgetset.client.ui;
+package org.vaadin.tori.widgetset.client.ui.lazylayout;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +14,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
@@ -39,9 +39,8 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
     public static final String ATT_PLACEHOLDER_WIDTH_STRING = "w";
     public static final String ATT_FETCH_INDEX_INT = "ff";
     public static final String ATT_TOTAL_COMPONENTS_INT = "c";
-    public static final String ATT_PRIMARY_DISTANCE_INT = "pd";
-    public static final String ATT_SECONDARY_DISTANCE_INT = "sd";
-    public static final String ATT_RENDER_DELAY = "d";
+    public static final String ATT_DISTANCE_INT = "di";
+    public static final String ATT_RENDER_DELAY = "de";
 
     private final FlowPane panel = new FlowPane();
 
@@ -67,7 +66,6 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
     @Override
     public void setWidth(final String width) {
         super.setWidth(width);
-        // panel.setWidth(width);
         hasWidth = width != null && !width.equals("");
         if (!rendering) {
             panel.updateRelativeSizes();
@@ -77,7 +75,6 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
     @Override
     public void setHeight(final String height) {
         super.setHeight(height);
-        // panel.setHeight(height);
         hasHeight = height != null && !height.equals("");
         if (!rendering) {
             panel.updateRelativeSizes();
@@ -127,34 +124,35 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
         panel.updateCaption(component, uidl);
     }
 
-    private static class PlaceholderWidget extends Label {
-
-        public PlaceholderWidget(final String string) {
-            super(string);
+    private static class PlaceholderWidget extends HTML {
+        public PlaceholderWidget(final String placeholderWidth,
+                final String placeholderHeight, final int number) {
+            super("<div class='content'>Loading Post " + number + "</div>");
+            setWidth(placeholderWidth);
+            setHeight(placeholderHeight);
+            setStyleName(CLASSNAME + "-placeholder");
         }
     }
 
     private static class FlowPane extends FlowPanel {
 
-        private static final int SECONDARY_FETCH_DELAY_MILLIS = 500;
-
         private final HashMap<Widget, VCaption> widgetToCaption = new HashMap<Widget, VCaption>();
         private ApplicationConnection client;
         private String id;
 
-        private int primaryDistance;
-        private int secondaryDistance;
+        private int distance;
         private String placeholderHeight;
         private String placeholderWidth;
 
         private int renderDelay;
 
-        private int secondaryLoadGoingOn;
-
         private final Timer scrollPoller = new Timer() {
             @Override
             public void run() {
-                findAllThingsToFetchAndFetchThem(primaryDistance);
+                VConsole.log("*** SCROLL!");
+                if (findAllThingsToFetchAndFetchThem(distance)) {
+                    VConsole.log("**** SCROLL FOUND STUFF!");
+                }
                 startSecondaryLoading();
             }
         };
@@ -170,6 +168,9 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
          * @see #fixScrollPosition(Set)
          */
         private final Map<Paintable, Integer> scrollAdjustmentMap = new HashMap<Paintable, Integer>();
+
+        private boolean scrollingWasProgrammaticallyAdjusted = false;
+        private boolean secondaryLoadHasBeenAlreadyCalled;
 
         public FlowPane() {
             super();
@@ -196,7 +197,8 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
             } else {
                 initialize(uidl);
                 attachScrollHandlersIfNeeded();
-                findAllThingsToFetchAndFetchThem(primaryDistance);
+                VConsole.log("*** INIT FETCH");
+                findAllThingsToFetchAndFetchThem(distance);
             }
         }
 
@@ -227,24 +229,13 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                     .getStringAttribute(ATT_PLACEHOLDER_HEIGHT_STRING);
             placeholderWidth = uidl
                     .getStringAttribute(ATT_PLACEHOLDER_WIDTH_STRING);
-            primaryDistance = uidl.getIntAttribute(ATT_PRIMARY_DISTANCE_INT);
-            secondaryDistance = uidl
-                    .getIntAttribute(ATT_SECONDARY_DISTANCE_INT);
+            distance = uidl.getIntAttribute(ATT_DISTANCE_INT);
             renderDelay = uidl.getIntAttribute(ATT_RENDER_DELAY);
 
             for (int i = getChildren().size(); i < componentAmount; i++) {
-                add(createPlaceholderWidget());
+                add(new PlaceholderWidget(placeholderWidth, placeholderHeight,
+                        i));
             }
-        }
-
-        private PlaceholderWidget createPlaceholderWidget() {
-            final PlaceholderWidget placeholder = new PlaceholderWidget(
-                    "Loading...");
-            placeholder.setWidth(placeholderWidth);
-            placeholder.setHeight(placeholderHeight);
-            placeholder.setStyleName(CLASSNAME + "-placeholder");
-            placeholder.getElement().getStyle().setBackgroundColor("#ccc");
-            return placeholder;
         }
 
         private void addLazyLoadedWidgets(final UIDL uidl,
@@ -280,24 +271,26 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
         }
 
         private void startSecondaryLoading() {
-            if (secondaryLoadGoingOn == 0) {
-                secondaryLoadGoingOn++;
+            if (!secondaryLoadHasBeenAlreadyCalled) {
+                secondaryLoadHasBeenAlreadyCalled = true;
+                final int secondaryDelay = renderDelay * 3;
+                final int secondaryDistance = distance * 3;
                 new Timer() {
                     @Override
                     public void run() {
-                        secondaryLoadGoingOn--;
                         findAllThingsToFetchAndFetchThem(secondaryDistance);
                     }
-                }.schedule(SECONDARY_FETCH_DELAY_MILLIS);
+                }.schedule(secondaryDelay);
+            } else {
+                secondaryLoadHasBeenAlreadyCalled = false;
             }
         }
 
-        private void findAllThingsToFetchAndFetchThem(final int distance) {
+        private boolean findAllThingsToFetchAndFetchThem(final int distance) {
             final Set<Widget> componentsToLoad = new HashSet<Widget>();
             for (final Widget child : getChildren()) {
                 final boolean isAPlaceholderWidget = child.getClass() == PlaceholderWidget.class;
                 if (isAPlaceholderWidget && isBeingShown(child, distance)) {
-                    child.getOffsetHeight();
                     componentsToLoad.add(child);
                 }
             }
@@ -314,6 +307,8 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 client.updateVariable(id, VAR_LOAD_INDEXES_INTARR, idsToLoad,
                         true);
             }
+
+            return !componentsToLoad.isEmpty();
         }
 
         private boolean isBeingShown(final Widget child, final int proximity) {
@@ -489,8 +484,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 final ScrollHandler handler = new ScrollHandler() {
                     @Override
                     public void onScroll(final ScrollEvent event) {
-                        scrollPoller.cancel();
-                        scrollPoller.schedule(renderDelay);
+                        startScrollLoad();
                     }
                 };
                 scrollHandlerRegistration = client.getView().addDomHandler(
@@ -503,13 +497,21 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                     @Override
                     public void onWindowScroll(
                             final com.google.gwt.user.client.Window.ScrollEvent event) {
-                        scrollPoller.cancel();
-                        scrollPoller.schedule(renderDelay);
+                        startScrollLoad();
                     }
                 };
                 scrollHandlerRegistrationWin = Window
                         .addWindowScrollHandler(handler);
             }
+        }
+
+        private void startScrollLoad() {
+            if (!scrollingWasProgrammaticallyAdjusted) {
+                scrollPoller.cancel();
+                scrollPoller.schedule(renderDelay);
+            }
+
+            scrollingWasProgrammaticallyAdjusted = false;
         }
 
         @Override
@@ -520,6 +522,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
             if (scrollHandlerRegistrationWin != null) {
                 scrollHandlerRegistrationWin.removeHandler();
             }
+            scrollPoller.cancel();
             super.onDetach();
         }
 
@@ -528,7 +531,6 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
          *            The Paintables that have received their final height.
          */
         public void fixScrollPosition(final Set<Paintable> sizemodifiedChildren) {
-            VConsole.log("** SIZE CHANGE");
             final int scrollPos = getCurrentScrollPos();
             int requiredScrollAdjustment = 0;
             for (final Paintable paintable : sizemodifiedChildren) {
@@ -537,16 +539,15 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                     final Integer oldHeight = scrollAdjustmentMap
                             .get(paintable);
 
+                    /*
+                     * only check for elements that are below the current scroll
+                     * position
+                     */
                     if (widget.getElement().getOffsetTop() < scrollPos) {
                         final int newHeight = ((Widget) paintable)
                                 .getOffsetHeight();
                         requiredScrollAdjustment = newHeight - oldHeight;
-                        VConsole.log("old: " + oldHeight + ", new: "
-                                + newHeight + ", adjust: "
-                                + requiredScrollAdjustment);
                         scrollAdjustmentMap.put(paintable, newHeight);
-                    } else {
-                        VConsole.log("Element is below scroll pos ^_^!");
                     }
                 } else {
                     VConsole.error("No record of such child needing height adjustment!");
@@ -557,6 +558,10 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
         }
 
         private void adjustScrollBy(final int requiredScrollAdjustment) {
+            if (requiredScrollAdjustment == 0) {
+                return;
+            }
+
             com.google.gwt.dom.client.Element parent = getElement()
                     .getOffsetParent();
             while (parent != null && parent.getScrollTop() <= 0) {
@@ -572,6 +577,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 Window.scrollTo(currentScrollLeft, currentScrollTop
                         + requiredScrollAdjustment);
             }
+            scrollingWasProgrammaticallyAdjusted = true;
         }
 
         private int getCurrentScrollPos() {

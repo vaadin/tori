@@ -51,9 +51,8 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         implements ThreadView {
 
-    private static final int RENDER_DELAY_MILLIS = 500;
-    private static final int RENDER_DISTANCE_PX_PRIMARY = 600;
-    private static final int RENDER_DISTANCE_PX_SECONDARY = 1000;
+    private static final int RENDER_DELAY_MILLIS = 1000;
+    private static final int RENDER_DISTANCE_PX = 600;
     private static final String PLACEHOLDER_WIDTH = "100%";
     private static final String PLACEHOLDER_HEIGHT = "300px";
 
@@ -78,8 +77,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     public ThreadViewImpl() {
         setStyleName("threadview");
         postsLayout = new LazyLayout();
-        postsLayout.setRenderDistances(RENDER_DISTANCE_PX_PRIMARY,
-                RENDER_DISTANCE_PX_SECONDARY);
+        postsLayout.setRenderDistance(RENDER_DISTANCE_PX);
         postsLayout.setPlaceholderSize(PLACEHOLDER_HEIGHT, PLACEHOLDER_WIDTH);
         postsLayout.setRenderDelay(RENDER_DELAY_MILLIS);
     }

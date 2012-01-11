@@ -490,3 +490,15 @@
 .authoring .code .code-lines {
 	background: rgba(230, 248, 254, 0.6);
 }
+
+.v-lazylayout-placeholder {
+	display: table-row;
+}
+.v-lazylayout-placeholder .content {
+	color: #DEDDD3;
+	text-align: center;
+	font-size: 46px;
+	display: table-cell;
+	width: 100%;
+	vertical-align: middle;
+}

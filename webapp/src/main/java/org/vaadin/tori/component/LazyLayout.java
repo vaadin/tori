@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.vaadin.tori.widgetset.client.ui.VLazyLayout;
+import org.vaadin.tori.widgetset.client.ui.lazylayout.VLazyLayout;
 
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
@@ -30,8 +30,7 @@ public class LazyLayout extends AbstractLayout {
     private String placeholderWidth = "100%";
     private String placeholderHeight = "181px";
 
-    private int primaryDistance = 200;
-    private int secondaryDistance = 600;
+    private int distance = 1000;
     private int renderDelay = 500;
 
     /**
@@ -91,10 +90,7 @@ public class LazyLayout extends AbstractLayout {
                 placeholderWidth);
         target.addAttribute(VLazyLayout.ATT_TOTAL_COMPONENTS_INT,
                 components.size());
-        target.addAttribute(VLazyLayout.ATT_PRIMARY_DISTANCE_INT,
-                primaryDistance);
-        target.addAttribute(VLazyLayout.ATT_SECONDARY_DISTANCE_INT,
-                secondaryDistance);
+        target.addAttribute(VLazyLayout.ATT_DISTANCE_INT, distance);
         target.addAttribute(VLazyLayout.ATT_RENDER_DELAY, renderDelay);
 
         if (componentIndexesToSend != null) {
@@ -150,13 +146,8 @@ public class LazyLayout extends AbstractLayout {
      * @param primary
      * @param secondary
      */
-    public void setRenderDistances(final int primary, final int secondary) {
-        if (primary > secondary) {
-            throw new IllegalArgumentException(
-                    "secondary distance must be equal to or larger than the primary distance");
-        }
-        primaryDistance = primary;
-        secondaryDistance = secondary;
+    public void setRenderDistance(final int pixels) {
+        distance = pixels;
         requestRepaint();
     }
 
