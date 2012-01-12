@@ -31,13 +31,13 @@ public class ThreadListing extends Table {
         addContainerProperty(PROPERTY_ID_POSTS, Integer.class, 0);
         addContainerProperty(PROPERTY_ID_LATESTPOST, Component.class, null);
 
-        // setColumnWidth(PROPERTY_ID_TOPIC, *);
         setColumnWidth(PROPERTY_ID_STARTEDBY, 150);
         setColumnWidth(PROPERTY_ID_POSTS, 50);
         setColumnWidth(PROPERTY_ID_LATESTPOST, 150);
 
         // set visual properties
         setWidth("100%");
+        setCellStyleGenerator(new ThreadCellStyleGenerator());
     }
 
     public void setThreads(final List<DiscussionThread> threads) {
@@ -65,5 +65,23 @@ public class ThreadListing extends Table {
         item.getItemProperty(PROPERTY_ID_POSTS).setValue(thread.getPostCount());
         item.getItemProperty(PROPERTY_ID_LATESTPOST).setValue(
                 new LatestPostComponent(thread));
+    }
+
+    public void refreshCellStyles() {
+        refreshRenderedCells();
+    }
+
+    private class ThreadCellStyleGenerator implements CellStyleGenerator {
+
+        @Override
+        public String getStyle(final Object itemId, final Object propertyId) {
+            if (itemId instanceof DiscussionThread) {
+                if (presenter.userIsFollowing((DiscussionThread) itemId)) {
+                    return "following";
+                }
+            }
+            return null;
+        }
+
     }
 }

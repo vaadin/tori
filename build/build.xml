@@ -155,7 +155,9 @@
 				<exclude name="**/vaadin-*.jar"/>
 			</webinf>
 			<metainf dir="${dir.meta-inf}"/>
-			<lib dir="${dir.build-artifacts}" includes="*.jar"/>
+			<lib file="${file.common.jar}" />
+			<lib file="${file.ds.liferay.jar}" />
+			<lib file="${file.webapp.jar}" />
 			<lib file="${dir.common}/lib/guava-10.0.1.jar"/>
 			<classes file="${dir.webapp}/src/main/resources/log4j.properties"/>
 			<zipfileset dir="${dir.build-artifacts.widgetsets}"
@@ -177,11 +179,19 @@
 			/>
 			<metainf dir="${dir.meta-inf}"/>
 			<lib dir="${dir.web-inf.lib}" includes="*.jar"/>
-			<lib dir="${dir.build-artifacts}" includes="*.jar"/>
+			<lib file="${file.common.jar}" />
+			<lib file="${file.ds.test.jar}" />
+			<lib file="${file.webapp.jar}" />
+			<lib file="${dir.ds.test}/lib/eclipselink.jar"/>
+			<lib file="${dir.ds.test}/lib/mysql-connector-java-5.1.10-bin.jar"/>
 			<lib file="${dir.common}/lib/guava-10.0.1.jar"/>
+			<lib file="${dir.common}/lib/javax.persistence_2.0.3.v201010191057.jar"/>
 			<zipfileset dir="${dir.build-artifacts.widgetsets}"
-				includes="org.*"
+				includes="org.*/**"
 				prefix="VAADIN/widgetsets"
+			/>
+			<zipfileset dir="${dir.webapp}/src/main/webapp"
+				includes="VAADIN/themes/**"
 			/>
 		</war>
 	</target>

@@ -513,6 +513,10 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     @Override
     public boolean isFollowing(final DiscussionThread thread)
             throws DataSourceException {
+        if (currentUserId <= 0) {
+            return false;
+        }
+
         try {
             final com.liferay.portal.model.User user = getCurrentUser();
             return SubscriptionLocalServiceUtil.isSubscribed(
