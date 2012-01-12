@@ -13,6 +13,7 @@ import org.vaadin.tori.component.FloatingBar.HideEvent;
 import org.vaadin.tori.component.FloatingBar.VisibilityListener;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
+import org.vaadin.tori.component.LazyLayout;
 import org.vaadin.tori.component.NewThreadComponent;
 import org.vaadin.tori.component.NewThreadComponent.NewThreadListener;
 import org.vaadin.tori.component.PanicComponent;
@@ -50,6 +51,11 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         implements ThreadView {
 
+    private static final int RENDER_DELAY_MILLIS = 1000;
+    private static final int RENDER_DISTANCE_PX = 1000;
+    private static final String PLACEHOLDER_WIDTH = "100%";
+    private static final String PLACEHOLDER_HEIGHT = "300px";
+
     private CssLayout layout;
     private final ReplyListener replyListener = new ReplyListener() {
         @Override
@@ -66,11 +72,15 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     };
 
     private final Map<Post, PostComponent> postsToComponents = new HashMap<Post, PostComponent>();
-    private final CssLayout postsLayout = new CssLayout();
+    private final LazyLayout postsLayout;
     private ReplyComponent reply;
 
     public ThreadViewImpl() {
         setStyleName("threadview");
+        postsLayout = new LazyLayout();
+        postsLayout.setRenderDistance(RENDER_DISTANCE_PX);
+        postsLayout.setPlaceholderSize(PLACEHOLDER_HEIGHT, PLACEHOLDER_WIDTH);
+        postsLayout.setRenderDelay(RENDER_DELAY_MILLIS);
     }
 
     @Override
@@ -121,6 +131,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         for (final Post post : posts) {
             final PostComponent c = newPostComponent(post);
             postsLayout.addComponent(c);
+            // final NativeButton button = new NativeButton("FOO");
+            // button.setWidth("100%");
+            // button.setHeight("200px");
+            // postsLayout.addComponent(button);
 
             if (first) {
                 // create the floating summary bar for the first post

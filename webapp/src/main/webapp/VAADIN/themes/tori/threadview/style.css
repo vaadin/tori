@@ -1,5 +1,5 @@
 .post {
-	margin-top: 50px;
+	padding-top: 50px;
 	border-bottom: 2px solid #e9e9e1;
 	background: #fff;
 }
@@ -513,4 +513,10 @@
 }
 .authoring .code .code-lines {
 	background: rgba(230, 248, 254, 0.6);
+}
+
+.v-lazylayout-placeholder {
+	background-image: url("../images/loadingpost-bg.png");
+	background-repeat: no-repeat;
+	background-position: center;
 }

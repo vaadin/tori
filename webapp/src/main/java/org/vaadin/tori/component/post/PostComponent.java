@@ -176,6 +176,10 @@ public class PostComponent extends CustomComponent {
         this.presenter = presenter;
         this.post = post;
 
+        root = new CustomLayout("postlayout");
+        setCompositionRoot(root);
+        setStyleName("post");
+
         editButton = new Button("Edit Post", editListener);
         editButton.setStyleName(BaseTheme.BUTTON_LINK);
         editButton.setIcon(new ThemeResource("images/icon-link-edit.png"));
@@ -186,10 +190,6 @@ public class PostComponent extends CustomComponent {
         quoteButton.setStyleName(BaseTheme.BUTTON_LINK);
         quoteButton.setIcon(new ThemeResource("images/icon-link-reply.png"));
         quoteButton.setVisible(false);
-
-        root = new CustomLayout("postlayout");
-        setCompositionRoot(root);
-        setStyleName("post");
 
         contextMenu = new ContextMenu();
         score = new PostScoreComponent(post, presenter);
