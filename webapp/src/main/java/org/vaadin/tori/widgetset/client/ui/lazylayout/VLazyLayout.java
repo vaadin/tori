@@ -133,7 +133,6 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
     private static class PlaceholderWidget extends HTML {
         public PlaceholderWidget(final String placeholderWidth,
                 final String placeholderHeight) {
-            super();
             setWidth(placeholderWidth);
             setHeight(placeholderHeight);
             setStyleName(CLASSNAME + "-placeholder");
@@ -141,6 +140,21 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
     }
 
     private static class FlowPane extends FlowPanel {
+
+        private class SecondaryFetchTimer extends Timer {
+            private static final int SECONDARY_MULTIPLIER = 3;
+
+            @Override
+            public void run() {
+                findAllThingsToFetchAndFetchThem(distance
+                        * SECONDARY_MULTIPLIER);
+            }
+
+            public void scheduleNew() {
+                super.cancel();
+                super.schedule(renderDelay * SECONDARY_MULTIPLIER);
+            }
+        }
 
         private final HashMap<Widget, VCaption> widgetToCaption = new HashMap<Widget, VCaption>();
         private ApplicationConnection client;
@@ -173,7 +187,8 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
         private final Map<Paintable, Integer> scrollAdjustmentMap = new HashMap<Paintable, Integer>();
 
         private boolean scrollingWasProgrammaticallyAdjusted = false;
-        private boolean secondaryLoadHasBeenAlreadyCalled = false;
+
+        private final SecondaryFetchTimer secondaryLoader = new SecondaryFetchTimer();
 
         public FlowPane() {
             super();
@@ -272,22 +287,12 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
         }
 
         private void startSecondaryLoading() {
-            if (!secondaryLoadHasBeenAlreadyCalled) {
-                secondaryLoadHasBeenAlreadyCalled = true;
-                final int secondaryDelay = renderDelay * 3;
-                final int secondaryDistance = distance * 3;
-                new Timer() {
-                    @Override
-                    public void run() {
-                        findAllThingsToFetchAndFetchThem(secondaryDistance);
-                    }
-                }.schedule(secondaryDelay);
-            } else {
-                secondaryLoadHasBeenAlreadyCalled = false;
-            }
+            secondaryLoader.cancel();
+            secondaryLoader.scheduleNew();
         }
 
         private boolean findAllThingsToFetchAndFetchThem(final int distance) {
+
             final Set<Widget> componentsToLoad = new HashSet<Widget>();
             for (final Widget child : getChildren()) {
                 final boolean isAPlaceholderWidget = child.getClass() == PlaceholderWidget.class;
@@ -320,10 +325,10 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
              * track the original element's position as we iterate through the
              * DOM tree
              */
-            int originalTopAdjusted = 0 - proximity;
-            final int originalHeight = element.getOffsetHeight() + proximity;
-            int originalLeftAdjusted = 0 - proximity;
-            final int originalWidth = element.getOffsetWidth() + proximity;
+            int originalTopAdjusted = 0;
+            final int originalHeight = element.getOffsetHeight();
+            int originalLeftAdjusted = 0;
+            final int originalWidth = element.getOffsetWidth();
 
             com.google.gwt.dom.client.Element childElement = element;
             com.google.gwt.dom.client.Element parentElement = element
@@ -334,26 +339,28 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 // clientheight == the height as seen in browser
                 // offsetheight == the DOM element's native height
 
-                // See if the parent sees the child
-                final int parentTop = 0 + parentElement.getScrollTop();
+                // What part of its canvas the parent shows, relative to its own
+                // coordinates (0,0 is the top left corner)
+                final int parentTop = parentElement.getScrollTop();
                 final int parentBottom = parentTop
                         + parentElement.getClientHeight();
-                final int parentLeft = 0 + parentElement.getScrollLeft();
+                final int parentLeft = parentElement.getScrollLeft();
                 final int parentRight = parentLeft
                         + parentElement.getClientWidth();
 
                 /*
-                 * renderbox is the box that indicates the boundary of what
-                 * should be rendered - if parent is inside the renderbox, it's
-                 * a candidate for rendering.
+                 * renderbox is the target box that is checked for visibility.
+                 * If the renderbox and parent's viewport don't overlap, it
+                 * should not be rendered. The renderbox is the child's position
+                 * with an adjusted margin.
                  */
                 final int renderBoxTop = childElement.getOffsetTop()
                         - proximity;
-                final int renderBoxBottom = renderBoxTop
+                final int renderBoxBottom = childElement.getOffsetTop()
                         + childElement.getOffsetHeight() + proximity;
                 final int renderBoxLeft = childElement.getOffsetLeft()
                         - proximity;
-                final int renderBoxRight = renderBoxLeft
+                final int renderBoxRight = childElement.getOffsetLeft()
                         + childElement.getOffsetWidth() + proximity;
 
                 if (!colliding2D(parentTop, parentRight, parentBottom,
@@ -373,9 +380,10 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 originalLeftAdjusted += childElement.getOffsetLeft()
                         - childElement.getScrollLeft();
                 if (!colliding2D(parentTop, parentRight, parentBottom,
-                        parentLeft, originalTopAdjusted, originalLeftAdjusted
-                                + originalWidth, originalTopAdjusted
-                                + originalHeight, originalLeftAdjusted)) {
+                        parentLeft, originalTopAdjusted - proximity,
+                        originalLeftAdjusted + originalWidth + proximity,
+                        originalTopAdjusted + originalHeight + proximity,
+                        originalLeftAdjusted - proximity)) {
                     return false;
                 }
 
@@ -392,6 +400,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
             final int renderBoxTop = childElement.getOffsetTop() - proximity;
             final int renderBoxBottom = childElement.getOffsetTop()
                     + childElement.getClientHeight() + proximity;
+
             final int renderBoxLeft = childElement.getOffsetLeft() - proximity;
             final int renderBoxRight = childElement.getOffsetLeft()
                     + childElement.getClientWidth() + proximity;
@@ -405,8 +414,10 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
             originalTopAdjusted += childElement.getOffsetTop();
             originalLeftAdjusted += childElement.getOffsetLeft();
             if (!colliding2D(parentTop, parentRight, parentBottom, parentLeft,
-                    originalTopAdjusted, originalLeftAdjusted + originalWidth,
-                    originalTopAdjusted + originalHeight, originalLeftAdjusted)) {
+                    originalTopAdjusted - proximity, originalLeftAdjusted
+                            + originalWidth + proximity, originalTopAdjusted
+                            + originalHeight + proximity, originalLeftAdjusted
+                            - proximity)) {
                 return false;
             }
 
@@ -534,6 +545,8 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
         public void fixScrollPosition(
                 final Iterable<Paintable> sizemodifiedChildren) {
             final int scrollPos = getCurrentScrollPos();
+            final int previousWidgetOffsetTop = getPreviousWidgetOffsetTop(scrollPos);
+
             int requiredScrollAdjustment = 0;
             for (final Paintable paintable : sizemodifiedChildren) {
                 if (scrollAdjustmentMap.get(paintable) != null) {
@@ -541,24 +554,15 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                     final Integer oldHeight = scrollAdjustmentMap
                             .get(paintable);
 
-                    VConsole.log("top: " + widget.getElement().getOffsetTop()
-                            + " scroll: " + scrollPos);
-
                     /*
                      * only check for elements that are below the current scroll
                      * position
                      */
-                    if (widget.getElement().getOffsetTop() < scrollPos) {
+                    if (widget.getElement().getOffsetTop() < previousWidgetOffsetTop) {
                         final int newHeight = ((Widget) paintable)
                                 .getOffsetHeight();
                         requiredScrollAdjustment += newHeight - oldHeight;
                         scrollAdjustmentMap.put(paintable, newHeight);
-                        VConsole.log("** ADJUSTING SCROLL: old: " + oldHeight
-                                + " new: " + newHeight + " diff: "
-                                + (newHeight - oldHeight) + " ++: "
-                                + requiredScrollAdjustment);
-                    } else {
-                        VConsole.log("** ADJUSTING SCROLL: below!");
                     }
                 } else {
                     VConsole.error("No record of such child needing height adjustment!");
@@ -566,6 +570,29 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
             }
 
             adjustScrollBy(requiredScrollAdjustment);
+        }
+
+        /**
+         * Gets the offset top of the closest component that's above the given
+         * value.
+         * 
+         * @param topPixels
+         *            top pixels into the layout
+         * @return the position of the component above the given argument. 0 if
+         *         it's above the first component. -1 if something went weirdly
+         *         wrong (i guess no children available?)
+         */
+        private int getPreviousWidgetOffsetTop(final int topPixels) {
+            int previousOffsetTop = 0;
+            for (final Widget child : getChildren()) {
+                final int offsetTop = child.getElement().getOffsetTop();
+                if (offsetTop > previousOffsetTop) {
+                    return previousOffsetTop;
+                } else {
+                    previousOffsetTop = offsetTop;
+                }
+            }
+            return -1;
         }
 
         private void adjustScrollBy(final int requiredScrollAdjustment) {
@@ -578,20 +605,14 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 parent = parent.getOffsetParent();
             }
 
-            VConsole.log("adjusting scroll by: " + requiredScrollAdjustment);
             if (parent != null) {
                 final int currentScroll = parent.getScrollTop();
                 parent.setScrollTop(currentScroll + requiredScrollAdjustment);
-
-                VConsole.log("parent - was " + currentScroll + ", now "
-                        + parent.getScrollTop());
             } else {
                 final int currentScrollTop = Window.getScrollTop();
                 final int currentScrollLeft = Window.getScrollLeft();
                 Window.scrollTo(currentScrollLeft, currentScrollTop
                         + requiredScrollAdjustment);
-                VConsole.log("window - was " + currentScrollTop + ", now "
-                        + Window.getScrollTop());
             }
             scrollingWasProgrammaticallyAdjusted = true;
         }
