@@ -132,8 +132,8 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
 
     private static class PlaceholderWidget extends HTML {
         public PlaceholderWidget(final String placeholderWidth,
-                final String placeholderHeight, final int number) {
-            super("<div class='content'>Loading Post " + number + "</div>");
+                final String placeholderHeight) {
+            super();
             setWidth(placeholderWidth);
             setHeight(placeholderHeight);
             setStyleName(CLASSNAME + "-placeholder");
@@ -235,8 +235,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
             renderDelay = uidl.getIntAttribute(ATT_RENDER_DELAY);
 
             for (int i = getChildren().size(); i < componentAmount; i++) {
-                add(new PlaceholderWidget(placeholderWidth, placeholderHeight,
-                        i));
+                add(new PlaceholderWidget(placeholderWidth, placeholderHeight));
             }
         }
 
@@ -532,7 +531,8 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
          * @param sizemodifiedChildren
          *            The Paintables that have received their final height.
          */
-        public void fixScrollPosition(final Set<Paintable> sizemodifiedChildren) {
+        public void fixScrollPosition(
+                final Iterable<Paintable> sizemodifiedChildren) {
             final int scrollPos = getCurrentScrollPos();
             int requiredScrollAdjustment = 0;
             for (final Paintable paintable : sizemodifiedChildren) {
@@ -541,6 +541,9 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                     final Integer oldHeight = scrollAdjustmentMap
                             .get(paintable);
 
+                    VConsole.log("top: " + widget.getElement().getOffsetTop()
+                            + " scroll: " + scrollPos);
+
                     /*
                      * only check for elements that are below the current scroll
                      * position
@@ -548,8 +551,14 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                     if (widget.getElement().getOffsetTop() < scrollPos) {
                         final int newHeight = ((Widget) paintable)
                                 .getOffsetHeight();
-                        requiredScrollAdjustment = newHeight - oldHeight;
+                        requiredScrollAdjustment += newHeight - oldHeight;
                         scrollAdjustmentMap.put(paintable, newHeight);
+                        VConsole.log("** ADJUSTING SCROLL: old: " + oldHeight
+                                + " new: " + newHeight + " diff: "
+                                + (newHeight - oldHeight) + " ++: "
+                                + requiredScrollAdjustment);
+                    } else {
+                        VConsole.log("** ADJUSTING SCROLL: below!");
                     }
                 } else {
                     VConsole.error("No record of such child needing height adjustment!");
@@ -569,14 +578,20 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 parent = parent.getOffsetParent();
             }
 
+            VConsole.log("adjusting scroll by: " + requiredScrollAdjustment);
             if (parent != null) {
                 final int currentScroll = parent.getScrollTop();
                 parent.setScrollTop(currentScroll + requiredScrollAdjustment);
+
+                VConsole.log("parent - was " + currentScroll + ", now "
+                        + parent.getScrollTop());
             } else {
                 final int currentScrollTop = Window.getScrollTop();
                 final int currentScrollLeft = Window.getScrollLeft();
                 Window.scrollTo(currentScrollLeft, currentScrollTop
                         + requiredScrollAdjustment);
+                VConsole.log("window - was " + currentScrollTop + ", now "
+                        + Window.getScrollTop());
             }
             scrollingWasProgrammaticallyAdjusted = true;
         }
@@ -594,6 +609,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 return Window.getScrollTop();
             }
         }
+
     }
 
     private RenderSpace space;

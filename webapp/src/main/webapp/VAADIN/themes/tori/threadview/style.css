@@ -492,13 +492,7 @@
 }
 
 .v-lazylayout-placeholder {
-	display: table-row;
-}
-.v-lazylayout-placeholder .content {
-	color: #DEDDD3;
-	text-align: center;
-	font-size: 46px;
-	display: table-cell;
-	width: 100%;
-	vertical-align: middle;
+	background-image: url("../images/loadingpost-bg.png");
+	background-repeat: no-repeat;
+	background-position: center;
 }
