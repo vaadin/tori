@@ -52,7 +52,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         implements ThreadView {
 
     private static final int RENDER_DELAY_MILLIS = 1000;
-    private static final int RENDER_DISTANCE_PX = 600;
+    private static final int RENDER_DISTANCE_PX = 1000;
     private static final String PLACEHOLDER_WIDTH = "100%";
     private static final String PLACEHOLDER_HEIGHT = "300px";
 
