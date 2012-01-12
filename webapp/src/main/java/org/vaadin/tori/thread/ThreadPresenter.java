@@ -393,4 +393,10 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             return categoryWhileCreatingNewThread;
         }
     }
+
+    public void quotePost(final Post post) {
+        final String quote = ToriApplication.getCurrent().getPostFormatter()
+                .getQuote(post);
+        getView().appendToReply(quote);
+    }
 }

@@ -113,4 +113,7 @@ public interface PostFormatter {
      */
     @CheckForNull
     Collection<? extends FormatInfo> getOtherFormattingInfo();
+
+    @NonNull
+    String getQuote(final Post postToQuote);
 }

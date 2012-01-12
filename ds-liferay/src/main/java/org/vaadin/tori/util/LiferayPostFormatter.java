@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.log4j.Logger;
+import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
 
@@ -97,5 +98,14 @@ public class LiferayPostFormatter implements PostFormatter {
     @Override
     public Collection<? extends FormatInfo> getOtherFormattingInfo() {
         return otherFormatInfos;
+    }
+
+    @Override
+    public String getQuote(final Post postToQuote) {
+        if (postToQuote == null) {
+            return "";
+        }
+        return String.format("[quote=%s]%s[/quote]\n", postToQuote.getAuthor()
+                .getDisplayedName(), postToQuote.getBodyRaw());
     }
 }

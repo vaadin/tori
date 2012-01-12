@@ -111,8 +111,10 @@ public class PostComponent extends CustomComponent {
     private final ClickListener replyListener = new ClickListener() {
         @Override
         public void buttonClick(final ClickEvent event) {
-            getApplication().getMainWindow().showNotification(
-                    "Replying not implemented yet");
+            if (event.getButton().getData() instanceof Post) {
+                final Post postToQuote = (Post) event.getButton().getData();
+                presenter.quotePost(postToQuote);
+            }
         }
     };
 
@@ -180,6 +182,7 @@ public class PostComponent extends CustomComponent {
         editButton.setVisible(false);
 
         quoteButton = new Button("Quote for Reply", replyListener);
+        quoteButton.setData(post);
         quoteButton.setStyleName(BaseTheme.BUTTON_LINK);
         quoteButton.setIcon(new ThemeResource("images/icon-link-reply.png"));
         quoteButton.setVisible(false);

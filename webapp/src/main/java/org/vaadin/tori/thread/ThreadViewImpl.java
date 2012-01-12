@@ -67,6 +67,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     private final Map<Post, PostComponent> postsToComponents = new HashMap<Post, PostComponent>();
     private final CssLayout postsLayout = new CssLayout();
+    private ReplyComponent reply;
 
     public ThreadViewImpl() {
         setStyleName("threadview");
@@ -137,8 +138,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             spacer.setStyleName("spacer");
             layout.addComponent(spacer);
 
-            final ReplyComponent reply = new ReplyComponent(replyListener,
-                    getPresenter().getFormattingSyntax(), "Post Reply");
+            reply = new ReplyComponent(replyListener, getPresenter()
+                    .getFormattingSyntax(), "Post Reply");
             layout.addComponent(reply);
 
             final FloatingBar quickReplyBar = getQuickReplyBar(reply);
@@ -454,4 +455,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         layout.removeAllComponents();
         layout.addComponent(new PanicComponent());
     }
+
+    @Override
+    public void appendToReply(final String textToAppend) {
+        reply.insertIntoMessage(textToAppend);
+    }
+
 }

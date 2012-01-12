@@ -56,4 +56,6 @@ public interface ThreadView extends View {
 
     /** For those occasions when a regular error message simply doesn't suffice. */
     void panic();
+
+    void appendToReply(String textToAppend);
 }
