@@ -267,4 +267,15 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         }
     }
 
+    public boolean userIsFollowing(final DiscussionThread thread) {
+        try {
+            return dataSource.isFollowing(thread);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            // Just log the error and return false, not considering this a
+            // serious problem.
+            return false;
+        }
+    }
+
 }

@@ -38,6 +38,7 @@ public class ThreadListing extends Table {
 
         // set visual properties
         setWidth("100%");
+        setCellStyleGenerator(new ThreadCellStyleGenerator());
     }
 
     public void setThreads(final List<DiscussionThread> threads) {
@@ -65,5 +66,23 @@ public class ThreadListing extends Table {
         item.getItemProperty(PROPERTY_ID_POSTS).setValue(thread.getPostCount());
         item.getItemProperty(PROPERTY_ID_LATESTPOST).setValue(
                 new LatestPostComponent(thread));
+    }
+
+    public void refreshCellStyles() {
+        refreshRenderedCells();
+    }
+
+    private class ThreadCellStyleGenerator implements CellStyleGenerator {
+
+        @Override
+        public String getStyle(final Object itemId, final Object propertyId) {
+            if (itemId instanceof DiscussionThread) {
+                if (presenter.userIsFollowing((DiscussionThread) itemId)) {
+                    return "following";
+                }
+            }
+            return null;
+        }
+
     }
 }

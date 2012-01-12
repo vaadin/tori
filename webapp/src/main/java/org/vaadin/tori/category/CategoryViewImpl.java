@@ -38,7 +38,8 @@ public class CategoryViewImpl extends
     private static final HeadingLabel THREADS = new HeadingLabel("Threads",
             HeadingLevel.H2);
     private VerticalLayout layout;
-    private Component threadListing;
+    private Component threadListingPlaceHolder;
+    private ThreadListing threadListing;
     private CategoryListing categoryListing;
     private VerticalLayout categoryLayout;
     private HeadingLabel threadsLabel;
@@ -75,7 +76,8 @@ public class CategoryViewImpl extends
         threadHeaderLayout.setComponentAlignment(newThreadButton1,
                 Alignment.MIDDLE_RIGHT);
 
-        threadLayout.addComponent(threadListing = new Label("placeholder"));
+        threadLayout.addComponent(threadListingPlaceHolder = new Label(
+                "placeholder"));
 
         newThreadButton2 = createNewThreadButton();
         threadLayout.addComponent(newThreadButton2);
@@ -107,9 +109,9 @@ public class CategoryViewImpl extends
         final CategoryPresenter categoryPresenter = new CategoryPresenter(
                 app.getDataSource(), app.getAuthorizationService());
 
-        final ComponentContainer parent = (ComponentContainer) threadListing
+        final ComponentContainer parent = (ComponentContainer) threadListingPlaceHolder
                 .getParent();
-        parent.replaceComponent(threadListing,
+        parent.replaceComponent(threadListingPlaceHolder,
                 threadListing = new ThreadListing(categoryPresenter));
 
         return categoryPresenter;
@@ -141,7 +143,7 @@ public class CategoryViewImpl extends
         newThreadButton1.setEnabled(getPresenter().userMayStartANewThread());
         newThreadButton2.setEnabled(getPresenter().userMayStartANewThread());
 
-        ((ThreadListing) threadListing).setThreads(threadsInCategory);
+        threadListing.setThreads(threadsInCategory);
     }
 
     @Override
@@ -165,11 +167,13 @@ public class CategoryViewImpl extends
 
     @Override
     public void confirmFollowing() {
+        threadListing.refreshCellStyles();
         getWindow().showNotification("following thread");
     }
 
     @Override
     public void confirmUnfollowing() {
+        threadListing.refreshCellStyles();
         getWindow().showNotification("unfollowed thread");
     }
 
@@ -203,9 +207,7 @@ public class CategoryViewImpl extends
     }
 
     private void refreshVisually(final DiscussionThread thread) {
-        if (threadListing instanceof ThreadListing) {
-            ((ThreadListing) threadListing).refresh(thread);
-        }
+        threadListing.refresh(thread);
     }
 
     @Override

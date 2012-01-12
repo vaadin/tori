@@ -27,6 +27,10 @@
 	transition: background 0.2s;
 }
 
+.threadTable .v-table-row-following > td:first-child {
+	background: url(../images/following-badge.png) #fff top left no-repeat;
+}
+
 .threadTable .v-table-row:last-child > td,
 .threadTable .v-table-row-odd:last-child > td {
 	border-bottom: 0;
