@@ -168,41 +168,41 @@ public class CategoryViewImpl extends
     @Override
     public void confirmFollowing() {
         threadListing.refreshCellStyles();
-        getWindow().showNotification("following thread");
+        getWindow().showNotification("Following thread");
     }
 
     @Override
     public void confirmUnfollowing() {
         threadListing.refreshCellStyles();
-        getWindow().showNotification("unfollowed thread");
+        getWindow().showNotification("Unfollowed thread");
     }
 
     @Override
     public void confirmThreadMoved() {
-        getWindow().showNotification("thread moved");
+        getWindow().showNotification("Thread moved");
     }
 
     @Override
     public void confirmThreadStickied(final DiscussionThread thread) {
-        getWindow().showNotification("thread stickied");
+        getWindow().showNotification("Thread stickied");
         // presenter will reset the view here
     }
 
     @Override
     public void confirmThreadUnstickied(final DiscussionThread thread) {
-        getWindow().showNotification("thread unstickied");
+        getWindow().showNotification("Thread unstickied");
         // presenter will reset the view here
     }
 
     @Override
     public void confirmThreadLocked(final DiscussionThread thread) {
-        getWindow().showNotification("thread locked");
+        getWindow().showNotification("Thread locked");
         refreshVisually(thread);
     }
 
     @Override
     public void confirmThreadUnlocked(final DiscussionThread thread) {
-        getWindow().showNotification("thread unlocked");
+        getWindow().showNotification("Thread unlocked");
         refreshVisually(thread);
     }
 
@@ -212,7 +212,7 @@ public class CategoryViewImpl extends
 
     @Override
     public void confirmThreadDeleted() {
-        getWindow().showNotification("thread deleted");
+        getWindow().showNotification("Thread deleted");
     }
 
     @Override
