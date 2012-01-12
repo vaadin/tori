@@ -31,7 +31,6 @@ public class ThreadListing extends Table {
         addContainerProperty(PROPERTY_ID_POSTS, Integer.class, 0);
         addContainerProperty(PROPERTY_ID_LATESTPOST, Component.class, null);
 
-        // setColumnWidth(PROPERTY_ID_TOPIC, *);
         setColumnWidth(PROPERTY_ID_STARTEDBY, 150);
         setColumnWidth(PROPERTY_ID_POSTS, 50);
         setColumnWidth(PROPERTY_ID_LATESTPOST, 150);
