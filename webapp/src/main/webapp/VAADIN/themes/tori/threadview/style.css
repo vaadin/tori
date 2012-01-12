@@ -20,38 +20,62 @@
 	vertical-align: top;
 }
 
-.post [location="avatar"] {
+.post div[location="avatar"] {
 	margin-bottom: 0.5em;
 }
-.post [location="avatar"] img {
+.post div[location="avatar"] img {
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
 }
 
-.post [location="authorname"] {
+.post div[location="authorname"] {
 	color: #000;
 	font-weight: bold;
 }
 
-.post [location="postedtime"] {
+.post div[location="postedtime"] span {
+	white-space: nowrap;	
 	color: #a09f91;
 	font-size: 13px;
+	position: absolute;
+	-moz-transition: all 0.2s ease-in-out;
+	-webkit-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;	
+
+}
+.post div[location="postedtime"] {
+	position: relative;
+	height: 1.2em;
+	overflow: hidden;
+}
+.post div[location="postedtime"] .timestamp {
+	top: 1.5em;
+}
+.post .author:hover div[location="postedtime"] .timestamp {
+	top: 0;	
+}
+.post div[location="postedtime"] .prettytime {
+	top: 0;
+}
+.post .author:hover div[location="postedtime"] .prettytime {
+	top: -1.5em;
 }
 
-.post [location="permalink"] a {
+.post div[location="permalink"] a {
 	font-size: 12px;
 }
 
-.post [location="permalink"] a:hover {
+.post div[location="permalink"] a:hover {
 	color: black;
 }
 
-.post [location="body"] {
+.post div[location="body"] {
 	padding: 5px;
 }
 
-.post [location="scrollto"] .v-button {
+.post div[location="scrollto"] .v-button {
 	padding-right: 18px;
 	background: url(../images/icon-scroll-to-top.png) center right no-repeat;
 }
@@ -78,17 +102,17 @@
 	vertical-align: middle;
 }
 
-.post td.actions [location="report"] {
+.post td.actions div[location="report"] {
 	color: #AAA;
 }
 
-.post td.actions [location="report"],
-.post td.actions [location="settings"] {
+.post td.actions div[location="report"],
+.post td.actions div[location="settings"] {
 	visibility: hidden;
 }
 
-.post td.actions:hover [location="report"],
-.post td.actions:hover [location="settings"] {
+.post td.actions:hover div[location="report"],
+.post td.actions:hover div[location="settings"] {
 	visibility: visible;
 }
 
@@ -101,9 +125,9 @@
 .post.summary table.container {
 	margin: 0;	
 }
-.post.summary [location="permalink"],
-.post.summary [location="postedtime"],
-.post.summary [location="score"],
+.post.summary div[location="permalink"],
+.post.summary div[location="postedtime"],
+.post.summary div[location="score"],
 .post.summary .toolbar {
 	display: none;
 }
@@ -112,21 +136,21 @@
 	min-width: 151px;
 	padding: 11px 0 0 5px;
 }
-.post.summary .author [location="avatar"] {
+.post.summary .author div[location="avatar"] {
 	width: 23px;
 	float: left;
 }
-.post.summary .author [location="authorname"] {
+.post.summary .author div[location="authorname"] {
 	margin-top: 0.2em;
 	margin-left: 10px;
 	width: 100px;
 	float: left;
 }
-.post.summary .author [location="authorname"] .v-label {
+.post.summary .author div[location="authorname"] .v-label {
 	white-space: normal;	
 }
-.post.summary .author [location="avatar"] .v-embedded,
-.post.summary .author [location="avatar"] .v-embedded img {
+.post.summary .author div[location="avatar"] .v-embedded,
+.post.summary .author div[location="avatar"] .v-embedded img {
 	width: 100% !important;
 	height: auto !important;
 }
@@ -282,31 +306,31 @@
 .authoring .buttons > div {
 	display: inline-block;
 }
-.authoring .buttons [location="clearbutton"] {
+.authoring .buttons div[location="clearbutton"] {
 	display: none !important;
 }
 
-.authoring [location="formattingsyntax"] {
+.authoring div[location="formattingsyntax"] {
 	float: right;	
 }
 
-.authoring [location="toolbar"] select {
+.authoring div[location="toolbar"] select {
 	border: 2px solid #c8c7b5;
 }
 
-.authoring [location="toolbar"] button {
+.authoring div[location="toolbar"] button {
 	box-shadow: none;
 	-moz-box-shadow: none;
 	-webkit-box-shadow: none;
 	padding: 0;
 }
 
-.authoring [location="toolbar"] button img {
+.authoring div[location="toolbar"] button img {
 	margin: 0;
 	padding: 0;
 }
 
-.authoring [location="toolbar"] .v-nativebutton {
+.authoring div[location="toolbar"] .v-nativebutton {
 	border: none;
 	background: none;
 	border-radius: 0;
@@ -315,12 +339,12 @@
 	padding: 0;
 }
 
-.authoring [location="toolbar"] .v-horizontallayout-margin {
+.authoring div[location="toolbar"] .v-horizontallayout-margin {
 	padding: 0px;
 	padding-bottom: 2px;
 }
 
-.authoring [location="input"] textarea {
+.authoring div[location="input"] textarea {
 	width: 100%;
 	font-size: 14px;
 	color: #464440;
@@ -336,7 +360,7 @@
 	box-sizing: border-box;
 }
 
-.authoring [location="captionlabel"] {
+.authoring div[location="captionlabel"] {
 	color: #64635a;
 	font-size: 18px;
 	font-weight: bold;	
@@ -347,7 +371,7 @@
 	color: #8c8b7e;
 }
 
-.authoring [location="preview"] {
+.authoring div[location="preview"] {
 	background: url(../images/preview-bg.png) #fff top left repeat;
 	padding: 18px 14px;
 	max-height: 180px;
@@ -385,15 +409,15 @@
 	vertical-align: middle;
 }
 
-.authoring.compact [location="formattingsyntax"],
-.authoring.compact [location="preview"],
-.authoring.compact [location="toolbar"],
+.authoring.compact div[location="formattingsyntax"],
+.authoring.compact div[location="preview"],
+.authoring.compact div[location="toolbar"],
 .authoring.compact .toolbar,
 .authoring.compact .buttons,
 .authoring.compact .previewcaption {
 	display: none;	
 }
-.authoring.compact [location="input"] textarea {
+.authoring.compact div[location="input"] textarea {
 	height: 1.8em;
 	padding: 4px 12px;
 	margin-top: 8px;
@@ -410,7 +434,7 @@
 	-o-transition: height 0.2s ease-in-out;
 	transition: height 0.2s ease-in-out;
 }
-.v-floatingbar .authoring [location="captionlabel"] .v-label,
+.v-floatingbar .authoring div[location="captionlabel"] .v-label,
 .v-floatingbar .authoring .previewcaption {
 	color: #fff;
 	font-size: 13px;
@@ -427,11 +451,11 @@
 	font-size: 120%;
 }
 
-.post [location="signature"] {
+.post div[location="signature"] {
 	font-size: smaller;
 	margin: 0.5em 1em;
 }
-.post [location="signature"] .v-label {
+.post div[location="signature"] .v-label {
 	border-top: 1px solid #9f9f9f;	
 }
 

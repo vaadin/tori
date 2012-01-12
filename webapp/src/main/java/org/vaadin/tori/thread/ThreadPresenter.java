@@ -33,8 +33,8 @@ public class ThreadPresenter extends Presenter<ThreadView> {
 
     public void setCurrentThreadById(final @NonNull String threadIdString)
             throws DataSourceException {
+        DiscussionThread requestedThread = null;
         try {
-            DiscussionThread requestedThread = null;
             try {
                 final long threadId = Long.valueOf(threadIdString);
                 requestedThread = dataSource.getThread(threadId);
@@ -55,6 +55,18 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             log.error(e);
             e.printStackTrace();
             throw e;
+        }
+
+        if (requestedThread != null) {
+            try {
+                dataSource.incrementViewCount(requestedThread);
+                dataSource.markRead(requestedThread);
+            } catch (final DataSourceException e) {
+                // Just log the exception, we don't want an exception in view
+                // count incrementing or marking as read to stop us here.
+                log.error("Couldn't increment view count and "
+                        + "mark thread as read.", e);
+            }
         }
     }
 

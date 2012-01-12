@@ -1,5 +1,9 @@
 package org.vaadin.tori.data;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -33,11 +37,13 @@ import com.liferay.portlet.messageboards.model.MBBan;
 import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBMessageConstants;
+import com.liferay.portlet.messageboards.model.MBMessageFlagConstants;
 import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.model.MBThreadConstants;
 import com.liferay.portlet.messageboards.service.MBBanServiceUtil;
 import com.liferay.portlet.messageboards.service.MBCategoryLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBCategoryServiceUtil;
+import com.liferay.portlet.messageboards.service.MBMessageFlagLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
@@ -251,6 +257,30 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
+    public void incrementViewCount(final DiscussionThread thread)
+            throws DataSourceException {
+        try {
+            // Reload the thread to get the latest view count.
+            // Here we have a race condition, but this is the same way Liferay
+            // handles the view count incrementation.
+            final MBThread liferayThread = MBThreadLocalServiceUtil
+                    .getThread(thread.getId());
+            MBThreadLocalServiceUtil.updateThread(liferayThread.getThreadId(),
+                    liferayThread.getViewCount() + 1);
+        } catch (final PortalException e) {
+            log.error(String.format(
+                    "Couldn't increment view count for thread %d.",
+                    thread.getId()), e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error(String.format(
+                    "Couldn't increment view count for thread %d.",
+                    thread.getId()), e);
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Override
     public List<Post> getPosts(final DiscussionThread thread)
             throws DataSourceException {
         ToriUtil.checkForNull(thread, "DiscussionThread must not be null.");
@@ -385,9 +415,45 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public long getUnreadThreadCount(final Category category) {
-        log.warn("Not yet implemented.");
-        return 0;
+    public long getUnreadThreadCount(final Category category)
+            throws DataSourceException {
+        if (currentUserId <= 0) {
+            return 0;
+        }
+
+        // FIXME Directly accessing Liferay's JDBC DataSource seems very
+        // fragile, but the most straightforward way to access the total unread
+        // count.
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet result = null;
+        final long totalThreadCount = getThreadCount(category);
+        try {
+            connection = JdbcUtil.getJdbcConnection();
+            statement = connection
+                    .prepareStatement("select (? - count(MBMessageFlag.messageFlagId)) "
+                            + "from MBMessageFlag, MBThread "
+                            + "where flag = ? and MBMessageFlag.threadId = MBThread.threadId "
+                            + "and MBThread.categoryId = ? and MBMessageFlag.userId = ?");
+            statement.setLong(1, totalThreadCount);
+            statement.setLong(2, MBMessageFlagConstants.READ_FLAG);
+            statement.setLong(3, category.getId());
+            statement.setLong(4, currentUserId);
+
+            result = statement.executeQuery();
+            if (result.next()) {
+                return result.getLong(1);
+            } else {
+                return 0;
+            }
+        } catch (final SQLException e) {
+            log.error(e);
+            throw new DataSourceException(e);
+        } finally {
+            JdbcUtil.closeAndLogException(result);
+            JdbcUtil.closeAndLogException(statement);
+            JdbcUtil.closeAndLogException(connection);
+        }
     }
 
     @Override
@@ -463,6 +529,48 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                     thread.getId()), e);
             throw new DataSourceException(e);
         }
+    }
+
+    @Override
+    public void markRead(final DiscussionThread thread)
+            throws DataSourceException {
+        if (currentUserId > 0) {
+            try {
+                MBMessageFlagLocalServiceUtil.addReadFlags(currentUserId,
+                        MBThreadLocalServiceUtil.getThread(thread.getId()));
+            } catch (final PortalException e) {
+                log.error(String.format("Couldn't mark thread %d as read.",
+                        thread.getId()), e);
+                throw new DataSourceException(e);
+            } catch (final SystemException e) {
+                log.error(String.format("Couldn't mark thread %d as read.",
+                        thread.getId()), e);
+                throw new DataSourceException(e);
+            }
+        }
+    }
+
+    @Override
+    public boolean isRead(final DiscussionThread thread)
+            throws DataSourceException {
+        if (currentUserId > 0) {
+            try {
+                return MBMessageFlagLocalServiceUtil.hasReadFlag(currentUserId,
+                        MBThreadLocalServiceUtil.getThread(thread.getId()));
+            } catch (final PortalException e) {
+                log.error(String.format(
+                        "Couldn't check for read flag on thread %d.",
+                        thread.getId()), e);
+                throw new DataSourceException(e);
+            } catch (final SystemException e) {
+                log.error(String.format(
+                        "Couldn't check for read flag on thread %d.",
+                        thread.getId()), e);
+                throw new DataSourceException(e);
+            }
+        }
+        // default to read in case of an anonymous user
+        return true;
     }
 
     @Override
@@ -720,9 +828,13 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                 scopeGroupId = themeDisplay.getScopeGroupId();
                 log.info("Using groupId " + scopeGroupId + " as the scope.");
             }
-            if (currentUserId != themeDisplay.getUserId()) {
+            long remoteUser = 0;
+            if (request.getRemoteUser() != null) {
+                remoteUser = Long.valueOf(request.getRemoteUser());
+            }
+            if (currentUserId != remoteUser) {
                 // current user is changed
-                currentUserId = themeDisplay.getUserId();
+                currentUserId = remoteUser;
                 currentUser = null;
             }
             if (imagePath == null) {

@@ -13,14 +13,14 @@ insert into CATEGORY set ID = 5, PARENTCATEGORY_ID = 1, NAME = "News", DESCRIPTI
 insert into CATEGORY set ID = 6, PARENTCATEGORY_ID = 1, NAME = "Announcements", DESCRIPTION = "All announcements.", DISPLAYORDER = 1;
 
 # Threads
-insert into DISCUSSIONTHREAD set ID = 1, CATEGORY_ID = 5, TOPIC = "Tori alpha 1 released";
-insert into DISCUSSIONTHREAD set ID = 2, CATEGORY_ID = 2, TOPIC = "Writing new messages";
-insert into DISCUSSIONTHREAD set ID = 3, CATEGORY_ID = 3, TOPIC = "Issues with widgetset compilation";
-insert into DISCUSSIONTHREAD set ID = 4, CATEGORY_ID = 4, TOPIC = "What does 'git rebase' actually do";
-insert into DISCUSSIONTHREAD set ID = 5, CATEGORY_ID = 6, TOPIC = "Announced the future release date of Tori alpha 2";
-insert into DISCUSSIONTHREAD set ID = 6, CATEGORY_ID = 5, TOPIC = "Something new is happening";
-insert into DISCUSSIONTHREAD set ID = 7, CATEGORY_ID = 3, TOPIC = "How to deploy Vaadin applications to Liferay";
-insert into DISCUSSIONTHREAD set ID = 8, CATEGORY_ID = 3, TOPIC = "How to change the color of a Label";
+insert into DISCUSSIONTHREAD set ID = 1, VIEWCOUNT = 0, CATEGORY_ID = 5, TOPIC = "Tori alpha 1 released";
+insert into DISCUSSIONTHREAD set ID = 2, VIEWCOUNT = 0, CATEGORY_ID = 2, TOPIC = "Writing new messages";
+insert into DISCUSSIONTHREAD set ID = 3, VIEWCOUNT = 0, CATEGORY_ID = 3, TOPIC = "Issues with widgetset compilation";
+insert into DISCUSSIONTHREAD set ID = 4, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "What does 'git rebase' actually do";
+insert into DISCUSSIONTHREAD set ID = 5, VIEWCOUNT = 0, CATEGORY_ID = 6, TOPIC = "Announced the future release date of Tori alpha 2";
+insert into DISCUSSIONTHREAD set ID = 6, VIEWCOUNT = 0, CATEGORY_ID = 5, TOPIC = "Something new is happening";
+insert into DISCUSSIONTHREAD set ID = 7, VIEWCOUNT = 0, CATEGORY_ID = 3, TOPIC = "How to deploy Vaadin applications to Liferay";
+insert into DISCUSSIONTHREAD set ID = 8, VIEWCOUNT = 0, CATEGORY_ID = 3, TOPIC = "How to change the color of a Label";
 
 ## Users
 insert into `USER` set ID = 1, DISPLAYEDNAME = "John Doe", RAWSIGNATURE = "I'm Doe. John Doe";

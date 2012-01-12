@@ -666,4 +666,38 @@ public class TestDataSource implements DataSource {
             }
         });
     }
+
+    @Override
+    public void incrementViewCount(final DiscussionThread thread)
+            throws DataSourceException {
+        executeWithEntityManager(new Command<Void>() {
+            @Override
+            public Void execute(final EntityManager em) {
+                final EntityTransaction transaction = em.getTransaction();
+
+                transaction.begin();
+                final Query q = em
+                        .createQuery("update DiscussionThread t set t.viewCount = t.viewCount + 1 where t = :thread");
+                q.setParameter("thread", thread);
+                q.executeUpdate();
+                transaction.commit();
+
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public boolean isRead(final DiscussionThread thread) {
+        // TODO actual implementation
+        return true;
+    }
+
+    @Override
+    public void markRead(final DiscussionThread thread)
+            throws DataSourceException {
+        System.out.println(String.format(
+                "Marking thread %d as read. Not actually implemented in "
+                        + getClass().getSimpleName() + ".", thread.getId()));
+    }
 }

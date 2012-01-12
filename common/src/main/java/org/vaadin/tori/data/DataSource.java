@@ -227,4 +227,35 @@ public interface DataSource {
     @NonNull
     DiscussionThread saveNewThread(@NonNull DiscussionThread newThread,
             @NonNull Post firstPost) throws DataSourceException;
+
+    /**
+     * Increments the view count of the given thread by one. This method should
+     * be always used instead of directly incrementing the view count property
+     * of the {@link DiscussionThread}.
+     * 
+     * @param thread
+     * @throws DataSourceException
+     */
+    void incrementViewCount(DiscussionThread thread) throws DataSourceException;
+
+    /**
+     * Returns true if the current user has read the given thread. If no user is
+     * logged in, this method will return true for any thread.
+     * 
+     * @param thread
+     * @return
+     * @throws DataSourceException
+     * @see {@link #markRead(DiscussionThread)}
+     */
+    boolean isRead(DiscussionThread thread) throws DataSourceException;
+
+    /**
+     * Marks the given thread as read. If no user is logged in, this method
+     * doesn't do anything.
+     * 
+     * @param thread
+     * @throws DataSourceException
+     * @see {@link #isRead(DiscussionThread)}
+     */
+    void markRead(DiscussionThread thread) throws DataSourceException;
 }

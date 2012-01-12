@@ -34,6 +34,9 @@ public class DiscussionThread extends AbstractEntity {
     @Column(nullable = false)
     private boolean locked;
 
+    @Column(nullable = false)
+    private long viewCount;
+
     public DiscussionThread() {
     }
 
@@ -124,6 +127,21 @@ public class DiscussionThread extends AbstractEntity {
 
     public boolean isLocked() {
         return locked;
+    }
+
+    public long getViewCount() {
+        return viewCount;
+    }
+
+    /**
+     * You should not use this method to increment the view count for this
+     * DiscussionThread. Instead you should call the
+     * {@link DataSource#incrementViewCount(DiscussionThread)} .
+     * 
+     * @param viewCount
+     */
+    public void setViewCount(final long viewCount) {
+        this.viewCount = viewCount;
     }
 
 }

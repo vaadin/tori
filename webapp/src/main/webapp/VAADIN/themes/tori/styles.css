@@ -70,6 +70,12 @@ button.v-nativebutton {
 .v-label-h4 {
 	font-size: 110%;
 }
+.v-label-h1,
+.v-label-h2,
+.v-label-h3,
+.v-label-h4 {
+	margin: 10px 0;
+}
 
 .v-drag-element {
     opacity: 0.65;
