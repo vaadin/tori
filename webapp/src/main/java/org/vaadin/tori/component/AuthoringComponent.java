@@ -510,7 +510,7 @@ public abstract class AuthoringComponent extends CustomComponent {
         }
     }
 
-    private void insertIntoMessage(final String unformattedText) {
+    public void insertIntoMessage(final String unformattedText) {
         final String text = (String) input.getValue();
         input.setValue(text + unformattedText);
         input.focus();
