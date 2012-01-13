@@ -271,6 +271,7 @@
 	font-style: italic;
 	border-bottom: 2px solid #f4f4f0;
 	margin-bottom: 105px;
+	margin-top: 50px;
 }
 
 .threadview .spacer .eof {
@@ -461,12 +462,15 @@
 
 /* Post body formatting */
 .post .body .quote-title,
-.post .body .quote {
+.post .body .quote,
+.authoring .quote-title,
+.authoring .quote {
 	margin-left: 10px;
 	padding-left: 37px;
 	padding-right: 37px;
 }
-.post .body .quote-title {
+.post .body .quote-title,
+.authoring .quote-title {
 	font-weight: bold;
 	min-height: 20px;
 	padding-top: 10px;
@@ -475,12 +479,17 @@
 	-webkit-border-radius: 4px 4px 0 0;
 	border-radius: 4px 4px 0 0;
 }
-.post .body .quote {
+.post .body .quote,
+.authoring .quote {
 	background: #e9e9e1;
 	padding-bottom: 12px;
 	-moz-border-radius: 0 0 4px 4px;
 	-webkit-border-radius: 0 0 4px 4px;
 	border-radius: 0 0 4px 4px;
+}
+.authoring .quote,
+.authoring .quote-title {
+	opacity: 0.8;
 }
 .post .body .code,
 .authoring .code {

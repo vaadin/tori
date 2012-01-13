@@ -580,7 +580,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     @Override
     public void delete(final Post post) throws DataSourceException {
         try {
-            MBMessageLocalServiceUtil.deleteMBMessage(post.getId());
+            MBMessageServiceUtil.deleteMessage(post.getId());
         } catch (final PortalException e) {
             log.error(String.format("Couldn't delete post %d.", post.getId()),
                     e);

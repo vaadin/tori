@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
 
@@ -139,6 +140,15 @@ public class TestPostFormatter implements PostFormatter {
     @Override
     public Collection<? extends FormatInfo> getOtherFormattingInfo() {
         return OTHER_FORMAT_INFO;
+    }
+
+    @Override
+    public String getQuote(final Post postToQuote) {
+        if (postToQuote == null) {
+            return "";
+        }
+        return String.format("%s wrote:\n\n%s\n---\n", postToQuote.getAuthor()
+                .getDisplayedName(), postToQuote.getBodyRaw());
     }
 
 }
