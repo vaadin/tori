@@ -97,7 +97,7 @@
 	width: 100%;
 }
 
-.post td.actions div {
+.post td.actions > div {
 	display: inline-block;
 	vertical-align: middle;
 }
