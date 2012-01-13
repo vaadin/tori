@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -699,5 +700,19 @@ public class TestDataSource implements DataSource {
         System.out.println(String.format(
                 "Marking thread %d as read. Not actually implemented in "
                         + getClass().getSimpleName() + ".", thread.getId()));
+    }
+
+    @Override
+    public List<DiscussionThread> getRecentPosts() throws DataSourceException {
+        System.out.println("Recent threads not implemented in "
+                + getClass().getSimpleName() + ".");
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<DiscussionThread> getMyPosts() throws DataSourceException {
+        System.out.println("My posts not implemented in "
+                + getClass().getSimpleName() + ".");
+        return Collections.emptyList();
     }
 }
