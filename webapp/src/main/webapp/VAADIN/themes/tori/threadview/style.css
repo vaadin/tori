@@ -447,6 +447,14 @@
 	margin-left: 9px;
 }
 
+.v-floatingbar .authoring div[location="captionlabel"] .v-label {
+	padding-right: 18px;
+	background: url(../images/icon-expand.png) right center no-repeat;
+}
+.authoring.compact div[location="captionlabel"] .v-label {
+	background-image: none;
+}
+
 .threadview .newthread .topiclabel {
 	text-align: right;
 }
