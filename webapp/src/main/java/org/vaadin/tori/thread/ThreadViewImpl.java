@@ -28,11 +28,9 @@ import org.vaadin.tori.mvp.AbstractView;
 import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.FieldEvents.FocusEvent;
-import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -40,7 +38,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window.Notification;
-import com.vaadin.ui.themes.BaseTheme;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -242,32 +239,34 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         topicLabel.setWidth(null);
 
         final String showPostContentCaption = "Show post content";
-        final Resource collapseIcon = new ThemeResource(
-                "images/icon-collapse.png");
-        final Resource expandIcon = new ThemeResource("images/icon-expand.png");
-        final Button showPostButton = new Button(showPostContentCaption,
-                new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(final ClickEvent event) {
-                        postSummary.setVisible(!postSummary.isVisible());
-                        event.getButton().setCaption(
-                                postSummary.isVisible() ? "Hide post content"
-                                        : showPostContentCaption);
-                        event.getButton().setIcon(
-                                postSummary.isVisible() ? collapseIcon
-                                        : expandIcon);
-                    }
-                });
-        showPostButton.setIcon(expandIcon);
-        showPostButton.setStyleName(BaseTheme.BUTTON_LINK);
+        final String hidePostContentCaption = "Hide post content";
+        final String collapsedStyle = "collapsed";
+        final Label showOrHideLabel = new Label(showPostContentCaption);
+        showOrHideLabel.setStyleName("show-or-hide");
+        showOrHideLabel.addStyleName(collapsedStyle);
+        showOrHideLabel.setWidth(null);
+        summaryLayout.addListener(new LayoutClickListener() {
+
+            @Override
+            public void layoutClick(final LayoutClickEvent event) {
+                postSummary.setVisible(!postSummary.isVisible());
+                showOrHideLabel.setValue(postSummary.isVisible() ? hidePostContentCaption
+                        : showPostContentCaption);
+                if (postSummary.isVisible()) {
+                    showOrHideLabel.removeStyleName(collapsedStyle);
+                } else {
+                    showOrHideLabel.addStyleName(collapsedStyle);
+                }
+            }
+        });
 
         final HorizontalLayout topRow = new HorizontalLayout();
         topRow.addStyleName("topRow");
         topRow.setWidth("100%");
         topRow.setMargin(true);
         topRow.addComponent(topicLabel);
-        topRow.addComponent(showPostButton);
-        topRow.setComponentAlignment(showPostButton, Alignment.MIDDLE_RIGHT);
+        topRow.addComponent(showOrHideLabel);
+        topRow.setComponentAlignment(showOrHideLabel, Alignment.MIDDLE_RIGHT);
 
         summaryLayout.addComponent(topRow);
         summaryLayout.addComponent(postSummary);
