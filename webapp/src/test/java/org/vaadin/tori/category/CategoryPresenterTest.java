@@ -49,8 +49,8 @@ public class CategoryPresenterTest {
 
     @Test
     public void recentPostsCategory() throws DataSourceException {
-        presenter.setCurrentCategoryById("recent");
-        assertEquals(SpecialCategories.RECENT_POSTS.getInstance(),
+        presenter.setCurrentCategoryById(SpecialCategory.RECENT_POSTS.getId());
+        assertEquals(SpecialCategory.RECENT_POSTS.getInstance(),
                 presenter.getCurrentCategory());
         assertFalse(presenter.userMayStartANewThread());
 
@@ -59,8 +59,8 @@ public class CategoryPresenterTest {
 
     @Test
     public void myPostsCategory() throws DataSourceException {
-        presenter.setCurrentCategoryById("myposts");
-        assertEquals(SpecialCategories.MY_POSTS.getInstance(),
+        presenter.setCurrentCategoryById(SpecialCategory.MY_POSTS.getId());
+        assertEquals(SpecialCategory.MY_POSTS.getInstance(),
                 presenter.getCurrentCategory());
         assertFalse(presenter.userMayStartANewThread());
 

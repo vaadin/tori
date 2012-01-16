@@ -24,14 +24,15 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     public void setCurrentCategoryById(final String categoryIdString) {
         final CategoryView view = getView();
         try {
-            if (categoryIdString.equals("recent")) {
-                currentCategory = SpecialCategories.RECENT_POSTS.getInstance();
+            if (categoryIdString.equals(SpecialCategory.RECENT_POSTS.getId())) {
+                currentCategory = SpecialCategory.RECENT_POSTS.getInstance();
 
                 final List<Category> empty = Collections.emptyList();
                 view.displaySubCategories(empty);
                 view.displayThreads(dataSource.getRecentPosts());
-            } else if (categoryIdString.equals("myposts")) {
-                currentCategory = SpecialCategories.MY_POSTS.getInstance();
+            } else if (categoryIdString
+                    .equals(SpecialCategory.MY_POSTS.getId())) {
+                currentCategory = SpecialCategory.MY_POSTS.getInstance();
 
                 final List<Category> empty = Collections.emptyList();
                 view.displaySubCategories(empty);
@@ -257,7 +258,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     }
 
     public boolean userMayStartANewThread() {
-        if (SpecialCategories.isSpecialCategory(currentCategory)) {
+        if (SpecialCategory.isSpecialCategory(currentCategory)) {
             // special "categories" like recent posts
             return false;
         }

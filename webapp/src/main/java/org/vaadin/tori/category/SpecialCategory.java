@@ -5,23 +5,29 @@ import java.util.List;
 
 import org.vaadin.tori.data.entity.Category;
 
-public enum SpecialCategories {
+public enum SpecialCategory {
 
-    RECENT_POSTS("Recent Posts"), MY_POSTS("My Posts");
+    RECENT_POSTS("Recent Posts", "recent"), MY_POSTS("My Posts", "myposts");
 
     private Category categoryInstance;
+    private String id;
 
-    private SpecialCategories(final String name) {
+    private SpecialCategory(final String name, final String id) {
         categoryInstance = new Category();
         categoryInstance.setName(name);
+        this.id = id;
     }
 
     public Category getInstance() {
         return categoryInstance;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public static boolean isSpecialCategory(final Category category) {
-        for (final SpecialCategories specialCategory : values()) {
+        for (final SpecialCategory specialCategory : values()) {
             if (specialCategory.getInstance() == category) {
                 return true;
             }
@@ -31,7 +37,7 @@ public enum SpecialCategories {
 
     public static List<Category> getCategories() {
         final List<Category> specialCategories = new ArrayList<Category>();
-        for (final SpecialCategories specialCategory : values()) {
+        for (final SpecialCategory specialCategory : values()) {
             specialCategories.add(specialCategory.getInstance());
         }
         return specialCategories;
