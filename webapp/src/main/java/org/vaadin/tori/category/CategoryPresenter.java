@@ -1,5 +1,6 @@
 package org.vaadin.tori.category;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.vaadin.tori.data.DataSource;
@@ -21,24 +22,38 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     }
 
     public void setCurrentCategoryById(final String categoryIdString) {
+        final CategoryView view = getView();
         try {
-            Category requestedCategory = null;
-            try {
-                final long categoryId = Long.valueOf(categoryIdString);
-                requestedCategory = dataSource.getCategory(categoryId);
-            } catch (final NumberFormatException e) {
-                log.error("Invalid category id format: " + categoryIdString);
-            }
+            if (categoryIdString.equals(SpecialCategory.RECENT_POSTS.getId())) {
+                currentCategory = SpecialCategory.RECENT_POSTS.getInstance();
 
-            if (requestedCategory != null) {
-                currentCategory = requestedCategory;
+                final List<Category> empty = Collections.emptyList();
+                view.displaySubCategories(empty);
+                view.displayThreads(dataSource.getRecentPosts());
+            } else if (categoryIdString
+                    .equals(SpecialCategory.MY_POSTS.getId())) {
+                currentCategory = SpecialCategory.MY_POSTS.getInstance();
 
-                final CategoryView view = getView();
-                view.displaySubCategories(dataSource
-                        .getSubCategories(currentCategory));
-                view.displayThreads(dataSource.getThreads(currentCategory));
+                final List<Category> empty = Collections.emptyList();
+                view.displaySubCategories(empty);
+                view.displayThreads(dataSource.getMyPosts());
             } else {
-                getView().displayCategoryNotFoundError(categoryIdString);
+                Category requestedCategory = null;
+                try {
+                    final long categoryId = Long.valueOf(categoryIdString);
+                    requestedCategory = dataSource.getCategory(categoryId);
+                } catch (final NumberFormatException e) {
+                    log.error("Invalid category id format: " + categoryIdString);
+                }
+
+                if (requestedCategory != null) {
+                    currentCategory = requestedCategory;
+                    view.displaySubCategories(dataSource
+                            .getSubCategories(currentCategory));
+                    view.displayThreads(dataSource.getThreads(currentCategory));
+                } else {
+                    getView().displayCategoryNotFoundError(categoryIdString);
+                }
             }
         } catch (final DataSourceException e) {
             e.printStackTrace();
@@ -243,6 +258,10 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     }
 
     public boolean userMayStartANewThread() {
+        if (SpecialCategory.isSpecialCategory(currentCategory)) {
+            // special "categories" like recent posts
+            return false;
+        }
         return authorizationService.mayCreateThreadIn(currentCategory);
     }
 

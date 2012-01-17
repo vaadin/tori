@@ -187,19 +187,20 @@
 	font-size: 13px;
 	white-space: nowrap;
 }
+.threadSummary .topRow,
+.threadSummary .topRow .v-label {
+	cursor: pointer;
+}
 .threadSummary .topRow .v-horizontallayout-margin {
 	padding: 9px;
 }
-.threadSummary .topRow .v-button-wrap {
+.threadSummary .topRow .show-or-hide {
 	width: 115px;
+	padding-left: 16px;
+	background: url(../images/icon-collapse.png) left center no-repeat;
 }
-.threadSummary .topRow .v-button .v-icon {
-	margin-top: 3px;
-	float: left;	
-}
-.threadSummary .topRow .v-button-caption {
-	float: right;
-	color: #fff;	
+.threadSummary .topRow .collapsed {
+	background-image: url(../images/icon-expand.png);
 }
 
 .reportwindow .v-window-outerheader {
@@ -435,6 +436,9 @@
 	-o-transition: height 0.2s ease-in-out;
 	transition: height 0.2s ease-in-out;
 }
+.v-floatingbar .authoring div[location="toolbar"] {
+	display: none;
+}
 .v-floatingbar .authoring div[location="captionlabel"] .v-label,
 .v-floatingbar .authoring .previewcaption {
 	color: #fff;
@@ -442,6 +446,14 @@
 	font-weight: bold;
 	float: left;
 	margin-left: 9px;
+}
+
+.v-floatingbar .authoring div[location="captionlabel"] .v-label {
+	padding-right: 18px;
+	background: url(../images/icon-expand.png) right center no-repeat;
+}
+.authoring.compact div[location="captionlabel"] .v-label {
+	background-image: none;
 }
 
 .threadview .newthread .topiclabel {

@@ -160,8 +160,55 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         }
     }
 
+    @Override
+    public List<DiscussionThread> getRecentPosts() throws DataSourceException {
+        try {
+            final List<MBThread> liferayThreads = getLiferayRecentThreads();
+
+            // collection for the final result
+            final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
+                    liferayThreads.size());
+            for (final MBThread liferayThread : liferayThreads) {
+                final DiscussionThread thread = wrapLiferayThread(
+                        liferayThread, null);
+                result.add(thread);
+            }
+            return result;
+        } catch (final SystemException e) {
+            log.error("Couldn't get recent threads.", e);
+            throw new DataSourceException(e);
+        } catch (final PortalException e) {
+            log.error("Couldn't get recent threads.", e);
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Override
+    public List<DiscussionThread> getMyPosts() throws DataSourceException {
+        try {
+            final List<MBThread> liferayThreads = getLiferayMyPosts();
+
+            // collection for the final result
+            final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
+                    liferayThreads.size());
+            for (final MBThread liferayThread : liferayThreads) {
+                final DiscussionThread thread = wrapLiferayThread(
+                        liferayThread, null);
+                result.add(thread);
+            }
+            return result;
+        } catch (final SystemException e) {
+            log.error("Couldn't get my posts.", e);
+            throw new DataSourceException(e);
+        } catch (final PortalException e) {
+            log.error("Couldn't get my posts.", e);
+            throw new DataSourceException(e);
+        }
+    }
+
     private DiscussionThread wrapLiferayThread(final MBThread liferayThread,
-            final Category category) throws PortalException, SystemException {
+            Category category) throws PortalException, SystemException,
+            DataSourceException {
         // get the root message of the thread
         final MBMessage rootMessage = MBMessageLocalServiceUtil
                 .getMessage(liferayThread.getRootMessageId());
@@ -177,6 +224,11 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                 lastPostAuthorLiferay, imagePath,
                 lastPostAuthorLiferay.isFemale());
 
+        if (category == null) {
+            // fetch the category
+            category = getCategory(liferayThread.getCategoryId());
+        }
+
         final DiscussionThread thread = EntityFactoryUtil
                 .createDiscussionThread(liferayThread, rootMessage,
                         threadAuthor, lastPostAuthor);
@@ -188,7 +240,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     private List<MBThread> getLiferayThreadsForCategory(final long categoryId)
             throws SystemException {
         final int start = 0; // use QUERY_ALL if you'd like to get all
-        final int end = 20; // use QUERY_ALL if you'd like to get all
+        final int end = 40; // use QUERY_ALL if you'd like to get all
         final List<MBThread> liferayThreads = MBThreadLocalServiceUtil
                 .getThreads(scopeGroupId, categoryId,
                         WorkflowConstants.STATUS_APPROVED, start, end);
@@ -196,6 +248,35 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             log.debug(String.format(
                     "Found %d threads for category with id %d.",
                     liferayThreads.size(), categoryId));
+        }
+        return liferayThreads;
+    }
+
+    private List<MBThread> getLiferayRecentThreads() throws SystemException,
+            PortalException {
+        final int start = 0; // use QUERY_ALL if you'd like to get all
+        final int end = 40; // use QUERY_ALL if you'd like to get all
+        final List<MBThread> liferayThreads = MBThreadServiceUtil
+                .getGroupThreads(scopeGroupId, 0,
+                        WorkflowConstants.STATUS_APPROVED, false, false, start,
+                        end);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Found %d recent threads.",
+                    liferayThreads.size()));
+        }
+        return liferayThreads;
+    }
+
+    private List<MBThread> getLiferayMyPosts() throws SystemException,
+            PortalException {
+        final int start = 0; // use QUERY_ALL if you'd like to get all
+        final int end = 40; // use QUERY_ALL if you'd like to get all
+        final List<MBThread> liferayThreads = MBThreadServiceUtil
+                .getGroupThreads(scopeGroupId, currentUserId,
+                        WorkflowConstants.STATUS_ANY, start, end);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Found %d my threads.",
+                    liferayThreads.size()));
         }
         return liferayThreads;
     }

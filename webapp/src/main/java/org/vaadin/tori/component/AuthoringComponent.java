@@ -441,7 +441,6 @@ public abstract class AuthoringComponent extends CustomComponent {
         layout.addComponent(input, "input");
 
         preview = new Label("<br/>", Label.CONTENT_XHTML);
-        preview.setWidth(null);
         layout.addComponent(preview, "preview");
         layout.addComponent(new NativeButton("Post", POST_LISTENER),
                 "postbutton");
