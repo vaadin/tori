@@ -13,6 +13,7 @@ import org.vaadin.tori.component.FloatingBar.HideEvent;
 import org.vaadin.tori.component.FloatingBar.VisibilityListener;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
+import org.vaadin.tori.component.LazyLayout;
 import org.vaadin.tori.component.NewThreadComponent;
 import org.vaadin.tori.component.NewThreadComponent.NewThreadListener;
 import org.vaadin.tori.component.PanicComponent;
@@ -68,19 +69,17 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     };
 
     private final Map<Post, PostComponent> postsToComponents = new HashMap<Post, PostComponent>();
-    // private final LazyLayout postsLayout;
-    private final CssLayout postsLayout;
+    private final LazyLayout postsLayout;
+    // private final CssLayout postsLayout;
     private ReplyComponent reply;
 
     public ThreadViewImpl() {
         setStyleName("threadview");
-        postsLayout = new CssLayout();
-        /*-
+        // postsLayout = new CssLayout();
         postsLayout = new LazyLayout();
         postsLayout.setRenderDistance(RENDER_DISTANCE_PX);
         postsLayout.setPlaceholderSize(PLACEHOLDER_HEIGHT, PLACEHOLDER_WIDTH);
         postsLayout.setRenderDelay(RENDER_DELAY_MILLIS);
-         */
     }
 
     @Override
