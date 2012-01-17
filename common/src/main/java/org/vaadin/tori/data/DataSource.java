@@ -258,4 +258,8 @@ public interface DataSource {
      * @see {@link #isRead(DiscussionThread)}
      */
     void markRead(DiscussionThread thread) throws DataSourceException;
+
+    List<DiscussionThread> getRecentPosts() throws DataSourceException;
+
+    List<DiscussionThread> getMyPosts() throws DataSourceException;
 }

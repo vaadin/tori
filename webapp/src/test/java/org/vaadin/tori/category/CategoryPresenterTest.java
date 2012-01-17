@@ -1,6 +1,7 @@
 package org.vaadin.tori.category;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,6 +45,26 @@ public class CategoryPresenterTest {
 
         presenter.setCurrentCategoryById("-1");
         verify(mockView).displayCategoryNotFoundError("-1");
+    }
+
+    @Test
+    public void recentPostsCategory() throws DataSourceException {
+        presenter.setCurrentCategoryById(SpecialCategory.RECENT_POSTS.getId());
+        assertEquals(SpecialCategory.RECENT_POSTS.getInstance(),
+                presenter.getCurrentCategory());
+        assertFalse(presenter.userMayStartANewThread());
+
+        verify(mockDataSource).getRecentPosts();
+    }
+
+    @Test
+    public void myPostsCategory() throws DataSourceException {
+        presenter.setCurrentCategoryById(SpecialCategory.MY_POSTS.getId());
+        assertEquals(SpecialCategory.MY_POSTS.getInstance(),
+                presenter.getCurrentCategory());
+        assertFalse(presenter.userMayStartANewThread());
+
+        verify(mockDataSource).getMyPosts();
     }
 
     @Test

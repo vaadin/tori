@@ -57,3 +57,20 @@
 	-webkit-border-radius: 0 0 4px 4px;
 	border-radius: 0 0 4px 4px;
 }
+
+.breadcrumbs .breadcrumbs-layout {
+	float: left;
+}
+.breadcrumbs .action-bar {
+	float: right;	
+	padding: 8px 14px 0 0;
+}
+.breadcrumbs .action-bar .v-link {
+	margin-left: 5px;	
+}
+.breadcrumbs .action-bar .v-icon {
+	padding-right: 4px;
+}
+.breadcrumbs .action-bar a span {
+	color: #fff !important;
+}
