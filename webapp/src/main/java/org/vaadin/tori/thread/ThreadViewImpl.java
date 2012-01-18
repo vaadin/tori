@@ -392,8 +392,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void confirmReplyPostedAndShowIt(final Post newPost) {
-        getWindow().showNotification("Replied!");
-        postsLayout.addComponent(newPostComponent(newPost));
+        postsLayout.addComponentEagerly(newPostComponent(newPost));
     }
 
     @Override

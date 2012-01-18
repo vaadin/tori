@@ -108,10 +108,14 @@ public final class LazyLayout extends AbstractLayout {
 
     /**
      * Add a component into this container. The component is added to the right
-     * or under the previous component.
+     * or under the last component.
+     * <p/>
+     * The component will not be rendered directly, but fetched with a separate
+     * round-trip only after it gets visible.
      * 
      * @param c
      *            the component to be added.
+     * @see #addComponentEagerly(Component)
      */
     @Override
     public void addComponent(final Component c) {
@@ -125,6 +129,22 @@ public final class LazyLayout extends AbstractLayout {
             components.remove(c);
             throw e;
         }
+    }
+
+    /**
+     * Add a component into this container. The component is added to the right
+     * or under the last component.
+     * <p/>
+     * The component will be added and rendered directly with this round-trip.
+     * Best used with small incremental changes.
+     * 
+     * @param c
+     *            the component to be added.
+     * @see #addComponent(Component)
+     */
+    public void addComponentEagerly(final Component c) {
+        addComponent(c);
+        componentIndexesToSend.add(components.indexOf(c));
     }
 
     @Override
