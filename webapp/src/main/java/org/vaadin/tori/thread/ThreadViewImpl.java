@@ -130,10 +130,6 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         for (final Post post : posts) {
             final PostComponent c = newPostComponent(post);
             postsLayout.addComponent(c);
-            // final NativeButton button = new NativeButton("FOO");
-            // button.setWidth("100%");
-            // button.setHeight("200px");
-            // postsLayout.addComponent(button);
 
             if (first) {
                 // create the floating summary bar for the first post
