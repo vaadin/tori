@@ -13,6 +13,7 @@ import org.vaadin.tori.component.FloatingBar.HideEvent;
 import org.vaadin.tori.component.FloatingBar.VisibilityListener;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
+import org.vaadin.tori.component.LazyLayout;
 import org.vaadin.tori.component.NewThreadComponent;
 import org.vaadin.tori.component.NewThreadComponent.NewThreadListener;
 import org.vaadin.tori.component.PanicComponent;
@@ -52,6 +53,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     private static final String PLACEHOLDER_WIDTH = "100%";
     private static final String PLACEHOLDER_HEIGHT = "300px";
 
+    /** The amount of posts to preload from the beginning and the end. */
+    private static final int PRELOAD_THRESHHOLD = 4;
+
     private CssLayout layout;
     private final ReplyListener replyListener = new ReplyListener() {
         @Override
@@ -68,19 +72,17 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     };
 
     private final Map<Post, PostComponent> postsToComponents = new HashMap<Post, PostComponent>();
-    // private final LazyLayout postsLayout;
-    private final CssLayout postsLayout;
+    private final LazyLayout postsLayout;
+    // private final CssLayout postsLayout;
     private ReplyComponent reply;
 
     public ThreadViewImpl() {
         setStyleName("threadview");
-        postsLayout = new CssLayout();
-        /*-
+        // postsLayout = new CssLayout();
         postsLayout = new LazyLayout();
         postsLayout.setRenderDistance(RENDER_DISTANCE_PX);
         postsLayout.setPlaceholderSize(PLACEHOLDER_HEIGHT, PLACEHOLDER_WIDTH);
         postsLayout.setRenderDelay(RENDER_DELAY_MILLIS);
-         */
     }
 
     @Override
@@ -127,21 +129,21 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         postsLayout.removeAllComponents();
         layout.addComponent(postsLayout);
 
-        boolean first = true;
-        for (final Post post : posts) {
+        for (int i = 0; i < posts.size(); i++) {
+            final Post post = posts.get(i);
             final PostComponent c = newPostComponent(post);
-            postsLayout.addComponent(c);
-            // final NativeButton button = new NativeButton("FOO");
-            // button.setWidth("100%");
-            // button.setHeight("200px");
-            // postsLayout.addComponent(button);
 
-            if (first) {
+            if (i < PRELOAD_THRESHHOLD || i > posts.size() - PRELOAD_THRESHHOLD) {
+                postsLayout.addComponentEagerly(c);
+            } else {
+                postsLayout.addComponent(c);
+            }
+
+            if (i == 0) {
                 // create the floating summary bar for the first post
                 final FloatingBar summaryBar = getSummaryBar(post, c);
                 summaryBar.setScrollComponent(c);
-                postsLayout.addComponent(summaryBar);
-                first = false;
+                postsLayout.addComponentEagerly(summaryBar);
             }
 
         }
@@ -370,6 +372,14 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         reloadPage();
     }
 
+    /**
+     * Resets and redraws the view.
+     * 
+     * @deprecated Now with the {@link LazyLayout} this <em>really really</em>
+     *             should be avoided. Use incremental changes instead whenever
+     *             humanly possible, please!
+     */
+    @Deprecated
     private void reloadPage() {
         try {
             getPresenter().resetView();
@@ -384,9 +394,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void confirmReplyPosted() {
-        getWindow().showNotification("Replied!");
-        reloadPage();
+    public void confirmReplyPostedAndShowIt(final Post newPost) {
+        postsLayout.addComponentEagerly(newPostComponent(newPost));
     }
 
     @Override

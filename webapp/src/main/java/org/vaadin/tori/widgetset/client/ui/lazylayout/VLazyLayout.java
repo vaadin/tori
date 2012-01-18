@@ -47,6 +47,9 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
     public static final String ATT_TOTAL_COMPONENTS_INT = "c";
     public static final String ATT_DISTANCE_INT = "di";
     public static final String ATT_RENDER_DELAY = "de";
+    public static final String ATT_ADD_PLACEHOLDERS_INTARR = "ap";
+    public static final String ATT_REMOVE_COMPONENTS_INTARR = "rp";
+    public static final String ATT_MOVE_COMPONENTS_MAP = "mc";
 
     private final FlowPane panel = new FlowPane();
 
@@ -208,15 +211,49 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
             this.client = client;
             this.id = uidl.getId();
 
-            if (uidl.hasAttribute(ATT_PAINT_INDICES_MAP)) {
-                addLazyLoadedWidgets(uidl, client);
-                checkAndUpdatePlaceholderSizes(uidl);
-                startSecondaryLoading();
-            } else {
+            if (isInitializingRequest(uidl)) {
                 initialize(uidl);
                 attachScrollHandlersIfNeeded();
                 findAllThingsToFetchAndFetchThem(distance);
             }
+
+            if (isLazyLoadingRequest(uidl)) {
+                if (uidl.hasAttribute(ATT_ADD_PLACEHOLDERS_INTARR)) {
+                    for (final int index : uidl
+                            .getIntArrayAttribute(ATT_REMOVE_COMPONENTS_INTARR)) {
+                        remove(index);
+                    }
+
+                    for (final int index : uidl
+                            .getIntArrayAttribute(ATT_ADD_PLACEHOLDERS_INTARR)) {
+                        insert(new PlaceholderWidget(placeholderWidth,
+                                placeholderHeight), index);
+                    }
+
+                    final ValueMap moves = uidl
+                            .getMapAttribute(ATT_MOVE_COMPONENTS_MAP);
+
+                    for (final String pid : moves.getKeySet()) {
+                        final Widget widget = (Widget) client.getPaintable(pid);
+                        final int newIndex = moves.getInt(pid);
+                        remove(widget);
+                        insert(widget, newIndex);
+                    }
+
+                }
+
+                addLazyLoadedWidgets(uidl, client);
+                checkAndUpdatePlaceholderSizes(uidl);
+                startSecondaryLoading();
+            }
+        }
+
+        private static boolean isLazyLoadingRequest(final UIDL uidl) {
+            return uidl.hasAttribute(ATT_PAINT_INDICES_MAP);
+        }
+
+        private static boolean isInitializingRequest(final UIDL uidl) {
+            return uidl.hasAttribute(ATT_TOTAL_COMPONENTS_INT);
         }
 
         private void checkAndUpdatePlaceholderSizes(final UIDL uidl) {

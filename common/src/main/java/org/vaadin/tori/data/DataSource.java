@@ -177,8 +177,10 @@ public interface DataSource {
     /**
      * Same as {@link #save(Post)}, but makes sure that the <code>post</code>'s
      * author is the current user.
+     * 
+     * @return The properly updated {@link Post}
      */
-    void saveAsCurrentUser(@NonNull Post post) throws DataSourceException;
+    Post saveAsCurrentUser(@NonNull Post post) throws DataSourceException;
 
     void move(@NonNull DiscussionThread thread,
             @NonNull Category destinationCategory) throws DataSourceException;
