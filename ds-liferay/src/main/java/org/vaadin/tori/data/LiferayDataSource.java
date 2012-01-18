@@ -755,8 +755,10 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public void saveAsCurrentUser(final Post post) throws DataSourceException {
-        internalSaveAsCurrentUser(post, getRootMessageId(post.getThread()));
+    public Post saveAsCurrentUser(final Post post) throws DataSourceException {
+        final MBMessage newPost = internalSaveAsCurrentUser(post,
+                getRootMessageId(post.getThread()));
+        return EntityFactoryUtil.createPost(newPost);
     }
 
     private MBMessage internalSaveAsCurrentUser(final Post post,

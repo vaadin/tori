@@ -369,6 +369,14 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         reloadPage();
     }
 
+    /**
+     * Resets and redraws the view.
+     * 
+     * @deprecated Now with the {@link LazyLayout} this <em>really really</em>
+     *             should be avoided. Use incremental changes instead whenever
+     *             humanly possible, please!
+     */
+    @Deprecated
     private void reloadPage() {
         try {
             getPresenter().resetView();
@@ -383,9 +391,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void confirmReplyPosted() {
+    public void confirmReplyPostedAndShowIt(final Post newPost) {
         getWindow().showNotification("Replied!");
-        reloadPage();
+        postsLayout.addComponent(newPostComponent(newPost));
     }
 
     @Override

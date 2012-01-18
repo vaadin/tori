@@ -35,7 +35,14 @@ public interface ThreadView extends View {
 
     void refreshScores(Post post, long newScore);
 
-    void confirmReplyPosted();
+    /**
+     * Acknowledge that the post was properly accepted and saved.
+     * 
+     * @param updatedPost
+     *            The new {@link Post} <strong>that should be added to the
+     *            thread visually (if applicable).</strong>
+     */
+    void confirmReplyPostedAndShowIt(Post updatedPost);
 
     /**
      * This method is called when a reply is tried to be sent, but the current
