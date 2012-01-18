@@ -14,11 +14,10 @@ import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Link;
 
 @SuppressWarnings("serial")
-public class TopicComponent extends CustomComponent {
+public class TopicComponent extends CssLayout {
 
     private class FollowAction implements ContextAction {
         private final DiscussionThread thread;
@@ -170,7 +169,6 @@ public class TopicComponent extends CustomComponent {
     private static final Resource UNLOCK_ICON = new ThemeResource(
             "images/icon-unlock.png");
 
-    private final CssLayout layout;
     private CategoryPresenter presenter;
 
     private ContextMenu menu;
@@ -182,14 +180,13 @@ public class TopicComponent extends CustomComponent {
 
         this.presenter = presenter;
 
-        setCompositionRoot(layout = new CssLayout());
         setSizeUndefined();
         setStyleName("topic");
 
         final long id = thread.getId();
         final String topic = thread.getTopic();
-        layout.addComponent(new ThreadModifiersComponent(thread));
-        layout.addComponent(createCategoryLink(id, topic));
+        addComponent(new ThreadModifiersComponent(thread));
+        addComponent(createCategoryLink(id, topic));
 
         try {
             menu = createContextMenu(thread);
@@ -197,10 +194,10 @@ public class TopicComponent extends CustomComponent {
             menu = new ContextMenu();
             menu.add(null, "database fubar :(", ContextAction.NULL);
         }
-        layout.addComponent(menu);
+        addComponent(menu);
 
         if (!presenter.userHasRead(thread)) {
-            layout.addStyleName("unread");
+            addStyleName("unread");
         }
     }
 

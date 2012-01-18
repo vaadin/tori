@@ -4,16 +4,13 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 
 import com.ocpsoft.pretty.time.PrettyTime;
-import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 
 @SuppressWarnings("serial")
-public class LatestPostComponent extends CustomComponent {
-
-    private Label root;
+public class LatestPostComponent extends Label {
 
     public LatestPostComponent(final DiscussionThread thread) {
-        setCompositionRoot(root = new Label("", Label.CONTENT_XHTML));
+        super("", Label.CONTENT_XHTML);
         setWidth(null);
         setStyleName("latest-post");
 
@@ -21,7 +18,7 @@ public class LatestPostComponent extends CustomComponent {
 
         final String whenPostedXhtml = getWhenPostedXhtml(latestPost);
         final String byWhomXhtml = getByWhomXhtml(latestPost);
-        root.setValue(whenPostedXhtml + byWhomXhtml);
+        setValue(whenPostedXhtml + byWhomXhtml);
     }
 
     private static String getWhenPostedXhtml(final Post latestPost) {

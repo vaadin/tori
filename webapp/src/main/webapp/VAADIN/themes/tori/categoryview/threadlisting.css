@@ -32,7 +32,7 @@
 	font-weight: bold;	
 }
 .thread-listing .topic .modifiers {
-	width: 8px;
+	width: 8px !important;
 	height: 16px !important;
 	margin: 0 4px 0 12px;
 }
@@ -45,7 +45,11 @@
 .thread-listing .latest-post,
 .thread-listing .fixed-column-headers .started-by, 
 .thread-listing .fixed-column-headers .latest-post {
-	width: 150px;
+	width: 140px;
+}
+.thread-listing .started-by {	
+	overflow: hidden;
+	margin-right: 10px;
 }
 .thread-listing .posts {
 	width: 50px;
@@ -78,4 +82,8 @@
 }
 .thread-listing .following {
 	background: url(../images/following-badge.png) #fff top left no-repeat;
+}
+.thread-listing .v-lazylayout-placeholder {
+	background: #dfdfdf;
+	border-bottom: 1px solid #afafaf;
 }

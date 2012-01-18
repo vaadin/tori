@@ -5,11 +5,10 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 
 @SuppressWarnings("serial")
-public class ThreadListingRow extends CustomComponent {
+public class ThreadListingRow extends CssLayout {
 
     private final DiscussionThread thread;
 
@@ -20,14 +19,12 @@ public class ThreadListingRow extends CustomComponent {
         final CssLayout details = new CssLayout();
         details.setStyleName("details");
 
-        final CssLayout layout = new CssLayout();
-        layout.setStyleName("thread-listing-row");
-        layout.addComponent(new TopicComponent(thread, presenter));
+        setStyleName("thread-listing-row");
+        addComponent(new TopicComponent(thread, presenter));
         details.addComponent(getStartedBy(thread));
         details.addComponent(getPosts(thread));
         details.addComponent(new LatestPostComponent(thread));
-        layout.addComponent(details);
-        setCompositionRoot(layout);
+        addComponent(details);
     }
 
     private Component getStartedBy(final DiscussionThread thread) {

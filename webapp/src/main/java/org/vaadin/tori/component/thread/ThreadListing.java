@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.vaadin.tori.category.CategoryPresenter;
+import org.vaadin.tori.component.LazyLayout;
 import org.vaadin.tori.data.entity.DiscussionThread;
 
 import com.vaadin.ui.Component;
@@ -27,14 +28,22 @@ public class ThreadListing extends CustomComponent {
     private static final String STYLE_FIXED_COLUMNS = "fixed-column-headers";
     private static final String STYLE_COLUMN_HEADER_ROW = "column-header-row";
 
+    private static final String PLACEHOLDER_WIDTH = "100%";
+    private static final String PLACEHOLDER_HEIGHT = "40px";
+    private static final int RENDER_DELAY_MILLIS = 1000;
+    private static final int RENDER_DISTANCE_PX = 500;
+
     private final CategoryPresenter presenter;
-    private final CssLayout layout;
+    private final LazyLayout layout;
 
     public ThreadListing(final CategoryPresenter presenter) {
         this.presenter = presenter;
         setStyleName("thread-listing");
 
-        layout = new CssLayout();
+        layout = new LazyLayout();
+        layout.setPlaceholderSize(PLACEHOLDER_HEIGHT, PLACEHOLDER_WIDTH);
+        layout.setRenderDistance(RENDER_DISTANCE_PX);
+        layout.setRenderDelay(RENDER_DELAY_MILLIS);
         layout.setStyleName("wrapper-layout");
         setCompositionRoot(layout);
     }
@@ -44,10 +53,18 @@ public class ThreadListing extends CustomComponent {
 
         initColumnHeaders();
 
+        int index = 0;
         for (final DiscussionThread thread : threads) {
             final ThreadListingRow row = new ThreadListingRow(thread, presenter);
             assignStyles(row);
-            layout.addComponent(row);
+            if (index < 10) {
+                // add the 10 first rows eagerly
+                layout.addComponentEagerly(row);
+            } else {
+                layout.addComponent(row);
+            }
+
+            index++;
         }
     }
 
@@ -64,7 +81,7 @@ public class ThreadListing extends CustomComponent {
         detailsHeaders
                 .addComponent(createColumnHeader(COLUMN_HEADER_LATESTPOST));
         headerRow.addComponent(detailsHeaders);
-        layout.addComponent(headerRow);
+        layout.addComponentEagerly(headerRow);
     }
 
     private Label createColumnHeader(final String header) {
