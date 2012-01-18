@@ -1,51 +1,81 @@
-.threadTable .topic a {
-	display: block;
+.thread-listing .topic .modifiers,
+.thread-listing .topic .link,
+.thread-listing-row .started-by,
+.thread-listing-row .posts,
+.thread-listing-row .latest-post,
+.thread-listing .column-header {
+	float: left;
+}
+.thread-listing .column-header.topic {
+	margin-left: 25px;
+}
+.thread-listing-row {
+	position: relative;
+	padding: 2px 0;
+}
+.thread-listing-row .topic {
 	height: 100%;
+	position: absolute;
+	top: 2px;
+	left: 0;
+	right: 350px;
+	bottom: 0;
+}
+.thread-listing-row .details,
+.thread-listing .fixed-column-headers {
+	float: right;
+}
+.thread-listing .column-header-row {
+	background: #b4b3a3;
+	color: #fff;
+	font-size: 12px;	
+	font-weight: bold;	
+}
+.thread-listing .topic .modifiers {
+	width: 8px;
+	height: 16px !important;
+	margin: 0 4px 0 12px;
+}
+.thread-listing .topic .contextmenu {
+	width: 16px;
+	margin-right: 16px;
+	float: right;
+}
+.thread-listing .started-by,
+.thread-listing .latest-post,
+.thread-listing .fixed-column-headers .started-by, 
+.thread-listing .fixed-column-headers .latest-post {
+	width: 150px;
+}
+.thread-listing .posts {
+	width: 50px;
+}
+
+.thread-listing-row .contextmenu {
+	visibility: hidden;	
+}
+.thread-listing-row:hover .contextmenu {
+	visibility: visible;	
+}
+
+.thread-listing,
+.thread-listing-row {
+	border-color: #dfdfdf;
+	border-style: solid;
+}
+.thread-listing-row {
 	width: 100%;
+	border-width: 0 0 1px 0;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
 }
-
-.threadTable .unread {
-	font-weight: bold;
+.thread-listing {
+	border-width: 1px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
 }
-
-.threadTable .v-table-caption-container {
-	text-transform: none;
-	text-shadow: none;
-	font-weight: normal;
-}
-
-.threadTable .v-table-header-wrap {
-	background-image: none;
-}
-
-.threadTable .v-table-row > td,
-.threadTable .v-table-row-odd > td {
-	background: #fff;
-	border-bottom: 1px solid #dfdfdf;
-	-moz-transition: background 0.2s;
-	-webkit-transition: background 0.2s;
-	transition: background 0.2s;
-}
-
-.threadTable .v-table-row-following > td:first-child {
+.thread-listing .following {
 	background: url(../images/following-badge.png) #fff top left no-repeat;
-}
-
-.threadTable .v-table-row:last-child > td,
-.threadTable .v-table-row-odd:last-child > td {
-	border-bottom: 0;
-}
-
-.threadTable .v-table-row       .contextmenu,
-.threadTable .v-table-row-odd   .contextmenu { 
-	visibility: hidden; 
-}
-
-.threadTable .v-table-row:hover .contextmenu, 
-.threadTable .v-table-row-odd:hover .contextmenu { 
-	visibility: inherit; 
-}
-
-.threadTable td#mods {
-	vertical-align: top;
 }

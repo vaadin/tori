@@ -166,14 +166,14 @@ public class CategoryViewImpl extends
     }
 
     @Override
-    public void confirmFollowing() {
-        threadListing.refreshCellStyles();
+    public void confirmFollowing(final DiscussionThread thread) {
+        threadListing.refreshStyles(thread);
         getWindow().showNotification("Following thread");
     }
 
     @Override
-    public void confirmUnfollowing() {
-        threadListing.refreshCellStyles();
+    public void confirmUnfollowing(final DiscussionThread thread) {
+        threadListing.refreshStyles(thread);
         getWindow().showNotification("Unfollowed thread");
     }
 

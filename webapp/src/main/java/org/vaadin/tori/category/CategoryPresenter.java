@@ -107,7 +107,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             throws DataSourceException {
         try {
             dataSource.follow(thread);
-            getView().confirmFollowing();
+            getView().confirmFollowing(thread);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -120,7 +120,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             throws DataSourceException {
         try {
             dataSource.unFollow(thread);
-            getView().confirmUnfollowing();
+            getView().confirmUnfollowing(thread);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();

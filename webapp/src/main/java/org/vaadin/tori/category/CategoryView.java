@@ -25,9 +25,9 @@ public interface CategoryView extends View {
     @CheckForNull
     Category getCurrentCategory();
 
-    void confirmFollowing();
+    void confirmFollowing(DiscussionThread thread);
 
-    void confirmUnfollowing();
+    void confirmUnfollowing(DiscussionThread thread);
 
     void confirmThreadMoved();
 

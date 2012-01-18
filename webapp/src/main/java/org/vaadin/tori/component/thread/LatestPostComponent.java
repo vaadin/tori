@@ -14,7 +14,8 @@ public class LatestPostComponent extends CustomComponent {
 
     public LatestPostComponent(final DiscussionThread thread) {
         setCompositionRoot(root = new Label("", Label.CONTENT_XHTML));
-        setStyleName("latestPost");
+        setWidth(null);
+        setStyleName("latest-post");
 
         final Post latestPost = thread.getLatestPost();
 
