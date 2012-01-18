@@ -53,6 +53,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     private static final String PLACEHOLDER_WIDTH = "100%";
     private static final String PLACEHOLDER_HEIGHT = "300px";
 
+    /** The amount of posts to preload from the beginning and the end. */
+    private static final int PRELOAD_THRESHHOLD = 4;
+
     private CssLayout layout;
     private final ReplyListener replyListener = new ReplyListener() {
         @Override
@@ -126,17 +129,21 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         postsLayout.removeAllComponents();
         layout.addComponent(postsLayout);
 
-        boolean first = true;
-        for (final Post post : posts) {
+        for (int i = 0; i < posts.size(); i++) {
+            final Post post = posts.get(i);
             final PostComponent c = newPostComponent(post);
-            postsLayout.addComponent(c);
 
-            if (first) {
+            if (i < PRELOAD_THRESHHOLD || i > posts.size() - PRELOAD_THRESHHOLD) {
+                postsLayout.addComponentEagerly(c);
+            } else {
+                postsLayout.addComponent(c);
+            }
+
+            if (i == 0) {
                 // create the floating summary bar for the first post
                 final FloatingBar summaryBar = getSummaryBar(post, c);
                 summaryBar.setScrollComponent(c);
-                postsLayout.addComponent(summaryBar);
-                first = false;
+                postsLayout.addComponentEagerly(summaryBar);
             }
 
         }

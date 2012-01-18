@@ -221,23 +221,22 @@ public final class LazyLayout extends AbstractLayout {
                 target.addAttribute(VLazyLayout.ATT_MOVE_COMPONENTS_MAP,
                         diff.getMoves());
             }
+        }
+        if (componentIndexesToSend != null) {
+            Collections.sort(componentIndexesToSend);
 
-            if (componentIndexesToSend != null) {
-                Collections.sort(componentIndexesToSend);
-
-                final Map<Component, Integer> componentOrder = new HashMap<Component, Integer>();
-                for (final int sendIndex : componentIndexesToSend) {
-                    final Component component = components.get(sendIndex);
-                    component.paint(target);
-                    componentOrder.put(component, sendIndex);
-                    componentsPaintedOnClientSide.add(component);
-                }
-
-                target.addAttribute(VLazyLayout.ATT_PAINT_INDICES_MAP,
-                        componentOrder);
-
-                componentIndexesToSend.clear();
+            final Map<Component, Integer> componentOrder = new HashMap<Component, Integer>();
+            for (final int sendIndex : componentIndexesToSend) {
+                final Component component = components.get(sendIndex);
+                component.paint(target);
+                componentOrder.put(component, sendIndex);
+                componentsPaintedOnClientSide.add(component);
             }
+
+            target.addAttribute(VLazyLayout.ATT_PAINT_INDICES_MAP,
+                    componentOrder);
+
+            componentIndexesToSend.clear();
         }
 
         hasBeenRenderedBefore = true;

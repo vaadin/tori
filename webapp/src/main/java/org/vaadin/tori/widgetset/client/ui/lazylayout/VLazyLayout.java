@@ -211,13 +211,13 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
             this.client = client;
             this.id = uidl.getId();
 
-            if (uidl.hasAttribute(ATT_PAINT_INDICES_MAP)) {
-                /*
-                 * ^^ that's starting to be a bad assumption. It's not
-                 * either-or. I guess there can be only a modifying update,
-                 * without any components being added/removed. Oh well...
-                 */
+            if (isInitializingRequest(uidl)) {
+                initialize(uidl);
+                attachScrollHandlersIfNeeded();
+                findAllThingsToFetchAndFetchThem(distance);
+            }
 
+            if (isLazyLoadingRequest(uidl)) {
                 if (uidl.hasAttribute(ATT_ADD_PLACEHOLDERS_INTARR)) {
                     for (final int index : uidl
                             .getIntArrayAttribute(ATT_REMOVE_COMPONENTS_INTARR)) {
@@ -245,11 +245,15 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 addLazyLoadedWidgets(uidl, client);
                 checkAndUpdatePlaceholderSizes(uidl);
                 startSecondaryLoading();
-            } else {
-                initialize(uidl);
-                attachScrollHandlersIfNeeded();
-                findAllThingsToFetchAndFetchThem(distance);
             }
+        }
+
+        private static boolean isLazyLoadingRequest(final UIDL uidl) {
+            return uidl.hasAttribute(ATT_PAINT_INDICES_MAP);
+        }
+
+        private static boolean isInitializingRequest(final UIDL uidl) {
+            return uidl.hasAttribute(ATT_TOTAL_COMPONENTS_INT);
         }
 
         private void checkAndUpdatePlaceholderSizes(final UIDL uidl) {
