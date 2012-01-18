@@ -280,18 +280,17 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                 post.setBodyRaw(rawBody);
                 post.setThread(currentThread);
                 post.setTime(new Date());
-                dataSource.saveAsCurrentUser(post);
-                getView().confirmReplyPosted();
+                final Post updatedPost = dataSource.saveAsCurrentUser(post);
+
+                getView().confirmReplyPostedAndShowIt(updatedPost);
             } catch (final DataSourceException e) {
                 log.error(e);
                 e.printStackTrace();
                 throw e;
             }
-
         } else {
             getView().displayUserCanNotReply();
         }
-        resetView();
     }
 
     /**

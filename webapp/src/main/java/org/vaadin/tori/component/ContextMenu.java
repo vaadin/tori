@@ -17,7 +17,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 /**
@@ -29,6 +28,8 @@ import com.vaadin.ui.themes.Reindeer;
  */
 @SuppressWarnings("serial")
 public class ContextMenu extends CustomComponent {
+
+    private static final String ICON_SIZE = "16px";
 
     public interface ContextAction {
         /** A {@link ContextAction} that does nothing upon activation. */
@@ -45,7 +46,7 @@ public class ContextMenu extends CustomComponent {
         Component swapContextComponent();
     }
 
-    private final HorizontalLayout layout;
+    private final CssLayout layout = new CssLayout();
     private final CssLayout popupLayout;
     private final PopupButton contextComponent;
     private final Button settingsIcon;
@@ -69,10 +70,11 @@ public class ContextMenu extends CustomComponent {
     };
 
     public ContextMenu() {
-        setCompositionRoot(layout = new HorizontalLayout());
-        layout.setSizeFull();
-        setWidth("16px");
-        setHeight("16px");
+        setCompositionRoot(layout);
+        layout.setWidth(ICON_SIZE);
+        layout.setHeight(ICON_SIZE);
+        setWidth(ICON_SIZE);
+        setHeight(ICON_SIZE);
         setStyleName("contextmenu");
 
         popupLayout = new CssLayout();

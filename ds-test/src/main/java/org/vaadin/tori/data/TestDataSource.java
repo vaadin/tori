@@ -549,9 +549,10 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void saveAsCurrentUser(final Post post) throws DataSourceException {
+    public Post saveAsCurrentUser(final Post post) throws DataSourceException {
         post.setAuthor(currentUser);
         save(post);
+        return post;
     }
 
     @Override
