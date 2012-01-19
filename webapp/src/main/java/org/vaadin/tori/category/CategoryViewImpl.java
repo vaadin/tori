@@ -121,31 +121,25 @@ public class CategoryViewImpl extends
 
     @Override
     public void displayThreads(final List<DiscussionThread> threadsInCategory) {
-        final ThreadListingHacked tlhack = new ThreadListingHacked(
-                getPresenter());
-        tlhack.setThreads(threadsInCategory);
-        threadListing = tlhack;
+        if (!threadsInCategory.isEmpty()) {
+            final ThreadListingHacked tlhack = new ThreadListingHacked(
+                    getPresenter());
+            tlhack.setThreads(threadsInCategory);
+            threadListing = tlhack;
+            replacePlaceholder();
+        } else {
+            hideThreads();
+        }
     }
 
-    // if (threadsInCategory.isEmpty()) {
-    // threadListing.addStyleName(StyleConstants.HIDDEN);
-    // } else {
-    // threadListing.removeStyleName(StyleConstants.HIDDEN);
-    // }
-    //
-    // final ComponentContainer parent = (ComponentContainer) threadsLabel
-    // .getParent();
-    // if (threadsInCategory.isEmpty()) {
-    // parent.replaceComponent(threadsLabel, threadsLabel = NO_THREADS);
-    // } else {
-    // parent.replaceComponent(threadsLabel, threadsLabel = THREADS);
-    // }
-    //
-    // newThreadButton1.setEnabled(getPresenter().userMayStartANewThread());
-    // newThreadButton2.setEnabled(getPresenter().userMayStartANewThread());
-    //
-    // threadListing.setThreads(threadsInCategory);
-    // }
+    private void replacePlaceholder() {
+        final ComponentContainer listingParent = (ComponentContainer) threadListingPlaceHolder
+                .getParent();
+        if (listingParent != null) {
+            listingParent.replaceComponent(threadListingPlaceHolder,
+                    threadListing);
+        }
+    }
 
     @Override
     protected void navigationTo(final String[] arguments) {
@@ -224,12 +218,8 @@ public class CategoryViewImpl extends
 
     @Override
     public void displayThreads() {
-        final ComponentContainer listingParent = (ComponentContainer) threadListingPlaceHolder
-                .getParent();
-        if (listingParent != null) {
-            listingParent.replaceComponent(threadListingPlaceHolder,
-                    threadListing = new ThreadListing(getPresenter()));
-        }
+        threadListing = new ThreadListing(getPresenter());
+        replacePlaceholder();
         setThreadLabel(THREADS);
     }
 

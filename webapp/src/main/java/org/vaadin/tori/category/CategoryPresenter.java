@@ -50,16 +50,14 @@ public class CategoryPresenter extends Presenter<CategoryView> {
                     currentCategory = requestedCategory;
                     view.displaySubCategories(dataSource
                             .getSubCategories(currentCategory));
-                    /*-view.displayThreads(dataSource.getThreads(currentCategory));*/
                 } else {
                     getView().displayCategoryNotFoundError(categoryIdString);
                 }
-            }
-
-            if (countThreads() > 0) {
-                view.displayThreads();
-            } else {
-                view.hideThreads();
+                if (countThreads() > 0) {
+                    view.displayThreads();
+                } else {
+                    view.hideThreads();
+                }
             }
         } catch (final DataSourceException e) {
             e.printStackTrace();
