@@ -25,6 +25,41 @@ import com.vaadin.ui.Component;
  */
 @ClientWidget(VLazyLayout.class)
 public final class LazyLayout extends AbstractLayout {
+
+    /**
+     * The ComponentGenerator is an interface that allows the client code to
+     * generate the used components lazily.
+     * <p/>
+     * <strong>Note: Using this does not support the modification of existing
+     * components.</strong> So this interface works best with an immutable
+     * amount of lazily generated components.
+     * <p/>
+     * {@link LazyLayout#replaceComponent(Component, Component)
+     * replaceComponent()} and {@link LazyLayout#removeComponent(Component)
+     * removeComponent()} might work, but you need to handle the bookkeeping
+     * yourself.
+     */
+    public interface ComponentGenerator {
+        /**
+         * Get the Components found at places between (and including) two index
+         * points.
+         * 
+         * @param from
+         *            The zero-based index of the first component to return
+         * @param to
+         *            The zero-based index of the last component to return
+         * @return The components between (and including) <code>from</code> and
+         *         <code>to</code> such that they are in displayed order.
+         */
+        List<Component> getComponentsAtIndexes(int from, int to);
+
+        /**
+         * This method is called only once, and it needs to contain the amount
+         * of components shown throughout the lifetime of the LazyLayout.
+         */
+        int getAmountOfComponents();
+    }
+
     private static class ComponentDiff {
         private final Map<Component, Integer> additions;
         private final Map<Component, Integer> removes;
@@ -105,6 +140,8 @@ public final class LazyLayout extends AbstractLayout {
     private int renderDelay = 500;
 
     private boolean hasBeenRenderedBefore;
+
+    private ComponentGenerator generator = null;
 
     /**
      * Add a component into this container. The component is added to the right
@@ -412,5 +449,9 @@ public final class LazyLayout extends AbstractLayout {
         }
         renderDelay = renderDelayMillis;
         requestRepaint();
+    }
+
+    public void setComponentGenerator(final ComponentGenerator generator) {
+        this.generator = generator;
     }
 }
