@@ -10,6 +10,7 @@ import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.component.category.CategoryListing;
 import org.vaadin.tori.component.category.CategoryListing.Mode;
 import org.vaadin.tori.component.thread.ThreadListing;
+import org.vaadin.tori.component.thread.ThreadListingHacked;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.AbstractView;
@@ -118,9 +119,14 @@ public class CategoryViewImpl extends
         categoryListing.setCategories(subCategories);
     }
 
-    // @Override
-    // public void displayThreads(final List<DiscussionThread>
-    // threadsInCategory) {
+    @Override
+    public void displayThreads(final List<DiscussionThread> threadsInCategory) {
+        final ThreadListingHacked tlhack = new ThreadListingHacked(
+                getPresenter());
+        tlhack.setThreads(threadsInCategory);
+        threadListing = tlhack;
+    }
+
     // if (threadsInCategory.isEmpty()) {
     // threadListing.addStyleName(StyleConstants.HIDDEN);
     // } else {

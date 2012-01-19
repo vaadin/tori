@@ -39,8 +39,8 @@ public class ThreadListing extends CustomComponent {
 
     private static final long MAX_AMOUNT_OF_SHOWN_THREADS = 1000;
 
-    private final CategoryPresenter presenter;
-    private final LazyLayout layout;
+    protected final CategoryPresenter presenter;
+    protected final LazyLayout layout;
 
     private transient final ComponentGenerator componentGenerator = new ComponentGenerator() {
         @Override

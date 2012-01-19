@@ -29,14 +29,14 @@ public class CategoryPresenter extends Presenter<CategoryView> {
 
                 final List<Category> empty = Collections.emptyList();
                 view.displaySubCategories(empty);
-                /*-view.displayThreads(dataSource.getRecentPosts());*/
+                view.displayThreads(dataSource.getRecentPosts());
             } else if (categoryIdString
                     .equals(SpecialCategory.MY_POSTS.getId())) {
                 currentCategory = SpecialCategory.MY_POSTS.getInstance();
 
                 final List<Category> empty = Collections.emptyList();
                 view.displaySubCategories(empty);
-                /*-view.displayThreads(dataSource.getMyPosts());*/
+                view.displayThreads(dataSource.getMyPosts());
             } else {
                 Category requestedCategory = null;
                 try {
