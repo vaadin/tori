@@ -132,13 +132,17 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public List<DiscussionThread> getThreads(final Category category)
-            throws DataSourceException {
+    public List<DiscussionThread> getThreads(final Category category,
+            final int startIndex, int endIndex) throws DataSourceException {
         ToriUtil.checkForNull(category, "Category must not be null.");
 
         try {
-            final List<MBThread> liferayThreads = getLiferayThreadsForCategory(category
-                    .getId());
+            if (endIndex != QUERY_ALL) {
+                // adjust the endIndex to be inclusive
+                endIndex += 1;
+            }
+            final List<MBThread> liferayThreads = getLiferayThreadsForCategory(
+                    category.getId(), startIndex, endIndex);
 
             // collection for the final result
             final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
@@ -161,13 +165,11 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public List<DiscussionThread> getThreads(final Category category,
-            final int startIndex, final int endIndex)
+    public List<DiscussionThread> getThreads(final Category category)
             throws DataSourceException {
-        // FIXME not implemented in this datasource, just returns all
-        log.warn("Thread paging not yet impelemented in "
-                + getClass().getSimpleName() + ".");
-        return getThreads(category);
+        final int startIndex = QUERY_ALL; // use QUERY_ALL to get all
+        final int endIndex = QUERY_ALL; // use QUERY_ALL get all
+        return getThreads(category, startIndex, endIndex);
     }
 
     @Override
@@ -242,16 +244,18 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     private User getUser(final long userId) throws PortalException,
             SystemException {
-        final com.liferay.portal.model.User liferayUser = UserLocalServiceUtil
-                .getUser(userId);
-        return EntityFactoryUtil.createUser(liferayUser, imagePath,
-                liferayUser.isFemale());
+        if (userId == 0) {
+            return EntityFactoryUtil.createAnonymousUser();
+        } else {
+            final com.liferay.portal.model.User liferayUser = UserLocalServiceUtil
+                    .getUser(userId);
+            return EntityFactoryUtil.createUser(liferayUser, imagePath,
+                    liferayUser.isFemale());
+        }
     }
 
-    private List<MBThread> getLiferayThreadsForCategory(final long categoryId)
-            throws SystemException {
-        final int start = 0; // use QUERY_ALL if you'd like to get all
-        final int end = 40; // use QUERY_ALL if you'd like to get all
+    private List<MBThread> getLiferayThreadsForCategory(final long categoryId,
+            final int start, final int end) throws SystemException {
         final List<MBThread> liferayThreads = MBThreadLocalServiceUtil
                 .getThreads(scopeGroupId, categoryId,
                         WorkflowConstants.STATUS_APPROVED, start, end);
