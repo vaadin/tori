@@ -314,12 +314,19 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             throws DataSourceException {
         ToriUtil.checkForNull(category, "Category must not be null.");
         try {
-            return MBThreadLocalServiceUtil.getCategoryThreadsCount(
+            long count = MBThreadLocalServiceUtil.getCategoryThreadsCount(
                     scopeGroupId, category.getId(),
                     WorkflowConstants.STATUS_APPROVED);
+
+            // recursively add thread count of all sub categories
+            final List<Category> subCategories = getSubCategories(category);
+            for (final Category subCategory : subCategories) {
+                count += getThreadCountRecursively(subCategory);
+            }
+            return count;
         } catch (final SystemException e) {
             log.error(String.format(
-                    "Couldn't get thread count for category %d.",
+                    "Couldn't get recursive thread count for category %d.",
                     category.getId()), e);
             throw new DataSourceException(e);
         }
