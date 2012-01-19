@@ -213,16 +213,9 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         final MBMessage rootMessage = MBMessageLocalServiceUtil
                 .getMessage(liferayThread.getRootMessageId());
         // get the author of the root message
-        final com.liferay.portal.model.User liferayThreadAuthor = UserLocalServiceUtil
-                .getUser(rootMessage.getUserId());
-        final User threadAuthor = EntityFactoryUtil.createUser(
-                liferayThreadAuthor, imagePath, liferayThreadAuthor.isFemale());
+        final User threadAuthor = getUser(rootMessage.getUserId());
         // get the author of the last post
-        final com.liferay.portal.model.User lastPostAuthorLiferay = UserLocalServiceUtil
-                .getUser(liferayThread.getLastPostByUserId());
-        final User lastPostAuthor = EntityFactoryUtil.createUser(
-                lastPostAuthorLiferay, imagePath,
-                lastPostAuthorLiferay.isFemale());
+        final User lastPostAuthor = getUser(liferayThread.getLastPostByUserId());
 
         if (category == null) {
             // fetch the category
@@ -235,6 +228,14 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         thread.setCategory(category);
         thread.setSticky(liferayThread.getPriority() >= STICKY_PRIORITY);
         return thread;
+    }
+
+    private User getUser(final long userId) throws PortalException,
+            SystemException {
+        final com.liferay.portal.model.User liferayUser = UserLocalServiceUtil
+                .getUser(userId);
+        return EntityFactoryUtil.createUser(liferayUser, imagePath,
+                liferayUser.isFemale());
     }
 
     private List<MBThread> getLiferayThreadsForCategory(final long categoryId)
@@ -371,15 +372,9 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
             final List<Post> result = new ArrayList<Post>(messages.size());
             for (final MBMessage message : messages) {
-                final Post post = EntityFactoryUtil.createPost(message);
-                post.setThread(thread);
-
-                // get also the author
-                final com.liferay.portal.model.User liferayUser = UserLocalServiceUtil
-                        .getUser(message.getUserId());
-                final User author = EntityFactoryUtil.createUser(liferayUser,
-                        imagePath, liferayUser.isFemale());
-                post.setAuthor(author);
+                final User author = getUser(message.getUserId());
+                final Post post = EntityFactoryUtil.createPost(message, author,
+                        thread);
                 result.add(post);
             }
             return result;
@@ -756,13 +751,22 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     @Override
     public Post saveAsCurrentUser(final Post post) throws DataSourceException {
-        final MBMessage newPost = internalSaveAsCurrentUser(post,
-                getRootMessageId(post.getThread()));
-        return EntityFactoryUtil.createPost(newPost);
+        try {
+            final MBMessage newPost = internalSaveAsCurrentUser(post,
+                    getRootMessageId(post.getThread()));
+            return EntityFactoryUtil.createPost(newPost,
+                    getUser(currentUserId), getThread(newPost.getThreadId()));
+        } catch (final PortalException e) {
+            log.error("Couldn't save post.", e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error("Couldn't save post.", e);
+            throw new DataSourceException(e);
+        }
     }
 
     private MBMessage internalSaveAsCurrentUser(final Post post,
-            final long parentMessageId) throws DataSourceException {
+            final long parentMessageId) throws PortalException, SystemException {
         final DiscussionThread thread = post.getThread();
         final long groupId = scopeGroupId;
         final long categoryId = thread.getCategory().getId();
@@ -779,17 +783,10 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         final double priority = MBThreadConstants.PRIORITY_NOT_GIVEN;
         final boolean allowPingbacks = false;
 
-        try {
-            return MBMessageServiceUtil.addMessage(groupId, categoryId,
-                    threadId, parentMessageId, subject, body, files, anonymous,
-                    priority, allowPingbacks, mbMessageServiceContext);
-        } catch (final PortalException e) {
-            log.error("Couldn't save post.", e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error("Couldn't save post.", e);
-            throw new DataSourceException(e);
-        }
+        return MBMessageServiceUtil.addMessage(groupId, categoryId, threadId,
+                parentMessageId, subject, body, files, anonymous, priority,
+                allowPingbacks, mbMessageServiceContext);
+
     }
 
     @Override
@@ -956,14 +953,22 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     @Override
     public DiscussionThread saveNewThread(final DiscussionThread newThread,
             final Post firstPost) throws DataSourceException {
-        final MBMessage savedRootMessage = internalSaveAsCurrentUser(firstPost,
-                MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID);
-        if (savedRootMessage != null) {
-            final DiscussionThread savedThread = getThread(savedRootMessage
-                    .getThreadId());
-            if (savedThread != null) {
-                return savedThread;
+        try {
+            final MBMessage savedRootMessage = internalSaveAsCurrentUser(
+                    firstPost, MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID);
+            if (savedRootMessage != null) {
+                final DiscussionThread savedThread = getThread(savedRootMessage
+                        .getThreadId());
+                if (savedThread != null) {
+                    return savedThread;
+                }
             }
+        } catch (final PortalException e) {
+            log.error("Couldn't save new thread.", e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error("Couldn't save new thread.", e);
+            throw new DataSourceException(e);
         }
         // if we get this far, saving has failed -> throw exception
         throw new DataSourceException();

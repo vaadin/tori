@@ -64,11 +64,14 @@ public class EntityFactoryUtil {
         return entity;
     }
 
-    public static Post createPost(final MBMessage liferayMessage) {
+    public static Post createPost(final MBMessage liferayMessage,
+            final User author, final DiscussionThread thread) {
         final Post entity = new Post();
         entity.setId(liferayMessage.getMessageId());
         entity.setTime(liferayMessage.getCreateDate());
         entity.setBodyRaw(liferayMessage.getBody(false));
+        entity.setThread(thread);
+        entity.setAuthor(author);
         return entity;
     }
 
