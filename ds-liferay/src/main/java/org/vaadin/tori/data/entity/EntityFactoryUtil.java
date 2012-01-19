@@ -85,6 +85,14 @@ public class EntityFactoryUtil {
         return entity;
     }
 
+    public static User createAnonymousUser() {
+        final User entity = new User();
+        entity.setId(0);
+        entity.setDisplayedName("Anonymous");
+        entity.setAvatarUrl(null);
+        return entity;
+    }
+
     public static PostVote createPostVote(final RatingsEntry entry) {
         final PostVote vote = new PostVote();
         if (entry != null) {

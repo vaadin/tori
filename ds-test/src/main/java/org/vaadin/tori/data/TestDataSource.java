@@ -3,7 +3,6 @@ package org.vaadin.tori.data;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -126,44 +125,35 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public List<DiscussionThread> getThreads(final Category category)
+    public List<DiscussionThread> getThreads(final Category category,
+            final int startIndex, final int endIndex)
             throws DataSourceException {
         return executeWithEntityManager(new Command<List<DiscussionThread>>() {
             @Override
             public final List<DiscussionThread> execute(final EntityManager em) {
-                final List<DiscussionThread> threads = new ArrayList<DiscussionThread>();
-
-                final TypedQuery<DiscussionThread> stickyQuery = em
-                        .createQuery("select t from DiscussionThread t "
-                                + "where t.sticky = :sticky "
-                                + "and t.category = :category",
+                final TypedQuery<DiscussionThread> threadQuery = em
+                        .createQuery(
+                                "select t from DiscussionThread t "
+                                        + "where t.category = :category order by t.sticky desc",
                                 DiscussionThread.class);
-                stickyQuery.setParameter("sticky", true);
-                stickyQuery.setParameter("category", category);
-                threads.addAll(stickyQuery.getResultList());
+                if (startIndex >= 0 && endIndex >= 0) {
+                    threadQuery.setFirstResult(startIndex);
+                    threadQuery.setMaxResults(endIndex - startIndex + 1);
+                    System.out.println("Querying threads from " + startIndex
+                            + " to " + endIndex + ", max results "
+                            + (endIndex - startIndex + 1) + ".");
+                }
+                threadQuery.setParameter("category", category);
 
-                final TypedQuery<DiscussionThread> nonStickyQuery = em
-                        .createQuery("select t from DiscussionThread t "
-                                + "where t.sticky = :sticky "
-                                + "and t.category = :category",
-                                DiscussionThread.class);
-                nonStickyQuery.setParameter("sticky", false);
-                nonStickyQuery.setParameter("category", category);
-                threads.addAll(nonStickyQuery.getResultList());
-
-                return threads;
+                return threadQuery.getResultList();
             }
         });
     }
 
     @Override
-    public List<DiscussionThread> getThreads(final Category category,
-            final int startIndex, final int endIndex)
+    public List<DiscussionThread> getThreads(final Category category)
             throws DataSourceException {
-        // FIXME not implemented in this datasource, just returns all
-        System.out.println("Thread paging not yet impelemented in "
-                + getClass().getSimpleName() + ".");
-        return getThreads(category);
+        return getThreads(category, -1, -1);
     }
 
     @Override

@@ -59,8 +59,9 @@ public interface DataSource {
     /**
      * Get threads between given {@code startIndex} and {@code endIndex} in the
      * given {@code category}. The index is zero-based, so zero equals to the
-     * first post. As with {@link #getThreads(Category)} method, the threads are
-     * ordered in the following ordering priority:
+     * first post. The {@code endIndex} is inclusive, so fetching threads from 0
+     * to 9 returns first 10 threads. As with {@link #getThreads(Category)}
+     * method, the threads are ordered in the following ordering priority:
      * 
      * <ul>
      * <li>Primary: Stickied threads ({@link DiscussionThread#isSticky()})
