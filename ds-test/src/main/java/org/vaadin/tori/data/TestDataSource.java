@@ -125,7 +125,8 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public List<DiscussionThread> getThreads(final Category category)
+    public List<DiscussionThread> getThreads(final Category category,
+            final int startIndex, final int endIndex)
             throws DataSourceException {
         return executeWithEntityManager(new Command<List<DiscussionThread>>() {
             @Override
@@ -135,20 +136,24 @@ public class TestDataSource implements DataSource {
                                 "select t from DiscussionThread t "
                                         + "where t.category = :category order by t.sticky desc",
                                 DiscussionThread.class);
+                if (startIndex >= 0 && endIndex >= 0) {
+                    threadQuery.setFirstResult(startIndex);
+                    threadQuery.setMaxResults(endIndex - startIndex + 1);
+                    System.out.println("Querying threads from " + startIndex
+                            + " to " + endIndex + ", max results "
+                            + (endIndex - startIndex + 1) + ".");
+                }
                 threadQuery.setParameter("category", category);
+
                 return threadQuery.getResultList();
             }
         });
     }
 
     @Override
-    public List<DiscussionThread> getThreads(final Category category,
-            final int startIndex, final int endIndex)
+    public List<DiscussionThread> getThreads(final Category category)
             throws DataSourceException {
-        // FIXME not implemented in this datasource, just returns all
-        System.out.println("Thread paging not yet impelemented in "
-                + getClass().getSimpleName() + ".");
-        return getThreads(category);
+        return getThreads(category, -1, -1);
     }
 
     @Override
