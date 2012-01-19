@@ -3,7 +3,6 @@ package org.vaadin.tori.data;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -131,27 +130,13 @@ public class TestDataSource implements DataSource {
         return executeWithEntityManager(new Command<List<DiscussionThread>>() {
             @Override
             public final List<DiscussionThread> execute(final EntityManager em) {
-                final List<DiscussionThread> threads = new ArrayList<DiscussionThread>();
-
-                final TypedQuery<DiscussionThread> stickyQuery = em
-                        .createQuery("select t from DiscussionThread t "
-                                + "where t.sticky = :sticky "
-                                + "and t.category = :category",
+                final TypedQuery<DiscussionThread> threadQuery = em
+                        .createQuery(
+                                "select t from DiscussionThread t "
+                                        + "where t.category = :category order by t.sticky desc",
                                 DiscussionThread.class);
-                stickyQuery.setParameter("sticky", true);
-                stickyQuery.setParameter("category", category);
-                threads.addAll(stickyQuery.getResultList());
-
-                final TypedQuery<DiscussionThread> nonStickyQuery = em
-                        .createQuery("select t from DiscussionThread t "
-                                + "where t.sticky = :sticky "
-                                + "and t.category = :category",
-                                DiscussionThread.class);
-                nonStickyQuery.setParameter("sticky", false);
-                nonStickyQuery.setParameter("category", category);
-                threads.addAll(nonStickyQuery.getResultList());
-
-                return threads;
+                threadQuery.setParameter("category", category);
+                return threadQuery.getResultList();
             }
         });
     }
