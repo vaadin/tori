@@ -290,4 +290,6 @@ public interface DataSource {
     List<DiscussionThread> getRecentPosts() throws DataSourceException;
 
     List<DiscussionThread> getMyPosts() throws DataSourceException;
+
+    long countThreadsIn(Category category) throws DataSourceException;
 }

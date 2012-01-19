@@ -726,4 +726,19 @@ public class TestDataSource implements DataSource {
                 + getClass().getSimpleName() + ".");
         return Collections.emptyList();
     }
+
+    @Override
+    public long countThreadsIn(final Category category)
+            throws DataSourceException {
+        return executeWithEntityManager(new Command<Long>() {
+            @Override
+            public final Long execute(final EntityManager em) {
+                final TypedQuery<Long> q = em.createQuery(
+                        "select count(t) from DiscussionThread t "
+                                + "where t.category = :category", Long.class);
+                q.setParameter("category", category);
+                return q.getSingleResult();
+            }
+        });
+    }
 }

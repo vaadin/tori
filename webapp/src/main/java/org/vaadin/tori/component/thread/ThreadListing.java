@@ -1,16 +1,20 @@
 package org.vaadin.tori.component.thread;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.vaadin.tori.category.CategoryPresenter;
 import org.vaadin.tori.component.LazyLayout;
+import org.vaadin.tori.component.LazyLayout.ComponentGenerator;
 import org.vaadin.tori.data.entity.DiscussionThread;
+import org.vaadin.tori.exception.DataSourceException;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Window.Notification;
 
 /**
  * UI component for displaying a vertical hierarchical list of threads.
@@ -33,42 +37,91 @@ public class ThreadListing extends CustomComponent {
     private static final int RENDER_DELAY_MILLIS = 1000;
     private static final int RENDER_DISTANCE_PX = 500;
 
+    private static final long MAX_AMOUNT_OF_SHOWN_THREADS = 1000;
+
     private final CategoryPresenter presenter;
     private final LazyLayout layout;
 
+    private transient final ComponentGenerator componentGenerator = new ComponentGenerator() {
+        @Override
+        public List<Component> getComponentsAtIndexes(final int from,
+                final int to) {
+
+            final ArrayList<Component> components = new ArrayList<Component>();
+            try {
+                for (final DiscussionThread thread : presenter
+                        .getThreadsBetween(from, to)) {
+                    components.add(new ThreadListingRow(thread, presenter));
+                }
+            } catch (final DataSourceException e) {
+                getApplication().getMainWindow().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
+                        Notification.TYPE_ERROR_MESSAGE);
+            }
+            return components;
+        }
+
+        @Override
+        public long getAmountOfComponents() {
+            try {
+                final long shownThreads = Math.min(presenter.countThreads(),
+                        MAX_AMOUNT_OF_SHOWN_THREADS);
+
+                if (shownThreads <= 0) {
+                    setVisible(false);
+                }
+
+                return shownThreads;
+            } catch (final DataSourceException e) {
+                getApplication().getMainWindow().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
+                        Notification.TYPE_ERROR_MESSAGE);
+                return 0;
+            }
+        }
+    };
+    private final CssLayout root = new CssLayout();
+
     public ThreadListing(final CategoryPresenter presenter) {
         this.presenter = presenter;
+
         setStyleName("thread-listing");
+
+        setCompositionRoot(root);
 
         layout = new LazyLayout();
         layout.setPlaceholderSize(PLACEHOLDER_HEIGHT, PLACEHOLDER_WIDTH);
         layout.setRenderDistance(RENDER_DISTANCE_PX);
         layout.setRenderDelay(RENDER_DELAY_MILLIS);
         layout.setStyleName("wrapper-layout");
-        setCompositionRoot(layout);
+        layout.setComponentGenerator(componentGenerator);
+
+        root.addComponent(getHeaderComponent());
+        root.addComponent(layout);
+        setCompositionRoot(root);
     }
 
-    public void setThreads(final List<DiscussionThread> threads) {
-        layout.removeAllComponents();
+    // public void setThreads(final List<DiscussionThread> threads) {
+    // layout.removeAllComponents();
+    //
+    // initColumnHeaders();
+    //
+    // int index = 0;
+    // for (final DiscussionThread thread : threads) {
+    // final ThreadListingRow row = new ThreadListingRow(thread, presenter);
+    // assignStyles(row);
+    // if (index < 10) {
+    // // add the 10 first rows eagerly
+    // layout.addComponentEagerly(row);
+    // } else {
+    // layout.addComponent(row);
+    // }
+    //
+    // index++;
+    // }
+    // }
 
-        initColumnHeaders();
-
-        int index = 0;
-        for (final DiscussionThread thread : threads) {
-            final ThreadListingRow row = new ThreadListingRow(thread, presenter);
-            assignStyles(row);
-            if (index < 10) {
-                // add the 10 first rows eagerly
-                layout.addComponentEagerly(row);
-            } else {
-                layout.addComponent(row);
-            }
-
-            index++;
-        }
-    }
-
-    private void initColumnHeaders() {
+    private Component getHeaderComponent() {
         final CssLayout headerRow = new CssLayout();
         headerRow.setStyleName(STYLE_COLUMN_HEADER_ROW);
 
@@ -81,7 +134,8 @@ public class ThreadListing extends CustomComponent {
         detailsHeaders
                 .addComponent(createColumnHeader(COLUMN_HEADER_LATESTPOST));
         headerRow.addComponent(detailsHeaders);
-        layout.addComponentEagerly(headerRow);
+
+        return headerRow;
     }
 
     private Label createColumnHeader(final String header) {

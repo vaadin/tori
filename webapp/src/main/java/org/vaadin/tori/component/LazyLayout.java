@@ -57,7 +57,7 @@ public final class LazyLayout extends AbstractLayout {
          * This method is called only once, and it needs to contain the amount
          * of components shown throughout the lifetime of the LazyLayout.
          */
-        int getAmountOfComponents();
+        long getAmountOfComponents();
     }
 
     private static class ComponentDiff {
@@ -142,6 +142,7 @@ public final class LazyLayout extends AbstractLayout {
     private boolean hasBeenRenderedBefore;
 
     private ComponentGenerator generator = null;
+    private Long generatorSizeCache = null;
 
     /**
      * Add a component into this container. The component is added to the right
@@ -202,8 +203,15 @@ public final class LazyLayout extends AbstractLayout {
      * 
      * @return the number of contained components
      */
-    public int getComponentCount() {
-        return components.size();
+    public long getComponentCount() {
+        if (generator != null) {
+            if (generatorSizeCache == null) {
+                generatorSizeCache = generator.getAmountOfComponents();
+            }
+            return generatorSizeCache;
+        } else {
+            return components.size();
+        }
     }
 
     /**
@@ -226,7 +234,7 @@ public final class LazyLayout extends AbstractLayout {
             target.addAttribute(VLazyLayout.ATT_PLACEHOLDER_WIDTH_STRING,
                     placeholderWidth);
             target.addAttribute(VLazyLayout.ATT_TOTAL_COMPONENTS_INT,
-                    components.size());
+                    getComponentCount());
             target.addAttribute(VLazyLayout.ATT_DISTANCE_INT, distance);
             target.addAttribute(VLazyLayout.ATT_RENDER_DELAY, renderDelay);
 
@@ -262,21 +270,72 @@ public final class LazyLayout extends AbstractLayout {
         if (componentIndexesToSend != null) {
             Collections.sort(componentIndexesToSend);
 
-            final Map<Component, Integer> componentOrder = new HashMap<Component, Integer>();
-            for (final int sendIndex : componentIndexesToSend) {
-                final Component component = components.get(sendIndex);
-                component.paint(target);
-                componentOrder.put(component, sendIndex);
-                componentsPaintedOnClientSide.add(component);
+            if (generator != null) {
+                paintComponentsGenerated(target, generator);
+            } else {
+                paintComponentsPredefined(target, components);
             }
-
-            target.addAttribute(VLazyLayout.ATT_PAINT_INDICES_MAP,
-                    componentOrder);
 
             componentIndexesToSend.clear();
         }
 
         hasBeenRenderedBefore = true;
+    }
+
+    private void paintComponentsGenerated(final PaintTarget target,
+            final ComponentGenerator generator) throws PaintException {
+
+        final Map<Component, Integer> componentIndexMap = new HashMap<Component, Integer>();
+
+        for (final int[] range : groupToRanges(componentIndexesToSend)) {
+            final int from = range[0];
+            final int to = range[1];
+            int i = from;
+
+            for (final Component component : generator.getComponentsAtIndexes(
+                    from, to)) {
+                component.paint(target);
+                componentIndexMap.put(component, i++);
+                componentsPaintedOnClientSide.add(component);
+            }
+        }
+
+        target.addAttribute(VLazyLayout.ATT_PAINT_INDICES_MAP,
+                componentIndexMap);
+
+    }
+
+    private List<int[]> groupToRanges(final List<Integer> orderedNumbers) {
+        final List<int[]> ranges = new ArrayList<int[]>();
+
+        if (!orderedNumbers.isEmpty()) {
+            int start = orderedNumbers.get(0);
+            int previous = start;
+
+            for (final int num : orderedNumbers) {
+                if (num > previous + 1) {
+                    ranges.add(new int[] { start, num });
+                    start = num;
+                }
+                previous = num;
+            }
+            ranges.add(new int[] { start, previous });
+        }
+
+        return ranges;
+    }
+
+    private void paintComponentsPredefined(final PaintTarget target,
+            final List<Component> components) throws PaintException {
+        final Map<Component, Integer> componentOrder = new HashMap<Component, Integer>();
+        for (final int sendIndex : componentIndexesToSend) {
+            final Component component = components.get(sendIndex);
+            component.paint(target);
+            componentOrder.put(component, sendIndex);
+            componentsPaintedOnClientSide.add(component);
+        }
+
+        target.addAttribute(VLazyLayout.ATT_PAINT_INDICES_MAP, componentOrder);
     }
 
     @SuppressWarnings("unchecked")

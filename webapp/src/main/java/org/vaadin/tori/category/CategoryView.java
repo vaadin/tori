@@ -12,7 +12,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 public interface CategoryView extends View {
     void displaySubCategories(List<Category> subCategories);
 
-    void displayThreads(List<DiscussionThread> threadsInCategory);
+    // void displayThreads(List<DiscussionThread> threadsInCategory);
 
     void displayCategoryNotFoundError(String requestedCategoryId);
 

@@ -29,14 +29,14 @@ public class CategoryPresenter extends Presenter<CategoryView> {
 
                 final List<Category> empty = Collections.emptyList();
                 view.displaySubCategories(empty);
-                view.displayThreads(dataSource.getRecentPosts());
+                /*-view.displayThreads(dataSource.getRecentPosts());*/
             } else if (categoryIdString
                     .equals(SpecialCategory.MY_POSTS.getId())) {
                 currentCategory = SpecialCategory.MY_POSTS.getInstance();
 
                 final List<Category> empty = Collections.emptyList();
                 view.displaySubCategories(empty);
-                view.displayThreads(dataSource.getMyPosts());
+                /*-view.displayThreads(dataSource.getMyPosts());*/
             } else {
                 Category requestedCategory = null;
                 try {
@@ -50,7 +50,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
                     currentCategory = requestedCategory;
                     view.displaySubCategories(dataSource
                             .getSubCategories(currentCategory));
-                    view.displayThreads(dataSource.getThreads(currentCategory));
+                    /*-view.displayThreads(dataSource.getThreads(currentCategory));*/
                 } else {
                     getView().displayCategoryNotFoundError(categoryIdString);
                 }
@@ -266,6 +266,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     }
 
     private void resetView() throws DataSourceException {
+        /*-
         try {
             getView().displayThreads(dataSource.getThreads(currentCategory));
         } catch (final DataSourceException e) {
@@ -273,6 +274,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             e.printStackTrace();
             throw e;
         }
+         */
     }
 
     public boolean userHasRead(final DiscussionThread thread) {
@@ -294,6 +296,27 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             // Just log the error and return false, not considering this a
             // serious problem.
             return false;
+        }
+    }
+
+    public long countThreads() throws DataSourceException {
+        try {
+            return dataSource.countThreadsIn(currentCategory);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public List<DiscussionThread> getThreadsBetween(final int from, final int to)
+            throws DataSourceException {
+        try {
+            return dataSource.getThreads(currentCategory, from, to);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            e.printStackTrace();
+            throw e;
         }
     }
 

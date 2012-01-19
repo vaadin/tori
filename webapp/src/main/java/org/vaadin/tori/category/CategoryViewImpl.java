@@ -14,7 +14,6 @@ import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.thread.ThreadPresenter;
-import org.vaadin.tori.util.StyleConstants;
 
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Alignment;
@@ -124,27 +123,28 @@ public class CategoryViewImpl extends
         categoryListing.setCategories(subCategories);
     }
 
-    @Override
-    public void displayThreads(final List<DiscussionThread> threadsInCategory) {
-        if (threadsInCategory.isEmpty()) {
-            threadListing.addStyleName(StyleConstants.HIDDEN);
-        } else {
-            threadListing.removeStyleName(StyleConstants.HIDDEN);
-        }
-
-        final ComponentContainer parent = (ComponentContainer) threadsLabel
-                .getParent();
-        if (threadsInCategory.isEmpty()) {
-            parent.replaceComponent(threadsLabel, threadsLabel = NO_THREADS);
-        } else {
-            parent.replaceComponent(threadsLabel, threadsLabel = THREADS);
-        }
-
-        newThreadButton1.setEnabled(getPresenter().userMayStartANewThread());
-        newThreadButton2.setEnabled(getPresenter().userMayStartANewThread());
-
-        threadListing.setThreads(threadsInCategory);
-    }
+    // @Override
+    // public void displayThreads(final List<DiscussionThread>
+    // threadsInCategory) {
+    // if (threadsInCategory.isEmpty()) {
+    // threadListing.addStyleName(StyleConstants.HIDDEN);
+    // } else {
+    // threadListing.removeStyleName(StyleConstants.HIDDEN);
+    // }
+    //
+    // final ComponentContainer parent = (ComponentContainer) threadsLabel
+    // .getParent();
+    // if (threadsInCategory.isEmpty()) {
+    // parent.replaceComponent(threadsLabel, threadsLabel = NO_THREADS);
+    // } else {
+    // parent.replaceComponent(threadsLabel, threadsLabel = THREADS);
+    // }
+    //
+    // newThreadButton1.setEnabled(getPresenter().userMayStartANewThread());
+    // newThreadButton2.setEnabled(getPresenter().userMayStartANewThread());
+    //
+    // threadListing.setThreads(threadsInCategory);
+    // }
 
     @Override
     protected void navigationTo(final String[] arguments) {
