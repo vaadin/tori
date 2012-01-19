@@ -572,6 +572,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 scrollHandlerRegistrationWin.removeHandler();
             }
             scrollPoller.cancel();
+            secondaryLoader.cancel();
             super.onDetach();
         }
 
