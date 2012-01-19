@@ -5,11 +5,12 @@ import java.util.List;
 import org.vaadin.tori.category.CategoryPresenter;
 import org.vaadin.tori.data.entity.DiscussionThread;
 
+@SuppressWarnings("serial")
 public class ThreadListingHacked extends ThreadListing {
 
     public ThreadListingHacked(final CategoryPresenter presenter) {
         super(presenter);
-        super.layout.setComponentGenerator(null);
+        layout.setComponentGenerator(null);
     }
 
     public void setThreads(final List<DiscussionThread> threadsInCategory) {
