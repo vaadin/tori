@@ -161,6 +161,16 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
+    public List<DiscussionThread> getThreads(final Category category,
+            final int startIndex, final int endIndex)
+            throws DataSourceException {
+        // FIXME not implemented in this datasource, just returns all
+        log.warn("Thread paging not yet impelemented in "
+                + getClass().getSimpleName() + ".");
+        return getThreads(category);
+    }
+
+    @Override
     public List<DiscussionThread> getRecentPosts() throws DataSourceException {
         try {
             final List<MBThread> liferayThreads = getLiferayRecentThreads();

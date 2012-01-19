@@ -36,17 +36,43 @@ public interface DataSource {
             throws DataSourceException;
 
     /**
-     * Get all threads in the given <code>category</code>, in the following
-     * ordering priority:
+     * Get all threads in the given {@code category}, in the following ordering
+     * priority:
      * 
      * <ul>
      * <li>Primary: Stickied threads ({@link DiscussionThread#isSticky()})
      * <li>Secondary: Recent activity, in descending order
      * </ul>
+     * 
+     * Notice that as this method returns all threads it might be quite slow.
+     * For categories with large amount of threads it might be better to fetch
+     * only the required threads (see {@link #getThreads(Category, long, long)}
+     * ).
+     * 
+     * @see #getThreadCount(Category)
+     * @see #getThreads(Category, int, int)
      */
     @NonNull
     List<DiscussionThread> getThreads(@NonNull Category category)
             throws DataSourceException;
+
+    /**
+     * Get threads between given {@code startIndex} and {@code endIndex} in the
+     * given {@code category}. The index is zero-based, so zero equals to the
+     * first post. As with {@link #getThreads(Category)} method, the threads are
+     * ordered in the following ordering priority:
+     * 
+     * <ul>
+     * <li>Primary: Stickied threads ({@link DiscussionThread#isSticky()})
+     * <li>Secondary: Recent activity, in descending order
+     * </ul>
+     * 
+     * @see #getThreadCount(Category)
+     * @see #getThreads()
+     */
+    @NonNull
+    List<DiscussionThread> getThreads(@NonNull Category category,
+            int startIndex, int endIndex) throws DataSourceException;
 
     /**
      * Returns the Category corresponding to the id or <code>null</code> if no
