@@ -305,7 +305,8 @@ public final class LazyLayout extends AbstractLayout {
 
     }
 
-    private List<int[]> groupToRanges(final List<Integer> orderedNumbers) {
+    /* default protected due to tests */
+    static List<int[]> groupToRanges(final List<Integer> orderedNumbers) {
         final List<int[]> ranges = new ArrayList<int[]>();
 
         if (!orderedNumbers.isEmpty()) {
@@ -314,7 +315,7 @@ public final class LazyLayout extends AbstractLayout {
 
             for (final int num : orderedNumbers) {
                 if (num > previous + 1) {
-                    ranges.add(new int[] { start, num });
+                    ranges.add(new int[] { start, previous });
                     start = num;
                 }
                 previous = num;
