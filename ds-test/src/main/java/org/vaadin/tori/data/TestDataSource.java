@@ -157,6 +157,16 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
+    public List<DiscussionThread> getThreads(final Category category,
+            final int startIndex, final int endIndex)
+            throws DataSourceException {
+        // FIXME not implemented in this datasource, just returns all
+        System.out.println("Thread paging not yet impelemented in "
+                + getClass().getSimpleName() + ".");
+        return getThreads(category);
+    }
+
+    @Override
     public Category getCategory(final long categoryId)
             throws DataSourceException {
         return executeWithEntityManager(new Command<Category>() {
