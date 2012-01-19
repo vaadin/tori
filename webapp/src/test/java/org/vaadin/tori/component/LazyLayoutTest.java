@@ -11,7 +11,7 @@ import com.google.common.collect.Lists;
 public class LazyLayoutTest {
 
     @Test
-    public void testGroupToRanges1() {
+    public void testGroupToRangesTypical() {
         // 1-5, 7-9
         final List<Integer> list = Lists.newArrayList(1, 2, 3, 4, 5, 7, 8, 9);
 

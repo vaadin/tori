@@ -315,8 +315,8 @@ public final class LazyLayout extends AbstractLayout {
 
             for (final int num : orderedNumbers) {
                 if (num > previous + 1) {
-                    ranges.add(new int[] { start, num });
-                    start = previous;
+                    ranges.add(new int[] { start, previous });
+                    start = num;
                 }
                 previous = num;
             }
