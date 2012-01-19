@@ -310,6 +310,22 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
+    public long getThreadCountRecursively(final Category category)
+            throws DataSourceException {
+        ToriUtil.checkForNull(category, "Category must not be null.");
+        try {
+            return MBThreadLocalServiceUtil.getCategoryThreadsCount(
+                    scopeGroupId, category.getId(),
+                    WorkflowConstants.STATUS_APPROVED);
+        } catch (final SystemException e) {
+            log.error(String.format(
+                    "Couldn't get thread count for category %d.",
+                    category.getId()), e);
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Override
     public long getThreadCount(final Category category)
             throws DataSourceException {
         ToriUtil.checkForNull(category, "Category must not be null.");
@@ -513,7 +529,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet result = null;
-        final long totalThreadCount = getThreadCount(category);
+        final long totalThreadCount = getThreadCountRecursively(category);
         try {
             connection = JdbcUtil.getJdbcConnection();
             statement = connection

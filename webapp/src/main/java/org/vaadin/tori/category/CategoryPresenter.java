@@ -55,6 +55,12 @@ public class CategoryPresenter extends Presenter<CategoryView> {
                     getView().displayCategoryNotFoundError(categoryIdString);
                 }
             }
+
+            if (countThreads() > 0) {
+                view.displayThreads();
+            } else {
+                view.hideThreads();
+            }
         } catch (final DataSourceException e) {
             e.printStackTrace();
             getView().panic();
@@ -301,7 +307,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
 
     public long countThreads() throws DataSourceException {
         try {
-            return dataSource.countThreadsIn(currentCategory);
+            return dataSource.getThreadCount(currentCategory);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();

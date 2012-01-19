@@ -108,11 +108,6 @@ public class CategoryViewImpl extends
         final CategoryPresenter categoryPresenter = new CategoryPresenter(
                 app.getDataSource(), app.getAuthorizationService());
 
-        final ComponentContainer parent = (ComponentContainer) threadListingPlaceHolder
-                .getParent();
-        parent.replaceComponent(threadListingPlaceHolder,
-                threadListing = new ThreadListing(categoryPresenter));
-
         return categoryPresenter;
     }
 
@@ -219,5 +214,27 @@ public class CategoryViewImpl extends
     public void panic() {
         layout.removeAllComponents();
         layout.addComponent(new PanicComponent());
+    }
+
+    @Override
+    public void displayThreads() {
+        final ComponentContainer listingParent = (ComponentContainer) threadListingPlaceHolder
+                .getParent();
+        if (listingParent != null) {
+            listingParent.replaceComponent(threadListingPlaceHolder,
+                    threadListing = new ThreadListing(getPresenter()));
+        }
+        setThreadLabel(THREADS);
+    }
+
+    @Override
+    public void hideThreads() {
+        setThreadLabel(NO_THREADS);
+        threadListingPlaceHolder.setVisible(false);
+    }
+
+    private void setThreadLabel(final HeadingLabel newLabel) {
+        ((ComponentContainer) threadsLabel.getParent()).replaceComponent(
+                threadsLabel, newLabel);
     }
 }

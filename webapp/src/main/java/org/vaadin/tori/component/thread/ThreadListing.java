@@ -64,14 +64,8 @@ public class ThreadListing extends CustomComponent {
         @Override
         public long getAmountOfComponents() {
             try {
-                final long shownThreads = Math.min(presenter.countThreads(),
+                return Math.min(presenter.countThreads(),
                         MAX_AMOUNT_OF_SHOWN_THREADS);
-
-                if (shownThreads <= 0) {
-                    setVisible(false);
-                }
-
-                return shownThreads;
             } catch (final DataSourceException e) {
                 getApplication().getMainWindow().showNotification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE,

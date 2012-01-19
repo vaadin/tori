@@ -49,7 +49,7 @@ public interface DataSource {
      * only the required threads (see {@link #getThreads(Category, long, long)}
      * ).
      * 
-     * @see #getThreadCount(Category)
+     * @see #getThreadCountRecursively(Category)
      * @see #getThreads(Category, int, int)
      */
     @NonNull
@@ -67,7 +67,7 @@ public interface DataSource {
      * <li>Secondary: Recent activity, in descending order
      * </ul>
      * 
-     * @see #getThreadCount(Category)
+     * @see #getThreadCountRecursively(Category)
      * @see #getThreads()
      */
     @NonNull
@@ -80,6 +80,17 @@ public interface DataSource {
      */
     @CheckForNull
     Category getCategory(long categoryId) throws DataSourceException;
+
+    /**
+     * Returns the number {@link DiscussionThread DiscussionThreads} in the
+     * given {@link Category}, and all categories beneath it.
+     * 
+     * @param category
+     *            Category from which to count the threads.
+     * @return number of DiscussionThreads
+     */
+    long getThreadCountRecursively(@NonNull Category category)
+            throws DataSourceException;
 
     /**
      * Returns the number {@link DiscussionThread DiscussionThreads} in the
@@ -290,6 +301,4 @@ public interface DataSource {
     List<DiscussionThread> getRecentPosts() throws DataSourceException;
 
     List<DiscussionThread> getMyPosts() throws DataSourceException;
-
-    long countThreadsIn(Category category) throws DataSourceException;
 }

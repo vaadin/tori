@@ -178,7 +178,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public long getThreadCount(final Category category)
+    public long getThreadCountRecursively(final Category category)
             throws DataSourceException {
         return executeWithEntityManager(new Command<Long>() {
             @Override
@@ -195,12 +195,28 @@ public class TestDataSource implements DataSource {
                 try {
                     final List<Category> subCategories = getSubCategories(category);
                     for (final Category subCategory : subCategories) {
-                        threadCount += getThreadCount(subCategory);
+                        threadCount += getThreadCountRecursively(subCategory);
                     }
                 } catch (final DataSourceException e) {
                     throw new RuntimeException(e);
                 }
                 return threadCount;
+            }
+        });
+    }
+
+    @Override
+    public long getThreadCount(final Category category)
+            throws DataSourceException {
+        return executeWithEntityManager(new Command<Long>() {
+            @Override
+            public Long execute(final EntityManager em) {
+                final TypedQuery<Long> q = em
+                        .createQuery(
+                                "select count(t) from DiscussionThread t where t.category = :category",
+                                Long.class);
+                q.setParameter("category", category);
+                return q.getSingleResult();
             }
         });
     }
@@ -725,20 +741,5 @@ public class TestDataSource implements DataSource {
         System.out.println("My posts not implemented in "
                 + getClass().getSimpleName() + ".");
         return Collections.emptyList();
-    }
-
-    @Override
-    public long countThreadsIn(final Category category)
-            throws DataSourceException {
-        return executeWithEntityManager(new Command<Long>() {
-            @Override
-            public final Long execute(final EntityManager em) {
-                final TypedQuery<Long> q = em.createQuery(
-                        "select count(t) from DiscussionThread t "
-                                + "where t.category = :category", Long.class);
-                q.setParameter("category", category);
-                return q.getSingleResult();
-            }
-        });
     }
 }

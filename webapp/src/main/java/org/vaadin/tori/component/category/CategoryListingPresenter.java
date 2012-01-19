@@ -33,7 +33,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
 
     long getThreadCount(final Category category) throws DataSourceException {
         try {
-            return dataSource.getThreadCount(category);
+            return dataSource.getThreadCountRecursively(category);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();

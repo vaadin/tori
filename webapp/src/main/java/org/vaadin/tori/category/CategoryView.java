@@ -64,4 +64,8 @@ public interface CategoryView extends View {
      * @see PanicComponent
      */
     void panic();
+
+    void displayThreads();
+
+    void hideThreads();
 }
