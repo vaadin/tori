@@ -63,11 +63,13 @@
 }
 
 .thread-listing,
-.thread-listing-row {
+.thread-listing-row,
+.thread-listing .v-lazylayout-placeholder {
 	border-color: #dfdfdf;
 	border-style: solid;
 }
-.thread-listing-row {
+.thread-listing-row,
+.thread-listing .v-lazylayout-placeholder {
 	width: 100%;
 	border-width: 0 0 1px 0;
 	-moz-box-sizing: border-box;
@@ -84,6 +86,5 @@
 	background: url(../images/following-badge.png) #fff top left no-repeat;
 }
 .thread-listing .v-lazylayout-placeholder {
-	background: #dfdfdf;
-	border-bottom: 1px solid #afafaf;
+	background: #f9f9f9;
 }
