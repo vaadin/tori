@@ -13,6 +13,10 @@
 	position: relative;
 	padding: 2px 0;
 }
+.thread-listing-row .unread a {
+	color: #0094d0;
+	font-weight: bold;	
+}
 .thread-listing-row .topic {
 	height: 100%;
 	position: absolute;
