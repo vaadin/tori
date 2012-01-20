@@ -245,12 +245,16 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     private User getUser(final long userId) throws PortalException,
             SystemException {
         if (userId == 0) {
-            return EntityFactoryUtil.createAnonymousUser();
+            return EntityFactoryUtil.createAnonymousUser(imagePath);
         } else {
             final com.liferay.portal.model.User liferayUser = UserLocalServiceUtil
                     .getUser(userId);
-            return EntityFactoryUtil.createUser(liferayUser, imagePath,
-                    liferayUser.isFemale());
+            if (liferayUser.isDefaultUser()) {
+                return EntityFactoryUtil.createAnonymousUser(imagePath);
+            } else {
+                return EntityFactoryUtil.createUser(liferayUser, imagePath,
+                        liferayUser.isFemale());
+            }
         }
     }
 
