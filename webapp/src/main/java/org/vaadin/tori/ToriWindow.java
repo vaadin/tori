@@ -1,7 +1,9 @@
 package org.vaadin.tori;
 
+import org.vaadin.tori.ToriNavigator.ViewChangeListener;
 import org.vaadin.tori.component.DebugControlPanel;
 import org.vaadin.tori.component.breadcrumbs.Breadcrumbs;
+import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
 
@@ -24,9 +26,19 @@ public class ToriWindow extends Window {
         windowLayout.setMargin(false);
         setContent(windowLayout);
 
+        final Breadcrumbs breadcrumbs = new Breadcrumbs(navigator);
         addControlPanelIfInDevelopment();
-        addComponent(new Breadcrumbs(navigator));
+        addComponent(breadcrumbs);
         addComponent(navigator);
+
+        navigator.addListener(new ViewChangeListener() {
+            @Override
+            public void navigatorViewChange(final View previous,
+                    final View current) {
+                // scroll to top when the view is changed
+                scrollIntoView(breadcrumbs);
+            }
+        });
     }
 
     private void addControlPanelIfInDevelopment() {
