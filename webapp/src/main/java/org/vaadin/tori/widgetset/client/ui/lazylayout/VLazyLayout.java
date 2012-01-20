@@ -215,6 +215,7 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 initialize(uidl);
                 attachScrollHandlersIfNeeded();
                 findAllThingsToFetchAndFetchThem(distance);
+                checkAndUpdatePlaceholderSizes(uidl);
             }
 
             if (isLazyLoadingRequest(uidl)) {
@@ -243,7 +244,6 @@ public class VLazyLayout extends SimplePanel implements Paintable, Container {
                 }
 
                 addLazyLoadedWidgets(uidl, client);
-                checkAndUpdatePlaceholderSizes(uidl);
                 startSecondaryLoading();
             }
         }
