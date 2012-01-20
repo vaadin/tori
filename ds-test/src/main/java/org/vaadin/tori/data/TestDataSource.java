@@ -3,6 +3,7 @@ package org.vaadin.tori.data;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -721,9 +722,29 @@ public class TestDataSource implements DataSource {
 
     @Override
     public List<DiscussionThread> getRecentPosts() throws DataSourceException {
-        System.out.println("Recent threads not implemented in "
-                + getClass().getSimpleName() + ".");
-        return Collections.emptyList();
+        final List<Post> posts = executeWithEntityManager(new Command<List<Post>>() {
+            @Override
+            public List<Post> execute(final EntityManager em) {
+                final EntityTransaction tx = em.getTransaction();
+                tx.begin();
+                final TypedQuery<Post> q = em
+                        .createQuery(
+                                "select p from Post p order by p.time desc",
+                                Post.class);
+                q.setMaxResults(100);
+                final List<Post> result = q.getResultList();
+                tx.commit();
+                return result;
+            }
+        });
+
+        final List<DiscussionThread> threads = new ArrayList<DiscussionThread>();
+
+        for (final Post post : posts) {
+            threads.add(post.getThread());
+        }
+
+        return threads;
     }
 
     @Override
