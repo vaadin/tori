@@ -444,11 +444,10 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     @NonNull
     private List<Attachment> getAttachments(final MBMessage message)
             throws PortalException, SystemException {
-        final String[] filenames = message.getAttachmentsFiles();
-
-        final List<Attachment> attachments = new ArrayList<Attachment>(
-                filenames.length);
         if (message.isAttachments()) {
+            final String[] filenames = message.getAttachmentsFiles();
+            final List<Attachment> attachments = new ArrayList<Attachment>(
+                    filenames.length);
             for (final String filename : filenames) {
                 final String shortFilename = FileUtil
                         .getShortFileName(filename);
@@ -461,8 +460,9 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                         shortFilename, message.getMessageId()));
                 attachments.add(attachment);
             }
+            return attachments;
         }
-        return attachments;
+        return Collections.emptyList();
     }
 
     private String getAttachmentDownloadUrl(final String filename,
