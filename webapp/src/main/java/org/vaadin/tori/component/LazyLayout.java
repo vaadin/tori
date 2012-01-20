@@ -297,6 +297,7 @@ public final class LazyLayout extends AbstractLayout {
                 component.paint(target);
                 componentIndexMap.put(component, i++);
                 componentsPaintedOnClientSide.add(component);
+                super.addComponent(component);
             }
         }
 
