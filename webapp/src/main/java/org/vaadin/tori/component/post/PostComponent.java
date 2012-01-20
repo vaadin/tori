@@ -10,6 +10,7 @@ import org.vaadin.tori.component.ConfirmationDialog;
 import org.vaadin.tori.component.ConfirmationDialog.ConfirmationListener;
 import org.vaadin.tori.component.ContextMenu;
 import org.vaadin.tori.component.ContextMenu.ContextAction;
+import org.vaadin.tori.data.entity.Attachment;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
@@ -24,12 +25,16 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
+
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 @SuppressWarnings("serial")
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't bother us with serialization.")
@@ -236,6 +241,10 @@ public class PostComponent extends CustomComponent {
             root.addComponent(new Label(presenter.stripTags(formattedPost),
                     Label.CONTENT_XHTML), "body");
         }
+        final Component attachments = getAttachments(post);
+        if (attachments != null) {
+            root.addComponent(attachments, "attachments");
+        }
         root.addComponent(score, "score");
         root.addComponent(
                 reportComponent = buildReportPostComponent(post, presenter),
@@ -317,6 +326,25 @@ public class PostComponent extends CustomComponent {
         });
         button.setVisible(false);
         return button;
+    }
+
+    @CheckForNull
+    private Component getAttachments(final Post post) {
+        if (post.hasAttachments()) {
+            final CssLayout attachmentLinks = new CssLayout();
+            attachmentLinks.setCaption("Attachments");
+
+            // create a Link for each attachment
+            for (final Attachment attachment : post.getAttachments()) {
+                final String linkCaption = String.format("%s (%s KB)",
+                        attachment.getFilename(),
+                        attachment.getFileSize() / 1024);
+                attachmentLinks.addComponent(new Link(linkCaption,
+                        new ExternalResource(attachment.getDownloadUrl())));
+            }
+            return attachmentLinks;
+        }
+        return null;
     }
 
     private String getFormattedXhtmlBody(final Post post) {

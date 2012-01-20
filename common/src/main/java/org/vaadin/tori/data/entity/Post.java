@@ -1,12 +1,15 @@
 package org.vaadin.tori.data.entity;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -27,6 +30,9 @@ public class Post extends AbstractEntity {
     @Lob
     @Column(nullable = false, name = "body")
     private String bodyRaw;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Attachment> attachments;
 
     public void setAuthor(final User author) {
         this.author = author;
@@ -59,6 +65,22 @@ public class Post extends AbstractEntity {
     /** Gets the unformatted forum post. */
     public String getBodyRaw() {
         return bodyRaw;
+    }
+
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(final List<Attachment> attachments) {
+        // fix bidirectional relationship
+        for (final Attachment attachment : attachments) {
+            attachment.setPost(this);
+        }
+        this.attachments = attachments;
+    }
+
+    public boolean hasAttachments() {
+        return !attachments.isEmpty();
     }
 
 }
