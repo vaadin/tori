@@ -5,6 +5,7 @@
 	<persistence-unit name="tori-testdata" transaction-type="RESOURCE_LOCAL">
 	
 		<!-- list of entities -->
+		<class>org.vaadin.tori.data.entity.Attachment</class>
 		<class>org.vaadin.tori.data.entity.Category</class>
 		<class>org.vaadin.tori.data.entity.DiscussionThread</class>
 		<class>org.vaadin.tori.data.entity.User</class>

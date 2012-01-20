@@ -14,6 +14,7 @@ import javax.portlet.PortletRequest;
 import org.apache.log4j.Logger;
 import org.vaadin.tori.PortletRequestAware;
 import org.vaadin.tori.ToriUtil;
+import org.vaadin.tori.data.entity.Attachment;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.EntityFactoryUtil;
@@ -23,10 +24,14 @@ import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.post.PostReport;
 
+import com.liferay.documentlibrary.service.DLServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.FileUtil;
+import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.SubscriptionLocalServiceUtil;
@@ -68,9 +73,11 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     private static final double STICKY_PRIORITY = 2.0d;
 
     private long scopeGroupId = -1;
+    private long companyId;
     private long currentUserId;
     private com.liferay.portal.model.User currentUser;
     private String imagePath;
+    private String mainPath;
 
     private ServiceContext mbMessageServiceContext;
     private ServiceContext mbBanServiceContext;
@@ -414,8 +421,10 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             final List<Post> result = new ArrayList<Post>(messages.size());
             for (final MBMessage message : messages) {
                 final User author = getUser(message.getUserId());
+                final List<Attachment> attachments = getAttachments(message);
+
                 final Post post = EntityFactoryUtil.createPost(message, author,
-                        thread);
+                        thread, attachments);
                 result.add(post);
             }
             return result;
@@ -430,6 +439,36 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                             thread.getId()), e);
             throw new DataSourceException(e);
         }
+    }
+
+    @NonNull
+    private List<Attachment> getAttachments(final MBMessage message)
+            throws PortalException, SystemException {
+        final String[] filenames = message.getAttachmentsFiles();
+
+        final List<Attachment> attachments = new ArrayList<Attachment>(
+                filenames.length);
+        if (message.isAttachments()) {
+            for (final String filename : filenames) {
+                final String shortFilename = FileUtil
+                        .getShortFileName(filename);
+                final long fileSize = DLServiceUtil.getFileSize(companyId,
+                        CompanyConstants.SYSTEM, filename);
+
+                final Attachment attachment = new Attachment(shortFilename,
+                        fileSize);
+                attachment.setDownloadUrl(getAttachmentDownloadUrl(
+                        shortFilename, message.getMessageId()));
+                attachments.add(attachment);
+            }
+        }
+        return attachments;
+    }
+
+    private String getAttachmentDownloadUrl(final String filename,
+            final long messageId) throws SystemException {
+        return mainPath + "/message_boards/get_message_attachment?messageId="
+                + messageId + "&attachment=" + HttpUtil.encodeURL(filename);
     }
 
     private List<MBMessage> getLiferayPostsForThread(final long threadId)
@@ -796,7 +835,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             final MBMessage newPost = internalSaveAsCurrentUser(post,
                     getRootMessageId(post.getThread()));
             return EntityFactoryUtil.createPost(newPost,
-                    getUser(currentUserId), getThread(newPost.getThreadId()));
+                    getUser(currentUserId), getThread(newPost.getThreadId()),
+                    getAttachments(newPost));
         } catch (final PortalException e) {
             log.error("Couldn't save post.", e);
             throw new DataSourceException(e);
@@ -965,6 +1005,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             if (imagePath == null) {
                 imagePath = themeDisplay.getPathImage();
             }
+            mainPath = themeDisplay.getPathMain();
+            companyId = themeDisplay.getCompanyId();
         }
 
         try {
