@@ -33,8 +33,8 @@ public class ThreadListing extends CustomComponent {
     private static final String STYLE_COLUMN_HEADER_ROW = "column-header-row";
 
     private static final String PLACEHOLDER_WIDTH = "100%";
-    private static final String PLACEHOLDER_HEIGHT = "40px";
-    private static final int RENDER_DELAY_MILLIS = 1000;
+    private static final String PLACEHOLDER_HEIGHT = "41px";
+    private static final int RENDER_DELAY_MILLIS = 700;
     private static final int RENDER_DISTANCE_PX = 500;
 
     private static final long MAX_AMOUNT_OF_SHOWN_THREADS = 1000;
