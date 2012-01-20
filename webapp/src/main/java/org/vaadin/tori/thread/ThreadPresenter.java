@@ -398,4 +398,16 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                 .getQuote(post);
         getView().appendToReply(quote);
     }
+
+    public void saveEdited(final Post post, final String newBody)
+            throws DataSourceException {
+        if (authorizationService.mayEdit(post)) {
+            // FIXME: umm, maybe we should clone this first?
+            post.setBodyRaw(newBody);
+            dataSource.save(post);
+            getView().refresh(post);
+        } else {
+            getView().displayUserCanNotEdit();
+        }
+    }
 }

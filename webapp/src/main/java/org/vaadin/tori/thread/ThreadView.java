@@ -53,6 +53,15 @@ public interface ThreadView extends View {
      */
     void displayUserCanNotReply();
 
+    /**
+     * This method is called when trying to edit a {@link Post}, but the current
+     * {@link User} doens't have the rights to do so.
+     * <p/>
+     * Most probably happens when the <code>User</code> was revoked editing
+     * rights while the post was being modified.
+     */
+    void displayUserCanNotEdit();
+
     void redirectToDashboard();
 
     void displayNewThreadFormFor(Category category);
@@ -65,4 +74,8 @@ public interface ThreadView extends View {
     void panic();
 
     void appendToReply(String textToAppend);
+
+    /** Re-renders the post with the given post. */
+    void refresh(Post post);
+
 }

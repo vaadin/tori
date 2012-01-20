@@ -405,6 +405,12 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
+    public void displayUserCanNotEdit() {
+        getWindow().showNotification(
+                "Unfortunately, you are not allowed to edit this post.");
+    }
+
+    @Override
     public void redirectToDashboard() {
         getNavigator().navigateTo(
                 ToriNavigator.ApplicationView.DASHBOARD.getUrl());
@@ -484,6 +490,14 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public void appendToReply(final String textToAppend) {
         reply.insertIntoMessage(textToAppend);
+    }
+
+    @Override
+    public void refresh(final Post post) {
+        final PostComponent oldComponent = postsToComponents.get(post);
+        final PostComponent newComponent = newPostComponent(post);
+        postsToComponents.put(post, newComponent);
+        postsLayout.replaceComponent(oldComponent, newComponent);
     }
 
 }

@@ -10,6 +10,7 @@ import org.vaadin.tori.component.ConfirmationDialog;
 import org.vaadin.tori.component.ConfirmationDialog.ConfirmationListener;
 import org.vaadin.tori.component.ContextMenu;
 import org.vaadin.tori.component.ContextMenu.ContextAction;
+import org.vaadin.tori.component.post.EditComponent.EditListener;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
@@ -28,6 +29,7 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -100,11 +102,18 @@ public class PostComponent extends CustomComponent {
     private final CustomLayout root;
     private final Post post;
 
-    private final ClickListener editListener = new ClickListener() {
+    private final EditListener editListener = new EditListener() {
         @Override
-        public void buttonClick(final ClickEvent event) {
-            getApplication().getMainWindow().showNotification(
-                    "Editing not implemented yet.");
+        public void postEdited(final String newPostBody) {
+            try {
+                presenter.saveEdited(post, newPostBody);
+                // this component will be replaced with a new one. So no need to
+                // change the state.
+            } catch (final DataSourceException e) {
+                getApplication().getMainWindow().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
+                        Notification.TYPE_ERROR_MESSAGE);
+            }
         }
     };
 
@@ -119,7 +128,6 @@ public class PostComponent extends CustomComponent {
     };
 
     private final Component reportComponent;
-    private final Button editButton;
     private final Button quoteButton;
     private final Button scrollToButton;
     private final ContextMenu contextMenu;
@@ -154,6 +162,7 @@ public class PostComponent extends CustomComponent {
 
     private boolean followingEnabled = false;
     private boolean unfollowingEnabled = false;
+    private final EditComponent editComponent;
 
     /**
      * @throws IllegalArgumentException
@@ -180,10 +189,8 @@ public class PostComponent extends CustomComponent {
         setCompositionRoot(root);
         setStyleName("post");
 
-        editButton = new Button("Edit Post", editListener);
-        editButton.setStyleName(BaseTheme.BUTTON_LINK);
-        editButton.setIcon(new ThemeResource("images/icon-link-edit.png"));
-        editButton.setVisible(false);
+        editComponent = new EditComponent(post.getBodyRaw(), editListener);
+        editComponent.setVisible(false);
 
         quoteButton = new Button("Quote for Reply", replyListener);
         quoteButton.setData(post);
@@ -241,7 +248,7 @@ public class PostComponent extends CustomComponent {
                 reportComponent = buildReportPostComponent(post, presenter),
                 "report");
         root.addComponent(contextMenu, "settings");
-        root.addComponent(editButton, "edit");
+        root.addComponent(editComponent, "edit");
         root.addComponent(quoteButton, "quote");
     }
 
@@ -255,7 +262,7 @@ public class PostComponent extends CustomComponent {
     }
 
     public void enableEditing() {
-        editButton.setVisible(true);
+        editComponent.setVisible(true);
     }
 
     public void enableQuoting() {
