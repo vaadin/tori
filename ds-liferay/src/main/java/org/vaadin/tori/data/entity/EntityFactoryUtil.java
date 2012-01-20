@@ -81,15 +81,16 @@ public class EntityFactoryUtil {
         final User entity = new User();
         entity.setId(liferayUser.getUserId());
         entity.setDisplayedName(liferayUser.getFullName());
-        entity.setAvatarUrl(getAvatarUrl(liferayUser, imagePath, isFemale));
+        entity.setAvatarUrl(getAvatarUrl(liferayUser.getPortraitId(),
+                imagePath, isFemale));
         return entity;
     }
 
-    public static User createAnonymousUser() {
+    public static User createAnonymousUser(final String imagePath) {
         final User entity = new User();
         entity.setId(0);
         entity.setDisplayedName("Anonymous");
-        entity.setAvatarUrl(null);
+        entity.setAvatarUrl(getAvatarUrl(0, imagePath, false));
         return entity;
     }
 
@@ -105,12 +106,11 @@ public class EntityFactoryUtil {
         return vote;
     }
 
-    private static String getAvatarUrl(
-            final com.liferay.portal.model.User liferayUser,
+    private static String getAvatarUrl(final long liferayPortraidId,
             final String imagePath, final boolean isFemale) {
         if (imagePath != null) {
             return imagePath + "/user_" + (isFemale ? "female" : "male")
-                    + "_portrait?img_id=" + liferayUser.getPortraitId();
+                    + "_portrait?img_id=" + liferayPortraidId;
         }
         return null;
     }
