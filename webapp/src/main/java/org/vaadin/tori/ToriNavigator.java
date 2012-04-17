@@ -65,7 +65,6 @@ public class ToriNavigator extends CustomComponent {
     private String currentFragment = "";
     private View currentView = null;
     private final LinkedList<ViewChangeListener> listeners = new LinkedList<ViewChangeListener>();
-    private boolean viewCacheEnabled = false;
     private final Root root;
 
     public ToriNavigator(final Root root) {
@@ -143,16 +142,10 @@ public class ToriNavigator extends CustomComponent {
     private AbstractView<?, ?> getOrCreateView(final String uri) {
         final Class<? extends AbstractView<?, ?>> newViewClass = uriToClass
                 .get(uri);
-        if (!viewCacheEnabled || !classToView.containsKey(newViewClass)) {
-            final AbstractView<?, ?> view = createView(newViewClass);
-            if (viewCacheEnabled) {
-                classToView.put(newViewClass, view);
-            } else {
-                return view;
-            }
+        if (!classToView.containsKey(newViewClass)) {
+            return createView(newViewClass);
         }
-        final AbstractView<?, ?> v = classToView.get(newViewClass);
-        return v;
+        return classToView.get(newViewClass);
     }
 
     private <T extends AbstractView<?, ?>> T createView(final Class<T> viewClass) {
@@ -453,29 +446,6 @@ public class ToriNavigator extends CustomComponent {
 
     public View getCurrentView() {
         return currentView;
-    }
-
-    /**
-     * Returns {@code true} if the created {@link View} instances are cached and
-     * reused or {@code false} if a new instance is always created when needed.
-     * 
-     * @return {@code true} if the {@link View} instances are cached,
-     *         {@code false} if a new instance is always created.
-     */
-    public boolean isViewCacheEnabled() {
-        return viewCacheEnabled;
-    }
-
-    /**
-     * Sets whether this ToriNavigator should cache the created {@link View}
-     * instances or always instantiate a new one. By default the caching is
-     * disabled.
-     * 
-     * @param enabled
-     *            should the cache be enabled or not.
-     */
-    public void setViewCacheEnabled(final boolean enabled) {
-        this.viewCacheEnabled = enabled;
     }
 
     /**
