@@ -2,7 +2,6 @@ package org.vaadin.tori;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.thread.ThreadViewImpl;
 
 import com.google.common.base.Joiner;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Root;
 import com.vaadin.ui.Root.FragmentChangedEvent;
@@ -109,7 +107,6 @@ public class ToriNavigator extends CustomComponent {
         if (uriToClass.containsKey(uri)) {
             final AbstractView<?, ?> newView = getOrCreateView(uri);
             moveTo(newView, arguments, false);
-
         } else {
             root.setFragment(currentFragment, false);
         }
@@ -179,17 +176,8 @@ public class ToriNavigator extends CustomComponent {
         if (!noFragmentSetting && !currentFragment.equals(root.getFragment())) {
             root.setFragment(currentFragment, false);
         }
-        Component removeMe = null;
-        for (final Iterator<Component> i = layout.getComponentIterator(); i
-                .hasNext();) {
-            final Component c = i.next();
-            if (c != root) {
-                removeMe = c;
-            }
-        }
-        if (removeMe != null) {
-            layout.removeComponent(removeMe);
-        }
+
+        layout.removeAllComponents();
         layout.addComponent(v);
         layout.setExpandRatio(v, 1.0F);
         v.navigateTo(arguments);
