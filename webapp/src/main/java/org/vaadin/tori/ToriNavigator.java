@@ -22,6 +22,8 @@ import com.vaadin.ui.Root.FragmentChangedListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import edu.umd.cs.findbugs.annotations.Nullable;
+
 @SuppressWarnings("serial")
 public class ToriNavigator extends CustomComponent {
 
@@ -76,7 +78,7 @@ public class ToriNavigator extends CustomComponent {
         root.addListener(new FragmentChangedListener() {
             @Override
             public void fragmentChanged(final FragmentChangedEvent source) {
-                ToriNavigator.this.fragmentChanged();
+                loadPageFor(source.getFragment());
             }
         });
 
@@ -88,13 +90,20 @@ public class ToriNavigator extends CustomComponent {
         setMainView(ApplicationView.getDefault().getUrl());
     }
 
-    private void fragmentChanged() {
-        String newFragment = root.getFragment();
-        if ("".equals(newFragment)) {
-            newFragment = mainViewUri;
+    public void init(@Nullable final String initialUriFragment) {
+        if (initialUriFragment != null && !initialUriFragment.isEmpty()) {
+            loadPageFor(initialUriFragment);
+        }
+    }
+
+    private void loadPageFor(final String fragment) {
+        final String[] dataFragment;
+        if (fragment == null || fragment.isEmpty()) {
+            dataFragment = getDataFromFragment(mainViewUri);
+        } else {
+            dataFragment = getDataFromFragment(fragment);
         }
 
-        final String[] dataFragment = getDataFromFragment(newFragment);
         final String uri = dataFragment[0];
         final String[] arguments = tail(dataFragment);
         if (uriToClass.containsKey(uri)) {
@@ -123,6 +132,11 @@ public class ToriNavigator extends CustomComponent {
      * arguments. ^_^
      */
     private static String[] getDataFromFragment(final String fragment) {
+        if (fragment == null || fragment.isEmpty()
+                || fragment.length() <= URL_PREFIX.length()) {
+            return new String[] { "", "" };
+        }
+
         final String trimmedFragment = fragment.substring(URL_PREFIX.length());
         final String[] data = trimmedFragment.split("/");
         data[0] = URL_PREFIX + data[0];
@@ -217,8 +231,8 @@ public class ToriNavigator extends CustomComponent {
                 moveTo(getOrCreateView(mainViewUri), null, true);
             }
         } else {
-            throw new IllegalArgumentException(
-                    "No view with given uri can be found in the navigator");
+            throw new IllegalArgumentException("No view with the uri "
+                    + mainViewUri + " can be found in the navigator");
         }
     }
 

@@ -30,6 +30,8 @@ public class ToriRoot extends Root {
         addComponent(breadcrumbs);
         addComponent(navigator);
 
+        navigator.init(request.getBrowserDetails().getUriFragment());
+
         navigator.addListener(new ViewChangeListener() {
             @Override
             public void navigatorViewChange(final View previous,
