@@ -15,8 +15,10 @@
 			<param-value>org.vaadin.tori.ToriApplication</param-value>
 		</init-param>
 		<init-param>
-			<description>
-			Application widgetset</description>
+			<param-name>root</param-name>
+			<param-value>org.vaadin.tori.ToriRoot</param-value>
+		</init-param>
+		<init-param>
 			<param-name>widgetset</param-name>
 			<param-value>org.vaadin.tori.widgetset.ToriWidgetset</param-value>
 		</init-param>

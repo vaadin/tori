@@ -1,20 +1,10 @@
 package org.vaadin.tori.component.breadcrumbs;
 
-import java.util.List;
-
 import org.apache.log4j.Logger;
-import org.vaadin.hene.splitbutton.SplitButton;
-import org.vaadin.hene.splitbutton.SplitButton.SplitButtonPopupVisibilityEvent;
-import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.data.entity.DiscussionThread;
-import org.vaadin.tori.exception.DataSourceException;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.ListSelect;
 
 @SuppressWarnings("serial")
 class ThreadCrumb extends CustomComponent {
@@ -23,7 +13,10 @@ class ThreadCrumb extends CustomComponent {
     }
 
     private final ThreadSelectionListener listener;
+    /*-
+    FIXME splitbutton
     private final SplitButton crumb;
+     */
     private final Logger log = Logger.getLogger(getClass());
 
     public ThreadCrumb(final DiscussionThread thread,
@@ -39,6 +32,8 @@ class ThreadCrumb extends CustomComponent {
         addStyleName(Breadcrumbs.STYLE_THREAD);
         addStyleName(Breadcrumbs.STYLE_UNCLICKABLE);
 
+        /*-
+        FIXME splitbutton
         crumb = new SplitButton(thread.getTopic());
         crumb.addPopupVisibilityListener(new SplitButton.SplitButtonPopupVisibilityListener() {
             @Override
@@ -47,10 +42,13 @@ class ThreadCrumb extends CustomComponent {
                 event.getSplitButton().setComponent(getThreadPopup(thread));
             }
         });
+         */
 
-        setCompositionRoot(crumb);
+        setCompositionRoot(new Label("T-CRUMB!"));
     }
 
+    /*-
+    FIXME splitbutton
     private Component getThreadPopup(final DiscussionThread thread) {
         final ListSelect root = new ListSelect();
         root.setImmediate(true);
@@ -92,4 +90,5 @@ class ThreadCrumb extends CustomComponent {
 
         return root;
     }
+     */
 }

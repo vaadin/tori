@@ -16,7 +16,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.Container;
 import com.vaadin.terminal.gwt.client.Paintable;
 import com.vaadin.terminal.gwt.client.RenderSpace;
 import com.vaadin.terminal.gwt.client.UIDL;
@@ -24,6 +23,7 @@ import com.vaadin.terminal.gwt.client.UIDL;
 /**
  * The client-side implementation for server-side {@code FloatingBar} component.
  */
+// @Connect(FloatingBar.class)
 public class VFloatingBar extends Widget implements Container, HasWidgets,
         ResizeHandler {
 

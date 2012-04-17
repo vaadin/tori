@@ -3,10 +3,6 @@ package org.vaadin.tori.component.breadcrumbs;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.vaadin.hene.splitbutton.SplitButton;
-import org.vaadin.hene.splitbutton.SplitButton.SplitButtonClickEvent;
-import org.vaadin.hene.splitbutton.SplitButton.SplitButtonClickListener;
-import org.vaadin.hene.splitbutton.SplitButton.SplitButtonPopupVisibilityEvent;
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.exception.DataSourceException;
@@ -27,12 +23,15 @@ abstract class CategoryCrumb extends CustomComponent {
                 final CategorySelectionListener listener) {
             super(category, listener);
             this.category = category;
+            /*-
+            FIXME splitbutton
             setButtonClickListener(new SplitButtonClickListener() {
                 @Override
                 public void splitButtonClick(final SplitButtonClickEvent event) {
                     listener.selectCategory(Clickable.this.category);
                 }
             });
+             */
         }
     }
 
@@ -49,7 +48,10 @@ abstract class CategoryCrumb extends CustomComponent {
     }
 
     private final CategorySelectionListener listener;
+    /*-
+    FIXME splitbutton
     private final SplitButton crumb;
+     */
     private final Logger log = Logger.getLogger(getClass());
 
     public CategoryCrumb(final Category category,
@@ -65,6 +67,9 @@ abstract class CategoryCrumb extends CustomComponent {
         setStyleName(Breadcrumbs.STYLE_CRUMB);
         addStyleName(Breadcrumbs.STYLE_CATEGORY);
 
+        /*-
+        FIXME popupbutton
+        
         crumb = new SplitButton(category.getName());
         crumb.addPopupVisibilityListener(new SplitButton.SplitButtonPopupVisibilityListener() {
             @Override
@@ -76,15 +81,18 @@ abstract class CategoryCrumb extends CustomComponent {
                 }
             }
         });
-
-        setCompositionRoot(crumb);
+         */
+        setCompositionRoot(new Label("C-CRUMB!"));
     }
 
+    /*-
+    FIXME splitbutton
+    
     protected void setButtonClickListener(
             final SplitButtonClickListener listener) {
         crumb.addClickListener(listener);
     }
-
+     */
     private Component getCategoryPopup(final Category currentCategory) {
         final Tree tree = new Tree();
         tree.setImmediate(true);
@@ -107,7 +115,10 @@ abstract class CategoryCrumb extends CustomComponent {
                 if (listener != null) {
                     listener.selectCategory((Category) event.getItemId());
                 }
+                /*-
+                FIXME splitbutton
                 crumb.setPopupVisible(false);
+                 */
             }
         });
 

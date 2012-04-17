@@ -6,14 +6,8 @@ import java.util.Map;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.component.FloatingBar;
-import org.vaadin.tori.component.FloatingBar.DisplayEvent;
-import org.vaadin.tori.component.FloatingBar.FloatingAlignment;
-import org.vaadin.tori.component.FloatingBar.HideEvent;
-import org.vaadin.tori.component.FloatingBar.VisibilityListener;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
-import org.vaadin.tori.component.LazyLayout;
 import org.vaadin.tori.component.NewThreadComponent;
 import org.vaadin.tori.component.NewThreadComponent.NewThreadListener;
 import org.vaadin.tori.component.PanicComponent;
@@ -26,12 +20,6 @@ import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.AbstractView;
 
-import com.ocpsoft.pretty.time.PrettyTime;
-import com.vaadin.event.FieldEvents;
-import com.vaadin.event.FieldEvents.FocusEvent;
-import com.vaadin.event.LayoutEvents.LayoutClickEvent;
-import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -39,7 +27,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Label.ContentMode;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -74,17 +61,18 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't care about serialization")
     private final Map<Post, PostComponent> postsToComponents = new HashMap<Post, PostComponent>();
-    private final LazyLayout postsLayout;
-    // private final CssLayout postsLayout;
+    // private final LazyLayout postsLayout;
+    private final CssLayout postsLayout;
     private ReplyComponent reply;
 
     public ThreadViewImpl() {
         setStyleName("threadview");
-        // postsLayout = new CssLayout();
-        postsLayout = new LazyLayout();
-        postsLayout.setRenderDistance(RENDER_DISTANCE_PX);
-        postsLayout.setPlaceholderSize(PLACEHOLDER_HEIGHT, PLACEHOLDER_WIDTH);
-        postsLayout.setRenderDelay(RENDER_DELAY_MILLIS);
+        postsLayout = new CssLayout();
+        // postsLayout = new LazyLayout();
+        // postsLayout.setRenderDistance(RENDER_DISTANCE_PX);
+        // postsLayout.setPlaceholderSize(PLACEHOLDER_HEIGHT,
+        // PLACEHOLDER_WIDTH);
+        // postsLayout.setRenderDelay(RENDER_DELAY_MILLIS);
     }
 
     @Override
@@ -135,17 +123,18 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             final Post post = posts.get(i);
             final PostComponent c = newPostComponent(post);
 
-            if (i < PRELOAD_THRESHHOLD || i > posts.size() - PRELOAD_THRESHHOLD) {
-                postsLayout.addComponentEagerly(c);
-            } else {
-                postsLayout.addComponent(c);
-            }
+            // if (i < PRELOAD_THRESHHOLD || i > posts.size() -
+            // PRELOAD_THRESHHOLD) {
+            // postsLayout.addComponentEagerly(c);
+            // } else {
+            postsLayout.addComponent(c);
+            // }
 
             if (i == 0) {
-                // create the floating summary bar for the first post
-                final FloatingBar summaryBar = getSummaryBar(post, c);
-                summaryBar.setScrollComponent(c);
-                layout.addComponent(summaryBar);
+                // // create the floating summary bar for the first post
+                // final FloatingBar summaryBar = getSummaryBar(post, c);
+                // summaryBar.setScrollComponent(c);
+                // layout.addComponent(summaryBar);
             }
 
         }
@@ -160,10 +149,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                     .getFormattingSyntax(), "Post Reply");
             layout.addComponent(reply);
 
-            final FloatingBar quickReplyBar = getQuickReplyBar(reply);
-            quickReplyBar.setScrollComponent(reply);
-
-            layout.addComponent(quickReplyBar);
+            // final FloatingBar quickReplyBar = getQuickReplyBar(reply);
+            // quickReplyBar.setScrollComponent(reply);
+            //
+            // layout.addComponent(quickReplyBar);
         }
 
         final Label bottomSpacer = new Label("");
@@ -216,6 +205,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         return c;
     }
 
+    /*-
+    TODO RE-ENABLE WHEN FLOATINGBAR IS FIXED
     private PostComponent newPostSummaryComponent(final Post post) {
         final PostComponent c = new PostComponent(post, getPresenter());
         c.addStyleName("summary");
@@ -325,6 +316,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         });
         return bar;
     }
+     */
 
     @Override
     public void displayThreadNotFoundError(final String threadIdString) {
@@ -399,7 +391,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void confirmReplyPostedAndShowIt(final Post newPost) {
-        postsLayout.addComponentEagerly(newPostComponent(newPost));
+        // FIXME lazylayout
+        // postsLayout.addComponentEagerly(newPostComponent(newPost));
+        postsLayout.addComponent(newPostComponent(newPost));
     }
 
     @Override

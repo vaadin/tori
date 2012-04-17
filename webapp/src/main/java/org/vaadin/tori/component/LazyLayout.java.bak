@@ -17,13 +17,11 @@ import org.vaadin.tori.widgetset.client.ui.lazylayout.VLazyLayout;
 import com.vaadin.terminal.PaintException;
 import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.AbstractLayout;
-import com.vaadin.ui.ClientWidget;
 import com.vaadin.ui.Component;
 
 /**
  * Forked from {@link com.vaadin.ui.CssLayout} in Vaadin 6.7.3
  */
-@ClientWidget(VLazyLayout.class)
 public final class LazyLayout extends AbstractLayout {
 
     /**
@@ -203,6 +201,7 @@ public final class LazyLayout extends AbstractLayout {
      * 
      * @return the number of contained components
      */
+    @Override
     public long getComponentCount() {
         if (generator != null) {
             if (generatorSizeCache == null) {
