@@ -111,7 +111,14 @@ public class ToriNavigator extends CustomComponent {
         }
     }
 
-    /** Remove the first object in an array */
+    /**
+     * Return a copy of the array, without the first element
+     * 
+     * @param array
+     *            non-null array
+     * @throws IllegalArgumentException
+     *             if <code>array</code> is null
+     */
     private static String[] tail(final String[] array) {
         ToriUtil.checkForNull(array, "array must not be null");
 
