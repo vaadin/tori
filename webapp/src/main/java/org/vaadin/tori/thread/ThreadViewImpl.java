@@ -36,9 +36,10 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Label.ContentMode;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window.Notification;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -64,13 +65,14 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 try {
                     getPresenter().sendReply(rawBody);
                 } catch (final DataSourceException e) {
-                    getApplication().getMainWindow().showNotification(
+                    getRoot().showNotification(
                             DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                 }
             }
         }
     };
 
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't care about serialization")
     private final Map<Post, PostComponent> postsToComponents = new HashMap<Post, PostComponent>();
     private final LazyLayout postsLayout;
     // private final CssLayout postsLayout;
@@ -150,7 +152,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
         if (getPresenter().userMayReply()) {
             final Label spacer = new Label("<span class=\"eof\">eof</span>",
-                    Label.CONTENT_XHTML);
+                    ContentMode.XHTML);
             spacer.setStyleName("spacer");
             layout.addComponent(spacer);
 
@@ -237,7 +239,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                         thread.getTopic(), firstPost.getAuthor()
                                 .getDisplayedName(), new PrettyTime()
                                 .format(firstPost.getTime()));
-        final Label topicLabel = new Label(topicXhtml, Label.CONTENT_XHTML);
+        final Label topicLabel = new Label(topicXhtml, ContentMode.XHTML);
         topicLabel.setWidth(null);
 
         final String showPostContentCaption = "Show post content";
@@ -311,12 +313,14 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
             @Override
             public void onHide(final HideEvent event) {
-                quickReply.getInput().blur();
+                // FIXME re-implement
+                // quickReply.getInput().blur();
             }
 
             @Override
             public void onDisplay(final DisplayEvent event) {
-                mirroredReplyComponent.getInput().blur();
+                // FIXME re-implement
+                // mirroredReplyComponent.getInput().blur();
             }
         });
         return bar;
@@ -324,7 +328,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void displayThreadNotFoundError(final String threadIdString) {
-        getWindow().showNotification("No thread found for " + threadIdString,
+        getRoot().showNotification("No thread found for " + threadIdString,
                 Notification.TYPE_ERROR_MESSAGE);
     }
 
@@ -339,24 +343,24 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void confirmPostReported() {
-        getWindow().showNotification("Post is reported!");
+        getRoot().showNotification("Post is reported!");
     }
 
     @Override
     public void confirmBanned() {
-        getWindow().showNotification("User is banned");
+        getRoot().showNotification("User is banned");
         reloadPage();
     }
 
     @Override
     public void confirmFollowingThread() {
-        getWindow().showNotification("Following thread");
+        getRoot().showNotification("Following thread");
         swapFollowingMenus();
     }
 
     @Override
     public void confirmUnFollowingThread() {
-        getWindow().showNotification("Not following thread anymore");
+        getRoot().showNotification("Not following thread anymore");
         swapFollowingMenus();
     }
 
@@ -368,7 +372,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void confirmPostDeleted() {
-        getWindow().showNotification("Post deleted");
+        getRoot().showNotification("Post deleted");
         reloadPage();
     }
 
@@ -400,13 +404,13 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void displayUserCanNotReply() {
-        getWindow().showNotification(
+        getRoot().showNotification(
                 "Unfortunately, you are not allowed to reply to this thread.");
     }
 
     @Override
     public void displayUserCanNotEdit() {
-        getWindow().showNotification(
+        getRoot().showNotification(
                 "Unfortunately, you are not allowed to edit this post.");
     }
 
@@ -422,7 +426,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         final HeadingLabel heading = new HeadingLabel("Start a New Thread",
                 HeadingLevel.H2);
         layout.addComponent(heading);
-        ToriApplication.getCurrent().getMainWindow().scrollIntoView(heading);
+        getRoot().scrollIntoView(heading);
 
         final HorizontalLayout topicLayout = new HorizontalLayout();
         topicLayout.setSpacing(true);
@@ -448,7 +452,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             public void submit(final String rawBody) {
                 String errorMessages = "";
 
-                final String topic = (String) topicField.getValue();
+                final String topic = topicField.getValue();
                 if (topic.isEmpty()) {
                     errorMessages += "You need a topic<br/>";
                 }
@@ -464,17 +468,13 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                                 ToriNavigator.ApplicationView.THREADS.getUrl()
                                         + "/" + createdThread.getId());
                     } catch (final DataSourceException e) {
-                        getApplication()
-                                .getMainWindow()
+                        getRoot()
                                 .showNotification(
                                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                     }
                 } else {
-                    ToriApplication
-                            .getCurrent()
-                            .getMainWindow()
-                            .showNotification(errorMessages,
-                                    Notification.TYPE_HUMANIZED_MESSAGE);
+                    getRoot().showNotification(errorMessages,
+                            Notification.TYPE_HUMANIZED_MESSAGE);
                 }
             }
         }, ToriApplication.getCurrent().getPostFormatter()

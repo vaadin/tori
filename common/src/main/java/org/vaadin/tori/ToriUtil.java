@@ -1,6 +1,10 @@
 package org.vaadin.tori;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
+import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 
 public final class ToriUtil {
     private ToriUtil() {
@@ -36,5 +40,19 @@ public final class ToriUtil {
         if (string.isEmpty()) {
             throw new IllegalArgumentException(emptyErrorMessage);
         }
+    }
+
+    /** Remove the first object in an array */
+    @java.lang.SuppressWarnings("unchecked")
+    @SuppressWarnings(justification = "Java doesn't support generics in this case")
+    public static <T extends Object> T[] tail(final T[] array) {
+        ToriUtil.checkForNull(array, "array must not be null");
+
+        final List<T> list = new ArrayList<T>();
+        for (int i = 1; i < array.length; i++) {
+            list.add(array[i]);
+        }
+
+        return (T[]) list.toArray();
     }
 }

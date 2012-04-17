@@ -24,10 +24,9 @@ import org.vaadin.tori.thread.ThreadView;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -75,7 +74,7 @@ public class DebugControlPanel extends CustomComponent implements
         }
     }
 
-    private class CheckboxListener implements ClickListener {
+    private class CheckboxListener implements ValueChangeListener {
         private final ContextData data;
         private final Method setter;
 
@@ -85,9 +84,9 @@ public class DebugControlPanel extends CustomComponent implements
         }
 
         @Override
-        public void buttonClick(final ClickEvent event) {
-            final Button button = event.getButton();
-            final boolean newValue = button.booleanValue();
+        public void valueChange(final ValueChangeEvent event) {
+            final boolean newValue = ((CheckBox) event.getProperty())
+                    .getValue();
             callSetter(newValue);
             navigator.recreateCurrentView();
         }
@@ -115,15 +114,14 @@ public class DebugControlPanel extends CustomComponent implements
                 }
 
             } catch (final Exception e) {
-                getApplication().getMainWindow().showNotification(
-                        e.getClass().getSimpleName());
+                getRoot().showNotification(e.getClass().getSimpleName());
                 e.printStackTrace();
             }
 
         }
     }
 
-    private class PostCheckboxListener implements ClickListener {
+    private class PostCheckboxListener implements ValueChangeListener {
 
         private final Post post;
         private final Method setter;
@@ -134,9 +132,9 @@ public class DebugControlPanel extends CustomComponent implements
         }
 
         @Override
-        public void buttonClick(final ClickEvent event) {
-            final Button button = event.getButton();
-            final boolean newValue = button.booleanValue();
+        public void valueChange(final ValueChangeEvent event) {
+            final boolean newValue = ((CheckBox) event.getProperty())
+                    .getValue();
             callSetter(newValue);
             navigator.recreateCurrentView();
         }
@@ -145,8 +143,7 @@ public class DebugControlPanel extends CustomComponent implements
             try {
                 setter.invoke(authorizationService, post, newValue);
             } catch (final Exception e) {
-                getApplication().getMainWindow().showNotification(
-                        e.getClass().getSimpleName());
+                getRoot().showNotification(e.getClass().getSimpleName());
                 e.printStackTrace();
             }
         }
@@ -154,7 +151,11 @@ public class DebugControlPanel extends CustomComponent implements
 
     private final DebugAuthorizationService authorizationService;
     private final ToriNavigator navigator;
+
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "we don't care about serialization")
     private ContextData data;
+
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "we don't care about serialization")
     private final Logger log = Logger.getLogger(getClass());
 
     public DebugControlPanel(
@@ -210,7 +211,6 @@ public class DebugControlPanel extends CustomComponent implements
 
         final Panel panel = new Panel();
         panel.setStyleName(Reindeer.PANEL_LIGHT);
-        panel.setScrollable(true);
         panel.setWidth("300px");
         panel.setHeight("300px");
 

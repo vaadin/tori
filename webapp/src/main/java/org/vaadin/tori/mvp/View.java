@@ -40,17 +40,4 @@ public interface View {
      *            the array is empty.
      */
     public void navigateTo(String[] arguments);
-
-    /**
-     * Get a warning that should be shown to user before navigating away from
-     * the view.
-     * 
-     * If the current view is in state where navigating away from it could lead
-     * to data loss, this method should return a message that will be shown to
-     * user before he confirms that he will leave the screen. If there is no
-     * need to ask questions from user, this should return null.
-     * 
-     * @return Message to be shown or null if no message should be shown.
-     */
-    public String getWarningForNavigatingFrom();
 }

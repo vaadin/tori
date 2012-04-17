@@ -24,8 +24,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window.Notification;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
@@ -149,7 +149,7 @@ public class CategoryViewImpl extends
     @Override
     public void displayCategoryNotFoundError(final String requestedCategoryId) {
         log.error("No such category: " + requestedCategoryId);
-        getWindow().showNotification(
+        getRoot().showNotification(
                 "No category found for " + requestedCategoryId,
                 Notification.TYPE_ERROR_MESSAGE);
     }
@@ -163,41 +163,41 @@ public class CategoryViewImpl extends
     @Override
     public void confirmFollowing(final DiscussionThread thread) {
         threadListing.refreshStyles(thread);
-        getWindow().showNotification("Following thread");
+        getRoot().showNotification("Following thread");
     }
 
     @Override
     public void confirmUnfollowing(final DiscussionThread thread) {
         threadListing.refreshStyles(thread);
-        getWindow().showNotification("Unfollowed thread");
+        getRoot().showNotification("Unfollowed thread");
     }
 
     @Override
     public void confirmThreadMoved() {
-        getWindow().showNotification("Thread moved");
+        getRoot().showNotification("Thread moved");
     }
 
     @Override
     public void confirmThreadStickied(final DiscussionThread thread) {
-        getWindow().showNotification("Thread stickied");
+        getRoot().showNotification("Thread stickied");
         // presenter will reset the view here
     }
 
     @Override
     public void confirmThreadUnstickied(final DiscussionThread thread) {
-        getWindow().showNotification("Thread unstickied");
+        getRoot().showNotification("Thread unstickied");
         // presenter will reset the view here
     }
 
     @Override
     public void confirmThreadLocked(final DiscussionThread thread) {
-        getWindow().showNotification("Thread locked");
+        getRoot().showNotification("Thread locked");
         refreshVisually(thread);
     }
 
     @Override
     public void confirmThreadUnlocked(final DiscussionThread thread) {
-        getWindow().showNotification("Thread unlocked");
+        getRoot().showNotification("Thread unlocked");
         refreshVisually(thread);
     }
 
@@ -207,7 +207,7 @@ public class CategoryViewImpl extends
 
     @Override
     public void confirmThreadDeleted() {
-        getWindow().showNotification("Thread deleted");
+        getRoot().showNotification("Thread deleted");
     }
 
     @Override

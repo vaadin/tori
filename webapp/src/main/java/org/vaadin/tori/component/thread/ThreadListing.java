@@ -14,7 +14,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.Notification;
 
 /**
  * UI component for displaying a vertical hierarchical list of threads.
@@ -39,6 +39,7 @@ public class ThreadListing extends CustomComponent {
 
     private static final long MAX_AMOUNT_OF_SHOWN_THREADS = 1000;
 
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "ignoring serialization")
     protected final CategoryPresenter presenter;
     protected final LazyLayout layout;
 
@@ -54,7 +55,7 @@ public class ThreadListing extends CustomComponent {
                     components.add(new ThreadListingRow(thread, presenter));
                 }
             } catch (final DataSourceException e) {
-                getApplication().getMainWindow().showNotification(
+                getRoot().showNotification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
                         Notification.TYPE_ERROR_MESSAGE);
             }
@@ -67,7 +68,7 @@ public class ThreadListing extends CustomComponent {
                 return Math.min(presenter.countThreads(),
                         MAX_AMOUNT_OF_SHOWN_THREADS);
             } catch (final DataSourceException e) {
-                getApplication().getMainWindow().showNotification(
+                getRoot().showNotification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
                         Notification.TYPE_ERROR_MESSAGE);
                 return 0;

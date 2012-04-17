@@ -8,8 +8,6 @@ import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
 import org.vaadin.tori.ToriUtil;
 
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
@@ -77,6 +75,12 @@ public class ContextMenu extends CustomComponent {
         setHeight(ICON_SIZE);
         setStyleName("contextmenu");
 
+        /*
+         * invisible by default, until it has some items. Re-set as visible in
+         * the add()-methods
+         */
+        setVisible(false);
+
         popupLayout = new CssLayout();
 
         contextComponent = newContextComponent();
@@ -90,19 +94,13 @@ public class ContextMenu extends CustomComponent {
         return !actions.isEmpty() || !swappers.isEmpty();
     }
 
-    @Override
-    public void paintContent(final PaintTarget target) throws PaintException {
-        // should be visible only if there are menu items
-        setVisible(hasItems());
-        super.paintContent(target);
-    }
-
     public void add(final Resource icon, final String caption,
             final ContextAction action) {
         ToriUtil.checkForNull(action, "action may not be null");
         final Button button = createButton(icon, caption, action);
         actions.put(action, button);
         popupLayout.addComponent(button);
+        setVisible(true);
     }
 
     private Button createButton(final Resource icon, final String caption,
@@ -125,6 +123,7 @@ public class ContextMenu extends CustomComponent {
         final Button button = createButton(icon, caption, swapper);
         swappers.put(swapper, button);
         popupLayout.addComponent(button);
+        setVisible(true);
     }
 
     private Button createButton(final Resource icon, final String caption,

@@ -31,8 +31,9 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Label.ContentMode;
 import com.vaadin.ui.Link;
-import com.vaadin.ui.Window.Notification;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -115,7 +116,7 @@ public class PostComponent extends CustomComponent {
                 // this component will be replaced with a new one. So no need to
                 // change the state.
             } catch (final DataSourceException e) {
-                getApplication().getMainWindow().showNotification(
+                getRoot().showNotification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
                         Notification.TYPE_ERROR_MESSAGE);
             }
@@ -146,7 +147,7 @@ public class PostComponent extends CustomComponent {
             try {
                 presenter.followThread();
             } catch (final DataSourceException e) {
-                getApplication().getMainWindow().showNotification(
+                getRoot().showNotification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
         }
@@ -158,7 +159,7 @@ public class PostComponent extends CustomComponent {
             try {
                 presenter.unFollowThread();
             } catch (final DataSourceException e) {
-                getApplication().getMainWindow().showNotification(
+                getRoot().showNotification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
 
@@ -219,7 +220,7 @@ public class PostComponent extends CustomComponent {
             @Override
             public void buttonClick(final ClickEvent event) {
                 if (scrollToComponent != null) {
-                    getWindow().scrollIntoView(scrollToComponent);
+                    getRoot().scrollIntoView(scrollToComponent);
                 }
             }
         });
@@ -235,18 +236,17 @@ public class PostComponent extends CustomComponent {
         if (rawSignature != null && !rawSignature.isEmpty()) {
             final String formattedSignature = ToriApplication.getCurrent()
                     .getSignatureFormatter().format(rawSignature);
-            root.addComponent(
-                    new Label(formattedSignature, Label.CONTENT_XHTML),
+            root.addComponent(new Label(formattedSignature, ContentMode.XHTML),
                     "signature");
         }
 
         final String formattedPost = getFormattedXhtmlBody(post);
         if (allowHtml) {
-            root.addComponent(new Label(formattedPost, Label.CONTENT_XHTML),
+            root.addComponent(new Label(formattedPost, ContentMode.XHTML),
                     "body");
         } else {
             root.addComponent(new Label(presenter.stripTags(formattedPost),
-                    Label.CONTENT_XHTML), "body");
+                    ContentMode.XHTML), "body");
         }
         final Component attachments = getAttachments(post);
         if (attachments != null) {
@@ -326,7 +326,7 @@ public class PostComponent extends CustomComponent {
             public void buttonClick(final ClickEvent event) {
                 final int x = event.getClientX();
                 final int y = event.getClientY();
-                getApplication().getMainWindow().addWindow(
+                getRoot().addWindow(
                         new ReportWindow(post, presenter, x, y,
                                 getPermaLinkUrl(post)));
             }
@@ -380,7 +380,7 @@ public class PostComponent extends CustomComponent {
                 );
         // @formatter:on
 
-        final Label label = new Label(linkString, Label.CONTENT_XHTML);
+        final Label label = new Label(linkString, ContentMode.XHTML);
         return label;
     }
 
@@ -391,7 +391,7 @@ public class PostComponent extends CustomComponent {
         xhtml.append("</span><span class=\"timestamp\">");
         xhtml.append(dateFormat.format(post.getTime()));
         xhtml.append("</span>");
-        return new Label(xhtml.toString(), Label.CONTENT_XHTML);
+        return new Label(xhtml.toString(), ContentMode.XHTML);
     }
 
     private Embedded getAvatarImage(final Post post) {
@@ -418,7 +418,7 @@ public class PostComponent extends CustomComponent {
             // just to refresh the up/down icon visuals. bad method name here.
             score.enableUpDownVoting(presenter.getPostVote(post));
         } catch (final DataSourceException e) {
-            getApplication().getMainWindow().showNotification(
+            getRoot().showNotification(
                     DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
         }
     }

@@ -28,6 +28,7 @@ import com.vaadin.terminal.gwt.client.ui.dd.VerticalDropLocation;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Label.ContentMode;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.TreeTable;
 
@@ -54,8 +55,8 @@ class CategoryTreeTable extends TreeTable {
             addContainerProperty(PROPERTY_ID_UNREAD, Integer.class, 0);
             addContainerProperty(PROPERTY_ID_THREADS, Integer.class, 0);
 
-            setColumnAlignment(PROPERTY_ID_UNREAD, ALIGN_RIGHT);
-            setColumnAlignment(PROPERTY_ID_THREADS, ALIGN_RIGHT);
+            setColumnAlignment(PROPERTY_ID_UNREAD, Align.RIGHT);
+            setColumnAlignment(PROPERTY_ID_THREADS, Align.RIGHT);
         }
 
         // set visual properties
@@ -64,7 +65,7 @@ class CategoryTreeTable extends TreeTable {
         setSortDisabled(true);
         setDropHandler(new CategoryTreeDropHandler());
         if (mode == Mode.SINGLE_COLUMN) {
-            setColumnHeaderMode(COLUMN_HEADER_MODE_HIDDEN);
+            setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
         }
     }
 
@@ -174,7 +175,7 @@ class CategoryTreeTable extends TreeTable {
                 final long unreadPostCount) {
             final Label threadCountLabel = new Label(String.format(
                     "%d threads<br />%d new posts", threadCount,
-                    unreadPostCount), Label.CONTENT_XHTML);
+                    unreadPostCount), ContentMode.XHTML);
             threadCountLabel.setStyleName("threadCount");
             threadCountLabel.setWidth(null);
             return threadCountLabel;
@@ -223,8 +224,7 @@ class CategoryTreeTable extends TreeTable {
                                                  * FIXME: make sure that edits
                                                  * are reverted.
                                                  */
-                                                getApplication()
-                                                        .getMainWindow()
+                                                getRoot()
                                                         .showNotification(
                                                                 "Sorry, there's something wrong with the database :(");
                                             }
@@ -254,8 +254,7 @@ class CategoryTreeTable extends TreeTable {
                                             try {
                                                 presenter.delete(category);
                                             } catch (final DataSourceException e) {
-                                                getApplication()
-                                                        .getMainWindow()
+                                                getRoot()
                                                         .showNotification(
                                                                 "Sorry, there's something wrong with the database :(");
                                             }

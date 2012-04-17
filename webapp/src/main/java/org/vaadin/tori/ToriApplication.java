@@ -15,6 +15,7 @@ import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.SignatureFormatter;
 
 import com.vaadin.Application;
+import com.vaadin.terminal.WrappedRequest;
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
 import com.vaadin.terminal.gwt.server.PortletRequestListener;
 import com.vaadin.ui.Window;
@@ -30,7 +31,6 @@ public class ToriApplication extends Application implements
         PortletRequestListener {
 
     private static Logger log = Logger.getLogger(ToriApplication.class);
-    private static ThreadLocal<ToriApplication> currentApplication = new ThreadLocal<ToriApplication>();
     private static ThreadLocal<HttpServletRequest> currentHttpServletRequest = new ThreadLocal<HttpServletRequest>();
     private static ThreadLocal<PortletRequest> currentPortletRequest = new ThreadLocal<PortletRequest>();
 
@@ -50,12 +50,11 @@ public class ToriApplication extends Application implements
         authorizationService = createAuthorizationService(spi);
 
         setRequestForDataSource();
-        setCurrentInstance();
+    }
 
-        setTheme("tori");
-
-        final Window mainWindow = new ToriWindow();
-        setMainWindow(mainWindow);
+    @Override
+    protected String getRootClassName(final WrappedRequest request) {
+        return ToriRoot.class.getName();
     }
 
     private void setRequestForDataSource() {
@@ -152,17 +151,6 @@ public class ToriApplication extends Application implements
         return authorizationService;
     }
 
-    @Override
-    public Window getWindow(final String name) {
-        // Delegate the multiple browser window/tab handling to Navigator
-        return ToriNavigator.getWindow(this, name, super.getWindow(name));
-    }
-
-    @Override
-    public Window createNewWindow() {
-        return new ToriWindow();
-    }
-
     /**
      * Returns the ToriApplication instance that is bound to the currently
      * running Thread.
@@ -170,7 +158,7 @@ public class ToriApplication extends Application implements
      * @return ToriApplication instance for the current Thread.
      */
     public static ToriApplication getCurrent() {
-        return currentApplication.get();
+        return (ToriApplication) Application.getCurrentApplication();
     }
 
     /**
@@ -194,20 +182,11 @@ public class ToriApplication extends Application implements
         return signatureFormatter;
     }
 
-    private void setCurrentInstance() {
-        currentApplication.set(this);
-    }
-
-    private void removeCurrentInstance() {
-        currentApplication.remove();
-    }
-
     @Override
     public void onRequestStart(final HttpServletRequest request,
             final HttpServletResponse response) {
         currentHttpServletRequest.set(request);
         setRequestForDataSource();
-        setCurrentInstance();
     }
 
     @Override
@@ -215,20 +194,22 @@ public class ToriApplication extends Application implements
             final javax.portlet.PortletResponse response) {
         currentPortletRequest.set(request);
         setRequestForDataSource();
-        setCurrentInstance();
     }
 
     @Override
     public void onRequestEnd(final HttpServletRequest request,
             final HttpServletResponse response) {
-        removeCurrentInstance();
         currentHttpServletRequest.remove();
     }
 
     @Override
     public void onRequestEnd(final javax.portlet.PortletRequest request,
             final javax.portlet.PortletResponse response) {
-        removeCurrentInstance();
         currentPortletRequest.remove();
+    }
+
+    @Override
+    public Window createNewWindow() {
+        return new Window("Tori");
     }
 }

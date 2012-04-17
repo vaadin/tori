@@ -14,17 +14,11 @@ import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.thread.ThreadViewImpl;
 
 import com.google.common.base.Joiner;
-import com.vaadin.Application;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UriFragmentUtility;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedEvent;
-import com.vaadin.ui.UriFragmentUtility.FragmentChangedListener;
+import com.vaadin.ui.Root;
+import com.vaadin.ui.Root.FragmentChangedEvent;
+import com.vaadin.ui.Root.FragmentChangedListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
@@ -68,18 +62,18 @@ public class ToriNavigator extends CustomComponent {
     private final HashMap<Class<? extends AbstractView<?, ?>>, AbstractView<?, ?>> classToView = new HashMap<Class<? extends AbstractView<?, ?>>, AbstractView<?, ?>>();
     private String mainViewUri = null;
     private final VerticalLayout layout = new VerticalLayout();
-    private final UriFragmentUtility uriFragmentUtil = new UriFragmentUtility();
     private String currentFragment = "";
     private View currentView = null;
     private final LinkedList<ViewChangeListener> listeners = new LinkedList<ViewChangeListener>();
     private boolean viewCacheEnabled = false;
+    private final Root root;
 
-    public ToriNavigator() {
+    public ToriNavigator(final Root root) {
+        this.root = root;
         layout.setSizeFull();
         setSizeFull();
-        layout.addComponent(uriFragmentUtil);
         setCompositionRoot(layout);
-        uriFragmentUtil.addListener(new FragmentChangedListener() {
+        root.addListener(new FragmentChangedListener() {
             @Override
             public void fragmentChanged(final FragmentChangedEvent source) {
                 ToriNavigator.this.fragmentChanged();
@@ -95,7 +89,7 @@ public class ToriNavigator extends CustomComponent {
     }
 
     private void fragmentChanged() {
-        String newFragment = uriFragmentUtil.getFragment();
+        String newFragment = root.getFragment();
         if ("".equals(newFragment)) {
             newFragment = mainViewUri;
         }
@@ -105,17 +99,10 @@ public class ToriNavigator extends CustomComponent {
         final String[] arguments = tail(dataFragment);
         if (uriToClass.containsKey(uri)) {
             final AbstractView<?, ?> newView = getOrCreateView(uri);
-
-            final String warn = currentView == null ? null : currentView
-                    .getWarningForNavigatingFrom();
-            if (warn != null && warn.length() > 0) {
-                confirmedMoveToNewView(arguments, newView, warn);
-            } else {
-                moveTo(newView, arguments, false);
-            }
+            moveTo(newView, arguments, false);
 
         } else {
-            uriFragmentUtil.setFragment(currentFragment, false);
+            root.setFragment(currentFragment, false);
         }
     }
 
@@ -140,44 +127,6 @@ public class ToriNavigator extends CustomComponent {
         final String[] data = trimmedFragment.split("/");
         data[0] = URL_PREFIX + data[0];
         return data;
-    }
-
-    private void confirmedMoveToNewView(final String[] arguments,
-            final AbstractView<?, ?> newView, final String warn) {
-        final VerticalLayout lo = new VerticalLayout();
-        lo.setMargin(true);
-        lo.setSpacing(true);
-        lo.setWidth("400px");
-        final Window wDialog = new Window("Warning", lo);
-        wDialog.setModal(true);
-        final Window main = getWindow();
-        main.addWindow(wDialog);
-        lo.addComponent(new Label(warn));
-        lo.addComponent(new Label(
-                "If you do not want to navigate away from the current screen, press Cancel."));
-        final Button cancel = new Button("Cancel", new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                uriFragmentUtil.setFragment(currentFragment, false);
-                main.removeWindow(wDialog);
-            }
-        });
-        final Button cont = new Button("Continue", new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                main.removeWindow(wDialog);
-                moveTo(newView, arguments, false);
-            }
-
-        });
-        final HorizontalLayout h = new HorizontalLayout();
-        h.addComponent(cancel);
-        h.addComponent(cont);
-        h.setSpacing(true);
-        lo.addComponent(h);
-        lo.setComponentAlignment(h, Alignment.MIDDLE_RIGHT);
     }
 
     private AbstractView<?, ?> getOrCreateView(final String uri) {
@@ -213,15 +162,14 @@ public class ToriNavigator extends CustomComponent {
         if (arguments != null) {
             currentFragment += "/" + Joiner.on('/').join(arguments);
         }
-        if (!noFragmentSetting
-                && !currentFragment.equals(uriFragmentUtil.getFragment())) {
-            uriFragmentUtil.setFragment(currentFragment, false);
+        if (!noFragmentSetting && !currentFragment.equals(root.getFragment())) {
+            root.setFragment(currentFragment, false);
         }
         Component removeMe = null;
         for (final Iterator<Component> i = layout.getComponentIterator(); i
                 .hasNext();) {
             final Component c = i.next();
-            if (c != uriFragmentUtil) {
+            if (c != root) {
                 removeMe = c;
             }
         }
@@ -380,7 +328,7 @@ public class ToriNavigator extends CustomComponent {
      *            Uri where to navigate.
      */
     public void navigateTo(final String uri) {
-        uriFragmentUtil.setFragment(uri);
+        root.setFragment(uri);
     }
 
     /**
@@ -476,58 +424,11 @@ public class ToriNavigator extends CustomComponent {
     }
 
     /**
-     * Helper for overriding Application.getWindow(String).
-     * 
-     * <p>
-     * This helper makes implementing support for multiple browser tabs or
-     * browser windows easy. Just override Application.getWindow(String) in your
-     * application like this:
-     * </p>
-     * 
-     * <pre>
-     * &#064;Override
-     * public Window getWindow(String name) {
-     *     return Navigator.getWindow(this, name, super.getWindow(name));
-     * }
-     * </pre>
-     * 
-     * @param application
-     *            Application instance, which implements
-     *            Navigator.NavigableApplication interface.
-     * @param name
-     *            Name parameter from Application.getWindow(String name)
-     * @param superGetWindow
-     *            The window returned by super.getWindow(name)
-     * @return
-     * @throws IllegalArgumentException
-     *             if <code>application</code> is not an instance of
-     *             {@link Application}
-     */
-    public static Window getWindow(final NavigableApplication application,
-            final String name, final Window superGetWindow) {
-        if (superGetWindow != null) {
-            return superGetWindow;
-        }
-
-        final Window w = application.createNewWindow();
-        w.setName(name);
-
-        if (application instanceof Application) {
-            ((Application) application).addWindow(w);
-        } else {
-            throw new IllegalArgumentException(
-                    "application must also be an instance of "
-                            + Application.class.getName());
-        }
-        return w;
-    }
-
-    /**
      * In a URI fragment of <code>#foo/bar</code>, this will return
      * <code>foo</code>. If no fragment is set, this returns <code>null</code>
      */
     public String getCurrentUri() {
-        final String fragment = uriFragmentUtil.getFragment();
+        final String fragment = root.getFragment();
         if (fragment != null) {
             return getDataFromFragment(fragment)[0];
         } else {
@@ -540,7 +441,7 @@ public class ToriNavigator extends CustomComponent {
      * <code>bar</code>. If no fragment is set, this returns <code>null</code>
      */
     public String[] getCurrentArguments() {
-        final String fragment = uriFragmentUtil.getFragment();
+        final String fragment = root.getFragment();
         if (fragment != null) {
             return tail(getDataFromFragment(fragment));
         } else {

@@ -13,7 +13,9 @@ import com.vaadin.ui.NativeButton;
 
 @SuppressWarnings("serial")
 public class PostScoreComponent extends CustomComponent {
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "Ignoring serialization")
     private final ThreadPresenter presenter;
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "Ignoring serialization")
     private final Post post;
 
     private final CssLayout layout = new CssLayout();
@@ -46,7 +48,7 @@ public class PostScoreComponent extends CustomComponent {
                 try {
                     presenter.upvote(post);
                 } catch (final DataSourceException e) {
-                    getApplication().getMainWindow().showNotification(
+                    getRoot().showNotification(
                             DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                 }
             }
@@ -65,7 +67,7 @@ public class PostScoreComponent extends CustomComponent {
                 try {
                     presenter.downvote(post);
                 } catch (final DataSourceException e) {
-                    getApplication().getMainWindow().showNotification(
+                    getRoot().showNotification(
                             DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                 }
             }

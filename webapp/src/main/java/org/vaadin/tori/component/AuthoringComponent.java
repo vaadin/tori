@@ -37,10 +37,12 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Label.ContentMode;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
+import com.vaadin.ui.TextArea;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -315,7 +317,7 @@ public abstract class AuthoringComponent extends CustomComponent {
     private final ClickListener POST_LISTENER = new NativeButton.ClickListener() {
         @Override
         public void buttonClick(final ClickEvent event) {
-            listener.submit((String) input.getValue());
+            listener.submit(input.getValue());
             resetInput();
         }
     };
@@ -388,7 +390,7 @@ public abstract class AuthoringComponent extends CustomComponent {
 
     private final CustomLayout layout = new CustomLayout("replylayout");
     private final AuthoringListener listener;
-    private final ToriExpandingTextArea input;
+    private final TextArea input;
     private final Label preview;
     private boolean compactMode;
     private final CssLayout captionLayout;
@@ -432,15 +434,15 @@ public abstract class AuthoringComponent extends CustomComponent {
         layout.addComponent(new PopupView("Show Formatting Syntax",
                 getSyntaxLabel(formattingSyntaxXhtml)), "formattingsyntax");
 
-        input = new ToriExpandingTextArea();
+        input = new TextArea();
         if (inputPrompt != null) {
             input.setInputPrompt(inputPrompt);
         }
-        input.setMaxRows(MAX_ROWS_EXPANDED);
+        // input.setMaxRows(MAX_ROWS_EXPANDED);
         input.setImmediate(true);
         layout.addComponent(input, "input");
 
-        preview = new Label("<br/>", Label.CONTENT_XHTML);
+        preview = new Label("<br/>", ContentMode.XHTML);
         layout.addComponent(preview, "preview");
         layout.addComponent(new NativeButton("Post", POST_LISTENER),
                 "postbutton");
@@ -454,13 +456,12 @@ public abstract class AuthoringComponent extends CustomComponent {
         setCompactMode(false);
     }
 
-    public ToriExpandingTextArea getInput() {
+    public TextArea getInput() {
         return input;
     }
 
     private static Label getSyntaxLabel(final String formattingSyntaxXhtml) {
-        final Label label = new Label(formattingSyntaxXhtml,
-                Label.CONTENT_XHTML);
+        final Label label = new Label(formattingSyntaxXhtml, ContentMode.XHTML);
         label.setWidth("250px");
         return label;
     }
@@ -488,10 +489,10 @@ public abstract class AuthoringComponent extends CustomComponent {
 
     protected void setCompactMode(final boolean compact) {
         if (compact) {
-            input.setMaxRows(MAX_ROWS_COMPACT);
+            // input.setMaxRows(MAX_ROWS_COMPACT);
             addStyleName("compact");
         } else {
-            input.setMaxRows(MAX_ROWS_EXPANDED);
+            // input.setMaxRows(MAX_ROWS_EXPANDED);
             removeStyleName("compact");
         }
         compactMode = compact;
@@ -510,7 +511,7 @@ public abstract class AuthoringComponent extends CustomComponent {
     }
 
     public void insertIntoMessage(final String unformattedText) {
-        final String text = (String) input.getValue();
+        final String text = input.getValue();
         input.setValue(text + unformattedText);
         input.focus();
     }

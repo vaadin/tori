@@ -124,7 +124,7 @@ public class CategoryListing extends
                              * FIXME: make sure that no categories were added to
                              * the UI.
                              */
-                            getApplication().getMainWindow().showNotification(
+                            getRoot().showNotification(
                                     "Couldn't save your modifications :(");
                         }
                     }
@@ -139,7 +139,7 @@ public class CategoryListing extends
                     getPresenter().applyRearrangement();
                 } catch (final DataSourceException e) {
                     /* FIXME: refresh view to show that nothing was rearranged? */
-                    getApplication().getMainWindow().showNotification(
+                    getRoot().showNotification(
                             "Couldn't save new arrangement :(");
                 }
             }

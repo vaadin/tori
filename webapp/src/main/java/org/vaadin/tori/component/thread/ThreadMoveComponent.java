@@ -20,6 +20,7 @@ import com.vaadin.ui.Tree;
 public class ThreadMoveComponent extends CustomComponent {
 
     private final CssLayout layout = new CssLayout();
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We ignore serialization")
     private final DiscussionThread thread;
     private Tree categories;
 
@@ -34,7 +35,6 @@ public class ThreadMoveComponent extends CustomComponent {
             final Panel panel = new Panel("Move Thread to Category...");
             panel.setWidth("100%");
             panel.setHeight("250px");
-            panel.setScrollable(true);
 
             categories = createCategories(presenter);
             panel.addComponent(categories);
@@ -50,8 +50,7 @@ public class ThreadMoveComponent extends CustomComponent {
                             try {
                                 presenter.move(thread, newCategory);
                             } catch (final DataSourceException e) {
-                                getApplication()
-                                        .getMainWindow()
+                                getRoot()
                                         .showNotification(
                                                 DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                             }

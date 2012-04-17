@@ -33,7 +33,7 @@ public class TopicComponent extends CssLayout {
                 menu.swap(this, UNFOLLOW_ICON, UNFOLLOW_CAPTION,
                         new UnfollowAction(thread));
             } catch (final DataSourceException e) {
-                getApplication().getMainWindow().showNotification(
+                getRoot().showNotification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
         }
@@ -53,7 +53,7 @@ public class TopicComponent extends CssLayout {
                 menu.swap(this, FOLLOW_ICON, FOLLOW_CAPTION, new FollowAction(
                         thread));
             } catch (final DataSourceException e) {
-                getApplication().getMainWindow().showNotification(
+                getRoot().showNotification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
         }
@@ -73,7 +73,7 @@ public class TopicComponent extends CssLayout {
                 menu.swap(this, UNSTICKY_ICON, UNSTICKY_CAPTION,
                         new UnstickyAction(thread));
             } catch (final DataSourceException e) {
-                getApplication().getMainWindow().showNotification(
+                getRoot().showNotification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
 
@@ -94,7 +94,7 @@ public class TopicComponent extends CssLayout {
                 menu.swap(this, STICKY_ICON, STICKY_CAPTION, new StickyAction(
                         thread));
             } catch (final DataSourceException e) {
-                getApplication().getMainWindow().showNotification(
+                getRoot().showNotification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
 
@@ -115,7 +115,7 @@ public class TopicComponent extends CssLayout {
                 menu.swap(this, UNLOCK_ICON, UNLOCK_CAPTION, new UnlockAction(
                         thread));
             } catch (final DataSourceException e) {
-                getApplication().getMainWindow().showNotification(
+                getRoot().showNotification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
 
@@ -135,7 +135,7 @@ public class TopicComponent extends CssLayout {
                 presenter.unlock(thread);
                 menu.swap(this, LOCK_ICON, LOCK_CAPTION, new LockAction(thread));
             } catch (final DataSourceException e) {
-                getApplication().getMainWindow().showNotification(
+                getRoot().showNotification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
 
@@ -169,6 +169,7 @@ public class TopicComponent extends CssLayout {
     private static final Resource UNLOCK_ICON = new ThemeResource(
             "images/icon-unlock.png");
 
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "ignoring serialization")
     private CategoryPresenter presenter;
 
     private ContextMenu menu;
@@ -254,8 +255,7 @@ public class TopicComponent extends CssLayout {
                             try {
                                 presenter.delete(thread);
                             } catch (final DataSourceException e) {
-                                getApplication()
-                                        .getMainWindow()
+                                getRoot()
                                         .showNotification(
                                                 DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                             }

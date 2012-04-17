@@ -94,11 +94,6 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
      */
     protected abstract void navigationTo(String[] arguments);
 
-    @Override
-    public String getWarningForNavigatingFrom() {
-        return null;
-    }
-
     protected ToriNavigator getNavigator() {
         return navigator;
     }
