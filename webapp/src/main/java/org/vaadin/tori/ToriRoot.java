@@ -20,7 +20,7 @@ public class ToriRoot extends Root {
 
     @Override
     protected void init(final WrappedRequest request) {
-        setDescription("Tori");
+        setCaption("Tori");
         final VerticalLayout windowLayout = new VerticalLayout();
         windowLayout.setMargin(false);
         setContent(windowLayout);
