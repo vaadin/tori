@@ -1,9 +1,14 @@
 package org.vaadin.tori.widgetset.client.ui.lazylayout;
 
+import java.util.List;
+
 import org.vaadin.tori.component.LazyLayout2;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ComponentConnector;
+import com.vaadin.terminal.gwt.client.VConsole;
+import com.vaadin.terminal.gwt.client.communication.RpcProxy;
 import com.vaadin.terminal.gwt.client.communication.StateChangeEvent;
 import com.vaadin.terminal.gwt.client.ui.AbstractLayoutConnector;
 import com.vaadin.terminal.gwt.client.ui.Connect;
@@ -12,9 +17,30 @@ import com.vaadin.terminal.gwt.client.ui.Connect;
 @SuppressWarnings("serial")
 public class LazyLayoutConnector extends AbstractLayoutConnector {
 
+    private final LazyLayoutServerRpc rpc = RpcProxy.create(
+            LazyLayoutServerRpc.class, this);
+
+    @Override
+    protected void init() {
+        super.init();
+        registerRpc(LazyLayoutClientRpc.class, new LazyLayoutClientRpc() {
+            @Override
+            public void renderComponents(final List<Integer> indicesToFetch) {
+                VConsole.log("LazyLayoutConnector.init().new LazyLayoutClientRpc() {...}.renderComponents()");
+            }
+        });
+    }
+
     @Override
     protected VLazyLayout2 createWidget() {
-        return GWT.create(VLazyLayout2.class);
+        final VLazyLayout2 lazyLayout = GWT.create(VLazyLayout2.class);
+        lazyLayout.setFetcher(new VLazyLayout2.ComponentFetcher() {
+            @Override
+            public void fetchIndices(final List<Integer> indicesToFetch) {
+                rpc.fetchComponentsForIndices(indicesToFetch);
+            }
+        });
+        return lazyLayout;
     }
 
     @Override
@@ -58,9 +84,21 @@ public class LazyLayoutConnector extends AbstractLayoutConnector {
     @Override
     public void onStateChanged(final StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
+
+        attachScrollHandlersIfNeeded();
+
         getWidget().setPlaceholderSize(getState().getPlaceholderHeight(),
                 getState().getPlaceholderWidth());
         getWidget()
                 .setComponentsAmount(getState().getTotalAmountOfComponents());
+        getWidget().setRenderDistance(getState().getRenderDistance());
+        getWidget().setRenderDelay(getState().getRenderDelay());
     }
+
+    private void attachScrollHandlersIfNeeded() {
+        final Widget rootWidget = getConnection().getRootConnector()
+                .getWidget();
+        getWidget().attachScrollHandlersIfNeeded(rootWidget);
+    }
+
 }

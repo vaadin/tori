@@ -18,8 +18,11 @@ package org.vaadin.tori.component;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
+import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutClientRpc;
+import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutServerRpc;
 import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutState;
 
 import com.vaadin.ui.AbstractLayout;
@@ -31,10 +34,26 @@ public class LazyLayout2 extends AbstractLayout {
     /**
      * Custom layout slots containing the components.
      */
-    protected LinkedList<Component> components = new LinkedList<Component>();
+    protected List<Component> components = new LinkedList<Component>();
     private final Set<Component> loadedComponents = new HashSet<Component>();
 
+    private final LazyLayoutServerRpc rpc = new LazyLayoutServerRpc() {
+        @Override
+        public void fetchComponentsForIndices(final List<Integer> indicesToFetch) {
+            for (final Integer index : indicesToFetch) {
+                System.out
+                        .println("LazyLayout2.rpc.new LazyLayoutServerRpc() {...}.fetchComponentsForIndices()");
+
+                loadedComponents.add(getComponent(index));
+                getRpcProxy(LazyLayoutClientRpc.class).renderComponents(
+                        indicesToFetch);
+            }
+        }
+    };
+
     public LazyLayout2() {
+        registerRpc(rpc);
+        getState().setComponents(components);
     }
 
     @Override
@@ -178,13 +197,11 @@ public class LazyLayout2 extends AbstractLayout {
     }
 
     public void setRenderDistance(final int renderDistancePx) {
-        // TODO Auto-generated method stub
-        System.out.println("LazyLayout2.setRenderDistance()");
+        getState().setRenderDistance(renderDistancePx);
     }
 
     public void setRenderDelay(final int renderDelayMillis) {
-        // TODO Auto-generated method stub
-        System.out.println("LazyLayout2.setRenderDelay()");
+        getState().setRenderDelay(renderDelayMillis);
     }
 
 }
