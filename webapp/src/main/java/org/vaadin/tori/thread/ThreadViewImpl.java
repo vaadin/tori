@@ -131,6 +131,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             // }
 
             if (i == 0) {
+                // FIXME floatingbar
                 // // create the floating summary bar for the first post
                 // final FloatingBar summaryBar = getSummaryBar(post, c);
                 // summaryBar.setScrollComponent(c);
