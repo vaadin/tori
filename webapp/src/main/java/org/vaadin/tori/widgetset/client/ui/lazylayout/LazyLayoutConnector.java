@@ -1,11 +1,9 @@
 package org.vaadin.tori.widgetset.client.ui.lazylayout;
 
 import org.vaadin.tori.component.LazyLayout2;
-import org.vaadin.tori.widgetset.client.ui.lazylayout.VLazyLayout2.FlowPane;
 
 import com.google.gwt.core.client.GWT;
 import com.vaadin.terminal.gwt.client.ComponentConnector;
-import com.vaadin.terminal.gwt.client.ConnectorHierarchyChangeEvent;
 import com.vaadin.terminal.gwt.client.communication.StateChangeEvent;
 import com.vaadin.terminal.gwt.client.ui.AbstractLayoutConnector;
 import com.vaadin.terminal.gwt.client.ui.Connect;
@@ -34,9 +32,11 @@ public class LazyLayoutConnector extends AbstractLayoutConnector {
         // not supported
     }
 
+    /*-
     @Override
     public void onConnectorHierarchyChange(
             final ConnectorHierarchyChangeEvent event) {
+
         super.onConnectorHierarchyChange(event);
 
         int index = 0;
@@ -53,10 +53,13 @@ public class LazyLayoutConnector extends AbstractLayoutConnector {
             cssLayoutWidgetContainer.remove(child.getWidget());
         }
     }
+     */
 
     @Override
     public void onStateChanged(final StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
+        getWidget().setPlaceholderSize(getState().getPlaceholderHeight(),
+                getState().getPlaceholderWidth());
         getWidget()
                 .setComponentsAmount(getState().getTotalAmountOfComponents());
     }

@@ -15,8 +15,10 @@
  */
 package org.vaadin.tori.component;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Set;
 
 import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutState;
 
@@ -30,8 +32,14 @@ public class LazyLayout2 extends AbstractLayout {
      * Custom layout slots containing the components.
      */
     protected LinkedList<Component> components = new LinkedList<Component>();
+    private final Set<Component> loadedComponents = new HashSet<Component>();
 
     public LazyLayout2() {
+    }
+
+    @Override
+    public boolean isComponentVisible(final Component childComponent) {
+        return loadedComponents.contains(childComponent);
     }
 
     /**
@@ -48,9 +56,6 @@ public class LazyLayout2 extends AbstractLayout {
         components.add(c);
         try {
             super.addComponent(c);
-
-            // /* this makes the component load lazily */
-            c.setVisible(false);
             getState().setTotalAmountOfComponents(getComponentCount());
 
             requestRepaint();
@@ -62,9 +67,7 @@ public class LazyLayout2 extends AbstractLayout {
 
     public void addComponentEagerly(final Component c) {
         addComponent(c);
-
-        // this makes the component load eagerly
-        c.setVisible(true);
+        loadedComponents.add(c);
     }
 
     /**
@@ -170,8 +173,8 @@ public class LazyLayout2 extends AbstractLayout {
 
     public void setPlaceholderSize(final String placeholderHeight,
             final String placeholderWidth) {
-        // TODO Auto-generated method stub
-        System.out.println("LazyLayout2.setPlaceholderSize()");
+        getState().setPlaceholderHeight(placeholderHeight);
+        getState().setPlaceholderWidth(placeholderWidth);
     }
 
     public void setRenderDistance(final int renderDistancePx) {
