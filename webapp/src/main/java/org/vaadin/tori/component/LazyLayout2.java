@@ -20,32 +20,18 @@ import java.util.LinkedList;
 
 import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutState;
 
-import com.vaadin.event.LayoutEvents.LayoutClickEvent;
-import com.vaadin.terminal.gwt.client.Connector;
-import com.vaadin.terminal.gwt.client.MouseEventDetails;
-import com.vaadin.terminal.gwt.client.ui.csslayout.CssLayoutServerRPC;
 import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Component;
 
 @SuppressWarnings("serial")
 public class LazyLayout2 extends AbstractLayout {
 
-    private final CssLayoutServerRPC rpc = new CssLayoutServerRPC() {
-
-        @Override
-        public void layoutClick(final MouseEventDetails mouseDetails,
-                final Connector clickedConnector) {
-            fireEvent(LayoutClickEvent.createEvent(LazyLayout2.this,
-                    mouseDetails, clickedConnector));
-        }
-    };
     /**
      * Custom layout slots containing the components.
      */
     protected LinkedList<Component> components = new LinkedList<Component>();
 
     public LazyLayout2() {
-        registerRpc(rpc);
     }
 
     /**
