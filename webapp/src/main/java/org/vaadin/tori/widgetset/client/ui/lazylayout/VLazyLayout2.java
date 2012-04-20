@@ -3,7 +3,6 @@ package org.vaadin.tori.widgetset.client.ui.lazylayout;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.google.gwt.event.dom.client.ScrollEvent;
@@ -383,13 +382,17 @@ public class VLazyLayout2 extends SimplePanel {
         fetcher = componentFetcher;
     }
 
-    public void renderComponents(final Map<Integer, Widget> indicesToFetch) {
-
-    }
-
     public void put(final Widget widget, final int i) {
         try {
-            if (panel.getWidget(i) instanceof PlaceholderWidget) {
+
+            final Widget panelWidget = panel.getWidget(i);
+
+            if (panelWidget.equals(widget)) {
+                VConsole.error("Unnecessary placement command at index " + i);
+                return;
+            }
+
+            if (panelWidget instanceof PlaceholderWidget) {
                 panel.remove(i);
                 panel.insert(widget, i);
             } else {

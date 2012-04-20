@@ -41,13 +41,10 @@ public class LazyLayout2 extends AbstractLayout {
         @Override
         public void fetchComponentsForIndices(final List<Integer> indicesToFetch) {
             for (final Integer index : indicesToFetch) {
-                System.out
-                        .println("LazyLayout2.rpc.new LazyLayoutServerRpc() {...}.fetchComponentsForIndices()");
-
                 loadedComponents.add(getComponent(index));
-                getRpcProxy(LazyLayoutClientRpc.class).renderComponents(
-                        indicesToFetch);
             }
+            getRpcProxy(LazyLayoutClientRpc.class).renderComponents(
+                    indicesToFetch);
         }
     };
 
