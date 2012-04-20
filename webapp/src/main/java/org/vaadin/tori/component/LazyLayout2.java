@@ -43,6 +43,8 @@ public class LazyLayout2 extends AbstractLayout {
             for (final Integer index : indicesToFetch) {
                 loadedComponents.add(getComponent(index));
             }
+
+            requestRepaintAll();
             getRpcProxy(LazyLayoutClientRpc.class).renderComponents(
                     indicesToFetch);
         }
