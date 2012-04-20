@@ -7,9 +7,11 @@ import org.vaadin.tori.component.LazyLayout2;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ComponentConnector;
+import com.vaadin.terminal.gwt.client.Connector;
 import com.vaadin.terminal.gwt.client.VConsole;
 import com.vaadin.terminal.gwt.client.communication.RpcProxy;
 import com.vaadin.terminal.gwt.client.communication.StateChangeEvent;
+import com.vaadin.terminal.gwt.client.ui.AbstractComponentConnector;
 import com.vaadin.terminal.gwt.client.ui.AbstractLayoutConnector;
 import com.vaadin.terminal.gwt.client.ui.Connect;
 
@@ -26,7 +28,33 @@ public class LazyLayoutConnector extends AbstractLayoutConnector {
         registerRpc(LazyLayoutClientRpc.class, new LazyLayoutClientRpc() {
             @Override
             public void renderComponents(final List<Integer> indicesToFetch) {
-                VConsole.log("LazyLayoutConnector.init().new LazyLayoutClientRpc() {...}.renderComponents()");
+                final List<? extends Connector> components = getState()
+                        .getComponents();
+
+                if (indicesToFetch == null || indicesToFetch.isEmpty()) {
+                    VConsole.error("no indices to fetch");
+                } else {
+                    for (final int i : indicesToFetch) {
+                        try {
+                            final Connector connector = components.get(i);
+                            if (connector == null) {
+                                VConsole.error("No component for index "
+                                        + i
+                                        + " in state, even if it should be there");
+                                continue;
+                            }
+                            VConsole.error("YAY! " + i);
+
+                            if (connector instanceof AbstractComponentConnector) {
+                                final AbstractComponentConnector componentConnector = (AbstractComponentConnector) connector;
+                                getWidget().put(componentConnector.getWidget(),
+                                        i);
+                            }
+                        } catch (final IndexOutOfBoundsException e) {
+                            VConsole.error(e.getMessage());
+                        }
+                    }
+                }
             }
         });
     }

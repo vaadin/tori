@@ -386,4 +386,19 @@ public class VLazyLayout2 extends SimplePanel {
     public void renderComponents(final Map<Integer, Widget> indicesToFetch) {
 
     }
+
+    public void put(final Widget widget, final int i) {
+        try {
+            if (panel.getWidget(i) instanceof PlaceholderWidget) {
+                panel.remove(i);
+                panel.insert(widget, i);
+            } else {
+                VConsole.error("Trying to replace a component that isn't a placeholder. Index "
+                        + i);
+            }
+        } catch (final IndexOutOfBoundsException e) {
+            VConsole.error("Trying to replace a widget to a slot that doesn't exist. Index "
+                    + i);
+        }
+    }
 }
