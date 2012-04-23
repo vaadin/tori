@@ -34,8 +34,8 @@ public class LazyLayout2 extends AbstractLayout {
     /**
      * Custom layout slots containing the components.
      */
-    protected List<Component> components = new LinkedList<Component>();
-    private final Set<Component> loadedComponents = new HashSet<Component>();
+    protected final List<Component> components = new LinkedList<Component>();
+    protected final Set<Component> loadedComponents = new HashSet<Component>();
 
     private final LazyLayoutServerRpc rpc = new LazyLayoutServerRpc() {
         @Override
@@ -202,5 +202,4 @@ public class LazyLayout2 extends AbstractLayout {
     public void setRenderDelay(final int renderDelayMillis) {
         getState().setRenderDelay(renderDelayMillis);
     }
-
 }

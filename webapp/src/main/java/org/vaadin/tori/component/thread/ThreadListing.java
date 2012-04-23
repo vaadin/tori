@@ -1,14 +1,20 @@
 package org.vaadin.tori.component.thread;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.vaadin.tori.category.CategoryPresenter;
+import org.vaadin.tori.component.GeneratedLazyLayout;
+import org.vaadin.tori.component.GeneratedLazyLayout.ComponentGenerator;
 import org.vaadin.tori.data.entity.DiscussionThread;
+import org.vaadin.tori.exception.DataSourceException;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 
 /**
  * UI component for displaying a vertical hierarchical list of threads.
@@ -35,11 +41,9 @@ public class ThreadListing extends CustomComponent {
 
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "ignoring serialization")
     protected final CategoryPresenter presenter;
-    // protected final LazyLayout layout;
-    protected final CssLayout layout;
+    protected final GeneratedLazyLayout layout;
+    // protected final CssLayout layout;
 
-    /*-
-    FIXME lazyLayout
     private transient final ComponentGenerator componentGenerator = new ComponentGenerator() {
         @Override
         public List<Component> getComponentsAtIndexes(final int from,
@@ -60,9 +64,9 @@ public class ThreadListing extends CustomComponent {
         }
 
         @Override
-        public long getAmountOfComponents() {
+        public int getAmountOfComponents() {
             try {
-                return Math.min(presenter.countThreads(),
+                return (int) Math.min(presenter.countThreads(),
                         MAX_AMOUNT_OF_SHOWN_THREADS);
             } catch (final DataSourceException e) {
                 getRoot().showNotification(
@@ -72,7 +76,7 @@ public class ThreadListing extends CustomComponent {
             }
         }
     };
-     */
+
     private final CssLayout root = new CssLayout();
 
     public ThreadListing(final CategoryPresenter presenter) {
@@ -82,17 +86,13 @@ public class ThreadListing extends CustomComponent {
 
         setCompositionRoot(root);
 
-        /*-
-         * FIXME LazyLayout
-        layout = new LazyLayout();
+        layout = new GeneratedLazyLayout(componentGenerator);
         layout.setPlaceholderSize(PLACEHOLDER_HEIGHT, PLACEHOLDER_WIDTH);
         layout.setRenderDistance(RENDER_DISTANCE_PX);
         layout.setRenderDelay(RENDER_DELAY_MILLIS);
         layout.setStyleName("wrapper-layout");
-        layout.setComponentGenerator(componentGenerator);
-         */
-        layout = new CssLayout();
-        layout.setStyleName("wrapper-layout");
+        // layout = new CssLayout();
+        // layout.setStyleName("wrapper-layout");
 
         root.addComponent(getHeaderComponent());
         root.addComponent(layout);
