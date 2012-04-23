@@ -391,9 +391,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void confirmReplyPostedAndShowIt(final Post newPost) {
-        // FIXME lazylayout
-        // postsLayout.addComponentEagerly(newPostComponent(newPost));
-        postsLayout.addComponent(newPostComponent(newPost));
+        postsLayout.addComponentEagerly(newPostComponent(newPost));
     }
 
     @Override
