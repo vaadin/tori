@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -13,6 +15,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import org.vaadin.tori.data.entity.Attachment;
+import org.vaadin.tori.data.entity.AttachmentData;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
@@ -24,7 +28,7 @@ import org.vaadin.tori.service.post.PostReport;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 
-public class TestDataSource implements DataSource {
+public class TestDataSource implements DataSource, DebugDataSource {
 
     private static final long CURRENT_USER_ID = 3;
     private final User currentUser;
@@ -357,6 +361,7 @@ public class TestDataSource implements DataSource {
 
                 final EntityTransaction transaction = em.getTransaction();
                 transaction.begin();
+                // TODO: Handle attachments!
                 em.merge(thread);
                 transaction.commit();
                 return null;
@@ -566,10 +571,61 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public Post saveAsCurrentUser(final Post post) throws DataSourceException {
+    public Post saveAsCurrentUser(final Post post,
+            final Map<String, byte[]> files) throws DataSourceException {
         post.setAuthor(currentUser);
-        save(post);
+
+        executeWithEntityManager(new Command<Void>() {
+            @Override
+            public Void execute(final EntityManager em) {
+                em.getTransaction().begin();
+
+                final DiscussionThread thread = em.find(DiscussionThread.class,
+                        post.getThread().getId());
+                thread.getPosts().add(post);
+                em.persist(post);
+
+                persistPostAttachments(post, files, em);
+
+                em.getTransaction().commit();
+                return null;
+            }
+        });
+
         return post;
+    }
+
+    private void persistPostAttachments(final Post post,
+            final Map<String, byte[]> files, final EntityManager em) {
+        if (!em.getTransaction().isActive()) {
+            throw new IllegalArgumentException("Transaction inactive");
+        }
+        if (!em.contains(post)) {
+            throw new IllegalArgumentException("Post instance not managed");
+        }
+
+        if (post.getAttachments() == null) {
+            post.setAttachments(new ArrayList<Attachment>());
+        }
+
+        for (final Entry<String, byte[]> entry : files.entrySet()) {
+            final Attachment attachment = new Attachment();
+            attachment.setFilename(entry.getKey());
+            attachment.setPost(post);
+            attachment.setFileSize(entry.getValue().length);
+            em.persist(attachment);
+            post.getAttachments().add(attachment);
+
+            final AttachmentData attachmentData = new AttachmentData();
+            attachmentData.setAttachment(attachment);
+            attachmentData.setData(entry.getValue());
+            em.persist(attachmentData);
+
+            em.flush();
+
+            attachment.setDownloadUrl(ATTACHMENT_PREFIX
+                    + attachmentData.getId() + "/" + attachment.getFilename());
+        }
     }
 
     @Override
@@ -669,7 +725,8 @@ public class TestDataSource implements DataSource {
 
     @Override
     public DiscussionThread saveNewThread(final DiscussionThread newThread,
-            final Post firstPost) throws DataSourceException {
+            final Map<String, byte[]> files, final Post firstPost)
+            throws DataSourceException {
         return executeWithEntityManager(new Command<DiscussionThread>() {
             @Override
             public DiscussionThread execute(final EntityManager em) {
@@ -678,7 +735,10 @@ public class TestDataSource implements DataSource {
                 final EntityTransaction transaction = em.getTransaction();
                 transaction.begin();
                 final DiscussionThread mergedThread = em.merge(newThread);
-                em.merge(firstPost);
+                final Post post = em.merge(firstPost);
+
+                persistPostAttachments(post, files, em);
+
                 transaction.commit();
 
                 return mergedThread;
@@ -752,5 +812,27 @@ public class TestDataSource implements DataSource {
         System.out.println("My posts not implemented in "
                 + getClass().getSimpleName() + ".");
         return Collections.emptyList();
+    }
+
+    @Override
+    public byte[] getAttachmentData(final long id) {
+        try {
+            return executeWithEntityManager(new Command<byte[]>() {
+                @Override
+                public byte[] execute(final EntityManager em) {
+                    final AttachmentData data = em.find(AttachmentData.class,
+                            id);
+                    return data.getData();
+                }
+            });
+        } catch (final DataSourceException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public int getAttachmentMaxFileSize() {
+        return 307200;
     }
 }

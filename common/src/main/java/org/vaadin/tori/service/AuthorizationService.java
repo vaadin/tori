@@ -46,4 +46,6 @@ public interface AuthorizationService {
 
     boolean mayCreateThreadIn(@NonNull Category category);
 
+    boolean mayAddFiles(@NonNull Category currentThread);
+
 }

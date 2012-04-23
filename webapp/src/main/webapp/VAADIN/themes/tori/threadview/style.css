@@ -327,9 +327,29 @@
 	display: none !important;
 }
 
+.authoring .buttons div[location="uploadbutton"] {
+	float: right;
+}
+
 .authoring div[location="formattingsyntax"] {
 	float: right;	
 }
+
+.authoring div[location="attachments"] .v-caption{
+	font-weight: bold;
+	color: #5F5F5F;
+}
+
+/** The following two icons are from http://www.famfamfam.com/lab/icons/mini/ */
+.authoring div[location="attachments"] .filerow .v-textfield{
+	padding-left: 20px;
+	background: url(../images/page_attachment.gif) no-repeat left center;
+}
+
+.authoring div[location="attachments"] .filerow .v-csslayout-margin{
+	background: url(../images/action_stop.gif) no-repeat right center;
+	cursor: pointer;
+} 
 
 .authoring div[location="toolbar"] select {
 	border: 2px solid #c8c7b5;

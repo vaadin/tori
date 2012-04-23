@@ -16,6 +16,7 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     private final Map<Category, Boolean> mayDeleteCategory = new HashMap<Category, Boolean>();
     private final Map<Category, Boolean> mayEditCategory = new HashMap<Category, Boolean>();;
     private final Map<DiscussionThread, Boolean> mayReplyInThread = new HashMap<DiscussionThread, Boolean>();
+    private final Map<Category, Boolean> mayAddFilesInThread = new HashMap<Category, Boolean>();
     private final Map<Post, Boolean> mayEditPost = new HashMap<Post, Boolean>();
     private boolean mayBan = true;
     private final Map<DiscussionThread, Boolean> mayFollow = new HashMap<DiscussionThread, Boolean>();
@@ -109,8 +110,18 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     }
 
     @Override
+    public boolean mayAddFiles(final Category category) {
+        return get(mayAddFilesInThread, category, true);
+    }
+
+    @Override
     public void setMayReplyIn(final DiscussionThread thread, final boolean b) {
         mayReplyInThread.put(thread, b);
+    }
+
+    @Override
+    public void setMayAddFilesIn(final Category category, final boolean b) {
+        mayAddFilesInThread.put(category, b);
     }
 
     @Override

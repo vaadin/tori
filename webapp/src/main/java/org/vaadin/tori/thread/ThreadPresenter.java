@@ -1,6 +1,7 @@
 package org.vaadin.tori.thread;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.data.DataSource;
@@ -13,22 +14,37 @@ import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.post.PostReport;
+import org.vaadin.tori.thread.event.AddAttachmentEvent;
+import org.vaadin.tori.thread.event.RemoveAttachmentEvent;
+import org.vaadin.tori.thread.event.ResetInputEvent;
+import org.vaadin.tori.util.EventBus;
 
 import com.google.common.collect.Lists;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
-public class ThreadPresenter extends Presenter<ThreadView> {
+public class ThreadPresenter extends Presenter<ThreadView> implements
+        ThreadViewListener {
 
     public static final String NEW_THREAD_ARGUMENT = "new";
 
     private DiscussionThread currentThread;
     private Category categoryWhileCreatingNewThread;
+    private final LinkedHashMap<String, byte[]> attachments = new LinkedHashMap<String, byte[]>();
 
     public ThreadPresenter(final @NonNull DataSource dataSource,
             final @NonNull AuthorizationService authorizationService) {
         super(dataSource, authorizationService);
+    }
+
+    @Override
+    public void init() {
+        super.init();
+        EventBus.register(AddAttachmentEvent.class);
+        EventBus.register(ResetInputEvent.class);
+        EventBus.register(RemoveAttachmentEvent.class);
+        EventBus.setListener(this);
     }
 
     public void setCurrentThreadById(final @NonNull String threadIdString)
@@ -265,10 +281,44 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         return authorizationService.mayReplyIn(currentThread);
     }
 
+    public final boolean userMayAddFiles() {
+        boolean mayAddFiles;
+        if (currentThread == null) {
+            mayAddFiles = authorizationService
+                    .mayAddFiles(categoryWhileCreatingNewThread);
+        } else {
+            mayAddFiles = authorizationService.mayAddFiles(currentThread
+                    .getCategory());
+        }
+        return mayAddFiles;
+    }
+
+    public final int getMaxFileSize() {
+        return dataSource.getAttachmentMaxFileSize();
+    }
+
     @NonNull
     public String getFormattingSyntax() {
         return ToriApplication.getCurrent().getPostFormatter()
                 .getFormattingSyntaxXhtml();
+    }
+
+    @Override
+    public final void resetInput(final ResetInputEvent event) {
+        attachments.clear();
+        getView().updateAttachmentList(attachments);
+    }
+
+    @Override
+    public final void addAttachment(final AddAttachmentEvent event) {
+        attachments.put(event.getFileName(), event.getData());
+        getView().updateAttachmentList(attachments);
+    }
+
+    @Override
+    public final void removeAttachment(final RemoveAttachmentEvent event) {
+        attachments.remove(event.getFileName());
+        getView().updateAttachmentList(attachments);
     }
 
     public void sendReply(final @NonNull String rawBody)
@@ -280,7 +330,9 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                 post.setBodyRaw(rawBody);
                 post.setThread(currentThread);
                 post.setTime(new Date());
-                final Post updatedPost = dataSource.saveAsCurrentUser(post);
+
+                final Post updatedPost = dataSource.saveAsCurrentUser(post,
+                        attachments);
 
                 getView().confirmReplyPostedAndShowIt(updatedPost);
             } catch (final DataSourceException e) {
@@ -375,7 +427,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             thread.setPosts(Lists.newArrayList(post));
             post.setThread(thread);
 
-            return dataSource.saveNewThread(thread, post);
+            return dataSource.saveNewThread(thread, attachments, post);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -410,4 +462,5 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             getView().displayUserCanNotEdit();
         }
     }
+
 }

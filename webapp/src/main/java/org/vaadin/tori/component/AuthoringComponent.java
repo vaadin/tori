@@ -1,9 +1,17 @@
 package org.vaadin.tori.component;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriUtil;
+import org.vaadin.tori.thread.event.AddAttachmentEvent;
+import org.vaadin.tori.thread.event.RemoveAttachmentEvent;
+import org.vaadin.tori.thread.event.ResetInputEvent;
+import org.vaadin.tori.util.EventBus;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.PostFormatter.FontsInfo;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
@@ -41,6 +49,11 @@ import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.Receiver;
+import com.vaadin.ui.Upload.StartedEvent;
+import com.vaadin.ui.Upload.SucceededEvent;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -392,12 +405,16 @@ public abstract class AuthoringComponent extends CustomComponent {
     private final Label preview;
     private boolean compactMode;
     private final CssLayout captionLayout;
+    private final CssLayout attachmentsLayout;
     private final Handler actionHandler = new BoldAndItalicShortcutHandler();
+    private String attachmentFileName;
+    private ByteArrayOutputStream attachmentData;
 
     @CheckForNull
     private String italicSyntax;
     @CheckForNull
     private String boldSyntax;
+    private int maxFileSize = 307200;
 
     public AuthoringComponent(final AuthoringListener listener,
             final String formattingSyntaxXhtml, final String captionText) {
@@ -444,6 +461,49 @@ public abstract class AuthoringComponent extends CustomComponent {
         layout.addComponent(preview, "preview");
         layout.addComponent(new NativeButton("Post", POST_LISTENER),
                 "postbutton");
+
+        attachmentsLayout = new CssLayout();
+        attachmentsLayout.setVisible(false);
+        attachmentsLayout.setCaption("Attachments");
+        layout.addComponent(attachmentsLayout, "attachments");
+
+        final Receiver receiver = new Receiver() {
+
+            @Override
+            public OutputStream receiveUpload(final String filename,
+                    final String mimeType) {
+                attachmentData = new ByteArrayOutputStream();
+                attachmentFileName = filename;
+                return attachmentData;
+            }
+        };
+
+        final Upload attach = new Upload(null, receiver);
+        attach.setButtonCaption("Attach file");
+        attach.setImmediate(true);
+        attach.addListener(new Upload.SucceededListener() {
+            @Override
+            public void uploadSucceeded(final SucceededEvent event) {
+                EventBus.fire(new AddAttachmentEvent(attachmentFileName,
+                        attachmentData.toByteArray()));
+                attachmentFileName = null;
+                attachmentData = null;
+            }
+        });
+
+        attach.addListener(new Upload.StartedListener() {
+            @Override
+            public void uploadStarted(final StartedEvent event) {
+                if (event.getContentLength() > maxFileSize) {
+                    attach.interruptUpload();
+                    getWindow().showNotification("File size too large");
+                    return;
+                }
+            }
+        });
+
+        layout.addComponent(attach, "uploadbutton");
+
         layout.addComponent(new NativeButton("Clear", CLEAR_LISTENER),
                 "clearbutton");
 
@@ -468,6 +528,7 @@ public abstract class AuthoringComponent extends CustomComponent {
     private void resetInput() {
         input.setValue("");
         preview.setValue("<br/>");
+        EventBus.fire(new ResetInputEvent());
     }
 
     private void updatePreview(final String unformattedText) {
@@ -513,5 +574,53 @@ public abstract class AuthoringComponent extends CustomComponent {
         final String text = (String) input.getValue();
         input.setValue(text + unformattedText);
         input.focus();
+    }
+
+    public void setUserMayAddFiles(final boolean userMayAddFiles) {
+        layout.getComponent("uploadbutton").setVisible(userMayAddFiles);
+    }
+
+    public void setMaxFileSize(final int maxFileSize) {
+        this.maxFileSize = maxFileSize;
+    }
+
+    public void updateAttachmentList(
+            final LinkedHashMap<String, byte[]> attachments) {
+        attachmentsLayout.removeAllComponents();
+        attachmentsLayout.setVisible(!attachments.isEmpty());
+        for (final Entry<String, byte[]> entry : attachments.entrySet()) {
+            final String fileName = entry.getKey();
+            final int fileSize = entry.getValue().length;
+            final String caption = String.format("%s (%s KB)", fileName,
+                    fileSize / 1024);
+
+            final TextField nameComponent = new TextField();
+            nameComponent.setValue(caption);
+            nameComponent.setReadOnly(true);
+            nameComponent.setWidth(100.0f, UNITS_PERCENTAGE);
+            try {
+                nameComponent.addStyleName(fileName.substring(fileName
+                        .lastIndexOf(".") + 1));
+            } catch (final IndexOutOfBoundsException e) {
+                // NOP
+            }
+
+            final CssLayout wrapperLayout = new CssLayout();
+            wrapperLayout.setWidth(300.0f, UNITS_PIXELS);
+            wrapperLayout.addStyleName("filerow");
+            wrapperLayout.addListener(new LayoutClickListener() {
+                @Override
+                public void layoutClick(final LayoutClickEvent event) {
+                    if (event.getChildComponent() != nameComponent) {
+                        EventBus.fire(new RemoveAttachmentEvent(fileName));
+                    }
+                }
+            });
+            wrapperLayout.setMargin(false, true, false, false);
+            wrapperLayout.addComponent(nameComponent);
+
+            attachmentsLayout.addComponent(wrapperLayout);
+
+        }
     }
 }

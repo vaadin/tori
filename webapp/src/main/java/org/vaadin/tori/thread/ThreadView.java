@@ -1,5 +1,6 @@
 package org.vaadin.tori.thread;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.vaadin.tori.data.entity.Category;
@@ -77,5 +78,7 @@ public interface ThreadView extends View {
 
     /** Re-renders the post with the given post. */
     void refresh(Post post);
+
+    void updateAttachmentList(LinkedHashMap<String, byte[]> attachments);
 
 }

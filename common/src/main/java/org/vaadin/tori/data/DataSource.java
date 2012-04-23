@@ -1,6 +1,7 @@
 package org.vaadin.tori.data;
 
 import java.util.List;
+import java.util.Map;
 
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -216,9 +217,12 @@ public interface DataSource {
      * Same as {@link #save(Post)}, but makes sure that the <code>post</code>'s
      * author is the current user.
      * 
+     * @param files
+     * 
      * @return The properly updated {@link Post}
      */
-    Post saveAsCurrentUser(@NonNull Post post) throws DataSourceException;
+    Post saveAsCurrentUser(@NonNull Post post, Map<String, byte[]> files)
+            throws DataSourceException;
 
     void move(@NonNull DiscussionThread thread,
             @NonNull Category destinationCategory) throws DataSourceException;
@@ -266,7 +270,8 @@ public interface DataSource {
      */
     @NonNull
     DiscussionThread saveNewThread(@NonNull DiscussionThread newThread,
-            @NonNull Post firstPost) throws DataSourceException;
+            final Map<String, byte[]> files, @NonNull Post firstPost)
+            throws DataSourceException;
 
     /**
      * Increments the view count of the given thread by one. This method should
@@ -302,4 +307,6 @@ public interface DataSource {
     List<DiscussionThread> getRecentPosts() throws DataSourceException;
 
     List<DiscussionThread> getMyPosts() throws DataSourceException;
+
+    int getAttachmentMaxFileSize();
 }

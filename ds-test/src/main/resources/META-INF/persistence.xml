@@ -6,12 +6,14 @@
 	
 		<!-- list of entities -->
 		<class>org.vaadin.tori.data.entity.Attachment</class>
+		<class>org.vaadin.tori.data.entity.AttachmentData</class>
 		<class>org.vaadin.tori.data.entity.Category</class>
 		<class>org.vaadin.tori.data.entity.DiscussionThread</class>
 		<class>org.vaadin.tori.data.entity.User</class>
 		<class>org.vaadin.tori.data.entity.Post</class>
 		<class>org.vaadin.tori.data.entity.PostVote</class>
 		<class>org.vaadin.tori.data.entity.Following</class>
+		
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
