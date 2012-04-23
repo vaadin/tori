@@ -120,7 +120,7 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     }
 
     @Override
-    public void setMayAddFilesIn(final Category category, final boolean b) {
+    public void setMayAddFiles(final Category category, final boolean b) {
         mayAddFilesInThread.put(category, b);
     }
 
