@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.vaadin.tori.component.LazyLayout2;
-import org.vaadin.tori.widgetset.client.ui.lazylayout.VLazyLayout2.WidgetSizeMemory;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
@@ -22,40 +21,11 @@ import com.vaadin.terminal.gwt.client.ui.Connect;
 @Connect(LazyLayout2.class)
 @SuppressWarnings("serial")
 public class LazyLayoutConnector extends AbstractLayoutConnector implements
-        DirectionalManagedLayout, WidgetSizeMemory {
-
-    public static final class WidgetSize {
-
-        private final Widget newWidget;
-        private final int oldHeight;
-        private final int oldWidth;
-
-        public WidgetSize(final Widget newWidget, final int oldHeight,
-                final int oldWidth) {
-            this.newWidget = newWidget;
-            this.oldHeight = oldHeight;
-            this.oldWidth = oldWidth;
-        }
-
-        public Widget getNewWidget() {
-            return newWidget;
-        }
-
-        public int getOldHeight() {
-            return oldHeight;
-        }
-
-        public int getOldWidth() {
-            return oldWidth;
-        }
-
-    }
+        DirectionalManagedLayout {
 
     private final LazyLayoutServerRpc rpc = RpcProxy.create(
             LazyLayoutServerRpc.class, this);
     private boolean eagerLoadHasBeenDone;
-
-    private final List<WidgetSize> oldWidgetSizeMemory = new ArrayList<WidgetSize>();
 
     @Override
     protected void init() {
@@ -63,6 +33,7 @@ public class LazyLayoutConnector extends AbstractLayoutConnector implements
         registerRpc(LazyLayoutClientRpc.class, new LazyLayoutClientRpc() {
             @Override
             public void renderComponents(final List<Integer> indicesToFetch) {
+                getWidget().updateScrollAdjustmentReference();
                 swapLazyComponents(indicesToFetch);
             }
         });
@@ -71,7 +42,6 @@ public class LazyLayoutConnector extends AbstractLayoutConnector implements
     @Override
     protected VLazyLayout2 createWidget() {
         final VLazyLayout2 lazyLayout = GWT.create(VLazyLayout2.class);
-        lazyLayout.setWidgetSizeMemory(this);
         lazyLayout.setFetcher(new VLazyLayout2.ComponentFetcher() {
             @Override
             public void fetchIndices(final List<Integer> indicesToFetch) {
@@ -185,25 +155,11 @@ public class LazyLayoutConnector extends AbstractLayoutConnector implements
 
     @Override
     public void layoutVertically() {
-        if (oldWidgetSizeMemory.isEmpty()) {
-            VConsole.error("no widgets changed?");
-        }
-
-        for (final WidgetSize size : oldWidgetSizeMemory) {
-            getWidget().adjustScrollIfNecessary(size.getNewWidget(),
-                    size.getOldHeight(), size.getOldWidth());
-        }
-        oldWidgetSizeMemory.clear();
+        getWidget().fixScrollbar();
     }
 
     @Override
     public void layoutHorizontally() {
         // NOOP
-    }
-
-    @Override
-    public void storeOldWidgetSize(final Widget newWidget, final int oldHeight,
-            final int oldWidth) {
-        oldWidgetSizeMemory.add(new WidgetSize(newWidget, oldHeight, oldWidth));
     }
 }

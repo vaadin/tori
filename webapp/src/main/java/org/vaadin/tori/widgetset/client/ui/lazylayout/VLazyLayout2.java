@@ -25,9 +25,30 @@ public class VLazyLayout2 extends SimplePanel {
     public static final String TAGNAME = "lazylayout";
     public static final String CLASSNAME = "v-" + TAGNAME;
 
-    public interface WidgetSizeMemory {
-        void storeOldWidgetSize(final Widget newWidget, int oldHeight,
-                int oldWidth);
+    public static final class WidgetInfo {
+
+        private final Widget newWidget;
+        private final int oldHeight;
+        private final int oldTop;
+
+        public WidgetInfo(final Widget newWidget, final int oldHeight,
+                final int oldTop) {
+            this.newWidget = newWidget;
+            this.oldHeight = oldHeight;
+            this.oldTop = oldTop;
+        }
+
+        public Widget getNewWidget() {
+            return newWidget;
+        }
+
+        public int getOldHeight() {
+            return oldHeight;
+        }
+
+        public int getOldTop() {
+            return oldTop;
+        }
     }
 
     public interface ComponentFetcher {
@@ -98,7 +119,12 @@ public class VLazyLayout2 extends SimplePanel {
     private boolean scrollingWasProgrammaticallyAdjusted = false;
 
     private ComponentFetcher fetcher = null;
-    private WidgetSizeMemory widgetSizeMemory = null;
+    private final List<WidgetInfo> widgetInfo = new ArrayList<WidgetInfo>();
+
+    /**
+     * @see VLazyLayout2#updateScrollAdjustmentReference()
+     */
+    private int scrollAdjustmentLimitPx = -1;
 
     public VLazyLayout2() {
         super();
@@ -388,10 +414,6 @@ public class VLazyLayout2 extends SimplePanel {
         fetcher = componentFetcher;
     }
 
-    public void setWidgetSizeMemory(final WidgetSizeMemory memory) {
-        widgetSizeMemory = memory;
-    }
-
     public void replacePlaceholderWith(final Widget widget, final int i) {
         try {
 
@@ -403,13 +425,9 @@ public class VLazyLayout2 extends SimplePanel {
             }
 
             if (panelWidget instanceof PlaceholderWidget) {
-                if (widgetSizeMemory != null) {
-                    final int height = panelWidget.getOffsetHeight();
-                    final int width = panelWidget.getOffsetWidth();
-                    widgetSizeMemory.storeOldWidgetSize(widget, height, width);
-                } else {
-                    VConsole.error("LazyLayout has no WidgetSizeMemory attached. Scrolling will bork.");
-                }
+                final int height = panelWidget.getElement().getOffsetHeight();
+                final int top = panelWidget.getElement().getOffsetTop();
+                widgetInfo.add(new WidgetInfo(widget, height, top));
 
                 panel.remove(i);
                 panel.insert(widget, i);
@@ -423,10 +441,6 @@ public class VLazyLayout2 extends SimplePanel {
         }
     }
 
-    /**
-     * @param sizemodifiedChildren
-     *            The Paintables that have received their final height.
-     */
     public void adjustScrollIfNecessary(final Widget newWidget,
             final int oldHeight, final int oldWidth) {
 
@@ -434,7 +448,8 @@ public class VLazyLayout2 extends SimplePanel {
         final int previousWidgetOffsetTop = getPreviousWidgetOffsetTop(scrollPos);
 
         /*
-         * only check for elements that are below the current scroll position
+         * only check for elements that are above the current scroll position.
+         * Element size changes below don't bounce the screen around.
          */
         if (newWidget.getElement().getOffsetTop() < previousWidgetOffsetTop) {
             final int newHeight = newWidget.getOffsetHeight();
@@ -490,16 +505,100 @@ public class VLazyLayout2 extends SimplePanel {
     }
 
     private int getCurrentScrollPos() {
-        com.google.gwt.dom.client.Element parent = getElement()
-                .getOffsetParent();
-        while (parent != null && parent.getScrollTop() <= 0) {
-            parent = parent.getOffsetParent();
-        }
+        final com.google.gwt.dom.client.Element parent = getFirstScrolledElement();
 
         if (parent != null) {
             return parent.getScrollTop();
         } else {
             return Window.getScrollTop();
         }
+    }
+
+    private com.google.gwt.dom.client.Element getFirstScrolledElement() {
+        com.google.gwt.dom.client.Element parent = getElement()
+                .getOffsetParent();
+        while (parent != null && parent.getScrollTop() <= 0) {
+            parent = parent.getOffsetParent();
+        }
+        return parent;
+    }
+
+    public void fixScrollbar() {
+        int requiredScrollAdjustment = 0;
+        if (scrollAdjustmentLimitPx >= 0) {
+            for (final WidgetInfo info : widgetInfo) {
+                if (info.getOldTop() < scrollAdjustmentLimitPx) {
+                    requiredScrollAdjustment += info.getNewWidget()
+                            .getElement().getOffsetHeight()
+                            - info.getOldHeight();
+                }
+            }
+            adjustScrollBy(requiredScrollAdjustment);
+        }
+        widgetInfo.clear();
+    }
+
+    /**
+     * This method re-evaluates the component the scroll adjustment should base
+     * upon.
+     */
+    public void updateScrollAdjustmentReference() {
+        final int currentScrollPos = getCurrentScrollPos();
+        final Widget referenceWidget = getFirstNonPlaceholderWidgetInOrAfter(currentScrollPos);
+
+        if (referenceWidget != null) {
+            scrollAdjustmentLimitPx = referenceWidget.getElement()
+                    .getOffsetTop();
+        } else {
+            scrollAdjustmentLimitPx = -1;
+        }
+    }
+
+    /**
+     * Gets the first non-placeholder widget in the current view.
+     * 
+     * @param topPixels
+     * @return <code>null</code> if no suitable widget was found.
+     */
+    private Widget getFirstNonPlaceholderWidgetInOrAfter(final int topPixels) {
+        // TODO: refactor. maek moar methods.
+
+        for (int i = 0; i < panel.getWidgetCount(); i++) {
+            final int childOffsetTop = panel.getWidget(i).getElement()
+                    .getOffsetTop();
+
+            if (topPixels < childOffsetTop) {
+                /*
+                 * we've reached the scrolled element's top. Let's search for
+                 * the first non-placeholder widget
+                 */
+
+                if (i > 0) {
+                    /*
+                     * rewind one element, because that might be a
+                     * non-placeholder widget, and we want to adjust to that.
+                     */
+                    i--;
+                }
+
+                for (; i < panel.getWidgetCount(); i++) {
+                    final Widget candidateChild = panel.getWidget(i);
+                    if (!(candidateChild instanceof PlaceholderWidget)) {
+                        return candidateChild;
+                    }
+
+                    if (candidateChild.getElement().getOffsetTop() > (topPixels + Window
+                            .getClientHeight())) {
+                        /*
+                         * we've already checked for a screenful of elements.
+                         * There's no non-placeholder widgets to adjust by.
+                         * Screw it.
+                         */
+                        return null;
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
