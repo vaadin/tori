@@ -25,6 +25,11 @@ public class VLazyLayout2 extends SimplePanel {
     public static final String TAGNAME = "lazylayout";
     public static final String CLASSNAME = "v-" + TAGNAME;
 
+    public interface WidgetSizeMemory {
+        void storeOldWidgetSize(final Widget newWidget, int oldHeight,
+                int oldWidth);
+    }
+
     public interface ComponentFetcher {
         void fetchIndices(List<Integer> indicesToFetch);
     }
@@ -93,6 +98,7 @@ public class VLazyLayout2 extends SimplePanel {
     private boolean scrollingWasProgrammaticallyAdjusted = false;
 
     private ComponentFetcher fetcher = null;
+    private WidgetSizeMemory widgetSizeMemory = null;
 
     public VLazyLayout2() {
         super();
@@ -382,7 +388,11 @@ public class VLazyLayout2 extends SimplePanel {
         fetcher = componentFetcher;
     }
 
-    public void put(final Widget widget, final int i) {
+    public void setWidgetSizeMemory(final WidgetSizeMemory memory) {
+        widgetSizeMemory = memory;
+    }
+
+    public void replacePlaceholderWith(final Widget widget, final int i) {
         try {
 
             final Widget panelWidget = panel.getWidget(i);
@@ -393,6 +403,14 @@ public class VLazyLayout2 extends SimplePanel {
             }
 
             if (panelWidget instanceof PlaceholderWidget) {
+                if (widgetSizeMemory != null) {
+                    final int height = panelWidget.getOffsetHeight();
+                    final int width = panelWidget.getOffsetWidth();
+                    widgetSizeMemory.storeOldWidgetSize(widget, height, width);
+                } else {
+                    VConsole.error("LazyLayout has no WidgetSizeMemory attached. Scrolling will bork.");
+                }
+
                 panel.remove(i);
                 panel.insert(widget, i);
             } else {
@@ -402,6 +420,86 @@ public class VLazyLayout2 extends SimplePanel {
         } catch (final IndexOutOfBoundsException e) {
             VConsole.error("Trying to replace a widget to a slot that doesn't exist. Index "
                     + i);
+        }
+    }
+
+    /**
+     * @param sizemodifiedChildren
+     *            The Paintables that have received their final height.
+     */
+    public void adjustScrollIfNecessary(final Widget newWidget,
+            final int oldHeight, final int oldWidth) {
+
+        final int scrollPos = getCurrentScrollPos();
+        final int previousWidgetOffsetTop = getPreviousWidgetOffsetTop(scrollPos);
+
+        /*
+         * only check for elements that are below the current scroll position
+         */
+        if (newWidget.getElement().getOffsetTop() < previousWidgetOffsetTop) {
+            final int newHeight = newWidget.getOffsetHeight();
+            final int requiredScrollAdjustment = newHeight - oldHeight;
+            adjustScrollBy(requiredScrollAdjustment);
+        }
+    }
+
+    private void adjustScrollBy(final int requiredScrollAdjustment) {
+        if (requiredScrollAdjustment == 0) {
+            return;
+        }
+
+        com.google.gwt.dom.client.Element parent = getElement();
+        while (parent != null && parent.getScrollTop() <= 0) {
+            parent = parent.getOffsetParent();
+        }
+
+        if (parent != null) {
+            final int currentScroll = parent.getScrollTop();
+            parent.setScrollTop(currentScroll + requiredScrollAdjustment);
+        } else {
+            final int currentScrollTop = Window.getScrollTop();
+            final int currentScrollLeft = Window.getScrollLeft();
+            Window.scrollTo(currentScrollLeft, currentScrollTop
+                    + requiredScrollAdjustment);
+        }
+        scrollingWasProgrammaticallyAdjusted = true;
+    }
+
+    /**
+     * Gets the offset top of the closest component that's above the given
+     * value.
+     * 
+     * @param topPixels
+     *            top pixels into the layout
+     * @return the position of the component above the given argument. 0 if it's
+     *         above the first component. -1 if something went weirdly wrong (i
+     *         guess no children available?)
+     */
+    private int getPreviousWidgetOffsetTop(final int topPixels) {
+        int previousOffsetTop = 0;
+        for (int i = 0; i < panel.getWidgetCount(); i++) {
+            final Widget child = panel.getWidget(i);
+            final int offsetTop = child.getElement().getOffsetTop();
+            if (topPixels < previousOffsetTop) {
+                return previousOffsetTop;
+            } else {
+                previousOffsetTop = offsetTop;
+            }
+        }
+        return -1;
+    }
+
+    private int getCurrentScrollPos() {
+        com.google.gwt.dom.client.Element parent = getElement()
+                .getOffsetParent();
+        while (parent != null && parent.getScrollTop() <= 0) {
+            parent = parent.getOffsetParent();
+        }
+
+        if (parent != null) {
+            return parent.getScrollTop();
+        } else {
+            return Window.getScrollTop();
         }
     }
 }

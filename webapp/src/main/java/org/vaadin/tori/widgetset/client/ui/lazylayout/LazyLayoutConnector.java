@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.vaadin.tori.component.LazyLayout2;
+import org.vaadin.tori.widgetset.client.ui.lazylayout.VLazyLayout2.WidgetSizeMemory;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ComponentConnector;
 import com.vaadin.terminal.gwt.client.Connector;
 import com.vaadin.terminal.gwt.client.ConnectorHierarchyChangeEvent;
+import com.vaadin.terminal.gwt.client.DirectionalManagedLayout;
 import com.vaadin.terminal.gwt.client.VConsole;
 import com.vaadin.terminal.gwt.client.communication.RpcProxy;
 import com.vaadin.terminal.gwt.client.communication.StateChangeEvent;
@@ -19,11 +21,41 @@ import com.vaadin.terminal.gwt.client.ui.Connect;
 
 @Connect(LazyLayout2.class)
 @SuppressWarnings("serial")
-public class LazyLayoutConnector extends AbstractLayoutConnector {
+public class LazyLayoutConnector extends AbstractLayoutConnector implements
+        DirectionalManagedLayout, WidgetSizeMemory {
+
+    public static final class WidgetSize {
+
+        private final Widget newWidget;
+        private final int oldHeight;
+        private final int oldWidth;
+
+        public WidgetSize(final Widget newWidget, final int oldHeight,
+                final int oldWidth) {
+            this.newWidget = newWidget;
+            this.oldHeight = oldHeight;
+            this.oldWidth = oldWidth;
+        }
+
+        public Widget getNewWidget() {
+            return newWidget;
+        }
+
+        public int getOldHeight() {
+            return oldHeight;
+        }
+
+        public int getOldWidth() {
+            return oldWidth;
+        }
+
+    }
 
     private final LazyLayoutServerRpc rpc = RpcProxy.create(
             LazyLayoutServerRpc.class, this);
     private boolean eagerLoadHasBeenDone;
+
+    private final List<WidgetSize> oldWidgetSizeMemory = new ArrayList<WidgetSize>();
 
     @Override
     protected void init() {
@@ -39,6 +71,7 @@ public class LazyLayoutConnector extends AbstractLayoutConnector {
     @Override
     protected VLazyLayout2 createWidget() {
         final VLazyLayout2 lazyLayout = GWT.create(VLazyLayout2.class);
+        lazyLayout.setWidgetSizeMemory(this);
         lazyLayout.setFetcher(new VLazyLayout2.ComponentFetcher() {
             @Override
             public void fetchIndices(final List<Integer> indicesToFetch) {
@@ -136,7 +169,12 @@ public class LazyLayoutConnector extends AbstractLayoutConnector {
 
                     if (connector instanceof AbstractComponentConnector) {
                         final AbstractComponentConnector componentConnector = (AbstractComponentConnector) connector;
-                        getWidget().put(componentConnector.getWidget(), i);
+                        getWidget().replacePlaceholderWith(
+                                componentConnector.getWidget(), i);
+                    } else {
+                        VConsole.error("LazyLayout expected an AbstractComponentConnector; "
+                                + connector.getClass().getName()
+                                + " is not one");
                     }
                 } catch (final IndexOutOfBoundsException e) {
                     VConsole.error(e.getMessage());
@@ -145,4 +183,27 @@ public class LazyLayoutConnector extends AbstractLayoutConnector {
         }
     }
 
+    @Override
+    public void layoutVertically() {
+        if (oldWidgetSizeMemory.isEmpty()) {
+            VConsole.error("no widgets changed?");
+        }
+
+        for (final WidgetSize size : oldWidgetSizeMemory) {
+            getWidget().adjustScrollIfNecessary(size.getNewWidget(),
+                    size.getOldHeight(), size.getOldWidth());
+        }
+        oldWidgetSizeMemory.clear();
+    }
+
+    @Override
+    public void layoutHorizontally() {
+        // NOOP
+    }
+
+    @Override
+    public void storeOldWidgetSize(final Widget newWidget, final int oldHeight,
+            final int oldWidth) {
+        oldWidgetSizeMemory.add(new WidgetSize(newWidget, oldHeight, oldWidth));
+    }
 }
