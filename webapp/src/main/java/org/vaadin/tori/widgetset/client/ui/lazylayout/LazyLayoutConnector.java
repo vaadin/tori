@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ComponentConnector;
 import com.vaadin.terminal.gwt.client.Connector;
 import com.vaadin.terminal.gwt.client.ConnectorHierarchyChangeEvent;
+import com.vaadin.terminal.gwt.client.DirectionalManagedLayout;
 import com.vaadin.terminal.gwt.client.VConsole;
 import com.vaadin.terminal.gwt.client.communication.RpcProxy;
 import com.vaadin.terminal.gwt.client.communication.StateChangeEvent;
@@ -19,7 +20,8 @@ import com.vaadin.terminal.gwt.client.ui.Connect;
 
 @Connect(LazyLayout2.class)
 @SuppressWarnings("serial")
-public class LazyLayoutConnector extends AbstractLayoutConnector {
+public class LazyLayoutConnector extends AbstractLayoutConnector implements
+        DirectionalManagedLayout {
 
     private final LazyLayoutServerRpc rpc = RpcProxy.create(
             LazyLayoutServerRpc.class, this);
@@ -31,6 +33,7 @@ public class LazyLayoutConnector extends AbstractLayoutConnector {
         registerRpc(LazyLayoutClientRpc.class, new LazyLayoutClientRpc() {
             @Override
             public void renderComponents(final List<Integer> indicesToFetch) {
+                getWidget().updateScrollAdjustmentReference();
                 swapLazyComponents(indicesToFetch);
             }
         });
@@ -136,7 +139,12 @@ public class LazyLayoutConnector extends AbstractLayoutConnector {
 
                     if (connector instanceof AbstractComponentConnector) {
                         final AbstractComponentConnector componentConnector = (AbstractComponentConnector) connector;
-                        getWidget().put(componentConnector.getWidget(), i);
+                        getWidget().replacePlaceholderWith(
+                                componentConnector.getWidget(), i);
+                    } else {
+                        VConsole.error("LazyLayout expected an AbstractComponentConnector; "
+                                + connector.getClass().getName()
+                                + " is not one");
                     }
                 } catch (final IndexOutOfBoundsException e) {
                     VConsole.error(e.getMessage());
@@ -145,4 +153,13 @@ public class LazyLayoutConnector extends AbstractLayoutConnector {
         }
     }
 
+    @Override
+    public void layoutVertically() {
+        getWidget().fixScrollbar();
+    }
+
+    @Override
+    public void layoutHorizontally() {
+        // NOOP
+    }
 }
