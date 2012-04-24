@@ -1,11 +1,12 @@
 package org.vaadin.tori.component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.ui.Component;
 
 @SuppressWarnings("serial")
-public class GeneratedLazyLayout extends LazyLayout2 {
+public class GeneratedLazyLayout extends AbstractLazyLayout {
     /**
      * The ComponentGenerator is an interface that allows the client code to
      * generate the used components lazily.
@@ -91,4 +92,40 @@ public class GeneratedLazyLayout extends LazyLayout2 {
     public void removeComponent(final Component c) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    protected void loadingHook(final List<Integer> indicesToFetch) {
+        System.out.println("GeneratedLazyLayout.loadingHook()");
+        for (final int[] range : groupToRanges(indicesToFetch)) {
+            final int from = range[0];
+            final int to = range[1];
+
+            for (final Component component : generator.getComponentsAtIndexes(
+                    from, to)) {
+                System.out.println(component);
+            }
+        }
+    }
+
+    /* default protected due to tests */
+    static List<int[]> groupToRanges(final List<Integer> orderedNumbers) {
+        final List<int[]> ranges = new ArrayList<int[]>();
+
+        if (!orderedNumbers.isEmpty()) {
+            int start = orderedNumbers.get(0);
+            int previous = start;
+
+            for (final int num : orderedNumbers) {
+                if (num > previous + 1) {
+                    ranges.add(new int[] { start, previous });
+                    start = num;
+                }
+                previous = num;
+            }
+            ranges.add(new int[] { start, previous });
+        }
+
+        return ranges;
+    }
+
 }
