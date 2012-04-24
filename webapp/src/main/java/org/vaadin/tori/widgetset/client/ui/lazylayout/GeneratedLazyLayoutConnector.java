@@ -137,7 +137,8 @@ public class GeneratedLazyLayoutConnector extends AbstractLayoutConnector {
 
                     if (connector instanceof AbstractComponentConnector) {
                         final AbstractComponentConnector componentConnector = (AbstractComponentConnector) connector;
-                        getWidget().put(componentConnector.getWidget(), i);
+                        getWidget().replacePlaceholderWith(
+                                componentConnector.getWidget(), i);
                     }
                 } catch (final IndexOutOfBoundsException e) {
                     VConsole.error(e.getMessage());
