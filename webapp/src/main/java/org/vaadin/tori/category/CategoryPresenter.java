@@ -303,7 +303,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         }
     }
 
-    public int countThreads() throws DataSourceException {
+    public long countThreads() throws DataSourceException {
         try {
             return dataSource.getThreadCount(currentCategory);
         } catch (final DataSourceException e) {

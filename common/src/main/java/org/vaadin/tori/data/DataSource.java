@@ -101,7 +101,7 @@ public interface DataSource {
      *            Category from which to count the threads.
      * @return number of DiscussionThreads
      */
-    int getThreadCount(@NonNull Category category) throws DataSourceException;
+    long getThreadCount(@NonNull Category category) throws DataSourceException;
 
     /**
      * Returns the number of {@link DiscussionThread DiscussionThreads} in the

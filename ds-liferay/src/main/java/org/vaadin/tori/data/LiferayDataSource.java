@@ -348,7 +348,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public int getThreadCount(final Category category)
+    public long getThreadCount(final Category category)
             throws DataSourceException {
         ToriUtil.checkForNull(category, "Category must not be null.");
         try {
