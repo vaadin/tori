@@ -232,7 +232,6 @@ public class VLazyLayout2 extends SimplePanel {
         }
         scrollPoller.cancel();
         secondaryLoader.cancel();
-        super.onDetach();
     }
 
     private void startScrollLoad() {
