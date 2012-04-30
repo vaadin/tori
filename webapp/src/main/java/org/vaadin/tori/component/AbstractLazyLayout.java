@@ -21,7 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutClientRpc;
+import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRpc;
 import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutServerRpc;
 import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutState;
 
@@ -29,7 +29,7 @@ import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Component;
 
 @SuppressWarnings("serial")
-public class AbstractLazyLayout extends AbstractLayout {
+public abstract class AbstractLazyLayout extends AbstractLayout {
 
     /**
      * Custom layout slots containing the components.
@@ -40,15 +40,14 @@ public class AbstractLazyLayout extends AbstractLayout {
     private final LazyLayoutServerRpc rpc = new LazyLayoutServerRpc() {
         @Override
         public void fetchComponentsForIndices(final List<Integer> indicesToFetch) {
+            loadingHook(indicesToFetch);
+
             for (final Integer index : indicesToFetch) {
                 loadedComponents.add(getComponent(index));
             }
 
-            loadingHook(indicesToFetch);
-
             requestRepaintAll();
-            getRpcProxy(LazyLayoutClientRpc.class).renderComponents(
-                    indicesToFetch);
+            getRpc().renderComponents(indicesToFetch);
         }
     };
 
@@ -56,6 +55,8 @@ public class AbstractLazyLayout extends AbstractLayout {
         registerRpc(rpc);
         getState().setComponents(components);
     }
+
+    abstract protected AbstractLazyLayoutClientRpc getRpc();
 
     protected void loadingHook(final List<Integer> indicesToFetch) {
         // Override to make useful.
@@ -168,6 +169,14 @@ public class AbstractLazyLayout extends AbstractLayout {
     public void replaceComponent(final Component oldComponent,
             final Component newComponent) {
         throw new UnsupportedOperationException();
+    }
+
+    protected void _replaceComponent(final int oldIndex,
+            final Component newComponent) {
+        components.remove(oldIndex);
+        components.add(oldIndex, newComponent);
+        super.addComponent(newComponent);
+        requestRepaint();
     }
 
     /**

@@ -1,6 +1,5 @@
 package org.vaadin.tori.widgetset.client.ui.lazylayout;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
@@ -20,19 +19,16 @@ public abstract class AbstractLazyLayoutConnector extends
 
     private final LazyLayoutServerRpc rpc = RpcProxy.create(
             LazyLayoutServerRpc.class, this);
-    private boolean eagerLoadHasBeenDone;
+
+    private boolean firstStateChangeHasBeenDone;
 
     @Override
     protected void init() {
         super.init();
-        registerRpc(LazyLayoutClientRpc.class, new LazyLayoutClientRpc() {
-            @Override
-            public void renderComponents(final List<Integer> indicesToFetch) {
-                getWidget().updateScrollAdjustmentReference();
-                swapLazyComponents(indicesToFetch);
-            }
-        });
+        registerRpcs();
     }
+
+    abstract protected void registerRpcs();
 
     @Override
     protected VLazyLayout2 createWidget() {
@@ -74,36 +70,17 @@ public abstract class AbstractLazyLayoutConnector extends
         getWidget().setRenderDistance(getState().getRenderDistance());
         getWidget().setRenderDelay(getState().getRenderDelay());
 
-        if (!eagerLoadHasBeenDone) {
-            final List<Integer> componentIndices = getEagerlyLoadedComponentIndices();
-            swapLazyComponents(componentIndices);
-            eagerLoadHasBeenDone = true;
+        if (!firstStateChangeHasBeenDone) {
+            firstStateChangeHasBeenDone = true;
+            onFirstStateChanged(stateChangeEvent);
+
+            getWidget().findAllThingsToFetchAndFetchThem();
         }
     }
 
-    /**
-     * <b>Warning:</b> Calling this method at any other point of time than the
-     * initialization, will result in unintended answers.
-     * 
-     * @return
-     */
-    private List<Integer> getEagerlyLoadedComponentIndices() {
-        /*
-         * we take advantage of the fact that all components have a slot in the
-         * connector list, but they're null if the data hasn't been transferred
-         * over. Thus - each non-null element in the components list is eagerly
-         * loaded.
-         */
-
-        int i = 0;
-        final List<Integer> indices = new ArrayList<Integer>();
-        for (final Connector connector : getState().getComponents()) {
-            if (connector != null) {
-                indices.add(i);
-            }
-            i++;
-        }
-        return indices;
+    /** Called on the very first {@link #onStateChanged(StateChangeEvent)} call. */
+    protected void onFirstStateChanged(final StateChangeEvent stateChangeEvent) {
+        // don't force an implementation
     }
 
     private void attachScrollHandlersIfNeeded() {
@@ -117,7 +94,7 @@ public abstract class AbstractLazyLayoutConnector extends
             final ConnectorHierarchyChangeEvent event) {
     }
 
-    private void swapLazyComponents(final List<Integer> indicesToFetch) {
+    protected void swapLazyComponents(final List<Integer> indicesToFetch) {
         final List<? extends Connector> components = getState().getComponents();
 
         if (indicesToFetch == null || indicesToFetch.isEmpty()) {

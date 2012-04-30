@@ -3,10 +3,19 @@ package org.vaadin.tori.component;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRpc;
+import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRpc.GeneratedLazyLayoutClientRpc;
+
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 
 @SuppressWarnings("serial")
 public class GeneratedLazyLayout extends AbstractLazyLayout {
+
+    private static class ServerSidePlaceholderComponent extends
+            AbstractComponent {
+    }
+
     /**
      * The ComponentGenerator is an interface that allows the client code to
      * generate the used components lazily.
@@ -45,8 +54,15 @@ public class GeneratedLazyLayout extends AbstractLazyLayout {
 
     public GeneratedLazyLayout(final ComponentGenerator generator) {
         this.generator = generator;
-        getState()
-                .setTotalAmountOfComponents(generator.getAmountOfComponents());
+        final int amountOfComponents = generator.getAmountOfComponents();
+        getState().setTotalAmountOfComponents(amountOfComponents);
+        populateServerSideWithPlaceholders(amountOfComponents);
+    }
+
+    private void populateServerSideWithPlaceholders(final int amountOfComponents) {
+        for (int i = 0; i < amountOfComponents; i++) {
+            super.addComponent(new ServerSidePlaceholderComponent());
+        }
     }
 
     /**
@@ -100,9 +116,11 @@ public class GeneratedLazyLayout extends AbstractLazyLayout {
             final int from = range[0];
             final int to = range[1];
 
-            for (final Component component : generator.getComponentsAtIndexes(
-                    from, to)) {
-                System.out.println(component);
+            final List<Component> generatedComponents = generator
+                    .getComponentsAtIndexes(from, to);
+            for (int place = from, i = 0; place <= to; place++, i++) {
+                super._replaceComponent(place, generatedComponents.get(i));
+                System.out.println("replaced!");
             }
         }
     }
@@ -126,6 +144,11 @@ public class GeneratedLazyLayout extends AbstractLazyLayout {
         }
 
         return ranges;
+    }
+
+    @Override
+    protected AbstractLazyLayoutClientRpc getRpc() {
+        return getRpcProxy(GeneratedLazyLayoutClientRpc.class);
     }
 
 }

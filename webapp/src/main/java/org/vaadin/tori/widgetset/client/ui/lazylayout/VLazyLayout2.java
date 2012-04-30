@@ -251,6 +251,10 @@ public class VLazyLayout2 extends SimplePanel {
         this.renderDelay = renderDelay;
     }
 
+    protected void findAllThingsToFetchAndFetchThem() {
+        findAllThingsToFetchAndFetchThem(distance);
+    }
+
     private boolean findAllThingsToFetchAndFetchThem(final int distance) {
 
         final Set<Widget> componentsToLoad = new HashSet<Widget>();
