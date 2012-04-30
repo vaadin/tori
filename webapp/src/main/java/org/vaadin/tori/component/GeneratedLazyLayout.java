@@ -111,7 +111,6 @@ public class GeneratedLazyLayout extends AbstractLazyLayout {
 
     @Override
     protected void loadingHook(final List<Integer> indicesToFetch) {
-        System.out.println("GeneratedLazyLayout.loadingHook()");
         for (final int[] range : groupToRanges(indicesToFetch)) {
             final int from = range[0];
             final int to = range[1];
@@ -120,7 +119,6 @@ public class GeneratedLazyLayout extends AbstractLazyLayout {
                     .getComponentsAtIndexes(from, to);
             for (int place = from, i = 0; place <= to; place++, i++) {
                 super._replaceComponent(place, generatedComponents.get(i));
-                System.out.println("replaced!");
             }
         }
     }

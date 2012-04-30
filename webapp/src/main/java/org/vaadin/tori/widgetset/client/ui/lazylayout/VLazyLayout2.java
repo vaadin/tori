@@ -171,8 +171,6 @@ public class VLazyLayout2 extends SimplePanel {
             }
 
             totalAmountOfComponents = newAmountOfComponents;
-            VConsole.log("***************** COMPONENT AMOUNT CHANGED: "
-                    + newAmountOfComponents);
         }
     }
 

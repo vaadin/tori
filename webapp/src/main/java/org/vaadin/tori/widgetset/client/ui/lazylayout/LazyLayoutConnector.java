@@ -7,7 +7,6 @@ import org.vaadin.tori.component.LazyLayout2;
 import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRpc.LazyLayoutClientRpc;
 
 import com.vaadin.terminal.gwt.client.Connector;
-import com.vaadin.terminal.gwt.client.VConsole;
 import com.vaadin.terminal.gwt.client.communication.StateChangeEvent;
 import com.vaadin.terminal.gwt.client.ui.Connect;
 
@@ -20,7 +19,6 @@ public class LazyLayoutConnector extends AbstractLazyLayoutConnector {
         registerRpc(LazyLayoutClientRpc.class, new LazyLayoutClientRpc() {
             @Override
             public void renderComponents(final List<Integer> indicesToFetch) {
-                VConsole.error("LazyLayoutConnector.registerRpcs().new LazyLayoutClientRpc() {...}.renderComponents()");
                 getWidget().updateScrollAdjustmentReference();
                 swapLazyComponents(indicesToFetch);
             }
