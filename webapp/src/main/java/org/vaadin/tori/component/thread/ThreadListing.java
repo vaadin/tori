@@ -91,33 +91,11 @@ public class ThreadListing extends CustomComponent {
         layout.setRenderDistance(RENDER_DISTANCE_PX);
         layout.setRenderDelay(RENDER_DELAY_MILLIS);
         layout.setStyleName("wrapper-layout");
-        // layout = new CssLayout();
-        // layout.setStyleName("wrapper-layout");
 
         root.addComponent(getHeaderComponent());
         root.addComponent(layout);
         setCompositionRoot(root);
     }
-
-    // public void setThreads(final List<DiscussionThread> threads) {
-    // layout.removeAllComponents();
-    //
-    // initColumnHeaders();
-    //
-    // int index = 0;
-    // for (final DiscussionThread thread : threads) {
-    // final ThreadListingRow row = new ThreadListingRow(thread, presenter);
-    // assignStyles(row);
-    // if (index < 10) {
-    // // add the 10 first rows eagerly
-    // layout.addComponentEagerly(row);
-    // } else {
-    // layout.addComponent(row);
-    // }
-    //
-    // index++;
-    // }
-    // }
 
     private Component getHeaderComponent() {
         final CssLayout headerRow = new CssLayout();
