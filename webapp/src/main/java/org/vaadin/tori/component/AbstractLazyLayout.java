@@ -90,11 +90,6 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
         }
     }
 
-    public void addComponentEagerly(final Component c) {
-        addComponent(c);
-        loadedComponents.add(c);
-    }
-
     /**
      * Removes the component from this container.
      * 

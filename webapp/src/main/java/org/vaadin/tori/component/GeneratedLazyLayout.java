@@ -83,17 +83,6 @@ public class GeneratedLazyLayout extends AbstractLazyLayout {
      */
     @Deprecated
     @Override
-    public void addComponentEagerly(final Component c) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * @deprecated
-     * @throws UnsupportedOperationException
-     *             always
-     */
-    @Deprecated
-    @Override
     public void removeAllComponents() {
         throw new UnsupportedOperationException();
     }
