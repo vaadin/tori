@@ -4,7 +4,7 @@ import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRp
 import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRpc.LazyLayoutClientRpc;
 
 @SuppressWarnings("serial")
-public class LazyLayout2 extends AbstractLazyLayout {
+public class LazyLayout extends AbstractLazyLayout {
     @Override
     protected AbstractLazyLayoutClientRpc getRpc() {
         return getRpcProxy(LazyLayoutClientRpc.class);

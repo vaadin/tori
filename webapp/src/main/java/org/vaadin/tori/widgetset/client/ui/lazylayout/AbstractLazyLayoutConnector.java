@@ -31,9 +31,9 @@ public abstract class AbstractLazyLayoutConnector extends
     abstract protected void registerRpcs();
 
     @Override
-    protected VLazyLayout2 createWidget() {
-        final VLazyLayout2 lazyLayout = GWT.create(VLazyLayout2.class);
-        lazyLayout.setFetcher(new VLazyLayout2.ComponentFetcher() {
+    protected VLazyLayout createWidget() {
+        final VLazyLayout lazyLayout = GWT.create(VLazyLayout.class);
+        lazyLayout.setFetcher(new VLazyLayout.ComponentFetcher() {
             @Override
             public void fetchIndices(final List<Integer> indicesToFetch) {
                 rpc.fetchComponentsForIndices(indicesToFetch);
@@ -43,8 +43,8 @@ public abstract class AbstractLazyLayoutConnector extends
     }
 
     @Override
-    public VLazyLayout2 getWidget() {
-        return (VLazyLayout2) super.getWidget();
+    public VLazyLayout getWidget() {
+        return (VLazyLayout) super.getWidget();
     }
 
     @Override

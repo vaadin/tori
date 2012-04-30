@@ -21,7 +21,7 @@ import com.vaadin.terminal.gwt.client.VConsole;
 import com.vaadin.terminal.gwt.client.ui.VMarginInfo;
 import com.vaadin.terminal.gwt.client.ui.csslayout.VCssLayout;
 
-public class VLazyLayout2 extends SimplePanel {
+public class VLazyLayout extends SimplePanel {
     public static final String TAGNAME = "lazylayout";
     public static final String CLASSNAME = "v-" + TAGNAME;
 
@@ -122,11 +122,11 @@ public class VLazyLayout2 extends SimplePanel {
     private final List<WidgetInfo> widgetInfo = new ArrayList<WidgetInfo>();
 
     /**
-     * @see VLazyLayout2#updateScrollAdjustmentReference()
+     * @see VLazyLayout#updateScrollAdjustmentReference()
      */
     private int scrollAdjustmentLimitPx = -1;
 
-    public VLazyLayout2() {
+    public VLazyLayout() {
         super();
         getElement().appendChild(margin);
         setStyleName(CLASSNAME);

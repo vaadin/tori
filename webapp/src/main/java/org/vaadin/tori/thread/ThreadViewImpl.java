@@ -8,7 +8,7 @@ import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
-import org.vaadin.tori.component.LazyLayout2;
+import org.vaadin.tori.component.LazyLayout;
 import org.vaadin.tori.component.NewThreadComponent;
 import org.vaadin.tori.component.NewThreadComponent.NewThreadListener;
 import org.vaadin.tori.component.PanicComponent;
@@ -62,14 +62,14 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't care about serialization")
     private final Map<Post, PostComponent> postsToComponents = new HashMap<Post, PostComponent>();
-    private final LazyLayout2 postsLayout;
+    private final LazyLayout postsLayout;
     // private final CssLayout postsLayout;
     private ReplyComponent reply;
 
     public ThreadViewImpl() {
         setStyleName("threadview");
         // postsLayout = new CssLayout();
-        postsLayout = new LazyLayout2();
+        postsLayout = new LazyLayout();
         postsLayout.setRenderDistance(RENDER_DISTANCE_PX);
         postsLayout.setPlaceholderSize(PLACEHOLDER_HEIGHT, PLACEHOLDER_WIDTH);
         postsLayout.setRenderDelay(RENDER_DELAY_MILLIS);
