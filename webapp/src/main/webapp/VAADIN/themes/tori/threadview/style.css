@@ -288,6 +288,7 @@
 	border-bottom: 2px solid #f4f4f0;
 	margin-bottom: 105px;
 	margin-top: 50px;
+	overflow: visible;
 }
 
 .threadview .spacer .eof {
