@@ -42,7 +42,6 @@ import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
-import com.vaadin.ui.TextArea;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -390,7 +389,7 @@ public abstract class AuthoringComponent extends CustomComponent {
 
     private final CustomLayout layout = new CustomLayout("replylayout");
     private final AuthoringListener listener;
-    private final TextArea input;
+    private final ToriExpandingTextArea input;
     private final Label preview;
     private boolean compactMode;
     private final CssLayout captionLayout;
@@ -434,11 +433,11 @@ public abstract class AuthoringComponent extends CustomComponent {
         layout.addComponent(new PopupView("Show Formatting Syntax",
                 getSyntaxLabel(formattingSyntaxXhtml)), "formattingsyntax");
 
-        input = new TextArea();
+        input = new ToriExpandingTextArea();
         if (inputPrompt != null) {
             input.setInputPrompt(inputPrompt);
         }
-        // input.setMaxRows(MAX_ROWS_EXPANDED);
+        input.setMaxRows(MAX_ROWS_EXPANDED);
         input.setImmediate(true);
         layout.addComponent(input, "input");
 
@@ -456,7 +455,7 @@ public abstract class AuthoringComponent extends CustomComponent {
         setCompactMode(false);
     }
 
-    public TextArea getInput() {
+    public ToriExpandingTextArea getInput() {
         return input;
     }
 
@@ -489,10 +488,10 @@ public abstract class AuthoringComponent extends CustomComponent {
 
     protected void setCompactMode(final boolean compact) {
         if (compact) {
-            // input.setMaxRows(MAX_ROWS_COMPACT);
+            input.setMaxRows(MAX_ROWS_COMPACT);
             addStyleName("compact");
         } else {
-            // input.setMaxRows(MAX_ROWS_EXPANDED);
+            input.setMaxRows(MAX_ROWS_EXPANDED);
             removeStyleName("compact");
         }
         compactMode = compact;
