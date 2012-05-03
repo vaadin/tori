@@ -28,10 +28,10 @@ public class VLazyLayout extends SimplePanel {
     public static final class WidgetInfo {
 
         private final Widget newWidget;
-        private final int oldHeight;
+        private final double oldHeight;
         private final int oldTop;
 
-        public WidgetInfo(final Widget newWidget, final int oldHeight,
+        public WidgetInfo(final Widget newWidget, final double oldHeight,
                 final int oldTop) {
             this.newWidget = newWidget;
             this.oldHeight = oldHeight;
@@ -42,7 +42,7 @@ public class VLazyLayout extends SimplePanel {
             return newWidget;
         }
 
-        public int getOldHeight() {
+        public double getOldHeight() {
             return oldHeight;
         }
 
@@ -426,7 +426,7 @@ public class VLazyLayout extends SimplePanel {
             }
 
             if (panelWidget instanceof PlaceholderWidget) {
-                final int height = panelWidget.getElement().getOffsetHeight();
+                final double height = getPreciseHeight(panelWidget);
                 final int top = panelWidget.getElement().getOffsetTop();
                 widgetInfo.add(new WidgetInfo(widget, height, top));
 
@@ -525,16 +525,17 @@ public class VLazyLayout extends SimplePanel {
     }
 
     public void fixScrollbar() {
-        int requiredScrollAdjustment = 0;
+        double requiredScrollAdjustment = 0;
         if (scrollAdjustmentLimitPx >= 0) {
             for (final WidgetInfo info : widgetInfo) {
                 if (info.getOldTop() < scrollAdjustmentLimitPx) {
-                    requiredScrollAdjustment += info.getNewWidget()
-                            .getElement().getOffsetHeight()
-                            - info.getOldHeight();
+                    final double newHeight = getPreciseHeight(info
+                            .getNewWidget());
+
+                    requiredScrollAdjustment += newHeight - info.getOldHeight();
                 }
             }
-            adjustScrollBy(requiredScrollAdjustment);
+            adjustScrollBy((int) Math.round(requiredScrollAdjustment));
         }
         widgetInfo.clear();
     }
@@ -601,5 +602,21 @@ public class VLazyLayout extends SimplePanel {
             }
         }
         return null;
+    }
+
+    private static native double getPreciseHeight(Element element)
+    /*-{
+        var height;
+        if (element.getBoundingClientRect != null) {
+          var rect = element.getBoundingClientRect();
+          height = rect.bottom - rect.top;
+        } else {
+          height = element.offsetHeight;
+        }
+        return height;    
+    }-*/;
+
+    private static double getPreciseHeight(final Widget widget) {
+        return getPreciseHeight(widget.getElement());
     }
 }
