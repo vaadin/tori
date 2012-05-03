@@ -49,7 +49,6 @@ class ThreadCrumb extends CustomComponent {
         });
 
         setCompositionRoot(crumb);
-        // setCompositionRoot(new Label("T-CRUMB!"));
     }
 
     private Component getThreadPopup(final DiscussionThread thread) {

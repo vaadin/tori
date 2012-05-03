@@ -75,7 +75,6 @@ abstract class CategoryCrumb extends CustomComponent {
             }
         });
         setCompositionRoot(crumb);
-        // setCompositionRoot(new Label("C-CRUMB!"));
     }
 
     protected void setButtonClickListener(
