@@ -7,6 +7,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Layout;
 
 @SuppressWarnings("serial")
 public class SplitButton extends CustomComponent {
@@ -29,12 +30,16 @@ public class SplitButton extends CustomComponent {
 
     public SplitButton(final String caption) {
         button = new Button(caption);
-        popupButton = new PopupButton("v");
+        button.setStyleName("s-button");
+        popupButton = new PopupButton(null);
+        popupButton.setStyleName("s-popup");
 
-        final HorizontalLayout horizontalLayout = new HorizontalLayout();
-        horizontalLayout.addComponent(button);
-        horizontalLayout.addComponent(popupButton);
-        setCompositionRoot(horizontalLayout);
+        setStyleName("splitbutton");
+
+        final Layout root = new HorizontalLayout();
+        root.addComponent(button);
+        root.addComponent(popupButton);
+        setCompositionRoot(root);
     }
 
     public void addClickListener(final ClickListener listener) {

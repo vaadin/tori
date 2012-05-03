@@ -24,6 +24,16 @@
 	padding-right: 10px;
 	cursor: pointer;
 }
+
+.breadcrumbs .v-button.s-button {
+	background: none;
+	padding-right: 0;
+}
+
+.breadcrumbs .v-button.s-button .v-button-wrap {
+	padding-right: 0;
+}
+
 .breadcrumbs .v-splitbutton .v-button:first-child,
 .breadcrumbs .last .v-splitbutton .v-button {
 	background-image: none;	
