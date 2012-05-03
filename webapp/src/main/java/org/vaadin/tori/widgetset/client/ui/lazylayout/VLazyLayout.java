@@ -83,16 +83,41 @@ public class VLazyLayout extends SimplePanel {
     }
 
     private class SecondaryFetchTimer extends Timer {
-        private static final int SECONDARY_MULTIPLIER = 3;
+        private static final double SECONDARY_MULTIPLIER = 2d;
+        private static final int AMOUNT_OF_TIME_TO_GO_BACK_TO_THE_SERVER = 5;
+        private static final int SECONDARY_TIMER = 2000;
+
+        private int visitsLeftToTheServer = AMOUNT_OF_TIME_TO_GO_BACK_TO_THE_SERVER;
 
         @Override
         public void run() {
-            findAllThingsToFetchAndFetchThem(distance * SECONDARY_MULTIPLIER);
+            boolean foundSomething = false;
+            while (visitsLeftToTheServer > 0 && !foundSomething) {
+                final int totalExtraHeight = (int) (distance * SECONDARY_MULTIPLIER);
+                final double progress = (double) AMOUNT_OF_TIME_TO_GO_BACK_TO_THE_SERVER
+                        / (double) visitsLeftToTheServer;
+                final int fetchingDistance = (int) (distance + (totalExtraHeight * progress));
+
+                foundSomething = findAllThingsToFetchAndFetchThem(fetchingDistance);
+
+                visitsLeftToTheServer--;
+                if (foundSomething) {
+                    schedule(SECONDARY_TIMER);
+                    return;
+                }
+            }
+
+            resetCounter();
+        }
+
+        private void resetCounter() {
+            visitsLeftToTheServer = AMOUNT_OF_TIME_TO_GO_BACK_TO_THE_SERVER;
         }
 
         public void scheduleNew() {
-            super.cancel();
-            super.schedule(renderDelay * SECONDARY_MULTIPLIER);
+            cancel();
+            schedule(SECONDARY_TIMER);
+            resetCounter();
         }
     }
 
@@ -234,6 +259,7 @@ public class VLazyLayout extends SimplePanel {
 
     private void startScrollLoad() {
         if (!scrollingWasProgrammaticallyAdjusted) {
+            secondaryLoader.cancel();
             scrollPoller.cancel();
             scrollPoller.schedule(renderDelay);
         }
