@@ -7,6 +7,7 @@ import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
 
+import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.Theme;
 import com.vaadin.terminal.WrappedRequest;
 import com.vaadin.ui.Root;
@@ -15,6 +16,8 @@ import com.vaadin.ui.VerticalLayout;
 @Theme("tori")
 @SuppressWarnings("serial")
 public class ToriRoot extends Root {
+
+    private static final int KEEPALIVE_PING_INTERVAL_MILLIS = 60000;
 
     private final ToriNavigator navigator = new ToriNavigator(this);
 
@@ -40,6 +43,14 @@ public class ToriRoot extends Root {
                 scrollIntoView(breadcrumbs);
             }
         });
+
+        /*
+         * refresher to stop the session from expiring. SessionGuard would be
+         * better, but it doesn't work in portlets
+         */
+        final Refresher refresher = new Refresher();
+        refresher.setRefreshInterval(KEEPALIVE_PING_INTERVAL_MILLIS);
+        addComponent(refresher);
     }
 
     private void addControlPanelIfInDevelopment() {
