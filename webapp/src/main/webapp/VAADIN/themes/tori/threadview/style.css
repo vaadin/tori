@@ -194,7 +194,8 @@
 	-moz-transition: height 0.2s ease-in-out;
 	-webkit-transition: height 0.2s ease-in-out;
 	-o-transition: height 0.2s ease-in-out;
-	transition: height 0.2s ease-in-out;	
+	transition: height 0.2s ease-in-out;
+	overflow: hidden;
 }
 .threadSummary .topRow {
 	background: #64635a;
@@ -206,11 +207,11 @@
 .threadSummary .topRow .v-label {
 	cursor: pointer;
 }
-.threadSummary .topRow .v-horizontallayout-margin {
+.threadSummary .topRow .v-csslayout-margin {
 	padding: 9px;
 }
 .threadSummary .topRow .show-or-hide {
-	width: 115px;
+	float: right;
 	padding-left: 16px;
 	background: url(../images/icon-collapse.png) left center no-repeat;
 }
@@ -432,6 +433,7 @@
 	border: 2px solid #a09f91;
 }
 
+.authoring .v-panel-content,
 .authoring .v-panel-content > div {
 	background: transparent;
 }
