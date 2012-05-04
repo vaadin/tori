@@ -18,6 +18,7 @@ import com.vaadin.Application;
 import com.vaadin.terminal.WrappedRequest;
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
 import com.vaadin.terminal.gwt.server.PortletRequestListener;
+import com.vaadin.ui.Root;
 import com.vaadin.ui.Window;
 
 /**
@@ -211,5 +212,10 @@ public class ToriApplication extends Application implements
     @Override
     public Window createNewWindow() {
         return new Window("Tori");
+    }
+
+    @Override
+    public String getThemeForRoot(final Root root) {
+        return getProperty("theme");
     }
 }
