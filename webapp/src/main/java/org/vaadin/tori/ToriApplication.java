@@ -1,5 +1,7 @@
 package org.vaadin.tori;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ServiceLoader;
 
 import javax.portlet.PortletRequest;
@@ -9,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriNavigator.NavigableApplication;
 import org.vaadin.tori.data.DataSource;
+import org.vaadin.tori.data.DebugDataSource;
 import org.vaadin.tori.data.spi.ServiceProvider;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.util.EventBus;
@@ -16,7 +19,10 @@ import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.SignatureFormatter;
 
 import com.vaadin.Application;
+import com.vaadin.terminal.DownloadStream;
+import com.vaadin.terminal.RequestHandler;
 import com.vaadin.terminal.WrappedRequest;
+import com.vaadin.terminal.WrappedResponse;
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
 import com.vaadin.terminal.gwt.server.PortletRequestListener;
 import com.vaadin.ui.Window;
@@ -50,6 +56,10 @@ public class ToriApplication extends Application implements
         postFormatter = createPostFormatter(spi);
         signatureFormatter = createSignatureFormatter(spi);
         authorizationService = createAuthorizationService(spi);
+
+        if (ToriApplication.getCurrent().getDataSource() instanceof DebugDataSource) {
+            addAttachmentDownloadHandler();
+        }
 
         setRequestForDataSource();
     }
@@ -217,5 +227,37 @@ public class ToriApplication extends Application implements
     @Override
     public Window createNewWindow() {
         return new Window("Tori");
+    }
+
+    private void addAttachmentDownloadHandler() {
+        addRequestHandler(new RequestHandler() {
+            @Override
+            public boolean handleRequest(final Application application,
+                    final WrappedRequest request, final WrappedResponse response)
+                    throws IOException {
+
+                final String requestPathInfo = request.getRequestPathInfo();
+                if (requestPathInfo
+                        .startsWith(DebugDataSource.ATTACHMENT_PREFIX)) {
+                    final String[] data = requestPathInfo.substring(
+                            DebugDataSource.ATTACHMENT_PREFIX.length()).split(
+                            "/");
+                    final long dataId = Long.parseLong(data[0]);
+                    final String fileName = data[1];
+
+                    final byte[] attachmentData = ((DebugDataSource) ToriApplication
+                            .getCurrent().getDataSource())
+                            .getAttachmentData(dataId);
+
+                    final ByteArrayInputStream is = new ByteArrayInputStream(
+                            attachmentData);
+                    final DownloadStream stream = new DownloadStream(is, null,
+                            fileName);
+                    stream.writeTo(response);
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 }

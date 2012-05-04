@@ -31,7 +31,7 @@ public class Post extends AbstractEntity {
     @Column(nullable = false, name = "body")
     private String bodyRaw;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Attachment> attachments;
 
     public void setAuthor(final User author) {

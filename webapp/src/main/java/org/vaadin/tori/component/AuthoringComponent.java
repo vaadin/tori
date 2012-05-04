@@ -497,7 +497,7 @@ public abstract class AuthoringComponent extends CustomComponent {
             public void uploadStarted(final StartedEvent event) {
                 if (event.getContentLength() > maxFileSize) {
                     attach.interruptUpload();
-                    getWindow().showNotification("File size too large");
+                    getRoot().showNotification("File size too large");
                     return;
                 }
             }
