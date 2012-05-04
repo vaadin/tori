@@ -6,6 +6,11 @@ import java.util.Map;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.component.FloatingBar;
+import org.vaadin.tori.component.FloatingBar.DisplayEvent;
+import org.vaadin.tori.component.FloatingBar.FloatingAlignment;
+import org.vaadin.tori.component.FloatingBar.HideEvent;
+import org.vaadin.tori.component.FloatingBar.VisibilityListener;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.component.LazyLayout;
@@ -21,6 +26,11 @@ import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.AbstractView;
 
+import com.ocpsoft.pretty.time.PrettyTime;
+import com.vaadin.event.FieldEvents;
+import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -28,6 +38,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Label.ContentMode;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -130,11 +141,11 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             }
 
             if (i == 0) {
-                // FIXME floatingbar
-                // // create the floating summary bar for the first post
-                // final FloatingBar summaryBar = getSummaryBar(post, c);
-                // summaryBar.setScrollComponent(c);
-                // layout.addComponent(summaryBar);
+                // create the floating summary bar for the first post
+                final FloatingBar summaryBar = getSummaryBar(post, c);
+                summaryBar.setScrollComponent(c);
+                summaryBar.setAlignment(FloatingAlignment.TOP);
+                layout.addComponent(summaryBar);
             }
 
         }
@@ -149,10 +160,11 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                     .getFormattingSyntax(), "Post Reply");
             layout.addComponent(reply);
 
-            // final FloatingBar quickReplyBar = getQuickReplyBar(reply);
-            // quickReplyBar.setScrollComponent(reply);
-            //
-            // layout.addComponent(quickReplyBar);
+            final FloatingBar quickReplyBar = getQuickReplyBar(reply);
+            quickReplyBar.setScrollComponent(reply);
+            quickReplyBar.setAlignment(FloatingAlignment.BOTTOM);
+
+            layout.addComponent(quickReplyBar);
         }
 
         final Label bottomSpacer = new Label("");
@@ -205,8 +217,6 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         return c;
     }
 
-    /*-
-    TODO RE-ENABLE WHEN FLOATINGBAR IS FIXED
     private PostComponent newPostSummaryComponent(final Post post) {
         final PostComponent c = new PostComponent(post, getPresenter());
         c.addStyleName("summary");
@@ -220,6 +230,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         }
 
         final VerticalLayout summaryLayout = new VerticalLayout();
+
+        summaryLayout.setWidth(966.0f, Unit.PIXELS);
         summaryLayout.addStyleName("threadSummary");
 
         final PostComponent postSummary = newPostSummaryComponent(firstPost);
@@ -255,13 +267,12 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             }
         });
 
-        final HorizontalLayout topRow = new HorizontalLayout();
+        final CssLayout topRow = new CssLayout();
         topRow.addStyleName("topRow");
         topRow.setWidth("100%");
         topRow.setMargin(true);
         topRow.addComponent(topicLabel);
         topRow.addComponent(showOrHideLabel);
-        topRow.setComponentAlignment(showOrHideLabel, Alignment.MIDDLE_RIGHT);
 
         summaryLayout.addComponent(topRow);
         summaryLayout.addComponent(postSummary);
@@ -295,6 +306,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 quickReply.setCompactMode(false);
             }
         });
+        quickReply.setWidth(966.0f, Unit.PIXELS);
 
         final FloatingBar bar = new FloatingBar();
         bar.addStyleName("quickReply");
@@ -316,7 +328,6 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         });
         return bar;
     }
-     */
 
     @Override
     public void displayThreadNotFoundError(final String threadIdString) {

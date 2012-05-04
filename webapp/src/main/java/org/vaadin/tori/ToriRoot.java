@@ -8,12 +8,14 @@ import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
 
 import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Widgetset;
 import com.vaadin.terminal.WrappedRequest;
 import com.vaadin.ui.Root;
 import com.vaadin.ui.VerticalLayout;
 
 @Theme("tori")
 @SuppressWarnings("serial")
+@Widgetset("org.vaadin.tori.widgetset.ToriWidgetset")
 public class ToriRoot extends Root {
 
     private final ToriNavigator navigator = new ToriNavigator(this);

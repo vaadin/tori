@@ -1,14 +1,15 @@
 package org.vaadin.tori.component;
 
 import java.lang.reflect.Method;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Iterator;
 
-import org.vaadin.tori.widgetset.client.ui.floatingbar.VFloatingBar;
+import org.vaadin.tori.widgetset.client.ui.floatingbar.FloatingBarRpc;
+import org.vaadin.tori.widgetset.client.ui.floatingbar.FloatingBarState;
 
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
+import com.vaadin.terminal.gwt.server.PortletApplicationContext2;
+import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomComponent;
 
 /**
  * Displays a floating bar that is displayed as floating on top of all other
@@ -22,29 +23,14 @@ import com.vaadin.ui.CustomComponent;
  * reference to the component in {@link #setScrollComponent(Component)}.
  */
 @SuppressWarnings("serial")
-@com.vaadin.ui.ClientWidget(org.vaadin.tori.widgetset.client.ui.floatingbar.VFloatingBar.class)
-public class FloatingBar extends CustomComponent {
+public class FloatingBar extends AbstractComponentContainer implements
+        FloatingBarRpc {
 
     /**
      * The alignment of the FloatingBar on screen.
      */
     public enum FloatingAlignment {
-        TOP(VFloatingBar.ALIGNMENT_TOP), BOTTOM(VFloatingBar.ALIGNMENT_BOTTOM);
-
-        private final String stringRepresentation;
-
-        private FloatingAlignment(final String stringRepresentation) {
-            this.stringRepresentation = stringRepresentation;
-        }
-
-        private static FloatingAlignment getDefault() {
-            return TOP;
-        }
-
-        @Override
-        public String toString() {
-            return stringRepresentation;
-        }
+        TOP, BOTTOM;
     }
 
     private static final Method ON_HIDE_METHOD;
@@ -63,41 +49,8 @@ public class FloatingBar extends CustomComponent {
         }
     }
 
-    private static final int DEFAULT_SCROLL_THRESHOLD = 200;
-
-    private FloatingAlignment alignment = FloatingAlignment.getDefault();
-    private Component scrollComponent;
-    private int scrollThreshold = DEFAULT_SCROLL_THRESHOLD;
-
-    @Override
-    public void paintContent(final PaintTarget target) throws PaintException {
-        super.paintContent(target);
-
-        // add the component to follow
-        if (scrollComponent != null) {
-            target.addAttribute(VFloatingBar.ATTR_SCROLL_COMPONENT,
-                    scrollComponent);
-            target.addAttribute(VFloatingBar.ATTR_SCROLL_THRESHOLD,
-                    scrollThreshold);
-        }
-
-        // add the alignment
-        target.addAttribute(VFloatingBar.ATTR_ALIGNMENT, alignment.toString());
-    }
-
-    @Override
-    public void changeVariables(final Object source,
-            final Map<String, Object> variables) {
-        super.changeVariables(source, variables);
-
-        if (variables.containsKey(VFloatingBar.VAR_VISIBILITY)) {
-            // visibility has changed -> fire appropriate event
-            if ((Boolean) variables.get(VFloatingBar.VAR_VISIBILITY)) {
-                fireEvent(new DisplayEvent());
-            } else {
-                fireEvent(new HideEvent());
-            }
-        }
+    public FloatingBar() {
+        registerRpc(this);
     }
 
     /**
@@ -115,7 +68,12 @@ public class FloatingBar extends CustomComponent {
             throw new IllegalArgumentException(
                     "The threshold must be a positive integer.");
         }
-        this.scrollThreshold = threshold;
+        getState().setScrollThreshold(threshold);
+    }
+
+    @Override
+    public FloatingBarState getState() {
+        return (FloatingBarState) super.getState();
     }
 
     /**
@@ -125,8 +83,17 @@ public class FloatingBar extends CustomComponent {
      * @param component
      */
     public void setContent(final Component component) {
-        setCompositionRoot(component);
+        getState().setContent(component);
+        addComponent(component);
         requestRepaint();
+    }
+
+    @Override
+    public void updateState() {
+        getState()
+                .setPortlet(
+                        getApplication().getContext() instanceof PortletApplicationContext2);
+        super.updateState();
     }
 
     /**
@@ -146,7 +113,7 @@ public class FloatingBar extends CustomComponent {
      * @see #setAlignment(FloatingAlignment)
      */
     public void setScrollComponent(final Component component) {
-        scrollComponent = component;
+        getState().setScrollComponent(component);
         requestRepaint();
     }
 
@@ -160,7 +127,7 @@ public class FloatingBar extends CustomComponent {
      * @see #setScrollComponent(Component)
      */
     public void setAlignment(final FloatingAlignment alignment) {
-        this.alignment = alignment;
+        getState().setTopAligned(alignment == FloatingAlignment.TOP);
         requestRepaint();
     }
 
@@ -201,5 +168,30 @@ public class FloatingBar extends CustomComponent {
             return (FloatingBar) super.getSource();
         }
 
+    }
+
+    @Override
+    public void visibilityChanged(final boolean visible) {
+        if (visible) {
+            fireEvent(new DisplayEvent());
+        } else {
+            fireEvent(new HideEvent());
+        }
+    }
+
+    @Override
+    public void replaceComponent(final Component oldComponent,
+            final Component newComponent) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getComponentCount() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Iterator<Component> getComponentIterator() {
+        return Arrays.asList((Component) getState().getContent()).iterator();
     }
 }
