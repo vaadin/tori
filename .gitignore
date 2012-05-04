@@ -13,3 +13,6 @@ webapp/src/main/webapp/VAADIN/widgetsets
 webapp/GWT development mode for webapp.launch
 desktop.ini
 gwt-unitCache
+.pmd
+.checkstyle
+rebel.xml

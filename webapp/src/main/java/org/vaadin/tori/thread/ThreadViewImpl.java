@@ -1,6 +1,7 @@
 package org.vaadin.tori.thread;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -65,6 +66,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     private final LazyLayout postsLayout;
     // private final CssLayout postsLayout;
     private ReplyComponent reply;
+    private NewThreadComponent newThreadComponent;
 
     public ThreadViewImpl() {
         setStyleName("threadview");
@@ -147,6 +149,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
             reply = new ReplyComponent(replyListener, getPresenter()
                     .getFormattingSyntax(), "Post Reply");
+            reply.setUserMayAddFiles(getPresenter().userMayAddFiles());
+            reply.setMaxFileSize(getPresenter().getMaxFileSize());
             layout.addComponent(reply);
 
             // final FloatingBar quickReplyBar = getQuickReplyBar(reply);
@@ -439,7 +443,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         topicLayout.addComponent(topicField);
         topicLayout.setExpandRatio(topicField, 1.0f);
 
-        layout.addComponent(new NewThreadComponent(new NewThreadListener() {
+        newThreadComponent = new NewThreadComponent(new NewThreadListener() {
             @Override
             public void submit(final String rawBody) {
                 String errorMessages = "";
@@ -470,7 +474,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 }
             }
         }, ToriApplication.getCurrent().getPostFormatter()
-                .getFormattingSyntaxXhtml()));
+                .getFormattingSyntaxXhtml());
+        newThreadComponent.setUserMayAddFiles(getPresenter().userMayAddFiles());
+        newThreadComponent.setMaxFileSize(getPresenter().getMaxFileSize());
+        layout.addComponent(newThreadComponent);
     }
 
     @Override
@@ -490,6 +497,17 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         final PostComponent newComponent = newPostComponent(post);
         postsToComponents.put(post, newComponent);
         postsLayout.replaceComponent(oldComponent, newComponent);
+    }
+
+    @Override
+    public void updateAttachmentList(
+            final LinkedHashMap<String, byte[]> attachments) {
+        if (reply != null) {
+            reply.updateAttachmentList(attachments);
+        }
+        if (newThreadComponent != null) {
+            newThreadComponent.updateAttachmentList(attachments);
+        }
     }
 
 }

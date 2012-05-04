@@ -11,6 +11,7 @@ import org.vaadin.tori.ToriNavigator.NavigableApplication;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.spi.ServiceProvider;
 import org.vaadin.tori.service.AuthorizationService;
+import org.vaadin.tori.util.EventBus;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.SignatureFormatter;
 
@@ -38,6 +39,7 @@ public class ToriApplication extends Application implements
     private PostFormatter postFormatter;
     private SignatureFormatter signatureFormatter;
     private AuthorizationService authorizationService;
+    private final EventBus eventBus = new EventBus();
 
     @Override
     public void init() {
@@ -168,6 +170,10 @@ public class ToriApplication extends Application implements
      */
     public DataSource getDataSource() {
         return ds;
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
     }
 
     public AuthorizationService getAuthorizationService() {

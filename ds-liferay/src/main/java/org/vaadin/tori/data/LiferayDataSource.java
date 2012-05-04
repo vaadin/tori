@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.portlet.PortletRequest;
 
@@ -30,6 +32,8 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.ObjectValuePair;
+import com.liferay.portal.kernel.util.PrefsPropsUtil;
+import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portal.service.ServiceContext;
@@ -830,9 +834,10 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public Post saveAsCurrentUser(final Post post) throws DataSourceException {
+    public Post saveAsCurrentUser(final Post post,
+            final Map<String, byte[]> files) throws DataSourceException {
         try {
-            final MBMessage newPost = internalSaveAsCurrentUser(post,
+            final MBMessage newPost = internalSaveAsCurrentUser(post, files,
                     getRootMessageId(post.getThread()));
             return EntityFactoryUtil.createPost(newPost,
                     getUser(currentUserId), getThread(newPost.getThreadId()),
@@ -847,7 +852,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     private MBMessage internalSaveAsCurrentUser(final Post post,
-            final long parentMessageId) throws PortalException, SystemException {
+            final Map<String, byte[]> files, final long parentMessageId)
+            throws PortalException, SystemException {
         final DiscussionThread thread = post.getThread();
         final long groupId = scopeGroupId;
         final long categoryId = thread.getCategory().getId();
@@ -858,15 +864,29 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             subject = "RE: " + subject;
         }
         final String body = post.getBodyRaw();
-        final List<ObjectValuePair<String, byte[]>> files = Collections
-                .emptyList();
+        final List<ObjectValuePair<String, byte[]>> attachments = new ArrayList<ObjectValuePair<String, byte[]>>();
+
+        if (files != null) {
+            for (final Entry<String, byte[]> file : files.entrySet()) {
+                final String fileName = file.getKey();
+                final byte[] bytes = file.getValue();
+
+                if ((bytes != null) && (bytes.length > 0)) {
+                    final ObjectValuePair<String, byte[]> ovp = new ObjectValuePair<String, byte[]>(
+                            fileName, bytes);
+
+                    attachments.add(ovp);
+                }
+            }
+        }
+
         final boolean anonymous = false;
         final double priority = MBThreadConstants.PRIORITY_NOT_GIVEN;
         final boolean allowPingbacks = false;
 
         return MBMessageServiceUtil.addMessage(groupId, categoryId, threadId,
-                parentMessageId, subject, body, files, anonymous, priority,
-                allowPingbacks, mbMessageServiceContext);
+                parentMessageId, subject, body, attachments, anonymous,
+                priority, allowPingbacks, mbMessageServiceContext);
 
     }
 
@@ -1035,10 +1055,12 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     @Override
     public DiscussionThread saveNewThread(final DiscussionThread newThread,
-            final Post firstPost) throws DataSourceException {
+            final Map<String, byte[]> files, final Post firstPost)
+            throws DataSourceException {
         try {
             final MBMessage savedRootMessage = internalSaveAsCurrentUser(
-                    firstPost, MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID);
+                    firstPost, files,
+                    MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID);
             if (savedRootMessage != null) {
                 final DiscussionThread savedThread = getThread(savedRootMessage
                         .getThreadId());
@@ -1057,4 +1079,14 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         throw new DataSourceException();
     }
 
+    @Override
+    public int getAttachmentMaxFileSize() {
+        try {
+            return Integer.parseInt(PrefsPropsUtil
+                    .getString(PropsKeys.DL_FILE_MAX_SIZE));
+        } catch (final Exception e) {
+            log.error("Couldn't get max file size");
+            return 307200;
+        }
+    }
 }

@@ -40,6 +40,9 @@ public interface DebugAuthorizationService extends AuthorizationService {
     /** @see AuthorizationService#mayReplyIn(DiscussionThread) */
     void setMayReplyIn(DiscussionThread thread, boolean b);
 
+    /** @see AuthorizationService#mayAddFiles(DiscussionThread) */
+    void setMayAddFiles(Category category, boolean b);
+
     /** @see AuthorizationService#mayBan() */
     void setMayBan(boolean b);
 
@@ -66,4 +69,5 @@ public interface DebugAuthorizationService extends AuthorizationService {
 
     /** @see AuthorizationService#mayCreateThreadIn(Category) */
     void setMayCreateThreadIn(Category category, boolean b);
+
 }

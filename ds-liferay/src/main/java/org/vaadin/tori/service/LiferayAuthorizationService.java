@@ -74,6 +74,11 @@ public class LiferayAuthorizationService implements AuthorizationService,
     }
 
     @Override
+    public boolean mayAddFiles(final Category category) {
+        return hasCategoryPermission(CategoryAction.ADD_FILE, category);
+    }
+
+    @Override
     public boolean mayBan() {
         return hasPermission(MbAction.BAN_USER);
     }
