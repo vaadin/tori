@@ -7,6 +7,7 @@ Tori is a forum project built upon Vaadin.
 
  * Henrik Paul
  * Teemu Pöntelin
+ * Tomi Virkki
 
 ## 3rd Party Libraries
 

@@ -9,12 +9,14 @@ import org.vaadin.tori.service.DebugAuthorizationService;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Widgetset;
 import com.vaadin.terminal.WrappedRequest;
 import com.vaadin.ui.Root;
 import com.vaadin.ui.VerticalLayout;
 
 @Theme("tori")
 @SuppressWarnings("serial")
+@Widgetset("org.vaadin.tori.widgetset.ToriWidgetset")
 public class ToriRoot extends Root {
 
     private static final int KEEPALIVE_PING_INTERVAL_MILLIS = 60000;
