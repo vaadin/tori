@@ -149,10 +149,10 @@
     </target>
 
 	<target name="package-liferay-war" depends="-check-widgetset-dependency, -package-webapp-jar, -package-ds-liferay-jar, test-all">
-		<war destfile="${file.tori.liferay.war}" webxml="${dir.web-inf}/web.xml" manifest="${dir.meta-inf}/MANIFEST.MF">
+		<war destfile="${file.tori.liferay.war}" webxml="${dir.web-inf}/web-liferay.xml" manifest="${dir.meta-inf}/MANIFEST.MF">
 			<webinf dir="${dir.web-inf}">
 				<exclude name="**/portlet.jar"/>
-				<exclude name="**/vaadin-*.jar"/>
+				<!--<exclude name="**/vaadin-*.jar"/>-->
 			</webinf>
 			<metainf dir="${dir.meta-inf}"/>
 			<lib file="${file.common.jar}" />
