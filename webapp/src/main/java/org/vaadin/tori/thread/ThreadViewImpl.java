@@ -300,6 +300,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
         // Using the TextArea of the ReplyComponent as the property data source
         // to keep the two editors in sync.
+        quickReply.setUserMayAddFiles(false);
         quickReply.getInput().setPropertyDataSource(
                 mirroredReplyComponent.getInput());
         quickReply.setCompactMode(true);

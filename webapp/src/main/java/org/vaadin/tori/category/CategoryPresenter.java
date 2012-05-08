@@ -263,11 +263,16 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     }
 
     public boolean userMayStartANewThread() {
+        boolean userMayStartANewThread = false;
         if (SpecialCategory.isSpecialCategory(currentCategory)) {
             // special "categories" like recent posts
-            return false;
+            userMayStartANewThread = false;
         }
-        return authorizationService.mayCreateThreadIn(currentCategory);
+        if (authorizationService != null) {
+            userMayStartANewThread = authorizationService
+                    .mayCreateThreadIn(currentCategory);
+        }
+        return userMayStartANewThread;
     }
 
     private void resetView() throws DataSourceException {
