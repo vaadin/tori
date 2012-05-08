@@ -41,9 +41,6 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     @Override
     public void init() {
         super.init();
-        EventBus.register(AddAttachmentEvent.class);
-        EventBus.register(ResetInputEvent.class);
-        EventBus.register(RemoveAttachmentEvent.class);
         EventBus.setListener(this);
     }
 

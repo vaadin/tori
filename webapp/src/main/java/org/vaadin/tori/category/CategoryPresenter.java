@@ -59,6 +59,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
                     view.hideThreads();
                 }
             }
+            view.setUserMayStartANewThread(userMayStartANewThread());
         } catch (final DataSourceException e) {
             e.printStackTrace();
             getView().panic();

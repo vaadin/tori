@@ -70,4 +70,6 @@ public interface CategoryView extends View {
     void displayThreads();
 
     void hideThreads();
+
+    void setUserMayStartANewThread(boolean userMayStartANewThread);
 }

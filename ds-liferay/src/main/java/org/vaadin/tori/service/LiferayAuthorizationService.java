@@ -243,4 +243,9 @@ public class LiferayAuthorizationService implements AuthorizationService,
         setBannedStatus();
     }
 
+    @Override
+    public boolean mayView(final Category category) {
+        return hasCategoryPermission(CategoryAction.VIEW, category);
+    }
+
 }

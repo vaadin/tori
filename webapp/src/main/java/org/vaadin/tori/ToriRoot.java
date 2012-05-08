@@ -6,6 +6,7 @@ import org.vaadin.tori.component.breadcrumbs.Breadcrumbs;
 import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
+import org.vaadin.tori.util.EventBus;
 
 import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.Theme;
@@ -22,6 +23,7 @@ public class ToriRoot extends Root {
     private static final int KEEPALIVE_PING_INTERVAL_MILLIS = 60000;
 
     private final ToriNavigator navigator = new ToriNavigator(this);
+    private final EventBus eventBus = new EventBus();
 
     @Override
     protected void init(final WrappedRequest request) {
@@ -63,6 +65,10 @@ public class ToriRoot extends Root {
             addComponent(new DebugControlPanel(
                     (DebugAuthorizationService) authorizationService, navigator));
         }
+    }
+
+    public EventBus getEventBus() {
+        return eventBus;
     }
 
 }

@@ -12,9 +12,10 @@ public class TestAuthorizationService implements DebugAuthorizationService {
 
     private boolean isCategoryAdministrator = true;
     private boolean mayReportPosts = true;
-    private final Map<Category, Boolean> mayFollowCategory = new HashMap<Category, Boolean>();;
+    private final Map<Category, Boolean> mayViewCategory = new HashMap<Category, Boolean>();
+    private final Map<Category, Boolean> mayFollowCategory = new HashMap<Category, Boolean>();
     private final Map<Category, Boolean> mayDeleteCategory = new HashMap<Category, Boolean>();
-    private final Map<Category, Boolean> mayEditCategory = new HashMap<Category, Boolean>();;
+    private final Map<Category, Boolean> mayEditCategory = new HashMap<Category, Boolean>();
     private final Map<DiscussionThread, Boolean> mayReplyInThread = new HashMap<DiscussionThread, Boolean>();
     private final Map<Category, Boolean> mayAddFilesInThread = new HashMap<Category, Boolean>();
     private final Map<Post, Boolean> mayEditPost = new HashMap<Post, Boolean>();
@@ -212,6 +213,16 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     @Override
     public void setMayCreateThreadIn(final Category category, final boolean b) {
         mayCreateThread.put(category, b);
+    }
+
+    @Override
+    public boolean mayView(final Category category) {
+        return get(mayViewCategory, category, true);
+    }
+
+    @Override
+    public void setMayView(final Category category, final boolean b) {
+        mayViewCategory.put(category, b);
     }
 
 }
