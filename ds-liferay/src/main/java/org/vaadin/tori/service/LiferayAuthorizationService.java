@@ -13,14 +13,17 @@ import org.vaadin.tori.service.LiferayAuthorizationConstants.CategoryAction;
 import org.vaadin.tori.service.LiferayAuthorizationConstants.MbAction;
 import org.vaadin.tori.service.LiferayAuthorizationConstants.MessageAction;
 
+import com.liferay.portal.kernel.exception.NestableException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.security.permission.PermissionThreadLocal;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.messageboards.model.MBMessage;
+import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.service.MBBanLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
+import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
 
 public class LiferayAuthorizationService implements AuthorizationService,
         PortletRequestAware {
@@ -69,8 +72,16 @@ public class LiferayAuthorizationService implements AuthorizationService,
 
     @Override
     public boolean mayReplyIn(final DiscussionThread thread) {
-        return hasCategoryPermission(CategoryAction.REPLY_TO_MESSAGE,
-                thread.getCategory());
+        MBThread mbThread = null;
+        try {
+            mbThread = MBThreadLocalServiceUtil.getThread(thread.getId());
+        } catch (final NestableException e) {
+            log.error(e);
+        }
+        return mbThread != null
+                && !mbThread.isLocked()
+                && hasCategoryPermission(CategoryAction.REPLY_TO_MESSAGE,
+                        thread.getCategory());
     }
 
     @Override
