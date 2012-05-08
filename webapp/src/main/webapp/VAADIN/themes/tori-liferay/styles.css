@@ -1,1 +1,13 @@
-@import url("../liferay-v7/styles.css")
+@import url("../liferay-v7/styles.css");
+@import url("breadcrumbs.css");
+@import url("categoryview.css");
+
+.v-view .v-label-h1,
+.v-view .v-label-h2,
+.v-view .v-label-h3 {
+	color: #34404F;
+}
+
+.v-popupbutton.popupIndicatorHidden .v-popup-indicator {
+	display: none;
+}

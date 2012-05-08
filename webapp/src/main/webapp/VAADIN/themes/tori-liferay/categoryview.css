@@ -1,0 +1,8 @@
+.categoryTree .category .contextmenu {
+	float: right;
+	visibility: hidden;
+}
+
+.categoryTree .category:hover .contextmenu {
+	visibility: visible;
+}

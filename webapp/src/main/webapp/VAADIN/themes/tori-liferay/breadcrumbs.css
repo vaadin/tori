@@ -1,0 +1,74 @@
+.breadcrumbs .breadcrumbs-layout {
+	float: left;
+}
+
+.breadcrumbs .action-bar {
+	float: right;
+	padding: 3px 14px 0 0;
+}
+
+.breadcrumbs .action-bar .v-link .v-icon {
+	padding-right: 3px
+}
+
+.breadcrumbs .action-bar .v-link {
+	margin-left: 5px;
+	color: #34404F;
+	font-weight: bold;
+	font-size: 14px;
+}
+
+.breadcrumbs .action-bar .v-link span {
+	text-decoration: none;
+}
+
+.breadcrumbs .v-label {
+	background-color: #e0e0e0;
+	font-size: 18px;
+	font-weight: bold;
+	padding: 10px 17px 12px 17px;
+	-moz-border-radius: 0 0 4px 4px;
+	-webkit-border-radius: 0 0 4px 4px;
+	border-radius: 0 0 4px 4px;
+}
+
+.breadcrumbs .v-verticallayout-slot:first-child {
+	background-color: #d2d2d2;
+	-moz-border-radius: 4px 4px 0 0;
+	-webkit-border-radius: 4px 4px 0 0;
+	border-radius: 4px 4px 0 0;
+}
+
+.breadcrumbs .breadcrumbs-layout .last {
+	/* overrides liferay theme */
+	margin: 0;
+}
+
+.breadcrumbs .breadcrumbs-layout .v-button-wrap {
+	background: transparent;
+	border: none;
+}
+
+.breadcrumbs .breadcrumbs-layout .v-button-caption {
+	text-shadow: none;
+}
+
+.breadcrumbs .v-button {
+	padding-right: 7px;
+	background: url("images/separator-breadcrumbs.png") no-repeat right center;
+	background-color: transparent;
+}
+
+.breadcrumbs .splitbutton .v-horizontallayout-slot:first-child .v-button {
+	background-image: none;
+	padding-right: 0;
+}
+
+.breadcrumbs .last .splitbutton .v-button {
+	background-image: none;
+	cursor: normal;
+}
+
+.breadcrumbs .last .splitbutton .v-button:hover .v-button-wrap{
+	color: #369; /* <- default color */ 
+}
