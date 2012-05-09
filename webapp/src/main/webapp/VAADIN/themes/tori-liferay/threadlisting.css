@@ -1,0 +1,95 @@
+.thread-listing {
+	border-width: 1px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.thread-listing .column-header-row {
+	background-color: #ddd;
+}
+
+.thread-listing-row .details, 
+.thread-listing .fixed-column-headers {
+	float: right;
+}
+
+.thread-listing .topic .modifiers, 
+.thread-listing .topic .link, 
+.thread-listing-row .started-by, 
+.thread-listing-row .posts, 
+.thread-listing-row .latest-post, 
+.thread-listing .column-header {
+	float: left;
+}
+
+.thread-listing-row .topic {
+	height: 100%;
+	position: absolute;
+	top: 2px;
+	left: 0;
+	right: 350px;
+	bottom: 0;
+}
+
+.thread-listing-row .contextmenu {
+	float: right;
+	visibility: hidden;
+}
+
+.thread-listing-row:hover .contextmenu {
+	visibility: visible;
+}
+.thread-listing .column-header.topic {
+	margin-left: 25px;
+}
+
+.thread-listing .topic .modifiers {
+	width: 8px !important;
+	height: 16px !important;
+	margin: 0 4px 0 12px;
+}
+
+.thread-listing .started-by, 
+.thread-listing .latest-post, 
+.thread-listing .fixed-column-headers .started-by, 
+.thread-listing .fixed-column-headers .latest-post {
+	width: 140px;
+}
+
+.thread-listing .posts {
+	width: 50px;
+}
+
+.thread-listing .started-by {
+	overflow: hidden;
+	margin-right: 10px;
+}
+
+.thread-listing-row, .thread-listing .v-lazylayout-placeholder {
+	width: 100%;
+	border-width: 0 0 1px 0;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.thread-listing-row {
+	position: relative;
+	padding: 2px 0;
+}
+
+.thread-listing, 
+.thread-listing-row, 
+.thread-listing .v-lazylayout-placeholder {
+	border-color: #DFDFDF;
+	border-style: solid;
+}
+
+.thread-listing .author {
+	font-size: smaller;
+}
+
+.thread-listing {
+	
+}

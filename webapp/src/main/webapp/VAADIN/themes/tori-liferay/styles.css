@@ -1,6 +1,8 @@
 @import url("../liferay-v7/styles.css");
 @import url("breadcrumbs.css");
 @import url("categoryview.css");
+@import url("threadlisting.css");
+@import url("contextmenu.css");
 
 .v-view .v-label-h1,
 .v-view .v-label-h2,

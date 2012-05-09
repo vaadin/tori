@@ -23,20 +23,29 @@
 }
 
 .breadcrumbs .v-label {
-	background-color: #e0e0e0;
 	font-size: 18px;
 	font-weight: bold;
 	padding: 10px 17px 12px 17px;
-	-moz-border-radius: 0 0 4px 4px;
-	-webkit-border-radius: 0 0 4px 4px;
-	border-radius: 0 0 4px 4px;
 }
 
 .breadcrumbs .v-verticallayout-slot:first-child {
 	background-color: #d2d2d2;
-	-moz-border-radius: 4px 4px 0 0;
-	-webkit-border-radius: 4px 4px 0 0;
-	border-radius: 4px 4px 0 0;
+	-moz-border-radius-topright: 4px;
+	-moz-border-radius-topleft: 4px;
+	-webkit-top-left-border-radius: 4px;
+	-webkit-top-right-border-radius: 4px;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+}
+
+.breadcrumbs .v-verticallayout-slot:nth-child(2) {
+	background-color: #e0e0e0;
+	-moz-border-radius-bottomright: 4px;
+	-moz-border-radius-bottomleft: 4px;
+	-webkit-border-bottom-left-radius: 4px;
+	-webkit-border-bottom-right-radius: 4px;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
 }
 
 .breadcrumbs .breadcrumbs-layout .last {

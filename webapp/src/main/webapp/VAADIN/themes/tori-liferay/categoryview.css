@@ -1,4 +1,4 @@
-.categoryTree .category {
+.categoryTree .category.normal {
 	float: left;
 }
 
@@ -35,4 +35,14 @@
 
 .categoryTree .v-treetable-node-open {
 	background-position: -18px 0;
+}
+
+.v-csslayout-category {
+	position: relative;
+}
+
+.v-csslayout-category .v-label-threadCount {
+	float:right;
+	margin-right:20px;
+	text-align: right;
 }
