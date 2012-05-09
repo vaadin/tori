@@ -1,8 +1,38 @@
+.categoryTree .category {
+	float: left;
+}
+
 .categoryTree .category .contextmenu {
-	float: right;
 	visibility: hidden;
+	position: absolute;
+	top: 0;
+	right: 0;	
 }
 
 .categoryTree .category:hover .contextmenu {
 	visibility: visible;
+}
+
+.v-treetable-treespacer {
+	display:inline-block;
+	background: transparent;
+	width:18px;
+}
+
+.categoryTree .v-treetable-treespacer {
+	float:left;
+	height:13px
+}
+
+.categoryTree .v-treetable-node-closed,
+.categoryTree .v-treetable-node-open {
+	background-image: url("images/treetable-triangles.png");
+}
+	
+.categoryTree .v-treetable-node-closed {
+	background-position: 0 0;
+}
+
+.categoryTree .v-treetable-node-open {
+	background-position: -18px 0;
 }
