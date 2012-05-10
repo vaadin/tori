@@ -70,6 +70,22 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 }
             }
         }
+
+        @Override
+        public void addAttachment(final String attachmentFileName,
+                final byte[] data) {
+            getPresenter().addAttachment(attachmentFileName, data);
+        }
+
+        @Override
+        public void resetInput() {
+            getPresenter().resetInput();
+        }
+
+        @Override
+        public void removeAttachment(final String fileName) {
+            getPresenter().removeAttachment(fileName);
+        }
     };
 
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't care about serialization")
@@ -485,6 +501,22 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                             Notification.TYPE_HUMANIZED_MESSAGE);
                 }
             }
+
+            @Override
+            public void addAttachment(final String attachmentFileName,
+                    final byte[] data) {
+                getPresenter().addAttachment(attachmentFileName, data);
+            }
+
+            @Override
+            public void resetInput() {
+                getPresenter().resetInput();
+            }
+
+            @Override
+            public void removeAttachment(final String fileName) {
+                getPresenter().removeAttachment(fileName);
+            }
         }, ToriApplication.getCurrent().getPostFormatter()
                 .getFormattingSyntaxXhtml());
         newThreadComponent.setUserMayAddFiles(getPresenter().userMayAddFiles());
@@ -505,10 +537,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void refresh(final Post post) {
-        final PostComponent oldComponent = postsToComponents.get(post);
-        final PostComponent newComponent = newPostComponent(post);
-        postsToComponents.put(post, newComponent);
-        postsLayout.replaceComponent(oldComponent, newComponent);
+        final PostComponent postComponent = postsToComponents.get(post);
+        postComponent.refreshBody(post);
     }
 
     @Override

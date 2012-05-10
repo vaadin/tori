@@ -7,12 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import org.vaadin.tori.ToriApplication;
-import org.vaadin.tori.ToriRoot;
 import org.vaadin.tori.ToriUtil;
-import org.vaadin.tori.thread.event.AddAttachmentEvent;
-import org.vaadin.tori.thread.event.RemoveAttachmentEvent;
-import org.vaadin.tori.thread.event.ResetInputEvent;
-import org.vaadin.tori.util.EventBus;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.PostFormatter.FontsInfo;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
@@ -317,6 +312,12 @@ public abstract class AuthoringComponent extends CustomComponent {
 
     protected interface AuthoringListener {
         void submit(String rawBody);
+
+        void addAttachment(String attachmentFileName, byte[] data);
+
+        void resetInput();
+
+        void removeAttachment(String fileName);
     }
 
     private final ClickListener CLEAR_LISTENER = new NativeButton.ClickListener() {
@@ -486,10 +487,8 @@ public abstract class AuthoringComponent extends CustomComponent {
         attach.addListener(new Upload.SucceededListener() {
             @Override
             public void uploadSucceeded(final SucceededEvent event) {
-                EventBus.currentRoot.set((ToriRoot) getRoot());
-                EventBus.fire(new AddAttachmentEvent(attachmentFileName,
-                        attachmentData.toByteArray()));
-                EventBus.currentRoot.remove();
+                listener.addAttachment(attachmentFileName,
+                        attachmentData.toByteArray());
                 attachmentFileName = null;
                 attachmentData = null;
             }
@@ -531,7 +530,7 @@ public abstract class AuthoringComponent extends CustomComponent {
     private void resetInput() {
         input.setValue("");
         preview.setValue("<br/>");
-        EventBus.fire(new ResetInputEvent());
+        listener.resetInput();
     }
 
     private void updatePreview(final String unformattedText) {
@@ -615,7 +614,7 @@ public abstract class AuthoringComponent extends CustomComponent {
                 @Override
                 public void layoutClick(final LayoutClickEvent event) {
                     if (event.getChildComponent() != nameComponent) {
-                        EventBus.fire(new RemoveAttachmentEvent(fileName));
+                        listener.removeAttachment(fileName);
                     }
                 }
             });
