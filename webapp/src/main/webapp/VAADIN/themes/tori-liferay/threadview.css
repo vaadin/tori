@@ -171,7 +171,8 @@
 	vertical-align: middle;
 }
 
-.post .body .code {
+.post .body .code,
+.authoring .code {
 	font-family: "courier new",monospace;
 	background: white;
 	padding: 5px;
@@ -181,12 +182,40 @@
 	font-weight: bold;
 }
 
-.post .body .code .code-lines {
+.post .body .code .code-lines,
+.authoring .code .code-lines {
 	display: inline-block;
 	width: 2em;
 	text-align: right;
 	padding-right: 0.5em;
 	color: #aaa;
+}
+
+.post .body .quote, .authoring .quote,
+.post .body .quote-title, .authoring .quote-title {
+	background-color: #ddd;
+	background-color: rgba(200, 200, 200, 0.4);
+	border-radius: 4px;
+	padding: 10px 37px;
+}
+
+.post .body .quote-title, 
+.authoring .quote-title {
+	border-radius: 4px 4px 0 0;
+	background-image: url("images/quote.png");
+	background-repeat: no-repeat;
+	padding-bottom: 0;
+	min-height: 20px;
+	font-size: 14px;
+	background-position: 8px 10px;
+	font-weight: bold;
+}
+
+.post .body .quote-title+.quote,
+.authoring .quote-title+.quote {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	padding-top: 0;
 }
 
 .threadview .spacer {
@@ -220,6 +249,7 @@
 	border-spacing: 0;
 }
 
+.newthread .topiclabel,
 .authoring div[location="captionlabel"] {
 	font-size: 18px;
 	font-weight: bold;
@@ -230,8 +260,7 @@
 }
 
 .authoring div[location="formattingsyntax"] {
-	text-align: right;
-	padding-right: 10px;
+	float: right;
 }
 
 .authoring div[location="input"] textarea {
@@ -426,4 +455,14 @@
 	background-image: url("images/loadingpost-bg.png");
 	background-repeat: no-repeat;
 	background-position: center;
+}
+
+.newthread .topicfield {
+	font-size: 16px;
+	line-height: 20px;
+	height: 30px;
+	border: 2px solid #ccc;
+	border-radius: 4px;
+	text-indent: 0.5em;
+	font-weight: bold;
 }

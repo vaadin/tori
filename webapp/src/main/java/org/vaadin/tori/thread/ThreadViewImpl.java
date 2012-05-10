@@ -442,10 +442,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         topicLayout.setStyleName("newthread");
         layout.addComponent(topicLayout);
 
-        final HeadingLabel topicLabel = new HeadingLabel("Topic:",
+        final HeadingLabel topicLabel = new HeadingLabel("Topic",
                 HeadingLevel.H3);
         topicLabel.addStyleName("topiclabel");
-        topicLabel.setWidth("140px");
+        topicLabel.setWidth("153px");
         topicLayout.addComponent(topicLabel);
 
         final TextField topicField = new TextField();
@@ -453,6 +453,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         topicField.setWidth("100%");
         topicLayout.addComponent(topicField);
         topicLayout.setExpandRatio(topicField, 1.0f);
+        topicField.focus();
 
         newThreadComponent = new NewThreadComponent(new NewThreadListener() {
             @Override
