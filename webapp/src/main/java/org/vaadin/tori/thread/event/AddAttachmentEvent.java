@@ -1,7 +1,6 @@
 package org.vaadin.tori.thread.event;
 
 import com.github.wolfie.blackboard.Event;
-import com.github.wolfie.blackboard.Listener;
 
 public class AddAttachmentEvent implements Event {
     private final String fileName;
@@ -19,9 +18,5 @@ public class AddAttachmentEvent implements Event {
 
     public final byte[] getData() {
         return data;
-    }
-
-    public interface AddAttachmentListener extends Listener {
-        void addAttachment(final AddAttachmentEvent event);
     }
 }

@@ -70,4 +70,7 @@ public interface DebugAuthorizationService extends AuthorizationService {
     /** @see AuthorizationService#mayCreateThreadIn(Category) */
     void setMayCreateThreadIn(Category category, boolean b);
 
+    /** @see AuthorizationService#mayView(Category) */
+    void setMayView(Category category, boolean b);
+
 }

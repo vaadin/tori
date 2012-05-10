@@ -1,11 +1,11 @@
 package org.vaadin.tori.util;
 
-import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.ToriRoot;
 
 import com.github.wolfie.blackboard.Blackboard;
 import com.github.wolfie.blackboard.Event;
 import com.github.wolfie.blackboard.Listener;
-import com.github.wolfie.blackboard.exception.DuplicateRegistrationException;
+import com.vaadin.ui.Root;
 
 /**
  * Utility class that provides static methods for Blackboard operations.
@@ -16,8 +16,18 @@ public final class EventBus {
     private final transient Blackboard blackboard = new Blackboard();
     private transient Listener currentListener;
 
+    // TODO: Remove. A temporary hack needed currently.
+    public static ThreadLocal<ToriRoot> currentRoot = new ThreadLocal<ToriRoot>();
+
     public static EventBus getCurrent() {
-        return ToriApplication.getCurrent().getEventBus();
+        try {
+            return ((ToriRoot) Root.getCurrentRoot()).getEventBus();
+        } catch (final Exception e) {
+            // TODO: Remove. Development-time nightly build of V7 will return
+            // null on Root.getCurrentRoot() in certain cases so we'll use this
+            // temporary hack.
+            return currentRoot.get().getEventBus();
+        }
     }
 
     public static void fire(final Event event) {
@@ -34,21 +44,5 @@ public final class EventBus {
 
     public static void setListener(final Listener listener) {
         getCurrent().setListener_(listener);
-    }
-
-    public static void register(final Class<? extends Event> event) {
-        try {
-            for (final Class<? extends Object> innerClass : event
-                    .getDeclaredClasses()) {
-                if (innerClass != null
-                        && Listener.class.isAssignableFrom(innerClass)) {
-                    @SuppressWarnings("unchecked")
-                    final Class<? extends Listener> listenerClass = (Class<? extends Listener>) innerClass;
-                    getCurrent().blackboard.register(listenerClass, event);
-                }
-            }
-        } catch (final DuplicateRegistrationException e) {
-            // NOP
-        }
     }
 }

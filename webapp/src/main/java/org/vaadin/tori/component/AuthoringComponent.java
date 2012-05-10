@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.ToriRoot;
 import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.thread.event.AddAttachmentEvent;
 import org.vaadin.tori.thread.event.RemoveAttachmentEvent;
@@ -485,8 +486,10 @@ public abstract class AuthoringComponent extends CustomComponent {
         attach.addListener(new Upload.SucceededListener() {
             @Override
             public void uploadSucceeded(final SucceededEvent event) {
+                EventBus.currentRoot.set((ToriRoot) getRoot());
                 EventBus.fire(new AddAttachmentEvent(attachmentFileName,
                         attachmentData.toByteArray()));
+                EventBus.currentRoot.remove();
                 attachmentFileName = null;
                 attachmentData = null;
             }

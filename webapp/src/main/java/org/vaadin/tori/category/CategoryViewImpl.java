@@ -233,4 +233,10 @@ public class CategoryViewImpl extends
         ((ComponentContainer) threadsLabel.getParent()).replaceComponent(
                 threadsLabel, newLabel);
     }
+
+    @Override
+    public void setUserMayStartANewThread(final boolean userMayStartANewThread) {
+        newThreadButton1.setVisible(userMayStartANewThread);
+        newThreadButton2.setVisible(userMayStartANewThread);
+    }
 }

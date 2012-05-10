@@ -330,7 +330,7 @@
 }
 
 .authoring .buttons div[location="uploadbutton"] {
-	float: right;
+	/**float: right;*/
 }
 
 .authoring div[location="formattingsyntax"] {
