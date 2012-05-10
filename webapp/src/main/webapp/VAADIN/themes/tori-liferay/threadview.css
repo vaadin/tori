@@ -451,7 +451,7 @@
 	color: #222;
 }
 
-.v-lazylayout-placeholder {
+.threadview .v-lazylayout-placeholder {
 	background-image: url("images/loadingpost-bg.png");
 	background-repeat: no-repeat;
 	background-position: center;

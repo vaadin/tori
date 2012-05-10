@@ -90,6 +90,6 @@
 	font-size: smaller;
 }
 
-.thread-listing {
-	
+.thread-listing .v-lazylayout-placeholder {
+	background: transparent;
 }
