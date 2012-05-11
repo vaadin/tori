@@ -25,16 +25,18 @@ public class ThreadModifiersComponent extends CustomComponent {
         layout.setSizeUndefined();
 
         if (thread.isSticky()) {
-            addIcon("icon-small-sticky.png", "Thread is sticky");
+            addIcon("icon-small-sticky.png", "Thread is sticky", "sticky");
         }
         if (thread.isLocked()) {
-            addIcon("icon-small-locked.png", "Thread is locked");
+            addIcon("icon-small-locked.png", "Thread is locked", "locked");
         }
     }
 
-    private void addIcon(final String iconName, final String popupText) {
+    private void addIcon(final String iconName, final String popupText,
+            final String stylename) {
         final Embedded icon = new Embedded(null, new ThemeResource("images/"
                 + iconName));
+        icon.setStyleName(stylename);
         icon.setDescription(popupText);
         icon.setWidth(ICON_WIDTH);
         icon.setHeight(ICON_HEIGHT);

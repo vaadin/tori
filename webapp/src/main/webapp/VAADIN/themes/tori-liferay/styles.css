@@ -11,6 +11,10 @@
 	color: #34404F;
 }
 
+.v-view {
+	font-size: 14px;
+}
+
 .v-popupbutton.popupIndicatorHidden .v-popup-indicator {
 	display: none;
 }

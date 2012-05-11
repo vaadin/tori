@@ -222,26 +222,32 @@
 	text-align: center;
 	font-size: 20px;
 	padding: 1em 0;
-	font-style: italic;
 	border-bottom: 2px solid #CCC;
 	margin-bottom: 105px;
 	margin-top: 50px;
 	overflow: visible;
+	position: relative;
 }
 
 .threadview .spacer .eof {
 	font-size: 46px;
 	font-family: Courier New, monospace;
-	font-style: normal;
 	color: #CCC;
 	padding: 0 26px;
 	background: #EEF0F2;
 	border: 2px solid #CCC;
-	position: relative;
-	top: 0.7em;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
+	
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	position: absolute;
+	bottom: 0;
+	line-height: 60px;
+	height: 60px;
+	margin-bottom: -30px;
 }
 
 .authoring table {
@@ -445,6 +451,7 @@
 	margin-left: -8px !important;
 	background: url(images/floatingbar-bg.png) #EEF0F2 top left repeat-x;	
 	border: 2px solid #64635a;
+	top: -999px;
 }
 
 .v-floatingbar.threadSummaryBar .body {

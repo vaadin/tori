@@ -97,14 +97,14 @@ class CategoryTreeTable extends TreeTable {
                 item.getItemProperty(PROPERTY_ID_UNREAD).setValue(
                         presenter.getUnreadThreadCount(category));
             } catch (final DataSourceException e) {
-                item.getItemProperty(PROPERTY_ID_UNREAD).setValue(0);
+                item.getItemProperty(PROPERTY_ID_UNREAD).setValue(0L);
             }
 
             try {
                 item.getItemProperty(PROPERTY_ID_THREADS).setValue(
                         presenter.getThreadCount(category));
             } catch (final DataSourceException e) {
-                item.getItemProperty(PROPERTY_ID_THREADS).setValue(0);
+                item.getItemProperty(PROPERTY_ID_THREADS).setValue(0L);
             }
 
         }

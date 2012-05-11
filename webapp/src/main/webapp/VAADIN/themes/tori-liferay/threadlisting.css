@@ -48,6 +48,17 @@
 	width: 8px !important;
 	height: 16px !important;
 	margin: 0 4px 0 12px;
+	position: relative;
+}
+
+.thread-listing .topic .modifiers .v-embedded {
+	line-height: 8px;
+	position: absolute;
+	right: 0;
+}
+
+.thread-listing .topic .modifiers .v-embedded.locked {
+	top: 8px;
 }
 
 .thread-listing .started-by, 
