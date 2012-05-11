@@ -274,7 +274,7 @@
 	font-size: 14px;
 	color: #464440;
 	border: none;
-	border: 2px solid #C8C7B5;
+	border: 2px solid #CCC;
 	padding: 12px;
 	margin-bottom: 8px;
 	-moz-border-radius: 4px;
@@ -355,7 +355,7 @@
 }
 
 .threadSummary .topRow {
-	background: #64635A;
+	background: #AAA;
 	color: white;
 	font-size: 13px;
 	white-space: nowrap;
@@ -437,8 +437,8 @@
 .v-floatingbar.quickReply:hover {
 	padding: 0 8px;
 	margin-left: -8px !important;
-	background: #a09f91;	
-	border: 2px solid #a09f91;
+	background: #888;	
+	border: 2px solid #888;
 }
 
 .v-floatingbar.threadSummaryBar .popupContent
@@ -450,7 +450,7 @@
 	padding: 0 8px;
 	margin-left: -8px !important;
 	background: url(images/floatingbar-bg.png) #EEF0F2 top left repeat-x;	
-	border: 2px solid #64635a;
+	border: 2px solid #aaa;
 	top: -999px;
 }
 
