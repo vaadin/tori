@@ -8,7 +8,8 @@ package org.vaadin.tori.data;
  * </p>
  */
 public interface DebugDataSource {
-    String ATTACHMENT_PREFIX = "/attachments/";
+    String CONTEXT = "/webapp";
+    String ATTACHMENT_PREFIX = CONTEXT + "/attachments/";
 
     /**
      * Returns data as byte array for an attachment with the given id.

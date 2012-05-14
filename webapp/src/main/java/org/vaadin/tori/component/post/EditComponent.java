@@ -8,7 +8,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Label;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.themes.BaseTheme;
 
 @SuppressWarnings("serial")
@@ -53,12 +53,6 @@ public class EditComponent extends CssLayout {
     }
 
     private Component newEditLayout(final String body) {
-        final Label notSupported = new Label("Editing not yet supported.");
-        notSupported.setWidth("300px");
-        return notSupported;
-        /*-
-        // editing disabled for now
-         
         final CssLayout layout = new CssLayout();
         layout.setWidth("400px");
 
@@ -71,7 +65,7 @@ public class EditComponent extends CssLayout {
         layout.addComponent(new Button("Edit", new ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
-                editListener.postEdited((String) editArea.getValue());
+                editListener.postEdited(editArea.getValue());
                 editPopup.setPopupVisible(false);
             }
         }));
@@ -84,6 +78,6 @@ public class EditComponent extends CssLayout {
         }));
 
         return layout;
-         */
+
     }
 }

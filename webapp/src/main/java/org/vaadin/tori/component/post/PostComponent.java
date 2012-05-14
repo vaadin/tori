@@ -169,6 +169,7 @@ public class PostComponent extends CustomComponent {
     private boolean followingEnabled = false;
     private boolean unfollowingEnabled = false;
     private final EditComponent editComponent;
+    private final boolean allowHtml;
 
     /**
      * @throws IllegalArgumentException
@@ -190,6 +191,7 @@ public class PostComponent extends CustomComponent {
 
         this.presenter = presenter;
         this.post = post;
+        this.allowHtml = allowHtml;
 
         root = new CustomLayout("postlayout");
         setCompositionRoot(root);
@@ -240,14 +242,8 @@ public class PostComponent extends CustomComponent {
                     "signature");
         }
 
-        final String formattedPost = getFormattedXhtmlBody(post);
-        if (allowHtml) {
-            root.addComponent(new Label(formattedPost, ContentMode.XHTML),
-                    "body");
-        } else {
-            root.addComponent(new Label(presenter.stripTags(formattedPost),
-                    ContentMode.XHTML), "body");
-        }
+        refreshBody(post);
+
         final Component attachments = getAttachments(post);
         if (attachments != null) {
             root.addComponent(attachments, "attachments");
@@ -436,6 +432,18 @@ public class PostComponent extends CustomComponent {
 
             followingEnabled = !followingEnabled;
             unfollowingEnabled = !unfollowingEnabled;
+        }
+    }
+
+    public final void refreshBody(final Post post) {
+        root.removeComponent("body");
+        final String formattedPost = getFormattedXhtmlBody(post);
+        if (allowHtml) {
+            root.addComponent(new Label(formattedPost, ContentMode.XHTML),
+                    "body");
+        } else {
+            root.addComponent(new Label(presenter.stripTags(formattedPost),
+                    ContentMode.XHTML), "body");
         }
     }
 }

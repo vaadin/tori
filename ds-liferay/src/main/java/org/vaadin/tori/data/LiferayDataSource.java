@@ -620,7 +620,13 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     @Override
     public void save(final Post post) {
-        log.warn("Not yet implemented.");
+        try {
+            // Currently only editing of message body allowed
+            MBMessageLocalServiceUtil.updateMessage(post.getId(),
+                    post.getBodyRaw());
+        } catch (Exception e) {
+            log.error("Editing message failed", e);
+        }
     }
 
     @Override

@@ -14,18 +14,13 @@ import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.post.PostReport;
-import org.vaadin.tori.thread.event.AddAttachmentEvent;
-import org.vaadin.tori.thread.event.RemoveAttachmentEvent;
-import org.vaadin.tori.thread.event.ResetInputEvent;
-import org.vaadin.tori.util.EventBus;
 
 import com.google.common.collect.Lists;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
-public class ThreadPresenter extends Presenter<ThreadView> implements
-        ThreadViewListener {
+public class ThreadPresenter extends Presenter<ThreadView> {
 
     public static final String NEW_THREAD_ARGUMENT = "new";
 
@@ -36,12 +31,6 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     public ThreadPresenter(final @NonNull DataSource dataSource,
             final @NonNull AuthorizationService authorizationService) {
         super(dataSource, authorizationService);
-    }
-
-    @Override
-    public void init() {
-        super.init();
-        EventBus.setListener(this);
     }
 
     public void setCurrentThreadById(final @NonNull String threadIdString)
@@ -300,21 +289,18 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
                 .getFormattingSyntaxXhtml();
     }
 
-    @Override
-    public final void resetInput(final ResetInputEvent event) {
+    public final void resetInput() {
         attachments.clear();
         getView().updateAttachmentList(attachments);
     }
 
-    @Override
-    public final void addAttachment(final AddAttachmentEvent event) {
-        attachments.put(event.getFileName(), event.getData());
+    public final void addAttachment(final String fileName, final byte[] data) {
+        attachments.put(fileName, data);
         getView().updateAttachmentList(attachments);
     }
 
-    @Override
-    public final void removeAttachment(final RemoveAttachmentEvent event) {
-        attachments.remove(event.getFileName());
+    public final void removeAttachment(final String fileName) {
+        attachments.remove(fileName);
         getView().updateAttachmentList(attachments);
     }
 
@@ -330,6 +316,8 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
                 final Post updatedPost = dataSource.saveAsCurrentUser(post,
                         attachments);
+
+                resetInput();
 
                 getView().confirmReplyPostedAndShowIt(updatedPost);
             } catch (final DataSourceException e) {
