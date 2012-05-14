@@ -1,6 +1,10 @@
 package org.vaadin.tori.widgetset.client.ui.floatingbar;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ui.VOverlay;
 import com.vaadin.terminal.gwt.client.ui.popupview.VPopupView;
@@ -13,6 +17,9 @@ class FloatingBarOverlay extends VOverlay {
     private FloatingBarWidgetListener listener;
     private boolean currentVisibility = false;
     private boolean topAligned;
+    private SimplePanel wrapper;
+
+    private Element paddingAdditionBar;
 
     private static final String CLASSNAME = VPopupView.CLASSNAME + " "
             + VPopupView.CLASSNAME + "-popup";
@@ -30,7 +37,39 @@ class FloatingBarOverlay extends VOverlay {
     }
 
     public void setContentWidget(final Widget contentWidget) {
-        setWidget(contentWidget);
+        wrapper = new SimplePanel(contentWidget);
+        wrapper.addStyleName("contentwrapper");
+
+        if (topAligned) {
+            final NodeList<Element> elements = Document.get()
+                    .getElementsByTagName("nav");
+            for (int i = 0; i < elements.getLength(); i++) {
+                final Element e = elements.getItem(i);
+
+                if (e.getClassName().contains("site-breadcrumbs")) {
+                    paddingAdditionBar = e;
+                    break;
+                }
+            }
+        } else {
+            final NodeList<Element> elements = Document.get()
+                    .getElementsByTagName("div");
+
+            for (int i = 0; i < elements.getLength(); i++) {
+                final Element e = elements.getItem(i);
+                if (e.getClassName().contains("chat-bar")) {
+                    paddingAdditionBar = e;
+                    break;
+                }
+            }
+        }
+
+        setWidget(wrapper);
+    }
+
+    public void update(final Widget rootWidget) {
+        wrapper.setWidth(rootWidget.getOffsetWidth() + "px");
+        getElement().getStyle().setLeft(rootWidget.getAbsoluteLeft(), Unit.PX);
     }
 
     public void setListener(final FloatingBarWidgetListener listener) {
@@ -81,6 +120,20 @@ class FloatingBarOverlay extends VOverlay {
                 getElement().getStyle().setTop(-visiblePixels, Unit.PX);
             } else {
                 getElement().getStyle().setBottom(-visiblePixels, Unit.PX);
+            }
+        }
+
+        if (paddingAdditionBar != null) {
+            if (topAligned) {
+                wrapper.getElement()
+                        .getStyle()
+                        .setPaddingTop(paddingAdditionBar.getOffsetHeight(),
+                                Unit.PX);
+            } else {
+                wrapper.getElement()
+                        .getStyle()
+                        .setPaddingBottom(paddingAdditionBar.getOffsetHeight(),
+                                Unit.PX);
             }
         }
     }

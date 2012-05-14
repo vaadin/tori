@@ -251,7 +251,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
         final VerticalLayout summaryLayout = new VerticalLayout();
 
-        summaryLayout.setWidth(966.0f, Unit.PIXELS);
+        summaryLayout.setWidth(100.0f, Unit.PERCENTAGE);
         summaryLayout.addStyleName("threadSummary");
 
         final PostComponent postSummary = newPostSummaryComponent(firstPost);
@@ -327,7 +327,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 quickReply.setCompactMode(false);
             }
         });
-        quickReply.setWidth(966.0f, Unit.PIXELS);
+        quickReply.setWidth(100.0f, Unit.PERCENTAGE);
 
         final FloatingBar bar = new FloatingBar();
         bar.addStyleName("quickReply");

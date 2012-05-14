@@ -185,8 +185,7 @@
 }
 .v-floatingbar.threadSummaryBar,
 .v-floatingbar.threadSummaryBar:hover {
-	padding: 0 8px;
-	margin-left: -8px !important;
+	margin-left: -2px !important;
 	background: url(../images/floatingbar-bg.png) #fff top left repeat-x;	
 	border: 2px solid #64635a;
 }
