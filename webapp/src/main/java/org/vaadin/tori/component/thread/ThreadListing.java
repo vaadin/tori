@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.vaadin.tori.category.CategoryPresenter;
+import org.vaadin.tori.component.AbstractLazyLayout;
 import org.vaadin.tori.component.GeneratedLazyLayout;
 import org.vaadin.tori.component.GeneratedLazyLayout.ComponentGenerator;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -20,6 +21,7 @@ import com.vaadin.ui.Notification;
  * UI component for displaying a vertical hierarchical list of threads.
  */
 @SuppressWarnings("serial")
+@edu.umd.cs.findbugs.annotations.SuppressWarnings("SE_NO_SERIALVERSIONID")
 public class ThreadListing extends CustomComponent {
 
     private static final String COLUMN_HEADER_TOPIC = "Topic";
@@ -32,17 +34,16 @@ public class ThreadListing extends CustomComponent {
     private static final String STYLE_FIXED_COLUMNS = "fixed-column-headers";
     private static final String STYLE_COLUMN_HEADER_ROW = "column-header-row";
 
-    private static final String PLACEHOLDER_WIDTH = "100%";
-    private static final String PLACEHOLDER_HEIGHT = "41px";
-    private static final int RENDER_DELAY_MILLIS = 700;
-    private static final int RENDER_DISTANCE_PX = 500;
+    protected static final String PLACEHOLDER_WIDTH = "100%";
+    protected static final String PLACEHOLDER_HEIGHT = "41px";
+    protected static final int RENDER_DELAY_MILLIS = 700;
+    protected static final int RENDER_DISTANCE_PX = 500;
 
     private static final long MAX_AMOUNT_OF_SHOWN_THREADS = 1000;
 
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "ignoring serialization")
     protected final CategoryPresenter presenter;
-    protected final GeneratedLazyLayout layout;
-    // protected final CssLayout layout;
+    protected AbstractLazyLayout layout;
 
     private transient final ComponentGenerator componentGenerator = new ComponentGenerator() {
         @Override
@@ -77,7 +78,7 @@ public class ThreadListing extends CustomComponent {
         }
     };
 
-    private final CssLayout root = new CssLayout();
+    protected final CssLayout root = new CssLayout();
 
     public ThreadListing(final CategoryPresenter presenter) {
         this.presenter = presenter;

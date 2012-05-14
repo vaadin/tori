@@ -184,7 +184,6 @@ public class VLazyLayout extends SimplePanel {
 
     public void setComponentsAmount(final int newAmountOfComponents) {
         if (newAmountOfComponents != totalAmountOfComponents) {
-
             if (newAmountOfComponents < totalAmountOfComponents) {
                 // TODO
                 VConsole.error("LazyLayout doesn't support removing of components");
