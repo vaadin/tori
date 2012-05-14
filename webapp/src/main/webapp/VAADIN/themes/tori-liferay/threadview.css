@@ -377,12 +377,12 @@
 
 .v-floatingbar {
 	position: fixed !important;
-	left: auto !important;
 	padding: 0;
 	white-space: normal;
 	-moz-box-shadow: 0 0 10px rgba(60, 59, 53, 0.5);
 	-webkit-box-shadow: 0 0 10px rgba(60, 59, 53, 0.5);
 	box-shadow: 0 0 10px rgba(60, 59, 53, 0.5);
+	z-index: 99 !important;
 }
 
 .v-floatingbar .authoring {
@@ -447,8 +447,7 @@
 }
 .v-floatingbar.threadSummaryBar,
 .v-floatingbar.threadSummaryBar:hover {
-	padding: 0 8px;
-	margin-left: -8px !important;
+	margin-left: -2px !important;
 	background: url(images/floatingbar-bg.png) #EEF0F2 top left repeat-x;	
 	border: 2px solid #aaa;
 	top: -999px;
