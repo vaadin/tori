@@ -99,6 +99,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
     @Override
     public void removeComponent(final Component c) {
         components.remove(c);
+        loadedComponents.remove(c);
         super.removeComponent(c);
         getState().setTotalAmountOfComponents(getComponentCount());
         requestRepaint();
@@ -153,18 +154,9 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
         return null;
     }
 
-    /**
-     * Don't use it.
-     * 
-     * @throws UnsupportedOperationException
-     * @deprecated not supported
-     */
-    @Deprecated
     @Override
-    public void replaceComponent(final Component oldComponent,
-            final Component newComponent) {
-        throw new UnsupportedOperationException();
-    }
+    public abstract void replaceComponent(Component oldComponent,
+            Component newComponent);
 
     protected void _replaceComponent(final int oldIndex,
             final Component newComponent) {
