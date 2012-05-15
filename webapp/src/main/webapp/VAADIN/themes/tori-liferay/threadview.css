@@ -383,12 +383,14 @@
 	-webkit-box-shadow: 0 0 10px rgba(60, 59, 53, 0.5);
 	box-shadow: 0 0 10px rgba(60, 59, 53, 0.5);
 	z-index: 99 !important;
+	margin-top: 0 !important;
 }
 
 .v-floatingbar .authoring {
 	-moz-transition: height 0.2s ease-in-out;
 	-webkit-transition: height 0.2s ease-in-out;
 	-o-transition: height 0.2s ease-in-out;
+	-ms-transition: height 0.2s ease-in-out;
 	transition: height 0.2s ease-in-out;
 }
 .v-floatingbar .authoring div[location="toolbar"] {
@@ -439,6 +441,10 @@
 	margin-left: -8px !important;
 	background: #888;	
 	border: 2px solid #888;
+}
+
+.v-floatingbar.threadSummaryBar .v-verticallayout-slot {
+	width: 100% !important;
 }
 
 .v-floatingbar.threadSummaryBar .popupContent

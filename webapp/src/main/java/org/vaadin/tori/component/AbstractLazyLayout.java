@@ -25,6 +25,8 @@ import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRp
 import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutServerRpc;
 import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutState;
 
+import com.vaadin.terminal.gwt.client.ComponentState;
+import com.vaadin.terminal.gwt.client.Connector;
 import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Component;
 
@@ -35,6 +37,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
      * Custom layout slots containing the components.
      */
     protected final List<Component> components = new LinkedList<Component>();
+    protected final List<Connector> connectors = new LinkedList<Connector>();
     protected final Set<Component> loadedComponents = new HashSet<Component>();
 
     private final LazyLayoutServerRpc rpc = new LazyLayoutServerRpc() {
@@ -53,7 +56,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
 
     public AbstractLazyLayout() {
         registerRpc(rpc);
-        getState().setComponents(components);
+        getState().setConnectors(connectors);
     }
 
     abstract protected AbstractLazyLayoutClientRpc getRpc();
@@ -79,6 +82,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
         // Add to components before calling super.addComponent
         // so that it is available to AttachListeners
         components.add(c);
+        connectors.add(c);
         try {
             super.addComponent(c);
             getState().setTotalAmountOfComponents(getComponentCount());
@@ -86,6 +90,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
             requestRepaint();
         } catch (final IllegalArgumentException e) {
             components.remove(c);
+            connectors.remove(c);
             throw e;
         }
     }
@@ -99,6 +104,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
     @Override
     public void removeComponent(final Component c) {
         components.remove(c);
+        connectors.remove(c);
         super.removeComponent(c);
         getState().setTotalAmountOfComponents(getComponentCount());
         requestRepaint();
@@ -170,6 +176,10 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
             final Component newComponent) {
         components.remove(oldIndex);
         components.add(oldIndex, newComponent);
+
+        connectors.remove(oldIndex);
+        connectors.add(oldIndex, newComponent);
+
         super.addComponent(newComponent);
         requestRepaint();
     }
@@ -211,5 +221,10 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
 
     public void setRenderDelay(final int renderDelayMillis) {
         getState().setRenderDelay(renderDelayMillis);
+    }
+
+    @Override
+    public Class<? extends ComponentState> getStateType() {
+        return LazyLayoutState.class;
     }
 }

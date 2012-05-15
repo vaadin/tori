@@ -17,7 +17,7 @@ class FloatingBarOverlay extends VOverlay {
     private FloatingBarWidgetListener listener;
     private boolean currentVisibility = false;
     private boolean topAligned;
-    private SimplePanel wrapper;
+    private final SimplePanel wrapper = new SimplePanel();
 
     private Element paddingAdditionBar;
 
@@ -33,12 +33,14 @@ class FloatingBarOverlay extends VOverlay {
         setStyleName(CLASSNAME);
         setShadowStyle(CLASSNAME_SHADOW);
         setModal(false);
+
         super.setVisible(false);
+        wrapper.addStyleName("contentwrapper");
+        setWidget(wrapper);
     }
 
     public void setContentWidget(final Widget contentWidget) {
-        wrapper = new SimplePanel(contentWidget);
-        wrapper.addStyleName("contentwrapper");
+        wrapper.setWidget(contentWidget);
 
         if (topAligned) {
             final NodeList<Element> elements = Document.get()
@@ -63,8 +65,6 @@ class FloatingBarOverlay extends VOverlay {
                 }
             }
         }
-
-        setWidget(wrapper);
     }
 
     public void update(final Widget rootWidget) {
@@ -83,20 +83,12 @@ class FloatingBarOverlay extends VOverlay {
             currentVisibility = visible;
         }
 
+        super.setVisible(visible);
+
         if (topAligned) {
-            if (visible) {
-                getElement().getStyle().setTop(0, Unit.PX);
-            } else {
-                getElement().getStyle().setTop(
-                        -getWidget().getOffsetHeight() - 10, Unit.PX);
-            }
+            getElement().getStyle().setTop(0, Unit.PX);
         } else {
-            if (visible) {
-                getElement().getStyle().setBottom(0, Unit.PX);
-            } else {
-                getElement().getStyle().setBottom(
-                        -getWidget().getOffsetHeight() - 10, Unit.PX);
-            }
+            getElement().getStyle().setBottom(0, Unit.PX);
         }
     }
 

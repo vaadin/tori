@@ -4,6 +4,7 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 
 import com.ocpsoft.pretty.time.PrettyTime;
+import com.vaadin.terminal.gwt.client.ui.label.ContentMode;
 import com.vaadin.ui.Label;
 
 @SuppressWarnings("serial")

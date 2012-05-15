@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -51,8 +52,16 @@ public final class FloatingBarWidget extends Widget implements ResizeHandler {
     public void setScrollWidget(final Widget scrollWidget) {
         this.scrollWidget = scrollWidget;
         overlay.show();
-        // overlay.setVisible(getVisibilityPercentage());
         overlay.update(rootWidget);
+
+        final Timer timer = new Timer() {
+            @Override
+            public void run() {
+                overlay.setVisible(getVisibilityPercentage());
+                overlay.update(rootWidget);
+            }
+        };
+        timer.schedule(500);
     }
 
     public void setContentWidget(final Widget contentWidget) {

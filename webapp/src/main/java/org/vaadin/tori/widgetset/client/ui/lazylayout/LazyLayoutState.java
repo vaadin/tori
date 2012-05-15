@@ -12,7 +12,7 @@ public class LazyLayoutState extends AbstractLayoutState {
     private String placeholderWidth;
     private int renderDistance;
     private int renderDelay;
-    private List<? extends Connector> components;
+    private List<Connector> connectors;
 
     public int getRenderDelay() {
         return renderDelay;
@@ -54,11 +54,11 @@ public class LazyLayoutState extends AbstractLayoutState {
         this.renderDelay = renderDelayMillis;
     }
 
-    public void setComponents(final List<? extends Connector> components) {
-        this.components = components;
+    public void setConnectors(final List<Connector> connectors) {
+        this.connectors = connectors;
     }
 
-    public List<? extends Connector> getComponents() {
-        return components;
+    public List<Connector> getConnectors() {
+        return connectors;
     }
 }

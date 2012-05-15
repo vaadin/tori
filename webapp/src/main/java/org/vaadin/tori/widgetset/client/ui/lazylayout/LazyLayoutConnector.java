@@ -36,7 +36,7 @@ public class LazyLayoutConnector extends AbstractLazyLayoutConnector {
 
         int i = 0;
         final List<Integer> indices = new ArrayList<Integer>();
-        for (final Connector connector : getState().getComponents()) {
+        for (final Connector connector : getState().getConnectors()) {
             if (connector != null) {
                 indices.add(i);
             }

@@ -1,6 +1,7 @@
 package org.vaadin.tori.component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRpc;
@@ -100,6 +101,7 @@ public class GeneratedLazyLayout extends AbstractLazyLayout {
 
     @Override
     protected void loadingHook(final List<Integer> indicesToFetch) {
+        Collections.sort(indicesToFetch);
         for (final int[] range : groupToRanges(indicesToFetch)) {
             final int from = range[0];
             final int to = range[1];
