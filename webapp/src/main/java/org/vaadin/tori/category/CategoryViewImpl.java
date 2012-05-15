@@ -33,10 +33,11 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 public class CategoryViewImpl extends
         AbstractView<CategoryView, CategoryPresenter> implements CategoryView {
 
-    private static final HeadingLabel NO_THREADS = new HeadingLabel(
+    private final HeadingLabel NO_THREADS = new HeadingLabel(
             "There are no threads in this category", HeadingLevel.H1);
-    private static final HeadingLabel THREADS = new HeadingLabel("Threads",
+    private final HeadingLabel THREADS = new HeadingLabel("Threads",
             HeadingLevel.H2);
+
     private VerticalLayout layout;
     private Component threadListingPlaceHolder;
     private ThreadListing threadListing;
@@ -230,8 +231,10 @@ public class CategoryViewImpl extends
     }
 
     private void setThreadLabel(final HeadingLabel newLabel) {
-        ((ComponentContainer) threadsLabel.getParent()).replaceComponent(
-                threadsLabel, newLabel);
+        if (newLabel != threadsLabel) {
+            ((ComponentContainer) threadsLabel.getParent()).replaceComponent(
+                    threadsLabel, newLabel);
+        }
     }
 
     @Override
