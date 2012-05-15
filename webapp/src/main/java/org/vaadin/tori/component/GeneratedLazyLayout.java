@@ -1,6 +1,7 @@
 package org.vaadin.tori.component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -143,7 +144,43 @@ public class GeneratedLazyLayout extends AbstractLazyLayout {
     @Override
     public void replaceComponent(final Component oldComponent,
             final Component newComponent) {
-        throw new UnsupportedOperationException("not implemented yet");
+        if (oldComponent == newComponent) {
+            return;
+        }
+
+        final boolean oldIsLoaded = loadedComponents.contains(oldComponent);
+        final boolean newIsLoaded = loadedComponents.contains(newComponent);
+
+        if (oldIsLoaded) {
+            final int oldIndex = components.indexOf(oldComponent);
+
+            if (newIsLoaded) {
+                final int newIndex = components.indexOf(newComponent);
+                components.remove(oldIndex);
+                components.add(oldIndex, newComponent);
+                components.remove(newIndex);
+                components.add(newIndex, oldComponent);
+                getRpc().renderComponents(Arrays.asList(oldIndex, newIndex));
+            } else {
+                loadedComponents.add(newComponent);
+                super.removeComponent(oldComponent);
+                super.addComponent(newComponent, oldIndex);
+
+                getRpc().renderComponents(Arrays.asList(oldIndex));
+            }
+
+        } else {
+            final RuntimeException exception = new UnsupportedOperationException(
+                    "Old component wasn't preloaded, can't replace");
+            /*
+             * vaadin7 only shows internal error, so let's print the stacktrace
+             * instead.
+             */
+            exception.printStackTrace();
+            throw exception;
+        }
+
+        requestRepaint();
     }
 
 }

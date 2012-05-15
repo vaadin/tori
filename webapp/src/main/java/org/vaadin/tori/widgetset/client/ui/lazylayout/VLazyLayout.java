@@ -440,7 +440,7 @@ public class VLazyLayout extends SimplePanel {
         fetcher = componentFetcher;
     }
 
-    public void replacePlaceholderWith(final Widget widget, final int i) {
+    public void replaceComponent(final Widget widget, final int i) {
         try {
 
             final Widget panelWidget = panel.getWidget(i);
@@ -450,17 +450,12 @@ public class VLazyLayout extends SimplePanel {
                 return;
             }
 
-            if (panelWidget instanceof PlaceholderWidget) {
-                final double height = getPreciseHeight(panelWidget);
-                final int top = panelWidget.getElement().getOffsetTop();
-                widgetInfo.add(new WidgetInfo(widget, height, top));
+            final double height = getPreciseHeight(panelWidget);
+            final int top = panelWidget.getElement().getOffsetTop();
+            widgetInfo.add(new WidgetInfo(widget, height, top));
 
-                panel.remove(i);
-                panel.insert(widget, i);
-            } else {
-                VConsole.error("Trying to replace a component that isn't a placeholder. Index "
-                        + i);
-            }
+            panel.remove(i);
+            panel.insert(widget, i);
         } catch (final IndexOutOfBoundsException e) {
             VConsole.error("Trying to replace a widget to a slot that doesn't exist. Index "
                     + i);

@@ -76,9 +76,16 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
      */
     @Override
     public void addComponent(final Component c) {
-        // Add to components before calling super.addComponent
-        // so that it is available to AttachListeners
-        components.add(c);
+        _addComponent(c, null);
+    }
+
+    public void _addComponent(final Component c, final Integer index) {
+        if (index != null) {
+            components.add(index, c);
+        } else {
+            components.add(c);
+        }
+
         try {
             super.addComponent(c);
             getState().setTotalAmountOfComponents(getComponentCount());
@@ -88,6 +95,10 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
             components.remove(c);
             throw e;
         }
+    }
+
+    protected void addComponent(final Component component, final int index) {
+        _addComponent(component, index);
     }
 
     /**

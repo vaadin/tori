@@ -61,19 +61,15 @@ public class LazyLayout extends AbstractLazyLayout {
             components.remove(oldComponent);
             components.add(oldIndex, newComponent);
 
-            super.addComponent(newComponent);
+            super.addComponent(newComponent, oldIndex);
             super.removeComponent(oldComponent);
-
-            /*
-             * since super.addComponent adds the component a second time, we
-             * need to remove it.
-             */
-            components.remove(components.size() - 1);
 
             if (oldIsLoaded) {
                 loadedComponents.add(newComponent);
                 loadedComponents.remove(oldComponent);
             }
         }
+
+        requestRepaint();
     }
 }
