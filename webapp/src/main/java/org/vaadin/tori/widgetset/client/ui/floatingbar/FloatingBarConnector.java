@@ -31,10 +31,15 @@ public final class FloatingBarConnector extends
     }
 
     @Override
+    public FloatingBarState getState() {
+        return (FloatingBarState) super.getState();
+    }
+
+    @Override
     public void onStateChanged(final StateChangeEvent stateChangeEvent) {
         super.onStateChanged(stateChangeEvent);
 
-        final FloatingBarState state = (FloatingBarState) getState();
+        final FloatingBarState state = getState();
         final FloatingBarWidget widget = (FloatingBarWidget) getWidget();
 
         widget.setRootWidget(getConnection().getRootConnector().getWidget());

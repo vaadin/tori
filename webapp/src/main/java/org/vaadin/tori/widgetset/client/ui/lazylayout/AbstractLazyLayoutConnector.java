@@ -95,7 +95,7 @@ public abstract class AbstractLazyLayoutConnector extends
     }
 
     protected void swapLazyComponents(final List<Integer> indicesToFetch) {
-        final List<? extends Connector> components = getState().getComponents();
+        final List<? extends Connector> components = getState().getConnectors();
 
         if (indicesToFetch == null || indicesToFetch.isEmpty()) {
             VConsole.error("no indices to fetch");
