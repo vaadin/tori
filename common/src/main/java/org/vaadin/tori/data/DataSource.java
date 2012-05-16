@@ -309,4 +309,6 @@ public interface DataSource {
     List<DiscussionThread> getMyPosts() throws DataSourceException;
 
     int getAttachmentMaxFileSize();
+
+    boolean isLoggedInUser();
 }

@@ -1,7 +1,9 @@
 package org.vaadin.tori.component.breadcrumbs;
 
+import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.category.SpecialCategory;
+import org.vaadin.tori.data.DataSource;
 
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.ThemeResource;
@@ -25,7 +27,10 @@ public class ActionBar extends CustomComponent {
         setWidth(null);
 
         layout.addComponent(getLink(SpecialCategory.RECENT_POSTS));
-        layout.addComponent(getLink(SpecialCategory.MY_POSTS));
+        final DataSource ds = ToriApplication.getCurrent().getDataSource();
+        if (ds.isLoggedInUser()) {
+            layout.addComponent(getLink(SpecialCategory.MY_POSTS));
+        }
     }
 
     private Link getLink(final SpecialCategory category) {

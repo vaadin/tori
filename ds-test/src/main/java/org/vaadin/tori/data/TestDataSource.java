@@ -835,4 +835,9 @@ public class TestDataSource implements DataSource, DebugDataSource {
     public int getAttachmentMaxFileSize() {
         return 307200;
     }
+
+    @Override
+    public boolean isLoggedInUser() {
+        return true;
+    }
 }

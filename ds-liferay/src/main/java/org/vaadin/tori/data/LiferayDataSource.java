@@ -1099,4 +1099,9 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             return 307200;
         }
     }
+
+    @Override
+    public boolean isLoggedInUser() {
+        return currentUserId != 0;
+    }
 }
