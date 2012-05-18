@@ -27,6 +27,7 @@ import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.post.PostReport;
+import org.vaadin.tori.util.PortletInstaller;
 
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -88,6 +89,10 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     private ServiceContext mbBanServiceContext;
     private ServiceContext flagsServiceContext;
     private ServiceContext mbCategoryServiceContext;
+
+    public LiferayDataSource() {
+        PortletInstaller.checkResources();
+    }
 
     @Override
     public List<Category> getRootCategories() throws DataSourceException {
