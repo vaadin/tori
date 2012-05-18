@@ -469,6 +469,16 @@
 	background-position: center;
 }
 
+.authoring .filerow .v-textfield{
+	padding-left: 20px;
+	background: url(images/icon-attachment.png) no-repeat left center;
+}
+
+.authoring .filerow .v-csslayout-margin {
+	background: url(images/icon-delete-attachment.png) no-repeat right center;
+	cursor: pointer;
+} 
+
 .newthread .topicfield {
 	font-size: 16px;
 	line-height: 20px;
