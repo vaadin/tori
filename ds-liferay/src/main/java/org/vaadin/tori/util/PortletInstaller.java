@@ -45,7 +45,10 @@ public class PortletInstaller {
             }
         } catch (final ToriInstallException e) {
             LOG.warn(e.getMessage()
-                    + " You'll need to install resources required by Tori manually.");
+                    + " Can't self-install Tori. You'll need to "
+                    + "install resources required by Tori manually. "
+                    + "See https://vaadin.com/wiki/-/wiki/Main/ToriInstall "
+                    + "for instructions");
         }
     }
 
