@@ -276,7 +276,6 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     }
 
     private void resetView() throws DataSourceException {
-        /*-
         try {
             getView().displayThreads(dataSource.getThreads(currentCategory));
         } catch (final DataSourceException e) {
@@ -284,7 +283,6 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             e.printStackTrace();
             throw e;
         }
-         */
     }
 
     public boolean userHasRead(final DiscussionThread thread) {

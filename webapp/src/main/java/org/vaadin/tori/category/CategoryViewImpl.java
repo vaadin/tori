@@ -139,6 +139,8 @@ public class CategoryViewImpl extends
         if (listingParent != null) {
             listingParent.replaceComponent(threadListingPlaceHolder,
                     threadListing);
+            // in case we need to replace the thread view again.
+            threadListingPlaceHolder = threadListing;
         }
     }
 

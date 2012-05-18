@@ -111,7 +111,7 @@ public abstract class AbstractLazyLayoutConnector extends
 
                     if (connector instanceof ComponentConnector) {
                         final ComponentConnector componentConnector = (ComponentConnector) connector;
-                        getWidget().replacePlaceholderWith(
+                        getWidget().replaceComponent(
                                 componentConnector.getWidget(), i);
                     } else {
                         VConsole.error("LazyLayout expected an ComponentConnector; "

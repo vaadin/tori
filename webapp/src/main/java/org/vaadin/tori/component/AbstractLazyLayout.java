@@ -79,10 +79,18 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
      */
     @Override
     public void addComponent(final Component c) {
-        // Add to components before calling super.addComponent
-        // so that it is available to AttachListeners
-        components.add(c);
-        connectors.add(c);
+        _addComponent(c, null);
+    }
+
+    public void _addComponent(final Component c, final Integer index) {
+        if (index != null) {
+            components.add(index, c);
+            connectors.add(index, c);
+        } else {
+            components.add(c);
+            connectors.add(c);
+        }
+
         try {
             super.addComponent(c);
             getState().setTotalAmountOfComponents(getComponentCount());
@@ -95,6 +103,10 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
         }
     }
 
+    protected void addComponent(final Component component, final int index) {
+        _addComponent(component, index);
+    }
+
     /**
      * Removes the component from this container.
      * 
@@ -105,6 +117,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
     public void removeComponent(final Component c) {
         components.remove(c);
         connectors.remove(c);
+        loadedComponents.remove(c);
         super.removeComponent(c);
         getState().setTotalAmountOfComponents(getComponentCount());
         requestRepaint();
@@ -159,18 +172,9 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
         return null;
     }
 
-    /**
-     * Don't use it.
-     * 
-     * @throws UnsupportedOperationException
-     * @deprecated not supported
-     */
-    @Deprecated
     @Override
-    public void replaceComponent(final Component oldComponent,
-            final Component newComponent) {
-        throw new UnsupportedOperationException();
-    }
+    public abstract void replaceComponent(Component oldComponent,
+            Component newComponent);
 
     protected void _replaceComponent(final int oldIndex,
             final Component newComponent) {
