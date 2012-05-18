@@ -57,16 +57,20 @@ public class PortletInstaller {
                         vaadinJarFile);
                 final ZipInputStream zipInputStream = new ZipInputStream(
                         inputStream);
-                ZipEntry zipEntry;
-                while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                    if (zipEntry.getName().endsWith(VAADIN_BOOTSTRAP)) {
-                        writeToFile(zipInputStream, getVaadinBootstrapFile());
-                        zipInputStream.closeEntry();
-                        break;
+                try {
+                    ZipEntry zipEntry;
+                    while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+                        if (zipEntry.getName().endsWith(VAADIN_BOOTSTRAP)) {
+                            writeToFile(zipInputStream,
+                                    getVaadinBootstrapFile());
+                            zipInputStream.closeEntry();
+                            break;
+                        }
                     }
+                } finally {
+                    zipInputStream.close();
+                    inputStream.close();
                 }
-                zipInputStream.close();
-                inputStream.close();
             } catch (final IOException e) {
                 throw new ToriInstallException(
                         "Exception while extracting Vaadin bootstrap file.", e);
@@ -97,13 +101,12 @@ public class PortletInstaller {
     }
 
     private static void copyLiferayV7Theme() {
-        final File vaadinJarFile = getDeploymentVaadinJarFile();
-        if (vaadinJarFile != null) {
+        try {
+            final InputStream inputStream = new FileInputStream(
+                    getDeploymentVaadinJarFile());
+            final ZipInputStream zipInputStream = new ZipInputStream(
+                    inputStream);
             try {
-                final InputStream inputStream = new FileInputStream(
-                        vaadinJarFile);
-                final ZipInputStream zipInputStream = new ZipInputStream(
-                        inputStream);
                 ZipEntry zipEntry;
                 while ((zipEntry = zipInputStream.getNextEntry()) != null) {
                     final String liferayThemeDir = "VAADIN/themes/liferay";
@@ -119,13 +122,14 @@ public class PortletInstaller {
                     }
                     zipInputStream.closeEntry();
                 }
+            } finally {
                 zipInputStream.close();
                 inputStream.close();
-            } catch (final IOException e) {
-                throw new ToriInstallException(
-                        "Exception while extracting Liferay theme for Vaadin 7.",
-                        e);
             }
+
+        } catch (final IOException e) {
+            throw new ToriInstallException(
+                    "Exception while extracting Liferay theme for Vaadin 7.", e);
         }
     }
 
