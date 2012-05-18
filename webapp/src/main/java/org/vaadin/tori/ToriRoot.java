@@ -7,7 +7,6 @@ import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
 
-import com.github.wolfie.refresher.Refresher;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.terminal.WrappedRequest;
@@ -50,9 +49,11 @@ public class ToriRoot extends Root {
          * refresher to stop the session from expiring. SessionGuard would be
          * better, but it doesn't work in portlets
          */
+        /*-
         final Refresher refresher = new Refresher();
         refresher.setRefreshInterval(KEEPALIVE_PING_INTERVAL_MILLIS);
         addComponent(refresher);
+         */
 
     }
 

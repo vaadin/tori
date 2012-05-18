@@ -20,11 +20,16 @@
 .thread-listing-row .topic {
 	height: 100%;
 	position: absolute;
-	top: 2px;
+	top: 0;
 	left: 0;
 	right: 350px;
 	bottom: 0;
 }
+.thread-listing-row .topic.unread {
+	font-weight: bold;
+	background-color: #eceac4;
+}
+
 .thread-listing-row .details,
 .thread-listing .fixed-column-headers {
 	float: right;

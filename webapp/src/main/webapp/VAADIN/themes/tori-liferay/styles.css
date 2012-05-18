@@ -18,3 +18,7 @@
 .v-popupbutton.popupIndicatorHidden .v-popup-indicator {
 	display: none;
 }
+
+.v-Notification-system {
+	position: fixed !important;
+}
