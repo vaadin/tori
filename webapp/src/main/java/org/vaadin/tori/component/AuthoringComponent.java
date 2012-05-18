@@ -599,7 +599,7 @@ public abstract class AuthoringComponent extends CustomComponent {
             final TextField nameComponent = new TextField();
             nameComponent.setValue(caption);
             nameComponent.setReadOnly(true);
-            nameComponent.setWidth(100.0f, UNITS_PERCENTAGE);
+            nameComponent.setWidth("100%");
             try {
                 nameComponent.addStyleName(fileName.substring(fileName
                         .lastIndexOf(".") + 1));
@@ -608,7 +608,7 @@ public abstract class AuthoringComponent extends CustomComponent {
             }
 
             final CssLayout wrapperLayout = new CssLayout();
-            wrapperLayout.setWidth(300.0f, UNITS_PIXELS);
+            wrapperLayout.setWidth("300px");
             wrapperLayout.addStyleName("filerow");
             wrapperLayout.addListener(new LayoutClickListener() {
                 @Override
