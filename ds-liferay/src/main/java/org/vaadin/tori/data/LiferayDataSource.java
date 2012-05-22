@@ -1,7 +1,5 @@
 package org.vaadin.tori.data;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,6 +27,7 @@ import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.post.PostReport;
 import org.vaadin.tori.util.PortletInstaller;
 
+import com.liferay.documentlibrary.service.DLServiceUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.FileUtil;
@@ -43,20 +42,20 @@ import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.SubscriptionLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
-import com.liferay.portlet.documentlibrary.store.DLStoreUtil;
 import com.liferay.portlet.flags.service.FlagsEntryServiceUtil;
 import com.liferay.portlet.messageboards.model.MBBan;
 import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBMessageConstants;
+import com.liferay.portlet.messageboards.model.MBMessageFlagConstants;
 import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.model.MBThreadConstants;
 import com.liferay.portlet.messageboards.service.MBBanServiceUtil;
 import com.liferay.portlet.messageboards.service.MBCategoryLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBCategoryServiceUtil;
+import com.liferay.portlet.messageboards.service.MBMessageFlagLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
-import com.liferay.portlet.messageboards.service.MBThreadFlagLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadServiceUtil;
 import com.liferay.portlet.messageboards.util.comparator.MessageCreateDateComparator;
@@ -461,7 +460,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             for (final String filename : filenames) {
                 final String shortFilename = FileUtil
                         .getShortFileName(filename);
-                final long fileSize = DLStoreUtil.getFileSize(companyId,
+                final long fileSize = DLServiceUtil.getFileSize(companyId,
                         CompanyConstants.SYSTEM, filename);
 
                 final Attachment attachment = new Attachment(shortFilename,
@@ -518,14 +517,11 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                         .getParentCategory() != null ? categoryToSave
                         .getParentCategory().getId() : ROOT_CATEGORY_ID;
 
-                String displayStyle = "default";
-
                 MBCategoryServiceUtil.addCategory(parentCategoryId,
                         categoryToSave.getName(),
-                        categoryToSave.getDescription(), displayStyle, null,
-                        null, null, 0, false, null, null, 0, null, false, null,
-                        0, false, null, null, false, false,
-                        mbCategoryServiceContext);
+                        categoryToSave.getDescription(), null, null, null, 0,
+                        false, null, null, 0, null, false, null, 0, false,
+                        null, null, false, mbCategoryServiceContext);
             }
         } catch (final PortalException e) {
             log.error(
@@ -600,14 +596,14 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         try {
             connection = JdbcUtil.getJdbcConnection();
             statement = connection
-                    .prepareStatement("select (? - count(MBThreadFlag.threadFlagId)) "
-                            + "from MBThreadFlag, MBThread "
-                            + "where MBThreadFlag.threadId = MBThread.threadId "
-                            + "and MBThread.categoryId = ? and MBThreadFlag.userId = ?");
-
+                    .prepareStatement("select (? - count(MBMessageFlag.messageFlagId)) "
+                            + "from MBMessageFlag, MBThread "
+                            + "where flag = ? and MBMessageFlag.threadId = MBThread.threadId "
+                            + "and MBThread.categoryId = ? and MBMessageFlag.userId = ?");
             statement.setLong(1, totalThreadCount);
-            statement.setLong(2, category.getId());
-            statement.setLong(3, currentUserId);
+            statement.setLong(2, MBMessageFlagConstants.READ_FLAG);
+            statement.setLong(3, category.getId());
+            statement.setLong(4, currentUserId);
 
             result = statement.executeQuery();
             if (result.next()) {
@@ -654,8 +650,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             throws DataSourceException {
         try {
             SubscriptionLocalServiceUtil.addSubscription(currentUserId,
-                    currentUser.getGroupId(), MBThread.class.getName(),
-                    thread.getId());
+                    MBThread.class.getName(), thread.getId());
         } catch (final PortalException e) {
             log.error(String.format("Cannot follow thread %d", thread.getId()),
                     e);
@@ -716,7 +711,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             throws DataSourceException {
         if (currentUserId > 0) {
             try {
-                MBThreadFlagLocalServiceUtil.addThreadFlag(currentUserId,
+                MBMessageFlagLocalServiceUtil.addReadFlags(currentUserId,
                         MBThreadLocalServiceUtil.getThread(thread.getId()));
             } catch (final PortalException e) {
                 log.error(String.format("Couldn't mark thread %d as read.",
@@ -735,8 +730,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             throws DataSourceException {
         if (currentUserId > 0) {
             try {
-                return MBThreadFlagLocalServiceUtil.hasThreadFlag(
-                        currentUserId,
+                return MBMessageFlagLocalServiceUtil.hasReadFlag(currentUserId,
                         MBThreadLocalServiceUtil.getThread(thread.getId()));
             } catch (final PortalException e) {
                 log.error(String.format(
@@ -881,7 +875,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             subject = "RE: " + subject;
         }
         final String body = post.getBodyRaw();
-        final List<ObjectValuePair<String, InputStream>> attachments = new ArrayList<ObjectValuePair<String, InputStream>>();
+        final List<ObjectValuePair<String, byte[]>> attachments = new ArrayList<ObjectValuePair<String, byte[]>>();
 
         if (files != null) {
             for (final Entry<String, byte[]> file : files.entrySet()) {
@@ -889,8 +883,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                 final byte[] bytes = file.getValue();
 
                 if ((bytes != null) && (bytes.length > 0)) {
-                    final ObjectValuePair<String, InputStream> ovp = new ObjectValuePair<String, InputStream>(
-                            fileName, new ByteArrayInputStream(bytes));
+                    final ObjectValuePair<String, byte[]> ovp = new ObjectValuePair<String, byte[]>(
+                            fileName, bytes);
 
                     attachments.add(ovp);
                 }
@@ -902,8 +896,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         final boolean allowPingbacks = false;
 
         return MBMessageServiceUtil.addMessage(groupId, categoryId, threadId,
-                parentMessageId, subject, body, "UTF-8", attachments,
-                anonymous, priority, allowPingbacks, mbMessageServiceContext);
+                parentMessageId, subject, body, attachments, anonymous,
+                priority, allowPingbacks, mbMessageServiceContext);
 
     }
 
