@@ -518,11 +518,13 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                         .getParentCategory() != null ? categoryToSave
                         .getParentCategory().getId() : ROOT_CATEGORY_ID;
 
+                String displayStyle = "default";
+
                 MBCategoryServiceUtil.addCategory(parentCategoryId,
                         categoryToSave.getName(),
-                        categoryToSave.getDescription(), null, null, null,
-                        null, 0, false, null, null, 0, null, false, null, 0,
-                        false, null, null, false, false,
+                        categoryToSave.getDescription(), displayStyle, null,
+                        null, null, 0, false, null, null, 0, null, false, null,
+                        0, false, null, null, false, false,
                         mbCategoryServiceContext);
             }
         } catch (final PortalException e) {
