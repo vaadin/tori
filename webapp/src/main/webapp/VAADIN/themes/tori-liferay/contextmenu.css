@@ -24,3 +24,7 @@
 .v-popupbutton-popup-contextmenu .link:hover {
 	background-color: #DDD;
 }
+
+.contextmenu .v-button-opened {
+	visibility: visible;
+}

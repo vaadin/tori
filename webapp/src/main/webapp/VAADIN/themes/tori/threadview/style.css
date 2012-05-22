@@ -188,6 +188,7 @@
 	margin-left: -2px !important;
 	background: url(../images/floatingbar-bg.png) #fff top left repeat-x;	
 	border: 2px solid #64635a;
+	top: -999px;
 }
 .v-floatingbar .threadSummary {
 	-moz-transition: height 0.2s ease-in-out;
@@ -344,11 +345,11 @@
 /** The following two icons are from http://www.famfamfam.com/lab/icons/mini/ */
 .authoring div[location="attachments"] .filerow .v-textfield{
 	padding-left: 20px;
-	background: url(../images/page_attachment.gif) no-repeat left center;
+	background: url(../images/icon-attachment.png) no-repeat left center;
 }
 
 .authoring div[location="attachments"] .filerow .v-csslayout-margin{
-	background: url(../images/action_stop.gif) no-repeat right center;
+	background: url(../images/icon-delete-attachment.png) no-repeat right center;
 	cursor: pointer;
 } 
 
