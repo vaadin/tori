@@ -33,7 +33,7 @@ public interface DataSource {
      *            <code>Categories</code>.
      */
     @NonNull
-    List<Category> getSubCategories(@NonNull Category category)
+    List<Category> getSubCategories(Category category)
             throws DataSourceException;
 
     /**

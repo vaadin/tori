@@ -2,6 +2,7 @@ package org.vaadin.tori.indexing;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
@@ -16,27 +17,37 @@ public class IndexableDashboardView extends IndexableView {
 
     @Override
     public String getXhtml() {
+        return "<h1>Forum</h1>" + getCategoriesXhtml(ds, getLogger(), null);
+    }
+
+    public static String getCategoriesXhtml(final DataSource ds,
+            final Logger logger, final Category currentCategory) {
         final StringBuilder sb = new StringBuilder();
-        sb.append("<h1>Categories</h1>");
         try {
-            sb.append("<ul>");
-            for (final Category category : ds.getRootCategories()) {
-                sb.append(String.format("<li><a href=\"#%s\">%s</a>",
-                        getLink(category), getDescription(category)));
+            final List<Category> subCategories = ds
+                    .getSubCategories(currentCategory);
+
+            if (!subCategories.isEmpty()) {
+                sb.append("<h2>Categories</h2>");
+                sb.append("<ul>");
+                for (final Category category : subCategories) {
+                    sb.append(String.format("<li><a href=\"#%s\">%s</a>",
+                            getLink(category), getDescription(category)));
+                }
+                sb.append("</ul>");
             }
-            sb.append("</ul>");
         } catch (final DataSourceException e) {
-            getLogger().error(e);
+            logger.error(e);
             sb.append("There was an error when trying to fetch categories.");
         }
         return sb.toString();
     }
 
-    private String getDescription(final Category category) {
+    private static String getDescription(final Category category) {
         return category.getName() + "<br>" + category.getDescription();
     }
 
-    private String getLink(final Category category) {
+    private static String getLink(final Category category) {
         return ToriNavigator.ApplicationView.CATEGORIES.getUrl() + "/"
                 + category.getId();
     }
