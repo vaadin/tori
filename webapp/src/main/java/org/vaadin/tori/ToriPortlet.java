@@ -15,6 +15,8 @@ import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.vaadin.tori.indexing.ToriIndexableApplication;
+
 import com.vaadin.terminal.gwt.server.ApplicationPortlet2;
 
 public class ToriPortlet extends ApplicationPortlet2 {
