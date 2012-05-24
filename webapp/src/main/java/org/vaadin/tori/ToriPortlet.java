@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.lang.reflect.Method;
 
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
@@ -13,7 +12,6 @@ import javax.portlet.PortletResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.vaadin.tori.indexing.ToriIndexableApplication;
 
@@ -28,13 +26,13 @@ public class ToriPortlet extends ApplicationPortlet2 {
             final PortletResponse response) throws PortletException,
             IOException {
         final HttpServletRequest servletRequest = getServletRequest(request);
-        final HttpServletResponse servletResponse = getServletResponse(response);
         if (servletRequest != null && request instanceof RenderRequest
                 && ToriIndexableApplication.isIndexerBot(servletRequest)
                 && ToriIndexableApplication.isIndexableRequest(servletRequest)) {
 
-            final String xhtmlPage = ToriIndexableApplication
-                    .getResultInXhtml(servletRequest);
+            final ToriIndexableApplication app = new ToriIndexableApplication(
+                    request);
+            final String xhtmlPage = app.getResultInXhtml(servletRequest);
 
             final RenderResponse renderResponse = (RenderResponse) response;
             renderResponse.setContentType("text/html");
@@ -68,19 +66,6 @@ public class ToriPortlet extends ApplicationPortlet2 {
                             httpServletRequest);
 
             return originalHttpServletRequest;
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private static HttpServletResponse getServletResponse(
-            final PortletResponse response) {
-        try {
-            final Class<?> portalUtil = Class.forName(PORTAL_UTIL_CLASS);
-            final Method method = portalUtil.getMethod(
-                    "getHttpServletResponse", PortletResponse.class);
-            return (HttpServletResponse) method.invoke(null, response);
         } catch (final Exception e) {
             e.printStackTrace();
         }

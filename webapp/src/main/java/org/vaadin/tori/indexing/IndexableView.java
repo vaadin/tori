@@ -44,4 +44,8 @@ public abstract class IndexableView {
                         + ": " + viewClass.getClass().getName());
         return null;
     }
+
+    protected Logger getLogger() {
+        return Logger.getLogger(getClass());
+    }
 }

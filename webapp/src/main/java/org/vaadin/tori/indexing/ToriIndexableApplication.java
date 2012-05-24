@@ -3,9 +3,12 @@ package org.vaadin.tori.indexing;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.vaadin.tori.HttpServletRequestAware;
+import org.vaadin.tori.PortletRequestAware;
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator.ApplicationView;
 import org.vaadin.tori.data.DataSource;
@@ -22,8 +25,19 @@ public class ToriIndexableApplication {
     // yahoo uses bing's crawlers
     };
 
+    private PortletRequest portletRequest = null;
+    private HttpServletRequest servletRequest = null;
+
+    public ToriIndexableApplication(final PortletRequest request) {
+        this.portletRequest = request;
+    }
+
+    public ToriIndexableApplication(final HttpServletRequest request) {
+        this.servletRequest = request;
+    }
+
     /** Get the resulting XHTML page (<code>&lt;html&gt;</code> tags and all) */
-    public static String getResultInXhtml(
+    public String getResultInXhtml(
             @NonNull final HttpServletRequest servletRequest) {
 
         final ArrayList<String> fragmentArguments = getFragmentArguments(servletRequest);
@@ -32,11 +46,21 @@ public class ToriIndexableApplication {
             final String viewString = getViewString(fragmentArguments);
             final List<String> arguments = getArguments(fragmentArguments);
             final DataSource ds = new ToriApiLoader().createDataSource();
+            injectRequestIntoDataSource(ds);
             final IndexableView view = getIndexableView(viewString, arguments,
                     ds);
             return view.getXhtml();
         } else {
             return "<!DOCTYPE html>\n<html><body>There was some unsightly error</body></html>";
+        }
+    }
+
+    private void injectRequestIntoDataSource(final DataSource ds) {
+        if (ds instanceof PortletRequestAware && portletRequest != null) {
+            ((PortletRequestAware) ds).setRequest(portletRequest);
+        } else if (ds instanceof HttpServletRequestAware
+                && servletRequest != null) {
+            ((HttpServletRequestAware) ds).setRequest(servletRequest);
         }
     }
 
