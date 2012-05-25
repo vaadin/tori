@@ -5,26 +5,26 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.vaadin.tori.data.DataSource;
 
 public abstract class IndexableView {
     protected final List<String> arguments;
-    protected final DataSource ds;
+    protected final ToriIndexableApplication application;
 
-    public IndexableView(final List<String> arguments, final DataSource ds) {
+    public IndexableView(final List<String> arguments,
+            final ToriIndexableApplication application) {
         this.arguments = arguments;
-        this.ds = ds;
+        this.application = application;
     }
 
     abstract public String getXhtml();
 
     public static <T extends IndexableView> T newInstance(
             final Class<T> viewClass, final List<String> arguments,
-            final DataSource dataSource) {
+            final ToriIndexableApplication application) {
         try {
             final Constructor<T> constructor = viewClass.getConstructor(
-                    List.class, DataSource.class);
-            return constructor.newInstance(arguments, dataSource);
+                    List.class, ToriIndexableApplication.class);
+            return constructor.newInstance(arguments, application);
         } catch (final NoSuchMethodException e) {
             e.printStackTrace();
         } catch (final IllegalArgumentException e) {
@@ -47,5 +47,10 @@ public abstract class IndexableView {
 
     protected Logger getLogger() {
         return Logger.getLogger(getClass());
+    }
+
+    protected static String escapeXhtml(final String xhtml) {
+        return xhtml.replace("&", "&amp;").replace("<", "&lt;")
+                .replace(">", "&gt;");
     }
 }

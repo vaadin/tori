@@ -12,6 +12,7 @@ import org.vaadin.tori.PortletRequestAware;
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator.ApplicationView;
 import org.vaadin.tori.data.DataSource;
+import org.vaadin.tori.util.PostFormatter;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
 
@@ -27,6 +28,8 @@ public class ToriIndexableApplication {
 
     private PortletRequest portletRequest = null;
     private HttpServletRequest servletRequest = null;
+    private DataSource ds;
+    private PostFormatter postFormatter;
 
     public ToriIndexableApplication(final PortletRequest request) {
         this.portletRequest = request;
@@ -43,12 +46,15 @@ public class ToriIndexableApplication {
         final ArrayList<String> fragmentArguments = getFragmentArguments(servletRequest);
 
         if (fragmentArguments.size() > 0) {
+            final ToriApiLoader apiLoader = new ToriApiLoader();
+            ds = apiLoader.createDataSource();
+            postFormatter = apiLoader.createPostFormatter();
+            injectRequestIntoDataSource(ds);
+
             final String viewString = getViewString(fragmentArguments);
             final List<String> arguments = getArguments(fragmentArguments);
-            final DataSource ds = new ToriApiLoader().createDataSource();
-            injectRequestIntoDataSource(ds);
             final IndexableView view = getIndexableView(viewString, arguments,
-                    ds);
+                    this);
             return view.getXhtml();
         } else {
             return "<!DOCTYPE html>\n<html><body>There was some unsightly error</body></html>";
@@ -56,10 +62,9 @@ public class ToriIndexableApplication {
     }
 
     private void injectRequestIntoDataSource(final DataSource ds) {
-        if (ds instanceof PortletRequestAware && portletRequest != null) {
+        if (ds instanceof PortletRequestAware) {
             ((PortletRequestAware) ds).setRequest(portletRequest);
-        } else if (ds instanceof HttpServletRequestAware
-                && servletRequest != null) {
+        } else if (ds instanceof HttpServletRequestAware) {
             ((HttpServletRequestAware) ds).setRequest(servletRequest);
         }
     }
@@ -98,7 +103,8 @@ public class ToriIndexableApplication {
 
     @NonNull
     private static IndexableView getIndexableView(@NonNull final String view,
-            final List<String> arguments, final DataSource ds) {
+            final List<String> arguments,
+            final ToriIndexableApplication application) {
 
         final ApplicationView viewToIndex;
 
@@ -125,7 +131,7 @@ public class ToriIndexableApplication {
         }
 
         return IndexableView.newInstance(viewToIndex.getIndexableView(),
-                arguments, ds);
+                arguments, application);
     }
 
     private static Logger getLogger() {
@@ -173,5 +179,13 @@ public class ToriIndexableApplication {
             }
         }
         return false;
+    }
+
+    public DataSource getDataSource() {
+        return ds;
+    }
+
+    public PostFormatter getPostFormatter() {
+        return postFormatter;
     }
 }

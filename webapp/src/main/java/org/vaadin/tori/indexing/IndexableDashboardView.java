@@ -11,13 +11,15 @@ import org.vaadin.tori.exception.DataSourceException;
 public class IndexableDashboardView extends IndexableView {
 
     public IndexableDashboardView(final List<String> arguments,
-            final DataSource ds) {
-        super(arguments, ds);
+            final ToriIndexableApplication application) {
+        super(arguments, application);
     }
 
     @Override
     public String getXhtml() {
-        return "<h1>Forum</h1>" + getCategoriesXhtml(ds, getLogger(), null);
+        return "<h1>Forum</h1>"
+                + getCategoriesXhtml(application.getDataSource(), getLogger(),
+                        null);
     }
 
     public static String getCategoriesXhtml(final DataSource ds,
@@ -44,7 +46,8 @@ public class IndexableDashboardView extends IndexableView {
     }
 
     private static String getDescription(final Category category) {
-        return category.getName() + "<br>" + category.getDescription();
+        return escapeXhtml(category.getName()) + "<br>"
+                + escapeXhtml(category.getDescription());
     }
 
     private static String getLink(final Category category) {

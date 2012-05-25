@@ -3,7 +3,6 @@ package org.vaadin.tori.indexing;
 import java.util.List;
 
 import org.vaadin.tori.ToriNavigator.ApplicationView;
-import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.exception.DataSourceException;
@@ -11,16 +10,21 @@ import org.vaadin.tori.exception.DataSourceException;
 public class IndexableCategoryView extends IndexableView {
 
     public IndexableCategoryView(final List<String> arguments,
-            final DataSource ds) {
-        super(arguments, ds);
+            final ToriIndexableApplication application) {
+        super(arguments, application);
     }
 
     @Override
     public String getXhtml() {
 
+        if (arguments.isEmpty()) {
+            return "No category given";
+        }
+
         try {
             final long categoryId = Long.parseLong(arguments.get(0));
-            final Category category = ds.getCategory(categoryId);
+            final Category category = application.getDataSource().getCategory(
+                    categoryId);
 
             if (category == null) {
                 return "No such category";
@@ -29,8 +33,8 @@ public class IndexableCategoryView extends IndexableView {
             final StringBuilder sb = new StringBuilder();
             sb.append(getParentCategoryLink(category));
             sb.append("<h1>" + category.getName() + "</h1>");
-            sb.append(IndexableDashboardView.getCategoriesXhtml(ds,
-                    getLogger(), category));
+            sb.append(IndexableDashboardView.getCategoriesXhtml(
+                    application.getDataSource(), getLogger(), category));
             sb.append(getThreadsXhtml(category));
             return sb.toString();
 
@@ -59,7 +63,8 @@ public class IndexableCategoryView extends IndexableView {
         sb.append("<h2>Threads</h2>");
 
         try {
-            final List<DiscussionThread> threads = ds.getThreads(category);
+            final List<DiscussionThread> threads = application.getDataSource()
+                    .getThreads(category);
             if (!threads.isEmpty()) {
                 sb.append("<table>");
                 sb.append("<tr><th>Thread</th><th>Author</th><th>Posts</th></tr>");
@@ -79,11 +84,14 @@ public class IndexableCategoryView extends IndexableView {
     }
 
     private String getThreadRow(final DiscussionThread thread) {
+        final String threadUrl = getThreadUrl(thread);
+        final String topic = escapeXhtml(thread.getTopic());
+        final String authorName = escapeXhtml(thread.getOriginalPoster()
+                .getDisplayedName());
+        final int postCount = thread.getPostCount();
         return String
                 .format("<tr><td><a href=\"#%s\">%s</a></td><td>%s</td><td>%s</td></tr>",
-                        getThreadUrl(thread), thread.getTopic(), thread
-                                .getOriginalPoster().getDisplayedName(), thread
-                                .getPostCount());
+                        threadUrl, topic, authorName, postCount);
     }
 
     private String getThreadUrl(final DiscussionThread thread) {
