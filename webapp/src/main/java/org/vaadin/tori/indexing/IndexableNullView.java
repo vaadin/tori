@@ -10,7 +10,7 @@ public class IndexableNullView extends IndexableView {
     }
 
     @Override
-    public String getXhtml() {
+    public String getHtml() {
         return "";
     }
 

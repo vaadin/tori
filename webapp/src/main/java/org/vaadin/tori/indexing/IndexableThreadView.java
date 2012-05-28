@@ -15,7 +15,7 @@ public class IndexableThreadView extends IndexableView {
     }
 
     @Override
-    public String getXhtml() {
+    public String getHtml() {
 
         if (arguments.isEmpty()) {
             return "No thread given";

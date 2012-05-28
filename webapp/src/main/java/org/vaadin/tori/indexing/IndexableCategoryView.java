@@ -15,7 +15,7 @@ public class IndexableCategoryView extends IndexableView {
     }
 
     @Override
-    public String getXhtml() {
+    public String getHtml() {
 
         if (arguments.isEmpty()) {
             return "No category given";

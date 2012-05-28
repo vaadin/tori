@@ -32,14 +32,14 @@ public class ToriPortlet extends ApplicationPortlet2 {
 
             final ToriIndexableApplication app = new ToriIndexableApplication(
                     request);
-            final String xhtmlPage = app.getResultInXhtml(servletRequest);
+            final String htmlPage = app.getResultInHtml(servletRequest);
 
             final RenderResponse renderResponse = (RenderResponse) response;
             renderResponse.setContentType("text/html");
             final OutputStream out = renderResponse.getPortletOutputStream();
             final PrintWriter outWriter = new PrintWriter(new BufferedWriter(
                     new OutputStreamWriter(out, "UTF-8")));
-            outWriter.print(xhtmlPage);
+            outWriter.print(htmlPage);
             outWriter.close();
         } else {
             super.handleRequest(request, response);

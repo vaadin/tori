@@ -41,7 +41,7 @@ public class ToriIndexableApplication {
     }
 
     /** Get the resulting XHTML page (<code>&lt;html&gt;</code> tags and all) */
-    public String getResultInXhtml(
+    public String getResultInHtml(
             @NonNull final HttpServletRequest servletRequest) {
 
         final ArrayList<String> fragmentArguments = getFragmentArguments(servletRequest);
@@ -56,7 +56,7 @@ public class ToriIndexableApplication {
             final List<String> arguments = getArguments(fragmentArguments);
             final IndexableView view = getIndexableView(viewString, arguments,
                     this);
-            return view.getXhtml();
+            return view.getHtml();
         } else {
             return "<!DOCTYPE html>\n<html><body>There was some unsightly error</body></html>";
         }

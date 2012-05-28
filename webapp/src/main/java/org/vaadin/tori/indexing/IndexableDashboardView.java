@@ -16,7 +16,7 @@ public class IndexableDashboardView extends IndexableView {
     }
 
     @Override
-    public String getXhtml() {
+    public String getHtml() {
         return "<h1>Forum</h1>"
                 + getCategoriesXhtml(application.getDataSource(), getLogger(),
                         null);

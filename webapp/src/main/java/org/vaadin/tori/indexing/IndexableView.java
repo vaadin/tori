@@ -16,7 +16,7 @@ public abstract class IndexableView {
         this.application = application;
     }
 
-    abstract public String getXhtml();
+    abstract public String getHtml();
 
     public static <T extends IndexableView> T newInstance(
             final Class<T> viewClass, final List<String> arguments,
