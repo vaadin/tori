@@ -20,8 +20,7 @@ public class ToriIndexableApplication {
 
     private static final String ESCAPED_FRAGMENT = "_escaped_fragment_";
     private static final String USER_AGENT = "User-Agent";
-    private static final String[] BOT_USER_AGENTS = {
-            // "firefox", // for testing
+    private static final String[] BOT_USER_AGENTS = { "firefox", // for testing
             "googlebot", // google
             "bingbot", "adidxbot", "msnbot", // bing
     // yahoo uses bing's crawlers
@@ -46,20 +45,15 @@ public class ToriIndexableApplication {
 
         final ArrayList<String> fragmentArguments = getFragmentArguments(servletRequest);
 
-        if (fragmentArguments.size() > 0) {
-            final ToriApiLoader apiLoader = new ToriApiLoader();
-            ds = apiLoader.createDataSource();
-            postFormatter = apiLoader.createPostFormatter();
-            injectRequestIntoDataSource(ds);
+        final ToriApiLoader apiLoader = new ToriApiLoader();
+        ds = apiLoader.createDataSource();
+        postFormatter = apiLoader.createPostFormatter();
+        injectRequestIntoDataSource(ds);
 
-            final String viewString = getViewString(fragmentArguments);
-            final List<String> arguments = getArguments(fragmentArguments);
-            final IndexableView view = getIndexableView(viewString, arguments,
-                    this);
-            return view.getHtml();
-        } else {
-            return "<!DOCTYPE html>\n<html><body>There was some unsightly error</body></html>";
-        }
+        final String viewString = getViewString(fragmentArguments);
+        final List<String> arguments = getArguments(fragmentArguments);
+        final IndexableView view = getIndexableView(viewString, arguments, this);
+        return view.getHtml();
     }
 
     private void injectRequestIntoDataSource(final DataSource ds) {
@@ -70,8 +64,13 @@ public class ToriIndexableApplication {
         }
     }
 
+    @NonNull
     private static List<String> getArguments(
-            final ArrayList<String> fragmentArguments) {
+            @NonNull final ArrayList<String> fragmentArguments) {
+        if (fragmentArguments.isEmpty()) {
+            return fragmentArguments;
+        }
+
         @SuppressWarnings("unchecked")
         final List<String> clone = (List<String>) fragmentArguments.clone();
         clone.remove(0);
@@ -80,7 +79,7 @@ public class ToriIndexableApplication {
 
     private static String getViewString(final List<String> fragmentArguments) {
         if (fragmentArguments.isEmpty()) {
-            return null;
+            return ApplicationView.DASHBOARD.getUrl().replace("/", "");
         } else {
             return fragmentArguments.get(0);
         }
@@ -90,6 +89,11 @@ public class ToriIndexableApplication {
     private static ArrayList<String> getFragmentArguments(
             @NonNull final HttpServletRequest servletRequest) {
         final String fragment = servletRequest.getParameter(ESCAPED_FRAGMENT);
+
+        if (fragment == null) {
+            return new ArrayList<String>();
+        }
+
         final ArrayList<String> args = new ArrayList<String>();
         for (final String bit : fragment.split("/")) {
             args.add(bit);
@@ -160,8 +164,8 @@ public class ToriIndexableApplication {
         final String[] escapedFragmentParameter = (String[]) servletRequest
                 .getParameterMap().get(ESCAPED_FRAGMENT);
 
-        return escapedFragmentParameter != null
-                && escapedFragmentParameter.length == 1;
+        return escapedFragmentParameter == null
+                || escapedFragmentParameter.length == 1;
     }
 
     public static boolean isIndexerBot(final HttpServletRequest servletRequest) {
