@@ -7,8 +7,6 @@ import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.vaadin.tori.HttpServletRequestAware;
-import org.vaadin.tori.PortletRequestAware;
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator.ApplicationView;
 import org.vaadin.tori.data.DataSource;
@@ -20,23 +18,21 @@ public class ToriIndexableApplication {
 
     private static final String ESCAPED_FRAGMENT = "_escaped_fragment_";
     private static final String USER_AGENT = "User-Agent";
-    private static final String[] BOT_USER_AGENTS = { "firefox", // for testing
-            "googlebot", // google
+    private static final String[] BOT_USER_AGENTS = { // "firefox", // for
+                                                      // testing
+    "googlebot", // google
             "bingbot", "adidxbot", "msnbot", // bing
     // yahoo uses bing's crawlers
     };
 
-    private PortletRequest portletRequest = null;
-    private HttpServletRequest servletRequest = null;
-    private DataSource ds;
-    private PostFormatter postFormatter;
+    private final ToriApiLoader apiLoader = new ToriApiLoader();
 
     public ToriIndexableApplication(final PortletRequest request) {
-        this.portletRequest = request;
+        apiLoader.setRequest(request);
     }
 
     public ToriIndexableApplication(final HttpServletRequest request) {
-        this.servletRequest = request;
+        apiLoader.setRequest(request);
     }
 
     /** Get the resulting XHTML page (<code>&lt;html&gt;</code> tags and all) */
@@ -45,23 +41,10 @@ public class ToriIndexableApplication {
 
         final ArrayList<String> fragmentArguments = getFragmentArguments(servletRequest);
 
-        final ToriApiLoader apiLoader = new ToriApiLoader();
-        ds = apiLoader.createDataSource();
-        postFormatter = apiLoader.createPostFormatter();
-        injectRequestIntoDataSource(ds);
-
         final String viewString = getViewString(fragmentArguments);
         final List<String> arguments = getArguments(fragmentArguments);
         final IndexableView view = getIndexableView(viewString, arguments, this);
         return view.getHtml();
-    }
-
-    private void injectRequestIntoDataSource(final DataSource ds) {
-        if (ds instanceof PortletRequestAware) {
-            ((PortletRequestAware) ds).setRequest(portletRequest);
-        } else if (ds instanceof HttpServletRequestAware) {
-            ((HttpServletRequestAware) ds).setRequest(servletRequest);
-        }
     }
 
     @NonNull
@@ -187,10 +170,10 @@ public class ToriIndexableApplication {
     }
 
     public DataSource getDataSource() {
-        return ds;
+        return apiLoader.getDs();
     }
 
     public PostFormatter getPostFormatter() {
-        return postFormatter;
+        return apiLoader.getPostFormatter();
     }
 }

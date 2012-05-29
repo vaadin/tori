@@ -31,11 +31,6 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     public ThreadPresenter(final @NonNull DataSource dataSource,
             final @NonNull AuthorizationService authorizationService) {
         super(dataSource, authorizationService);
-        final ToriApplication app = ToriApplication.getCurrent();
-        if (app != null && app.getPostFormatter() != null) {
-            app.getPostFormatter().setPostReplacements(
-                    dataSource.getPostReplacements());
-        }
     }
 
     public void setCurrentThreadById(final @NonNull String threadIdString)

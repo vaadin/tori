@@ -40,63 +40,18 @@ public class ToriApplication extends Application implements
         PortletRequestListener {
 
     private static Logger log = Logger.getLogger(ToriApplication.class);
-    private static ThreadLocal<HttpServletRequest> currentHttpServletRequest = new ThreadLocal<HttpServletRequest>();
-    private static ThreadLocal<PortletRequest> currentPortletRequest = new ThreadLocal<PortletRequest>();
-
-    private DataSource ds;
-    private PostFormatter postFormatter;
-    private SignatureFormatter signatureFormatter;
-    private AuthorizationService authorizationService;
+    private final ToriApiLoader apiLoader = new ToriApiLoader();
 
     @Override
     public void init() {
-
-        final ToriApiLoader apiLoader = new ToriApiLoader();
-        ds = apiLoader.createDataSource();
-        postFormatter = apiLoader.createPostFormatter();
-        signatureFormatter = apiLoader.createSignatureFormatter();
-        authorizationService = apiLoader.createAuthorizationService();
-
         if (ToriApplication.getCurrent().getDataSource() instanceof DebugDataSource) {
             addAttachmentDownloadHandler();
         }
-
-        setRequestForDataSource();
     }
 
     @Override
     protected String getRootClassName(final WrappedRequest request) {
         return ToriRoot.class.getName();
-    }
-
-    private void setRequestForDataSource() {
-        if (ds instanceof PortletRequestAware) {
-            setRequest((PortletRequestAware) ds);
-        } else if (ds instanceof HttpServletRequestAware) {
-            setRequest((HttpServletRequestAware) ds);
-        }
-
-        if (authorizationService instanceof PortletRequestAware) {
-            setRequest((PortletRequestAware) authorizationService);
-        } else if (authorizationService instanceof HttpServletRequestAware) {
-            setRequest((HttpServletRequestAware) authorizationService);
-        }
-    }
-
-    private void setRequest(final PortletRequestAware target) {
-        if (currentPortletRequest.get() != null) {
-            target.setRequest(currentPortletRequest.get());
-        } else {
-            log.warn("No PortletRequest set.");
-        }
-    }
-
-    private void setRequest(final HttpServletRequestAware target) {
-        if (currentHttpServletRequest.get() != null) {
-            target.setRequest(currentHttpServletRequest.get());
-        } else {
-            log.warn("No HttpServletRequest set.");
-        }
     }
 
     /**
@@ -115,45 +70,41 @@ public class ToriApplication extends Application implements
      * @return {@link DataSource} of this application
      */
     public DataSource getDataSource() {
-        return ds;
+        return apiLoader.getDs();
     }
 
     public AuthorizationService getAuthorizationService() {
-        return authorizationService;
+        return apiLoader.getAuthorizationService();
     }
 
     public PostFormatter getPostFormatter() {
-        return postFormatter;
+        return apiLoader.getPostFormatter();
     }
 
     public SignatureFormatter getSignatureFormatter() {
-        return signatureFormatter;
+        return apiLoader.getSignatureFormatter();
     }
 
     @Override
     public void onRequestStart(final HttpServletRequest request,
             final HttpServletResponse response) {
-        currentHttpServletRequest.set(request);
-        setRequestForDataSource();
+        apiLoader.setRequest(request);
     }
 
     @Override
     public void onRequestStart(final javax.portlet.PortletRequest request,
             final javax.portlet.PortletResponse response) {
-        currentPortletRequest.set(request);
-        setRequestForDataSource();
+        apiLoader.setRequest(request);
     }
 
     @Override
     public void onRequestEnd(final HttpServletRequest request,
             final HttpServletResponse response) {
-        currentHttpServletRequest.remove();
     }
 
     @Override
     public void onRequestEnd(final javax.portlet.PortletRequest request,
             final javax.portlet.PortletResponse response) {
-        currentPortletRequest.remove();
     }
 
     @Override

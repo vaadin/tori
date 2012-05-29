@@ -1,6 +1,10 @@
 package org.vaadin.tori;
 
+import java.util.Arrays;
 import java.util.ServiceLoader;
+
+import javax.portlet.PortletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.vaadin.tori.data.DataSource;
@@ -12,10 +16,35 @@ import org.vaadin.tori.util.SignatureFormatter;
 public class ToriApiLoader {
 
     private final ServiceProvider spi;
+    private final DataSource ds;
+    private final PostFormatter postFormatter;
+    private final SignatureFormatter signatureFormatter;
+    private final AuthorizationService authorizationService;
 
     public ToriApiLoader() {
         checkThatCommonIsLoaded();
         spi = newServiceProvider();
+        ds = createDataSource();
+        postFormatter = createPostFormatter();
+        signatureFormatter = createSignatureFormatter();
+        authorizationService = createAuthorizationService();
+    }
+
+    public final void setRequest(final Object request) {
+        if (request != null) {
+            for (final Object aware : Arrays.asList(ds, authorizationService)) {
+                if (aware instanceof PortletRequestAware
+                        && request instanceof PortletRequest) {
+                    ((PortletRequestAware) aware)
+                            .setRequest((PortletRequest) request);
+                } else if (aware instanceof HttpServletRequestAware
+                        && request instanceof HttpServletRequest) {
+                    ((HttpServletRequestAware) aware)
+                            .setRequest((HttpServletRequest) request);
+                }
+            }
+            postFormatter.setPostReplacements(ds.getPostReplacements());
+        }
     }
 
     /**
@@ -86,6 +115,22 @@ public class ToriApiLoader {
 
     private static Logger getLogger() {
         return Logger.getLogger(ToriApiLoader.class);
+    }
+
+    public DataSource getDs() {
+        return ds;
+    }
+
+    public PostFormatter getPostFormatter() {
+        return postFormatter;
+    }
+
+    public SignatureFormatter getSignatureFormatter() {
+        return signatureFormatter;
+    }
+
+    public AuthorizationService getAuthorizationService() {
+        return authorizationService;
     }
 
 }
