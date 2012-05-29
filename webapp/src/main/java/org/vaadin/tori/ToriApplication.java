@@ -2,7 +2,6 @@ package org.vaadin.tori;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ServiceLoader;
 
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +11,6 @@ import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriNavigator.NavigableApplication;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.DebugDataSource;
-import org.vaadin.tori.data.spi.ServiceProvider;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.SignatureFormatter;
@@ -48,13 +46,12 @@ public class ToriApplication extends Application implements
 
     @Override
     public void init() {
-        checkThatCommonIsLoaded();
 
-        final ServiceProvider spi = createServiceProvider();
-        ds = createDataSource(spi);
-        postFormatter = createPostFormatter(spi);
-        signatureFormatter = createSignatureFormatter(spi);
-        authorizationService = createAuthorizationService(spi);
+        final ToriApiLoader apiLoader = new ToriApiLoader();
+        ds = apiLoader.createDataSource();
+        postFormatter = apiLoader.createPostFormatter();
+        signatureFormatter = apiLoader.createSignatureFormatter();
+        authorizationService = apiLoader.createAuthorizationService();
 
         if (ToriApplication.getCurrent().getDataSource() instanceof DebugDataSource) {
             addAttachmentDownloadHandler();
@@ -96,70 +93,6 @@ public class ToriApplication extends Application implements
         } else {
             log.warn("No HttpServletRequest set.");
         }
-    }
-
-    /**
-     * Verifies that the common project is in the classpath
-     * 
-     * @throws RuntimeException
-     *             if Common is not in the classpath
-     */
-    private void checkThatCommonIsLoaded() {
-        try {
-            Class.forName("org.vaadin.tori.data.spi.ServiceProvider");
-        } catch (final ClassNotFoundException e) {
-            throw new RuntimeException("Your project was "
-                    + "apparently deployed without the Common "
-                    + "project (common.jar) in its classpath", e);
-        }
-    }
-
-    private static ServiceProvider createServiceProvider() {
-        final ServiceLoader<ServiceProvider> loader = ServiceLoader
-                .load(ServiceProvider.class);
-        if (loader.iterator().hasNext()) {
-            return loader.iterator().next();
-        } else {
-            throw new RuntimeException(
-                    "It seems you don't have a DataSource in your classpath, "
-                            + "or the added data source is misconfigured (see JavaDoc for "
-                            + ServiceProvider.class.getName() + ").");
-        }
-    }
-
-    private static DataSource createDataSource(final ServiceProvider spi) {
-        final DataSource ds = spi.createDataSource();
-        log.info(String.format("Using %s implementation: %s",
-                DataSource.class.getSimpleName(), ds.getClass().getName()));
-        return ds;
-    }
-
-    private static PostFormatter createPostFormatter(final ServiceProvider spi) {
-        final PostFormatter postFormatter = spi.createPostFormatter();
-        log.info(String.format("Using %s implementation: %s",
-                PostFormatter.class.getSimpleName(), postFormatter.getClass()
-                        .getName()));
-        return postFormatter;
-    }
-
-    private static SignatureFormatter createSignatureFormatter(
-            final ServiceProvider spi) {
-        final SignatureFormatter signatureFormatter = spi
-                .createSignatureFormatter();
-        log.info(String.format("Using %s implementation: %s",
-                SignatureFormatter.class.getSimpleName(), signatureFormatter
-                        .getClass().getName()));
-        return signatureFormatter;
-    }
-
-    private static AuthorizationService createAuthorizationService(
-            final ServiceProvider spi) {
-        final AuthorizationService authorizationService = spi
-                .createAuthorizationService();
-        log.info(String.format("Using %s implementation: %s",
-                PostFormatter.class.getSimpleName(), authorizationService
-                        .getClass().getName()));
-        return authorizationService;
     }
 
     /**

@@ -7,6 +7,11 @@ import java.util.List;
 
 import org.vaadin.tori.category.CategoryViewImpl;
 import org.vaadin.tori.dashboard.DashboardViewImpl;
+import org.vaadin.tori.indexing.IndexableCategoryView;
+import org.vaadin.tori.indexing.IndexableDashboardView;
+import org.vaadin.tori.indexing.IndexableNullView;
+import org.vaadin.tori.indexing.IndexableThreadView;
+import org.vaadin.tori.indexing.IndexableView;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.mvp.NullViewImpl;
 import org.vaadin.tori.mvp.View;
@@ -32,28 +37,39 @@ public class ToriNavigator extends CustomComponent {
      */
     public enum ApplicationView {
         // @formatter:off
-        DASHBOARD(URL_PREFIX + "dashboard", DashboardViewImpl.class),
-        CATEGORIES(URL_PREFIX + "category", CategoryViewImpl.class),
-        THREADS(URL_PREFIX + "thread", ThreadViewImpl.class),
-        USERS(URL_PREFIX + "user", NullViewImpl.class)
+        DASHBOARD(URL_PREFIX + "dashboard", DashboardViewImpl.class, IndexableDashboardView.class),
+        CATEGORIES(URL_PREFIX + "category", CategoryViewImpl.class, IndexableCategoryView.class),
+        THREADS(URL_PREFIX + "thread", ThreadViewImpl.class, IndexableThreadView.class),
+        USERS(URL_PREFIX + "user", NullViewImpl.class, IndexableNullView.class)
         ;
         // @formatter:on
 
         private String url;
         private Class<? extends AbstractView<?, ?>> viewClass;
+        private final Class<? extends IndexableView> indexView;
 
         private ApplicationView(final String url,
-                final Class<? extends AbstractView<?, ?>> viewClass) {
+                final Class<? extends AbstractView<?, ?>> viewClass,
+                final Class<? extends IndexableView> indexView) {
             this.url = url;
             this.viewClass = viewClass;
+            this.indexView = indexView;
         }
 
         public String getUrl() {
             return url;
         }
 
-        private static ApplicationView getDefault() {
+        public static ApplicationView getDefault() {
             return DASHBOARD;
+        }
+
+        public static String getUrlPrefix() {
+            return URL_PREFIX;
+        }
+
+        public Class<? extends IndexableView> getIndexableView() {
+            return indexView;
         }
     }
 

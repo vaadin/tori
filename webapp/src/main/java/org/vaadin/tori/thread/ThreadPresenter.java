@@ -316,6 +316,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
 
                 final Post updatedPost = dataSource.saveAsCurrentUser(post,
                         attachments);
+                dataSource.markRead(updatedPost.getThread());
 
                 resetInput();
 

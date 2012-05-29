@@ -7,7 +7,7 @@
 		<portlet-name>Tori portlet</portlet-name>
 		<display-name>Tori</display-name>
 
-		<portlet-class>com.vaadin.terminal.gwt.server.ApplicationPortlet2</portlet-class>
+		<portlet-class>org.vaadin.tori.ToriPortlet</portlet-class>
 		<init-param>
 			<description>Vaadin application class to start</description>
 			<name>application</name>
