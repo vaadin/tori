@@ -38,8 +38,7 @@
 	<property name="class.testsuite.webapp" value="org.vaadin.tori.WebappTestSuite" />
 	<property name="class.testsuite.common" value="org.vaadin.tori.CommonTestSuite" />
 	
-	<!--<property name="file.tori.liferay.war" value="/Users/tomi/Documents/Projects/org/liferay-portal-6.1.0-ce-ga1/deploy/tori-liferay.war" />-->
-	<property name="file.tori.liferay.war" value="/Users/tomi/Documents/Projects/org/liferay-portal-6.0.6/deploy/tori-liferay.war" />
+	<property name="file.tori.liferay.war" value="${dir.build-artifacts}/tori-liferay.war" />
 	<property name="file.tori.test.war" value="${dir.build-artifacts}/tori-test.war" />
 
 	<!-- FINDBUGS -->
