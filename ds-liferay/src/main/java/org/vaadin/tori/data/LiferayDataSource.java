@@ -470,6 +470,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     private void replaceMessageBoardsLinksCategories(final Post post) {
         String bodyRaw = post.getBodyRaw();
+        // Liferay 6.0 pattern
         final Pattern pattern = Pattern.compile(
                 "/-/message_boards\\?[_,\\d]+mbCategoryId=\\d+",
                 Pattern.CASE_INSENSITIVE);
@@ -484,14 +485,27 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                     fragment);
         }
 
+        // Liferay 6.1 pattern
+        final Pattern pattern61 = Pattern.compile(
+                "/-/message_boards/category/\\d+", Pattern.CASE_INSENSITIVE);
+        final Matcher matcher61 = pattern61.matcher(bodyRaw);
+        while (matcher61.find()) {
+            final String group = matcher61.group();
+            final String categoryIdString = group.substring(group
+                    .lastIndexOf('/') + 1);
+            final String fragment = CATEGORIES + categoryIdString;
+            bodyRaw = bodyRaw.replaceFirst(group, fragment);
+        }
+
         post.setBodyRaw(bodyRaw);
     }
 
     private void replaceMessageBoardsLinksMessages(final Post post) {
         String bodyRaw = post.getBodyRaw();
-        Pattern pattern = Pattern.compile(
-                "/-/message_boards/view_message/\\d+(#[_,\\d]+message_\\d+)?",
-                Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern
+                .compile(
+                        "/-/message_boards/(view_)?message/\\d+(#[_,\\d]+message_\\d+)?",
+                        Pattern.CASE_INSENSITIVE);
         final Matcher matcher = pattern.matcher(bodyRaw);
         while (matcher.find()) {
             final String group = matcher.group();
