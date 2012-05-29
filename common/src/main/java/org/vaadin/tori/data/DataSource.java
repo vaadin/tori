@@ -311,4 +311,12 @@ public interface DataSource {
     int getAttachmentMaxFileSize();
 
     boolean isLoggedInUser();
+
+    Map<String, String> getPostReplacements();
+
+    boolean getReplaceMessageBoardsLinks();
+
+    void savePortletPreferences(Map<String, String> postReplacements,
+            Boolean replaceMessageBoardsLinks) throws DataSourceException;
+
 }

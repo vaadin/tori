@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -839,5 +840,18 @@ public class TestDataSource implements DataSource, DebugDataSource {
     @Override
     public boolean isLoggedInUser() {
         return true;
+    }
+
+    public Map<String, String> getPostReplacements() {
+        return new HashMap<String, String>();
+    }
+
+    public void savePortletPreferences(Map<String, String> replacements,
+            Boolean replaceMessageBoardsLinks) {
+
+    }
+
+    public boolean getReplaceMessageBoardsLinks() {
+        return false;
     }
 }
