@@ -1,7 +1,5 @@
 package org.vaadin.tori.data;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,11 +7,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletSession;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.vaadin.tori.PortletRequestAware;
@@ -27,8 +31,9 @@ import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.post.PostReport;
-import org.vaadin.tori.util.PortletInstaller;
 
+import com.liferay.documentlibrary.service.DLServiceUtil;
+import com.liferay.portal.kernel.exception.NestableException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.FileUtil;
@@ -43,20 +48,22 @@ import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.SubscriptionLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
-import com.liferay.portlet.documentlibrary.store.DLStoreUtil;
+import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portlet.flags.service.FlagsEntryServiceUtil;
 import com.liferay.portlet.messageboards.model.MBBan;
 import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBMessageConstants;
+import com.liferay.portlet.messageboards.model.MBMessageFlagConstants;
 import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.model.MBThreadConstants;
 import com.liferay.portlet.messageboards.service.MBBanServiceUtil;
 import com.liferay.portlet.messageboards.service.MBCategoryLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBCategoryServiceUtil;
+import com.liferay.portlet.messageboards.service.MBMessageFlagLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
-import com.liferay.portlet.messageboards.service.MBThreadFlagLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadServiceUtil;
 import com.liferay.portlet.messageboards.util.comparator.MessageCreateDateComparator;
@@ -74,7 +81,6 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     private static final long ROOT_CATEGORY_ID = 0;
     private static final int QUERY_ALL = com.liferay.portal.kernel.dao.orm.QueryUtil.ALL_POS;
-
     // TODO this should be dynamic as it can be customized in liferay
     private static final double STICKY_PRIORITY = 2.0d;
 
@@ -90,9 +96,15 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     private ServiceContext flagsServiceContext;
     private ServiceContext mbCategoryServiceContext;
 
-    public LiferayDataSource() {
-        PortletInstaller.checkResources();
-    }
+    private PortletPreferences portletPreferences;
+
+    private static final String REPLACE_MESSAGE_BOARDS_LINKS_KEY = "toriReplaceMessageBoardsLinks";
+    private static final String URL_PREFIX = "/#!/";
+    private static final String CATEGORIES = URL_PREFIX + "category/";
+    private static final String THREADS = URL_PREFIX + "thread/";
+
+    private static final String POST_REPLACEMENTS_KEY = "toriPostReplacements";
+    private static final String REPLACEMENT_SEPARATOR = "<TORI-REPLACEMENT>";
 
     @Override
     public List<Category> getRootCategories() throws DataSourceException {
@@ -435,6 +447,10 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
                 final Post post = EntityFactoryUtil.createPost(message, author,
                         thread, attachments);
+                if (getReplaceMessageBoardsLinks()) {
+                    replaceMessageBoardsLinksCategories(post);
+                    replaceMessageBoardsLinksMessages(post);
+                }
                 result.add(post);
             }
             return result;
@@ -451,6 +467,63 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         }
     }
 
+    private void replaceMessageBoardsLinksCategories(final Post post) {
+        String bodyRaw = post.getBodyRaw();
+        final Pattern pattern = Pattern.compile(
+                "/-/message_boards\\?[_,\\d]+mbCategoryId=\\d+",
+                Pattern.CASE_INSENSITIVE);
+        final Matcher matcher = pattern.matcher(bodyRaw);
+        while (matcher.find()) {
+            final String group = matcher.group();
+            final String category = "mbCategoryId=";
+            final String categoryIdString = group.substring(group
+                    .indexOf(category) + category.length());
+            final String fragment = CATEGORIES + categoryIdString;
+            bodyRaw = bodyRaw.replaceFirst(group.replaceAll("\\?", "\\\\?"),
+                    fragment);
+        }
+
+        post.setBodyRaw(bodyRaw);
+    }
+
+    private void replaceMessageBoardsLinksMessages(final Post post) {
+        String bodyRaw = post.getBodyRaw();
+        Pattern pattern = Pattern.compile(
+                "/-/message_boards/view_message/\\d+(#[_,\\d]+message_\\d+)?",
+                Pattern.CASE_INSENSITIVE);
+        final Matcher matcher = pattern.matcher(bodyRaw);
+        while (matcher.find()) {
+            final String group = matcher.group();
+            String messageIdString = group
+                    .substring(group.lastIndexOf('/') + 1);
+            if (messageIdString.contains("#")) {
+                messageIdString = messageIdString.substring(0,
+                        messageIdString.indexOf('#'));
+            }
+            long messageId = Long.parseLong(messageIdString);
+            try {
+                final MBMessage message = MBMessageLocalServiceUtil
+                        .getMBMessage(messageId);
+
+                final long threadId = message.getThreadId();
+                final String messagePrefix = "_message_";
+                final int messageIdIndex = group.indexOf(messagePrefix);
+                if (messageIdIndex > -1) {
+                    messageId = Long.parseLong(group.substring(messageIdIndex
+                            + messagePrefix.length()));
+                }
+
+                final String fragment = THREADS + threadId + "/" + messageId;
+
+                bodyRaw = bodyRaw.replaceFirst(group, fragment);
+            } catch (NestableException e) {
+                log.warn("Unable to get MBmessage for id: " + messageId);
+            }
+        }
+
+        post.setBodyRaw(bodyRaw);
+    }
+
     @NonNull
     private List<Attachment> getAttachments(final MBMessage message)
             throws PortalException, SystemException {
@@ -461,7 +534,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             for (final String filename : filenames) {
                 final String shortFilename = FileUtil
                         .getShortFileName(filename);
-                final long fileSize = DLStoreUtil.getFileSize(companyId,
+                final long fileSize = DLServiceUtil.getFileSize(companyId,
                         CompanyConstants.SYSTEM, filename);
 
                 final Attachment attachment = new Attachment(shortFilename,
@@ -518,14 +591,11 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                         .getParentCategory() != null ? categoryToSave
                         .getParentCategory().getId() : ROOT_CATEGORY_ID;
 
-                String displayStyle = "default";
-
                 MBCategoryServiceUtil.addCategory(parentCategoryId,
                         categoryToSave.getName(),
-                        categoryToSave.getDescription(), displayStyle, null,
-                        null, null, 0, false, null, null, 0, null, false, null,
-                        0, false, null, null, false, false,
-                        mbCategoryServiceContext);
+                        categoryToSave.getDescription(), null, null, null, 0,
+                        false, null, null, 0, null, false, null, 0, false,
+                        null, null, false, mbCategoryServiceContext);
             }
         } catch (final PortalException e) {
             log.error(
@@ -600,14 +670,14 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         try {
             connection = JdbcUtil.getJdbcConnection();
             statement = connection
-                    .prepareStatement("select (? - count(MBThreadFlag.threadFlagId)) "
-                            + "from MBThreadFlag, MBThread "
-                            + "where MBThreadFlag.threadId = MBThread.threadId "
-                            + "and MBThread.categoryId = ? and MBThreadFlag.userId = ?");
-
+                    .prepareStatement("select (? - count(MBMessageFlag.messageFlagId)) "
+                            + "from MBMessageFlag, MBThread "
+                            + "where flag = ? and MBMessageFlag.threadId = MBThread.threadId "
+                            + "and MBThread.categoryId = ? and MBMessageFlag.userId = ?");
             statement.setLong(1, totalThreadCount);
-            statement.setLong(2, category.getId());
-            statement.setLong(3, currentUserId);
+            statement.setLong(2, MBMessageFlagConstants.READ_FLAG);
+            statement.setLong(3, category.getId());
+            statement.setLong(4, currentUserId);
 
             result = statement.executeQuery();
             if (result.next()) {
@@ -654,8 +724,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             throws DataSourceException {
         try {
             SubscriptionLocalServiceUtil.addSubscription(currentUserId,
-                    currentUser.getGroupId(), MBThread.class.getName(),
-                    thread.getId());
+                    MBThread.class.getName(), thread.getId());
         } catch (final PortalException e) {
             log.error(String.format("Cannot follow thread %d", thread.getId()),
                     e);
@@ -716,7 +785,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             throws DataSourceException {
         if (currentUserId > 0) {
             try {
-                MBThreadFlagLocalServiceUtil.addThreadFlag(currentUserId,
+                MBMessageFlagLocalServiceUtil.addReadFlags(currentUserId,
                         MBThreadLocalServiceUtil.getThread(thread.getId()));
             } catch (final PortalException e) {
                 log.error(String.format("Couldn't mark thread %d as read.",
@@ -735,8 +804,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             throws DataSourceException {
         if (currentUserId > 0) {
             try {
-                return MBThreadFlagLocalServiceUtil.hasThreadFlag(
-                        currentUserId,
+                return MBMessageFlagLocalServiceUtil.hasReadFlag(currentUserId,
                         MBThreadLocalServiceUtil.getThread(thread.getId()));
             } catch (final PortalException e) {
                 log.error(String.format(
@@ -856,9 +924,14 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         try {
             final MBMessage newPost = internalSaveAsCurrentUser(post, files,
                     getRootMessageId(post.getThread()));
-            return EntityFactoryUtil.createPost(newPost,
+            Post post2 = EntityFactoryUtil.createPost(newPost,
                     getUser(currentUserId), getThread(newPost.getThreadId()),
                     getAttachments(newPost));
+            if (getReplaceMessageBoardsLinks()) {
+                replaceMessageBoardsLinksCategories(post2);
+                replaceMessageBoardsLinksMessages(post2);
+            }
+            return post2;
         } catch (final PortalException e) {
             log.error("Couldn't save post.", e);
             throw new DataSourceException(e);
@@ -881,7 +954,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             subject = "RE: " + subject;
         }
         final String body = post.getBodyRaw();
-        final List<ObjectValuePair<String, InputStream>> attachments = new ArrayList<ObjectValuePair<String, InputStream>>();
+        final List<ObjectValuePair<String, byte[]>> attachments = new ArrayList<ObjectValuePair<String, byte[]>>();
 
         if (files != null) {
             for (final Entry<String, byte[]> file : files.entrySet()) {
@@ -889,8 +962,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                 final byte[] bytes = file.getValue();
 
                 if ((bytes != null) && (bytes.length > 0)) {
-                    final ObjectValuePair<String, InputStream> ovp = new ObjectValuePair<String, InputStream>(
-                            fileName, new ByteArrayInputStream(bytes));
+                    final ObjectValuePair<String, byte[]> ovp = new ObjectValuePair<String, byte[]>(
+                            fileName, bytes);
 
                     attachments.add(ovp);
                 }
@@ -902,8 +975,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         final boolean allowPingbacks = false;
 
         return MBMessageServiceUtil.addMessage(groupId, categoryId, threadId,
-                parentMessageId, subject, body, "UTF-8", attachments,
-                anonymous, priority, allowPingbacks, mbMessageServiceContext);
+                parentMessageId, subject, body, attachments, anonymous,
+                priority, allowPingbacks, mbMessageServiceContext);
 
     }
 
@@ -1021,6 +1094,9 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     @Override
     public void setRequest(final PortletRequest request) {
+
+        determineMessageBoardsParameters(request);
+
         final ThemeDisplay themeDisplay = (ThemeDisplay) request
                 .getAttribute("THEME_DISPLAY");
 
@@ -1060,6 +1136,70 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         } catch (final SystemException e) {
             log.error("Couldn't create ServiceContext.", e);
         }
+
+        try {
+            portletPreferences = PortletPreferencesFactoryUtil
+                    .getPortletSetup(request);
+        } catch (SystemException e) {
+            log.error("Couldn't load PortletPreferences.", e);
+        }
+    }
+
+    private static final String MESSAGEB_BOARDS_CATEGORY_ID = "mbCategoryId";
+    private static final String MESSAGEB_BOARDS_MESSAGE_ID = "messageId";
+
+    /** @see org.vaadin.tori.ToriApplication.TORI_CATEGORY_ID */
+    private static final String TORI_CATEGORY_ID = "toriCategoryId";
+    /** @see org.vaadin.tori.ToriApplication.TORI_THREAD_ID */
+    private static final String TORI_THREAD_ID = "toriThreadId";
+    /** @see org.vaadin.tori.ToriApplication.TORI_MESSAGE_ID */
+    private static final String TORI_MESSAGE_ID = "toriMessageId";
+
+    private void determineMessageBoardsParameters(final PortletRequest request) {
+        final PortletSession session = request.getPortletSession();
+        final Long categoryId = getOriginalRequestEntityIdParameter(request,
+                MESSAGEB_BOARDS_CATEGORY_ID);
+        if (categoryId == null) {
+            final Long messageId = getOriginalRequestEntityIdParameter(request,
+                    MESSAGEB_BOARDS_MESSAGE_ID);
+            if (messageId != null) {
+                try {
+                    final MBMessage message = MBMessageLocalServiceUtil
+                            .getMBMessage(messageId);
+                    session.setAttribute(TORI_THREAD_ID, message.getThreadId());
+                    session.setAttribute(TORI_MESSAGE_ID, messageId);
+                } catch (NestableException e) {
+                    log.warn("Unable to load MBMessage for id: " + messageId, e);
+                }
+            }
+        } else {
+            session.setAttribute(TORI_CATEGORY_ID, categoryId);
+        }
+    }
+
+    private Long getOriginalRequestEntityIdParameter(
+            final PortletRequest request, final String key) {
+        Long entityId = null;
+        final HttpServletRequest originalRequest = PortalUtil
+                .getOriginalServletRequest(PortalUtil
+                        .getHttpServletRequest(request));
+
+        @SuppressWarnings("rawtypes")
+        final Map parameters = originalRequest.getParameterMap();
+        for (Object param : parameters.keySet()) {
+            if (String.valueOf(param).contains(key)) {
+                try {
+                    final Object[] value = (Object[]) parameters.get(param);
+                    if (value != null && value.length > 0) {
+                        entityId = Long.parseLong(String.valueOf(value[0]));
+                        break;
+                    }
+                } catch (Exception e) {
+                    log.warn("Unable to parse parameter value.", e);
+                }
+            }
+        }
+        return entityId;
     }
 
     private com.liferay.portal.model.User getCurrentUser()
@@ -1111,4 +1251,61 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     public boolean isLoggedInUser() {
         return currentUserId != 0;
     }
+
+    public final Map<String, String> getPostReplacements() {
+        final Map<String, String> replacements = new HashMap<String, String>();
+
+        if (portletPreferences != null) {
+            final String[] values = portletPreferences.getValues(
+                    POST_REPLACEMENTS_KEY, new String[0]);
+            if (values != null) {
+                for (String value : values) {
+                    final String[] split = value.split(REPLACEMENT_SEPARATOR);
+                    if (split.length == 2) {
+                        replacements.put(split[0], split[1]);
+                    }
+                }
+            }
+        }
+        return replacements;
+
+    }
+
+    public final boolean getReplaceMessageBoardsLinks() {
+        boolean replace = true;
+        if (portletPreferences != null) {
+            final String replaceString = portletPreferences.getValue(
+                    REPLACE_MESSAGE_BOARDS_LINKS_KEY, "");
+            replace = !String.valueOf(Boolean.FALSE).equals(replaceString);
+        }
+        return replace;
+    }
+
+    public final void savePortletPreferences(
+            final Map<String, String> postReplacements,
+            final Boolean replaceMessageBoardsLinks) throws DataSourceException {
+        if (portletPreferences == null) {
+            throw new DataSourceException("Portlet preferences not available.");
+        } else {
+            String[] values = new String[postReplacements.size()];
+            int index = 0;
+            for (Entry<String, String> entry : postReplacements.entrySet()) {
+                values[index++] = entry.getKey() + REPLACEMENT_SEPARATOR
+                        + entry.getValue();
+            }
+            try {
+                portletPreferences.setValues(POST_REPLACEMENTS_KEY, values);
+
+                portletPreferences.setValue(REPLACE_MESSAGE_BOARDS_LINKS_KEY,
+                        String.valueOf(replaceMessageBoardsLinks ? Boolean.TRUE
+                                : Boolean.FALSE));
+
+                portletPreferences.store();
+            } catch (Exception e) {
+                log.error("Unable to store portlet preferences", e);
+                throw new DataSourceException(e);
+            }
+        }
+    }
+
 }

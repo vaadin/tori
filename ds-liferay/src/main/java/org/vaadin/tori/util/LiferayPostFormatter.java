@@ -3,11 +3,16 @@ package org.vaadin.tori.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Logger;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.util.PostFormatter.FontsInfo;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
+import org.vaadin.tori.util.PostFormatter.FormatInfo;
 
 import com.liferay.portlet.messageboards.util.BBCodeUtil;
 
@@ -20,6 +25,7 @@ public class LiferayPostFormatter implements PostFormatter {
     private static Collection<FontFace> fontFaces;
     private static Collection<FontSize> fontSizes;
     private static Collection<FormatInfo> otherFormatInfos;
+    private Map<String, String> postReplacements;
 
     static {
         final StringBuilder syntaxHelp = new StringBuilder();
@@ -58,7 +64,21 @@ public class LiferayPostFormatter implements PostFormatter {
     @Override
     public String format(final String rawPostBody) {
         try {
-            return BBCodeUtil.getHTML(rawPostBody.trim());
+            String body = BBCodeUtil.getHTML(rawPostBody.trim());
+            if (postReplacements != null) {
+                for (final Entry<String, String> entry : postReplacements
+                        .entrySet()) {
+                    try {
+                        body = body
+                                .replaceAll(entry.getKey(), entry.getValue());
+                    } catch (PatternSyntaxException e) {
+                        log.warn(
+                                "Invalid replacement regex pattern: "
+                                        + entry.getKey(), e);
+                    }
+                }
+            }
+            return body;
         } catch (final Exception e) {
             log.warn("Couldn't parse the given post body: " + rawPostBody);
         }
@@ -107,5 +127,10 @@ public class LiferayPostFormatter implements PostFormatter {
         }
         return String.format("[quote=%s]%s[/quote]\n", postToQuote.getAuthor()
                 .getDisplayedName(), postToQuote.getBodyRaw());
+    }
+
+    public final void setPostReplacements(
+            final Map<String, String> postReplacements) {
+        this.postReplacements = postReplacements;
     }
 }

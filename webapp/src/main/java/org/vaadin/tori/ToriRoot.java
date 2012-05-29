@@ -1,8 +1,11 @@
 package org.vaadin.tori;
 
+import javax.portlet.PortletMode;
+
 import org.vaadin.tori.ToriNavigator.ViewChangeListener;
 import org.vaadin.tori.component.DebugControlPanel;
 import org.vaadin.tori.component.breadcrumbs.Breadcrumbs;
+import org.vaadin.tori.edit.EditViewImpl;
 import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
@@ -21,11 +24,12 @@ public class ToriRoot extends Root {
     private static final int KEEPALIVE_PING_INTERVAL_MILLIS = 60000;
 
     private final ToriNavigator navigator = new ToriNavigator(this);
+    private VerticalLayout windowLayout;
 
     @Override
     protected void init(final WrappedRequest request) {
         setCaption("Tori");
-        final VerticalLayout windowLayout = new VerticalLayout();
+        windowLayout = new VerticalLayout();
         windowLayout.setMargin(false);
         setContent(windowLayout);
 
@@ -41,7 +45,9 @@ public class ToriRoot extends Root {
             public void navigatorViewChange(final View previous,
                     final View current) {
                 // scroll to top when the view is changed
-                scrollIntoView(breadcrumbs);
+                if (getContent() == windowLayout) {
+                    scrollIntoView(breadcrumbs);
+                }
             }
         });
 
@@ -54,7 +60,20 @@ public class ToriRoot extends Root {
         refresher.setRefreshInterval(KEEPALIVE_PING_INTERVAL_MILLIS);
         addComponent(refresher);
          */
+    }
 
+    public final void setPortletMode(final PortletMode portletMode) {
+        if (portletMode == PortletMode.EDIT) {
+            if (getContent() == windowLayout) {
+                final EditViewImpl editView = new EditViewImpl();
+                editView.init(null, getApplication());
+                setContent(editView);
+            }
+        } else {
+            if (getContent() != windowLayout && windowLayout != null) {
+                setContent(windowLayout);
+            }
+        }
     }
 
     private void addControlPanelIfInDevelopment() {
