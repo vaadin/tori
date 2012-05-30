@@ -22,3 +22,10 @@
 .v-Notification-system {
 	position: fixed !important;
 }
+
+.v-loading-indicator, 
+.v-loading-indicator-wait,
+.v-loading-indicator-delay {
+	position: fixed !important;
+	top: 70px !important;
+}

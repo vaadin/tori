@@ -100,3 +100,9 @@ button.v-nativebutton {
 .hidden {
 	visibility: hidden;
 }
+
+.v-loading-indicator, 
+.v-loading-indicator-wait,
+.v-loading-indicator-delay {
+	position: fixed !important;
+}
