@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,12 +17,15 @@ import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.SignatureFormatter;
 
 import com.vaadin.Application;
+import com.vaadin.RootRequiresMoreInformationException;
+import com.vaadin.terminal.CombinedRequest;
 import com.vaadin.terminal.DownloadStream;
 import com.vaadin.terminal.RequestHandler;
 import com.vaadin.terminal.WrappedRequest;
 import com.vaadin.terminal.WrappedResponse;
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
 import com.vaadin.terminal.gwt.server.PortletRequestListener;
+import com.vaadin.terminal.gwt.server.WrappedPortletRequest;
 import com.vaadin.ui.Root;
 import com.vaadin.ui.Window;
 
@@ -36,63 +40,18 @@ public class ToriApplication extends Application implements
         PortletRequestListener {
 
     private static Logger log = Logger.getLogger(ToriApplication.class);
-    private static ThreadLocal<HttpServletRequest> currentHttpServletRequest = new ThreadLocal<HttpServletRequest>();
-    private static ThreadLocal<PortletRequest> currentPortletRequest = new ThreadLocal<PortletRequest>();
-
-    private DataSource ds;
-    private PostFormatter postFormatter;
-    private SignatureFormatter signatureFormatter;
-    private AuthorizationService authorizationService;
+    private final ToriApiLoader apiLoader = new ToriApiLoader();
 
     @Override
     public void init() {
-
-        final ToriApiLoader apiLoader = new ToriApiLoader();
-        ds = apiLoader.createDataSource();
-        postFormatter = apiLoader.createPostFormatter();
-        signatureFormatter = apiLoader.createSignatureFormatter();
-        authorizationService = apiLoader.createAuthorizationService();
-
         if (ToriApplication.getCurrent().getDataSource() instanceof DebugDataSource) {
             addAttachmentDownloadHandler();
         }
-
-        setRequestForDataSource();
     }
 
     @Override
     protected String getRootClassName(final WrappedRequest request) {
         return ToriRoot.class.getName();
-    }
-
-    private void setRequestForDataSource() {
-        if (ds instanceof PortletRequestAware) {
-            setRequest((PortletRequestAware) ds);
-        } else if (ds instanceof HttpServletRequestAware) {
-            setRequest((HttpServletRequestAware) ds);
-        }
-
-        if (authorizationService instanceof PortletRequestAware) {
-            setRequest((PortletRequestAware) authorizationService);
-        } else if (authorizationService instanceof HttpServletRequestAware) {
-            setRequest((HttpServletRequestAware) authorizationService);
-        }
-    }
-
-    private void setRequest(final PortletRequestAware target) {
-        if (currentPortletRequest.get() != null) {
-            target.setRequest(currentPortletRequest.get());
-        } else {
-            log.warn("No PortletRequest set.");
-        }
-    }
-
-    private void setRequest(final HttpServletRequestAware target) {
-        if (currentHttpServletRequest.get() != null) {
-            target.setRequest(currentHttpServletRequest.get());
-        } else {
-            log.warn("No HttpServletRequest set.");
-        }
     }
 
     /**
@@ -111,45 +70,41 @@ public class ToriApplication extends Application implements
      * @return {@link DataSource} of this application
      */
     public DataSource getDataSource() {
-        return ds;
+        return apiLoader.getDs();
     }
 
     public AuthorizationService getAuthorizationService() {
-        return authorizationService;
+        return apiLoader.getAuthorizationService();
     }
 
     public PostFormatter getPostFormatter() {
-        return postFormatter;
+        return apiLoader.getPostFormatter();
     }
 
     public SignatureFormatter getSignatureFormatter() {
-        return signatureFormatter;
+        return apiLoader.getSignatureFormatter();
     }
 
     @Override
     public void onRequestStart(final HttpServletRequest request,
             final HttpServletResponse response) {
-        currentHttpServletRequest.set(request);
-        setRequestForDataSource();
+        apiLoader.setRequest(request);
     }
 
     @Override
     public void onRequestStart(final javax.portlet.PortletRequest request,
             final javax.portlet.PortletResponse response) {
-        currentPortletRequest.set(request);
-        setRequestForDataSource();
+        apiLoader.setRequest(request);
     }
 
     @Override
     public void onRequestEnd(final HttpServletRequest request,
             final HttpServletResponse response) {
-        currentHttpServletRequest.remove();
     }
 
     @Override
     public void onRequestEnd(final javax.portlet.PortletRequest request,
             final javax.portlet.PortletResponse response) {
-        currentPortletRequest.remove();
     }
 
     @Override
@@ -192,5 +147,71 @@ public class ToriApplication extends Application implements
                 return false;
             }
         });
+    }
+
+    /** @see org.vaadin.tori.data.LiferayDataSource.TORI_CATEGORY_ID */
+    private static final String TORI_CATEGORY_ID = "toriCategoryId";
+    /** @see org.vaadin.tori.data.LiferayDataSource.TORI_THREAD_ID */
+    private static final String TORI_THREAD_ID = "toriThreadId";
+    /** @see org.vaadin.tori.data.LiferayDataSource.TORI_MESSAGE_ID */
+    private static final String TORI_MESSAGE_ID = "toriMessageId";
+
+    @Override
+    public Root getRootForRequest(final WrappedRequest request)
+            throws RootRequiresMoreInformationException {
+        final Root root = super.getRootForRequest(request);
+        if (root != null) {
+            // Acquire the portletRequest if possible
+            PortletRequest portletRequest = null;
+            if (request instanceof WrappedPortletRequest) {
+                portletRequest = ((WrappedPortletRequest) request)
+                        .getPortletRequest();
+            } else if (request instanceof CombinedRequest) {
+                final WrappedRequest wrappedRequest = ((CombinedRequest) request)
+                        .getSecondRequest();
+                if (wrappedRequest instanceof WrappedPortletRequest) {
+                    portletRequest = ((WrappedPortletRequest) wrappedRequest)
+                            .getPortletRequest();
+                }
+            }
+
+            if (portletRequest != null) {
+                // Check if category/thread/message was determined from the
+                // original request attributes (Liferay message boards type url)
+
+                final PortletSession session = portletRequest
+                        .getPortletSession();
+
+                final Object categoryId = session
+                        .getAttribute(TORI_CATEGORY_ID);
+                final Object threadId = session.getAttribute(TORI_THREAD_ID);
+                final Object messageId = session.getAttribute(TORI_MESSAGE_ID);
+
+                String fragment = null;
+
+                if (categoryId != null) {
+                    fragment = ToriNavigator.ApplicationView.CATEGORIES
+                            .getUrl() + "/" + categoryId;
+                    session.removeAttribute(TORI_CATEGORY_ID);
+                } else if (threadId != null) {
+                    fragment = ToriNavigator.ApplicationView.THREADS.getUrl()
+                            + "/" + threadId;
+                    session.removeAttribute(TORI_THREAD_ID);
+                    if (messageId != null) {
+                        fragment = fragment + "/" + messageId;
+                        session.removeAttribute(TORI_MESSAGE_ID);
+                    }
+                }
+
+                if (fragment != null) {
+                    // Apply changes to Tori root's fragment
+                    root.setFragment(fragment);
+                }
+
+                ((ToriRoot) root).setPortletMode(portletRequest
+                        .getPortletMode());
+            }
+        }
+        return root;
     }
 }

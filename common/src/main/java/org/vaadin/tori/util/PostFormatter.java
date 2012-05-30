@@ -1,6 +1,7 @@
 package org.vaadin.tori.util;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.vaadin.tori.data.entity.Post;
 
@@ -116,4 +117,6 @@ public interface PostFormatter {
 
     @NonNull
     String getQuote(final Post postToQuote);
+
+    void setPostReplacements(Map<String, String> postReplacements);
 }

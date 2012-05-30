@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.vaadin.tori.indexing.ToriIndexableApplication;
 
 import com.vaadin.terminal.gwt.server.ApplicationPortlet2;
+import com.vaadin.terminal.gwt.server.Constants;
+import com.vaadin.terminal.gwt.server.WrappedPortletRequest;
 
 public class ToriPortlet extends ApplicationPortlet2 {
 
@@ -70,6 +72,29 @@ public class ToriPortlet extends ApplicationPortlet2 {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    protected WrappedPortletRequest createWrappedRequest(
+            final PortletRequest request) {
+        WrappedPortletRequest wrapped = super.createWrappedRequest(request);
+
+        final String portalInfo = request.getPortalContext().getPortalInfo()
+                .toLowerCase();
+        if (portalInfo.contains("liferay")) {
+            wrapped = new WrappedLiferayRequest(request,
+                    wrapped.getDeploymentConfiguration()) {
+                @Override
+                public String getPortalProperty(final String name) {
+                    if (Constants.PORTAL_PARAMETER_VAADIN_RESOURCE_PATH
+                            .equals(name)) {
+                        return request.getContextPath();
+                    }
+                    return super.getPortalProperty(name);
+                }
+            };
+        }
+        return wrapped;
     }
 
 }
