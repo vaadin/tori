@@ -1,5 +1,6 @@
 package org.vaadin.tori.component.post;
 
+import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.post.PostReport;
@@ -7,52 +8,79 @@ import org.vaadin.tori.service.post.PostReport.Reason;
 import org.vaadin.tori.thread.ThreadPresenter;
 
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 @SuppressWarnings("serial")
-class ReportWindow extends Window {
+public class ReportComponent extends CustomComponent {
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "ignore serialization")
+    private final Post post;
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "ignore serialization")
+    private final ThreadPresenter presenter;
+    private final PopupButton reportPopup;
+    private Component reportLayout;
 
-    private final CssLayout explanationLayout;
-    private final NativeButton reportButton;
-    private final VerticalLayout layout = new VerticalLayout();
+    ClickListener listener = new ClickListener() {
 
-    public ReportWindow(final Post post, final ThreadPresenter presenter,
-            final int x, final int y, final String postPermalink) {
-        super("Report Post");
-        layout.setSpacing(true);
-        layout.setMargin(true);
-
-        setContent(layout);
-        setStyleName("reportwindow");
-        setClosable(false);
-        setCloseShortcut(KeyCode.ESCAPE);
-        setResizable(false);
-        getContent().setWidth("100%");
-        setWidth("350px");
-        focus();
-
-        if (x != -1 && y != -1) {
-            setPositionX(x - 350);
-            setPositionY(y);
+        @Override
+        public void buttonClick(final ClickEvent event) {
+            try {
+                if (reportLayout == null) {
+                    reportLayout = newReportLayout();
+                    reportPopup.setComponent(reportLayout);
+                }
+                reportPopup.setPopupVisible(true);
+            } catch (final RuntimeException e) {
+                e.printStackTrace();
+            }
         }
+    };
+    private Layout explanationLayout;
+    private NativeButton reportButton;
+    private final String postPermalink;
 
-        addComponent(new Label("What's wrong with this post?"));
+    public ReportComponent(final Post post, final ThreadPresenter presenter,
+            final String postPermalink) {
 
-        final CssLayout reasonLayout = new CssLayout();
-        reasonLayout.setWidth("100%");
-        addComponent(reasonLayout);
+        final CssLayout root = new CssLayout();
+        setCompositionRoot(root);
+
+        this.post = post;
+        this.presenter = presenter;
+        this.postPermalink = postPermalink;
+
+        final Button reportButton = new Button("Report Post", listener);
+        reportButton.setStyleName(BaseTheme.BUTTON_LINK);
+        reportButton.setIcon(new ThemeResource("images/icon-link-report.png"));
+        root.addComponent(reportButton);
+
+        reportPopup = new PopupButton();
+        reportPopup.setWidth("0");
+        reportPopup.setHeight("0");
+        root.addComponent(reportPopup);
+    }
+
+    private Component newReportLayout() {
+        final VerticalLayout layout = new VerticalLayout();
+        layout.setWidth("250px");
+        layout.setSpacing(true);
+
+        layout.addComponent(new Label("What's wrong with this post?"));
 
         final OptionGroup reason = new OptionGroup();
-
         reason.addItem(Reason.SPAM);
         reason.setItemCaption(Reason.SPAM, "Spam");
         reason.addItem(Reason.OFFENSIVE);
@@ -73,7 +101,8 @@ class ReportWindow extends Window {
                 reportButton.setEnabled(reason.getValue() != null);
             }
         });
-        reasonLayout.addComponent(reason);
+
+        layout.addComponent(reason);
 
         explanationLayout = new CssLayout();
         explanationLayout.setStyleName("explanationlayout");
@@ -82,28 +111,27 @@ class ReportWindow extends Window {
         explanationLayout.addComponent(reasonText);
         explanationLayout.setVisible(false);
         explanationLayout.setWidth("100%");
-        reasonLayout.addComponent(explanationLayout);
+        layout.addComponent(explanationLayout);
 
         final HorizontalLayout footer = new HorizontalLayout();
         footer.setSpacing(true);
-        addComponent(footer);
+        layout.addComponent(footer);
 
         reportButton = new NativeButton("Report Post");
         reportButton.addListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 final PostReport report = new PostReport(post, (Reason) reason
-                        .getValue(), (String) reasonText.getValue(),
-                        postPermalink);
+                        .getValue(), reasonText.getValue(), postPermalink);
 
                 try {
                     presenter.handlePostReport(report);
-                    ReportWindow.this.close();
+                    reportPopup.setPopupVisible(false);
                 } catch (final DataSourceException e) {
+                    e.printStackTrace();
                     layout.removeAllComponents();
                     layout.addComponent(new Label(
                             DataSourceException.BORING_GENERIC_ERROR_MESSAGE));
-                    ReportWindow.this.setClosable(true);
                 }
             }
         });
@@ -114,10 +142,12 @@ class ReportWindow extends Window {
         cancel.addListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
-                ReportWindow.this.close();
+                reportPopup.setVisible(false);
             }
         });
         footer.addComponent(cancel);
+
+        return layout;
     }
 
     private static TextArea createReasonTextArea() {

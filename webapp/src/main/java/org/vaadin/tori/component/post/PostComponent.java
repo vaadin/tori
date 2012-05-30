@@ -35,7 +35,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.BaseTheme;
-import com.vaadin.ui.themes.Reindeer;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
@@ -244,14 +243,16 @@ public class PostComponent extends CustomComponent {
 
         refreshBody(post);
 
+        reportComponent = new ReportComponent(post, presenter,
+                getPermaLinkUrl(post));
+        reportComponent.setVisible(false);
+
         final Component attachments = getAttachments(post);
         if (attachments != null) {
             root.addComponent(attachments, "attachments");
         }
         root.addComponent(score, "score");
-        root.addComponent(
-                reportComponent = buildReportPostComponent(post, presenter),
-                "report");
+        root.addComponent(reportComponent, "report");
         root.addComponent(contextMenu, "settings");
         root.addComponent(editComponent, "edit");
         root.addComponent(quoteButton, "quote");
@@ -312,6 +313,7 @@ public class PostComponent extends CustomComponent {
         score.enableUpDownVoting(postVote);
     }
 
+    /*-
     private Component buildReportPostComponent(final Post post,
             final ThreadPresenter presenter) {
         final Button button = new Button("Report Post");
@@ -322,14 +324,16 @@ public class PostComponent extends CustomComponent {
             public void buttonClick(final ClickEvent event) {
                 final int x = event.getClientX();
                 final int y = event.getClientY();
-                getRoot().addWindow(
-                        new ReportWindow(post, presenter, x, y,
-                                getPermaLinkUrl(post)));
+                getRoot()
+                        .addWindow(
+                                new ReportWindow(post, presenter,
+                                        getPermaLinkUrl(post)));
             }
         });
         button.setVisible(false);
         return button;
     }
+     */
 
     @CheckForNull
     private Component getAttachments(final Post post) {
