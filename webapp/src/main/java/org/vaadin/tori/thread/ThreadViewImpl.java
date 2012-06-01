@@ -50,7 +50,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         implements ThreadView {
 
     private static final int RENDER_DELAY_MILLIS = 1000;
-    private static final int RENDER_DISTANCE_PX = 1000;
+    private static final double RENDER_DISTANCE_MULTIPLIER = 2.0d;
     private static final String PLACEHOLDER_WIDTH = "100%";
     private static final String PLACEHOLDER_HEIGHT = "300px";
 
@@ -99,7 +99,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         setStyleName("threadview");
         // postsLayout = new CssLayout();
         postsLayout = new LazyLayout();
-        postsLayout.setRenderDistance(RENDER_DISTANCE_PX);
+        postsLayout.setRenderDistanceMultiplier(RENDER_DISTANCE_MULTIPLIER);
         postsLayout.setPlaceholderSize(PLACEHOLDER_HEIGHT, PLACEHOLDER_WIDTH);
         postsLayout.setRenderDelay(RENDER_DELAY_MILLIS);
     }

@@ -37,7 +37,7 @@ public class ThreadListing extends CustomComponent {
     protected static final String PLACEHOLDER_WIDTH = "100%";
     protected static final String PLACEHOLDER_HEIGHT = "41px";
     protected static final int RENDER_DELAY_MILLIS = 700;
-    protected static final int RENDER_DISTANCE_PX = 500;
+    protected static final double RENDER_DISTANCE_MULTIPLIER = 1.5d;
 
     private static final long MAX_AMOUNT_OF_SHOWN_THREADS = 1000;
 
@@ -90,7 +90,7 @@ public class ThreadListing extends CustomComponent {
 
         layout = new GeneratedLazyLayout(componentGenerator);
         layout.setPlaceholderSize(PLACEHOLDER_HEIGHT, PLACEHOLDER_WIDTH);
-        layout.setRenderDistance(RENDER_DISTANCE_PX);
+        layout.setRenderDistanceMultiplier(RENDER_DISTANCE_MULTIPLIER);
         layout.setRenderDelay(RENDER_DELAY_MILLIS);
         layout.setStyleName("wrapper-layout");
 

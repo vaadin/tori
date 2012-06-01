@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -84,7 +86,7 @@ public class VLazyLayout extends SimplePanel {
 
     private class SecondaryFetchTimer extends Timer {
         private static final double SECONDARY_MULTIPLIER = 2d;
-        private static final int AMOUNT_OF_TIME_TO_GO_BACK_TO_THE_SERVER = 5;
+        private static final int AMOUNT_OF_TIME_TO_GO_BACK_TO_THE_SERVER = 2;
         private static final int SECONDARY_TIMER = 2000;
 
         private int visitsLeftToTheServer = AMOUNT_OF_TIME_TO_GO_BACK_TO_THE_SERVER;
@@ -93,10 +95,10 @@ public class VLazyLayout extends SimplePanel {
         public void run() {
             boolean foundSomething = false;
             while (visitsLeftToTheServer > 0 && !foundSomething) {
-                final int totalExtraHeight = (int) (distance * SECONDARY_MULTIPLIER);
+                final int totalExtraHeight = (int) (getFetchDistancePx() * SECONDARY_MULTIPLIER);
                 final double progress = (double) AMOUNT_OF_TIME_TO_GO_BACK_TO_THE_SERVER
                         / (double) visitsLeftToTheServer;
-                final int fetchingDistance = (int) (distance + (totalExtraHeight * progress));
+                final int fetchingDistance = (int) (getFetchDistancePx() + (totalExtraHeight * progress));
 
                 foundSomething = findAllThingsToFetchAndFetchThem(fetchingDistance);
 
@@ -134,12 +136,13 @@ public class VLazyLayout extends SimplePanel {
     private final Timer scrollPoller = new Timer() {
         @Override
         public void run() {
-            findAllThingsToFetchAndFetchThem(distance);
+            findAllThingsToFetchAndFetchThem(getFetchDistancePx());
             secondaryLoader.scheduleNew();
         }
     };
     private final SecondaryFetchTimer secondaryLoader = new SecondaryFetchTimer();
-    private int distance;
+    private double distanceMultiplier;
+    private int pageHeight;
     private int renderDelay;
     private boolean scrollingWasProgrammaticallyAdjusted = false;
 
@@ -207,6 +210,13 @@ public class VLazyLayout extends SimplePanel {
     @Override
     protected void onAttach() {
         super.onAttach();
+        refreshPageHeight();
+        Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override
+            public void execute() {
+                VLazyLayout.this.findAllThingsToFetchAndFetchThem();
+            }
+        });
     }
 
     @Override
@@ -266,8 +276,9 @@ public class VLazyLayout extends SimplePanel {
         scrollingWasProgrammaticallyAdjusted = false;
     }
 
-    public void setRenderDistance(final int renderDistance) {
-        distance = renderDistance;
+    public void setRenderDistanceMultiplier(
+            final double renderDistanceMultiplier) {
+        distanceMultiplier = renderDistanceMultiplier;
     }
 
     public void setRenderDelay(final int renderDelay) {
@@ -275,7 +286,7 @@ public class VLazyLayout extends SimplePanel {
     }
 
     protected void findAllThingsToFetchAndFetchThem() {
-        findAllThingsToFetchAndFetchThem(distance);
+        findAllThingsToFetchAndFetchThem(getFetchDistancePx());
     }
 
     private boolean findAllThingsToFetchAndFetchThem(final int distance) {
@@ -639,4 +650,19 @@ public class VLazyLayout extends SimplePanel {
     private static double getPreciseHeight(final Widget widget) {
         return getPreciseHeight(widget.getElement());
     }
+
+    public void refreshPageHeight() {
+        if (getParent() != null) {
+            final int windowHeight = Window.getClientHeight();
+            final int lazyLayoutHeight = getElement().getOffsetHeight();
+            pageHeight = Math.min(windowHeight, lazyLayoutHeight);
+        } else {
+            pageHeight = -1;
+        }
+    }
+
+    private int getFetchDistancePx() {
+        return (int) (pageHeight * distanceMultiplier);
+    }
+
 }

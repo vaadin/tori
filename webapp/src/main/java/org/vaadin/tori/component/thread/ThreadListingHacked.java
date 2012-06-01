@@ -13,7 +13,7 @@ public class ThreadListingHacked extends ThreadListing {
         super(presenter);
         root.replaceComponent(layout, layout = new LazyLayout());
         layout.setPlaceholderSize(PLACEHOLDER_HEIGHT, PLACEHOLDER_WIDTH);
-        layout.setRenderDistance(RENDER_DISTANCE_PX);
+        layout.setRenderDistanceMultiplier(RENDER_DISTANCE_MULTIPLIER);
         layout.setRenderDelay(RENDER_DELAY_MILLIS);
         layout.setStyleName("wrapper-layout");
     }

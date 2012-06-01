@@ -1,5 +1,6 @@
 package org.vaadin.tori.widgetset.client.ui.lazylayout;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.vaadin.terminal.gwt.client.Connector;
@@ -10,9 +11,9 @@ public class LazyLayoutState extends AbstractLayoutState {
     private int totalAmountOfComponents = 0;
     private String placeholderHeight;
     private String placeholderWidth;
-    private int renderDistance;
-    private int renderDelay;
-    private List<Connector> connectors;
+    private double renderDistanceMultiplier = 1;
+    private int renderDelay = 700;
+    private List<Connector> connectors = new ArrayList<Connector>();
 
     public int getRenderDelay() {
         return renderDelay;
@@ -42,12 +43,13 @@ public class LazyLayoutState extends AbstractLayoutState {
         this.placeholderWidth = placeholderWidth;
     }
 
-    public void setRenderDistance(final int renderDistancePx) {
-        this.renderDistance = renderDistancePx;
+    public void setRenderDistanceMultiplier(
+            final double renderDistanceMultiplier) {
+        this.renderDistanceMultiplier = renderDistanceMultiplier;
     }
 
-    public int getRenderDistance() {
-        return renderDistance;
+    public double getRenderDistanceMultiplier() {
+        return renderDistanceMultiplier;
     }
 
     public void setRenderDelay(final int renderDelayMillis) {

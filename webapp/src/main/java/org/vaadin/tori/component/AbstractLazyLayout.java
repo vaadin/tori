@@ -219,8 +219,10 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
         getState().setPlaceholderWidth(placeholderWidth);
     }
 
-    public void setRenderDistance(final int renderDistancePx) {
-        getState().setRenderDistance(renderDistancePx);
+    /** How far the rendering should occur past the page length */
+    public void setRenderDistanceMultiplier(
+            final double renderDistanceMultiplier) {
+        getState().setRenderDistanceMultiplier(renderDistanceMultiplier);
     }
 
     public void setRenderDelay(final int renderDelayMillis) {

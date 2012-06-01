@@ -3,6 +3,10 @@ package org.vaadin.tori.widgetset.client.ui.lazylayout;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ComponentConnector;
 import com.vaadin.terminal.gwt.client.Connector;
@@ -12,6 +16,8 @@ import com.vaadin.terminal.gwt.client.communication.RpcProxy;
 import com.vaadin.terminal.gwt.client.communication.StateChangeEvent;
 import com.vaadin.terminal.gwt.client.ui.AbstractLayoutConnector;
 import com.vaadin.terminal.gwt.client.ui.PostLayoutListener;
+import com.vaadin.terminal.gwt.client.ui.layout.ElementResizeEvent;
+import com.vaadin.terminal.gwt.client.ui.layout.ElementResizeListener;
 
 @SuppressWarnings("serial")
 public abstract class AbstractLazyLayoutConnector extends
@@ -22,10 +28,35 @@ public abstract class AbstractLazyLayoutConnector extends
 
     private boolean firstStateChangeHasBeenDone;
 
+    private final ElementResizeListener elementResizeListener = new ElementResizeListener() {
+        @Override
+        public void onElementResize(final ElementResizeEvent e) {
+            getWidget().refreshPageHeight();
+        }
+    };
+
+    private HandlerRegistration resizeHandler;
+
     @Override
     protected void init() {
         super.init();
         registerRpcs();
+        getLayoutManager().addElementResizeListener(getWidget().getElement(),
+                elementResizeListener);
+        resizeHandler = Window.addResizeHandler(new ResizeHandler() {
+            @Override
+            public void onResize(final ResizeEvent event) {
+                getWidget().refreshPageHeight();
+            }
+        });
+    }
+
+    @Override
+    public void onUnregister() {
+        getLayoutManager().removeElementResizeListener(
+                getWidget().getElement(), elementResizeListener);
+        resizeHandler.removeHandler();
+        super.onUnregister();
     }
 
     abstract protected void registerRpcs();
@@ -67,7 +98,7 @@ public abstract class AbstractLazyLayoutConnector extends
                 getState().getPlaceholderWidth());
         getWidget()
                 .setComponentsAmount(getState().getTotalAmountOfComponents());
-        getWidget().setRenderDistance(getState().getRenderDistance());
+        getWidget().setRenderDistanceMultiplier(getState().getRenderDistanceMultiplier());
         getWidget().setRenderDelay(getState().getRenderDelay());
 
         if (!firstStateChangeHasBeenDone) {
