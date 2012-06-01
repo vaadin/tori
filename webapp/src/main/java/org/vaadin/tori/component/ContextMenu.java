@@ -27,6 +27,7 @@ import com.vaadin.ui.themes.Reindeer;
 @SuppressWarnings("serial")
 public class ContextMenu extends CustomComponent {
 
+    private static final String OPENED_CLASS_NAME = "opened";
     private static final String ICON_SIZE = "16px";
 
     public interface ContextAction {
@@ -55,14 +56,14 @@ public class ContextMenu extends CustomComponent {
     private final PopupVisibilityListener popupListener = new PopupVisibilityListener() {
         @Override
         public void popupVisibilityChange(final PopupVisibilityEvent event) {
-            if (!event.isPopupVisible()) {
-                if (popupLayout.getParent() != contextComponent) {
-                    contextComponent.setComponent(popupLayout);
-                }
+            if (popupLayout.getParent() != contextComponent) {
+                contextComponent.setComponent(popupLayout);
+            }
 
-                settingsIcon.removeStyleName("opened");
+            if (!event.isPopupVisible()) {
+                settingsIcon.removeStyleName(OPENED_CLASS_NAME);
             } else {
-                settingsIcon.addStyleName("opened");
+                settingsIcon.addStyleName(OPENED_CLASS_NAME);
             }
         }
     };
@@ -169,7 +170,7 @@ public class ContextMenu extends CustomComponent {
         final PopupButton popupButton = new PopupButton();
         popupButton.setWidth("0");
         popupButton.setHeight("0");
-        popupButton.setComponent(popupLayout);
+        // popupButton.setComponent(new Label("Loading menu..."));
         popupButton.addPopupVisibilityListener(popupListener);
         popupLayout.setWidth("200px");
         return popupButton;

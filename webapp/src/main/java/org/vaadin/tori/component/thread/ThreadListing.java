@@ -52,8 +52,9 @@ public class ThreadListing extends CustomComponent {
 
             final ArrayList<Component> components = new ArrayList<Component>();
             try {
-                for (final DiscussionThread thread : presenter
-                        .getThreadsBetween(from, to)) {
+                final List<DiscussionThread> threads = presenter
+                        .getThreadsBetween(from, to);
+                for (final DiscussionThread thread : threads) {
                     components.add(new ThreadListingRow(thread, presenter));
                 }
             } catch (final DataSourceException e) {
