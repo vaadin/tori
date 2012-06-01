@@ -170,7 +170,6 @@ public class ContextMenu extends CustomComponent {
         final PopupButton popupButton = new PopupButton();
         popupButton.setWidth("0");
         popupButton.setHeight("0");
-        // popupButton.setComponent(new Label("Loading menu..."));
         popupButton.addPopupVisibilityListener(popupListener);
         popupLayout.setWidth("200px");
         return popupButton;
