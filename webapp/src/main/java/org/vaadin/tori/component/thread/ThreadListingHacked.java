@@ -9,6 +9,8 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 @SuppressWarnings("serial")
 public class ThreadListingHacked extends ThreadListing {
 
+    private static final int POSTS_TO_PRELOAD = 20;
+
     public ThreadListingHacked(final CategoryPresenter presenter) {
         super(presenter);
         root.replaceComponent(layout, layout = new LazyLayout());
@@ -22,7 +24,7 @@ public class ThreadListingHacked extends ThreadListing {
         for (int i = 0; i < threadsInCategory.size(); i++) {
             final DiscussionThread thread = threadsInCategory.get(i);
             final ThreadListingRow row = new ThreadListingRow(thread, presenter);
-            if (i < 10) {
+            if (i < POSTS_TO_PRELOAD) {
                 ((LazyLayout) layout).addComponentEagerly(row);
             } else {
                 layout.addComponent(row);
