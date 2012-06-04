@@ -40,6 +40,8 @@ public class ToriApplication extends Application implements
         PortletRequestListener {
 
     private static Logger log = Logger.getLogger(ToriApplication.class);
+
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "ignoring serialization")
     private final ToriApiLoader apiLoader = new ToriApiLoader();
 
     @Override
