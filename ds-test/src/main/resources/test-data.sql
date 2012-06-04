@@ -21,6 +21,28 @@ insert into DISCUSSIONTHREAD set ID = 5, VIEWCOUNT = 0, CATEGORY_ID = 6, TOPIC =
 insert into DISCUSSIONTHREAD set ID = 6, VIEWCOUNT = 0, CATEGORY_ID = 5, TOPIC = "Something new is happening";
 insert into DISCUSSIONTHREAD set ID = 7, VIEWCOUNT = 0, CATEGORY_ID = 3, TOPIC = "How to deploy Vaadin applications to Liferay";
 insert into DISCUSSIONTHREAD set ID = 8, VIEWCOUNT = 0, CATEGORY_ID = 3, TOPIC = "How to change the color of a Label";
+insert into DISCUSSIONTHREAD set ID = 9, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 10, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 11, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 12, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 13, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 14, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 15, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 16, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 17, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 18, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 19, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 20, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 21, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 22, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 23, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 24, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 25, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 26, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 27, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 28, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 29, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
+insert into DISCUSSIONTHREAD set ID = 30, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC = "Thread";
 
 ## Users
 insert into `USER` set ID = 1, DISPLAYEDNAME = "John Doe", RAWSIGNATURE = "I'm Doe. John Doe";
@@ -130,5 +152,28 @@ insert into POST set ID = 97, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 2, AUTH
 insert into POST set ID = 98, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 2, AUTHOR_ID = 4, body = "<div class='escaped'>Magna</div> [b]turkey minim[/b], in eiusmod turducken beef ribs hamburger tri-tip capicola short loin meatball quis occaecat. Dolore enim biltong pork belly, ea prosciutto consectetur. Dolore ullamco prosciutto venison, sint pig laboris t-bone brisket swine qui. Bresaola tail ham strip steak biltong magna laborum, culpa ex chuck swine. T-bone et ea magna, short loin dolor ut tongue sirloin flank frankfurter in tail pig. Bresaola velit salami, corned beef officia meatloaf cillum spare ribs culpa est leberk�se laboris boudin laborum elit. Cupidatat irure id ham, tongue mollit ad swine velit fugiat.";
 insert into POST set ID = 99, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 2, AUTHOR_ID = 4, body = "<div class='escaped'>Magna</div> [b]turkey minim[/b], in eiusmod turducken beef ribs hamburger tri-tip capicola short loin meatball quis occaecat. Dolore enim biltong pork belly, ea prosciutto consectetur. Dolore ullamco prosciutto venison, sint pig laboris t-bone brisket swine qui. Bresaola tail ham strip steak biltong magna laborum, culpa ex chuck swine. T-bone et ea magna, short loin dolor ut tongue sirloin flank frankfurter in tail pig. Bresaola velit salami, corned beef officia meatloaf cillum spare ribs culpa est leberk�se laboris boudin laborum elit. Cupidatat irure id ham, tongue mollit ad swine velit fugiat.";
 
+insert into POST set ID = 100, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 9, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 101, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 10, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 102, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 11, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 103, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 12, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 104, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 13, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 105, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 14, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 106, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 15, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 107, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 16, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 108, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 17, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 109, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 18, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 110, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 19, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 111, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 20, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 112, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 21, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 113, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 22, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 114, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 23, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 115, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 24, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 116, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 25, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 117, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 26, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 118, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 27, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 119, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 28, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 120, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 29, AUTHOR_ID = 4, body = "word";
+insert into POST set ID = 121, `TIME` = "2011-11-5 17:41:45", THREAD_ID = 30, AUTHOR_ID = 4, body = "word";
+
 ## Attachments
-insert into ATTACHMENT set ID = 1, POST_ID = 1, FILENAME = "README.md", DOWNLOADURL = "https://raw.github.com/vaadin/tori/master/README.md", FILESIZE = 10;
+#insert into ATTACHMENT set ID = 1, POST_ID = 1, FILENAME = "README.md", DOWNLOADURL = "https://raw.github.com/vaadin/tori/master/README.md", FILESIZE = 10;

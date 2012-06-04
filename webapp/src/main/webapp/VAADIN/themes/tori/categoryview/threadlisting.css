@@ -95,5 +95,5 @@
 	background: url(../images/following-badge.png) #fff top left no-repeat;
 }
 .thread-listing .v-lazylayout-placeholder {
-	background: #f9f9f9;
+	background: url("../images/loadingthread-bg.png") left center no-repeat transparent;
 }

@@ -102,5 +102,5 @@
 }
 
 .thread-listing .v-lazylayout-placeholder {
-	background: transparent;
+	background: url("images/loadingthread-bg.png") left center no-repeat transparent;
 }
