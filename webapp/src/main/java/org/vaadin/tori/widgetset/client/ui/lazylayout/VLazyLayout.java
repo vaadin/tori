@@ -2,6 +2,7 @@ package org.vaadin.tori.widgetset.client.ui.lazylayout;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -123,6 +124,61 @@ public class VLazyLayout extends SimplePanel {
         }
     }
 
+    private class RenderQueue extends Timer {
+        private final int RENDER_INTERVAL_MILLIS = 50;
+        private final int WIDGETS_TO_LOAD_AT_ONCE = 5;
+
+        private final LinkedList<Integer> indices = new LinkedList<Integer>();
+        private final LinkedList<Widget> widgets = new LinkedList<Widget>();
+
+        @Override
+        public void run() {
+            updateScrollAdjustmentReference();
+            final int iterations = Math.min(indices.size(),
+                    WIDGETS_TO_LOAD_AT_ONCE);
+            VConsole.error("Rendering a batch of " + iterations);
+            final long currentTimeMillis = System.currentTimeMillis();
+            for (int i = iterations; i > 0; i--) {
+                final int index = indices.removeFirst();
+                final Widget widget = widgets.removeFirst();
+                replaceComponent(widget, index);
+            }
+            VConsole.error("Took "
+                    + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+
+            if (!indices.isEmpty()) {
+                VConsole.error("Rescheduling in " + RENDER_INTERVAL_MILLIS
+                        + "ms");
+                schedule(RENDER_INTERVAL_MILLIS);
+            }
+            fixScrollbar();
+        }
+
+        @SuppressWarnings("unused")
+        public void add(final int index, final Widget widget) {
+            _add(index, widget);
+            schedule(RENDER_INTERVAL_MILLIS);
+        }
+
+        private void _add(final int index, final Widget widget) {
+            indices.addLast(index);
+            widgets.addLast(widget);
+        }
+
+        public void add(final int[] indices, final Widget[] widgets) {
+            if (indices.length != widgets.length) {
+                throw new IllegalArgumentException("The arguments given to "
+                        + getClass().getName()
+                        + "add() were of different lengths");
+            }
+
+            for (int i = 0; i < indices.length; i++) {
+                renderQueue._add(indices[i], widgets[i]);
+            }
+            schedule(RENDER_INTERVAL_MILLIS);
+        }
+    }
+
     private final FlowPane panel = new FlowPane();
     private final Element margin = DOM.createDiv();
 
@@ -132,6 +188,8 @@ public class VLazyLayout extends SimplePanel {
 
     private HandlerRegistration scrollHandlerRegistration;
     private HandlerRegistration scrollHandlerRegistrationWin;
+
+    private final RenderQueue renderQueue = new RenderQueue();
 
     private final Timer scrollPoller = new Timer() {
         @Override
@@ -286,7 +344,7 @@ public class VLazyLayout extends SimplePanel {
     }
 
     protected void findAllThingsToFetchAndFetchThem() {
-        findAllThingsToFetchAndFetchThem(getFetchDistancePx());
+        findAllThingsToFetchAndFetchThem(pageHeight);
     }
 
     private boolean findAllThingsToFetchAndFetchThem(final int distance) {
@@ -663,6 +721,14 @@ public class VLazyLayout extends SimplePanel {
 
     private int getFetchDistancePx() {
         return (int) (pageHeight * distanceMultiplier);
+    }
+
+    public void replaceComponents(final int[] indices, final Widget[] widgets) {
+        try {
+            renderQueue.add(indices, widgets);
+        } catch (final IllegalArgumentException e) {
+            VConsole.error(e);
+        }
     }
 
 }

@@ -347,6 +347,8 @@
 			<arg value="${widgetset}" />
 			<arg value="-localWorkers" />
 			<arg value="4" />
+			<arg value="-logLevel"/>
+			<arg value="TRACE"/>
             <jvmarg value="-Xss1024k"/>
             <jvmarg value="-Djava.awt.headless=true"/>
 			<classpath>

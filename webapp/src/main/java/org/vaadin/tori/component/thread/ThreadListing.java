@@ -35,7 +35,7 @@ public class ThreadListing extends CustomComponent {
     private static final String STYLE_COLUMN_HEADER_ROW = "column-header-row";
 
     protected static final String PLACEHOLDER_WIDTH = "100%";
-    protected static final String PLACEHOLDER_HEIGHT = "41px";
+    protected static final String PLACEHOLDER_HEIGHT = "40px";
     protected static final int RENDER_DELAY_MILLIS = 700;
     protected static final double RENDER_DISTANCE_MULTIPLIER = 1.5d;
 

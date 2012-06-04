@@ -15,18 +15,15 @@ import com.vaadin.terminal.gwt.client.VConsole;
 import com.vaadin.terminal.gwt.client.communication.RpcProxy;
 import com.vaadin.terminal.gwt.client.communication.StateChangeEvent;
 import com.vaadin.terminal.gwt.client.ui.AbstractLayoutConnector;
-import com.vaadin.terminal.gwt.client.ui.PostLayoutListener;
 import com.vaadin.terminal.gwt.client.ui.layout.ElementResizeEvent;
 import com.vaadin.terminal.gwt.client.ui.layout.ElementResizeListener;
 
 @SuppressWarnings("serial")
 public abstract class AbstractLazyLayoutConnector extends
-        AbstractLayoutConnector implements PostLayoutListener {
+        AbstractLayoutConnector {
 
     private final LazyLayoutServerRpc rpc = RpcProxy.create(
             LazyLayoutServerRpc.class, this);
-
-    private boolean firstStateChangeHasBeenDone;
 
     private final ElementResizeListener elementResizeListener = new ElementResizeListener() {
         @Override
@@ -98,15 +95,9 @@ public abstract class AbstractLazyLayoutConnector extends
                 getState().getPlaceholderWidth());
         getWidget()
                 .setComponentsAmount(getState().getTotalAmountOfComponents());
-        getWidget().setRenderDistanceMultiplier(getState().getRenderDistanceMultiplier());
+        getWidget().setRenderDistanceMultiplier(
+                getState().getRenderDistanceMultiplier());
         getWidget().setRenderDelay(getState().getRenderDelay());
-
-        if (!firstStateChangeHasBeenDone) {
-            firstStateChangeHasBeenDone = true;
-            onFirstStateChanged(stateChangeEvent);
-
-            getWidget().findAllThingsToFetchAndFetchThem();
-        }
     }
 
     /** Called on the very first {@link #onStateChanged(StateChangeEvent)} call. */
@@ -131,6 +122,11 @@ public abstract class AbstractLazyLayoutConnector extends
         if (indicesToFetch == null || indicesToFetch.isEmpty()) {
             VConsole.error("no indices to fetch");
         } else {
+
+            final int[] indices = new int[indicesToFetch.size()];
+            final Widget[] widgets = new Widget[indicesToFetch.size()];
+
+            int ii = 0;
             for (final int i : indicesToFetch) {
                 try {
                     final Connector connector = components.get(i);
@@ -142,8 +138,9 @@ public abstract class AbstractLazyLayoutConnector extends
 
                     if (connector instanceof ComponentConnector) {
                         final ComponentConnector componentConnector = (ComponentConnector) connector;
-                        getWidget().replaceComponent(
-                                componentConnector.getWidget(), i);
+                        final Widget widget = componentConnector.getWidget();
+                        indices[ii] = i;
+                        widgets[ii] = widget;
                     } else {
                         VConsole.error("LazyLayout expected an ComponentConnector; "
                                 + connector.getClass().getName()
@@ -152,12 +149,9 @@ public abstract class AbstractLazyLayoutConnector extends
                 } catch (final IndexOutOfBoundsException e) {
                     VConsole.error(e.getMessage());
                 }
+                ii++;
             }
+            getWidget().replaceComponents(indices, widgets);
         }
-    }
-
-    @Override
-    public void postLayout() {
-        getWidget().fixScrollbar();
     }
 }
