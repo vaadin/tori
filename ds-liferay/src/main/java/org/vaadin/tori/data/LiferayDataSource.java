@@ -502,7 +502,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     private void replaceMessageBoardsLinksMessages(final Post post) {
         String bodyRaw = post.getBodyRaw();
-        Pattern pattern = Pattern
+        final Pattern pattern = Pattern
                 .compile(
                         "/-/message_boards/(view_)?message/\\d+(#[_,\\d]+message_\\d+)?",
                         Pattern.CASE_INSENSITIVE);
@@ -531,7 +531,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                 final String fragment = THREADS + threadId + "/" + messageId;
 
                 bodyRaw = bodyRaw.replaceFirst(group, fragment);
-            } catch (NestableException e) {
+            } catch (final NestableException e) {
                 log.warn("Unable to get MBmessage for id: " + messageId);
             }
         }
@@ -591,7 +591,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public void save(final Category categoryToSave) throws DataSourceException {
+    public Category save(final Category categoryToSave)
+            throws DataSourceException {
         try {
             if (categoryToSave.getId() > 0) {
                 log.debug("Updating existing category: "
@@ -599,21 +600,25 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                 final MBCategory category = MBCategoryLocalServiceUtil
                         .getCategory(categoryToSave.getId());
                 EntityFactoryUtil.copyFields(categoryToSave, category);
-                MBCategoryLocalServiceUtil.updateMBCategory(category);
+                final MBCategory c = MBCategoryLocalServiceUtil
+                        .updateMBCategory(category);
+                return EntityFactoryUtil.createCategory(c);
             } else {
                 log.debug("Adding new category: " + categoryToSave.getName());
                 final long parentCategoryId = categoryToSave
                         .getParentCategory() != null ? categoryToSave
                         .getParentCategory().getId() : ROOT_CATEGORY_ID;
 
-                String displayStyle = "default";
+                final String displayStyle = "default";
 
-                MBCategoryServiceUtil.addCategory(parentCategoryId,
-                        categoryToSave.getName(),
+                final MBCategory c = MBCategoryServiceUtil.addCategory(
+                        parentCategoryId, categoryToSave.getName(),
                         categoryToSave.getDescription(), displayStyle, null,
                         null, null, 0, false, null, null, 0, null, false, null,
                         0, false, null, null, false, false,
                         mbCategoryServiceContext);
+
+                return EntityFactoryUtil.createCategory(c);
             }
         } catch (final PortalException e) {
             log.error(
@@ -719,7 +724,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             // Currently only editing of message body allowed
             MBMessageLocalServiceUtil.updateMessage(post.getId(),
                     post.getBodyRaw());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             log.error("Editing message failed", e);
         }
     }
@@ -944,7 +949,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         try {
             final MBMessage newPost = internalSaveAsCurrentUser(post, files,
                     getRootMessageId(post.getThread()));
-            Post post2 = EntityFactoryUtil.createPost(newPost,
+            final Post post2 = EntityFactoryUtil.createPost(newPost,
                     getUser(currentUserId), getThread(newPost.getThreadId()),
                     getAttachments(newPost));
             if (getReplaceMessageBoardsLinks()) {
@@ -1161,9 +1166,9 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         try {
             portletPreferences = PortletPreferencesFactoryUtil
                     .getPortletSetup(request);
-        } catch (SystemException e) {
+        } catch (final SystemException e) {
             log.error("Couldn't load PortletPreferences.", e);
-        } catch (PortalException e) {
+        } catch (final PortalException e) {
             log.error("Couldn't load PortletPreferences.", e);
         }
     }
@@ -1191,7 +1196,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                             .getMBMessage(messageId);
                     session.setAttribute(TORI_THREAD_ID, message.getThreadId());
                     session.setAttribute(TORI_MESSAGE_ID, messageId);
-                } catch (NestableException e) {
+                } catch (final NestableException e) {
                     log.warn("Unable to load MBMessage for id: " + messageId, e);
                 }
             }
@@ -1209,7 +1214,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
         @SuppressWarnings("rawtypes")
         final Map parameters = originalRequest.getParameterMap();
-        for (Object param : parameters.keySet()) {
+        for (final Object param : parameters.keySet()) {
             if (String.valueOf(param).contains(key)) {
                 try {
                     final Object[] value = (Object[]) parameters.get(param);
@@ -1217,7 +1222,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                         entityId = Long.parseLong(String.valueOf(value[0]));
                         break;
                     }
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     log.warn("Unable to parse parameter value.", e);
                 }
             }
@@ -1238,6 +1243,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             final Map<String, byte[]> files, final Post firstPost)
             throws DataSourceException {
         try {
+            firstPost.setThread(newThread);
+
             final MBMessage savedRootMessage = internalSaveAsCurrentUser(
                     firstPost, files,
                     MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID);
@@ -1275,6 +1282,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         return currentUserId != 0;
     }
 
+    @Override
     public final Map<String, String> getPostReplacements() {
         final Map<String, String> replacements = new HashMap<String, String>();
 
@@ -1282,7 +1290,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             final String[] values = portletPreferences.getValues(
                     POST_REPLACEMENTS_KEY, new String[0]);
             if (values != null) {
-                for (String value : values) {
+                for (final String value : values) {
                     final String[] split = value.split(REPLACEMENT_SEPARATOR);
                     if (split.length == 2) {
                         replacements.put(split[0], split[1]);
@@ -1294,6 +1302,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     }
 
+    @Override
     public final boolean getReplaceMessageBoardsLinks() {
         boolean replace = true;
         if (portletPreferences != null) {
@@ -1304,15 +1313,17 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         return replace;
     }
 
+    @Override
     public final void savePortletPreferences(
             final Map<String, String> postReplacements,
             final Boolean replaceMessageBoardsLinks) throws DataSourceException {
         if (portletPreferences == null) {
             throw new DataSourceException("Portlet preferences not available.");
         } else {
-            String[] values = new String[postReplacements.size()];
+            final String[] values = new String[postReplacements.size()];
             int index = 0;
-            for (Entry<String, String> entry : postReplacements.entrySet()) {
+            for (final Entry<String, String> entry : postReplacements
+                    .entrySet()) {
                 values[index++] = entry.getKey() + REPLACEMENT_SEPARATOR
                         + entry.getValue();
             }
@@ -1324,7 +1335,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                                 : Boolean.FALSE));
 
                 portletPreferences.store();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 log.error("Unable to store portlet preferences", e);
                 throw new DataSourceException(e);
             }

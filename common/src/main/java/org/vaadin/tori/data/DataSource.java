@@ -145,8 +145,9 @@ public interface DataSource {
      * 
      * @param categoryToSave
      *            {@link Category Category} to save.
+     * @return
      */
-    void save(@NonNull Category categoryToSave) throws DataSourceException;
+    Category save(@NonNull Category categoryToSave) throws DataSourceException;
 
     /**
      * Removes the given {@link Category} along with all containing

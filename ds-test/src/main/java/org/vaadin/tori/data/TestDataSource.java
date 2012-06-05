@@ -288,10 +288,11 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    public void save(final Category categoryToSave) throws DataSourceException {
-        executeWithEntityManager(new Command<Void>() {
+    public Category save(final Category categoryToSave)
+            throws DataSourceException {
+        executeWithEntityManager(new Command<Category>() {
             @Override
-            public Void execute(final EntityManager em) {
+            public Category execute(final EntityManager em) {
                 final EntityTransaction transaction = em.getTransaction();
                 transaction.begin();
                 try {
@@ -310,6 +311,8 @@ public class TestDataSource implements DataSource, DebugDataSource {
                 return null;
             }
         });
+
+        return null;
     }
 
     @Override
@@ -842,15 +845,18 @@ public class TestDataSource implements DataSource, DebugDataSource {
         return true;
     }
 
+    @Override
     public Map<String, String> getPostReplacements() {
         return new HashMap<String, String>();
     }
 
-    public void savePortletPreferences(Map<String, String> replacements,
-            Boolean replaceMessageBoardsLinks) {
+    @Override
+    public void savePortletPreferences(final Map<String, String> replacements,
+            final Boolean replaceMessageBoardsLinks) {
 
     }
 
+    @Override
     public boolean getReplaceMessageBoardsLinks() {
         return false;
     }

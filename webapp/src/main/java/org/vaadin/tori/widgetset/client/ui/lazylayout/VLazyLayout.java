@@ -725,7 +725,10 @@ public class VLazyLayout extends SimplePanel {
 
     public void replaceComponents(final int[] indices, final Widget[] widgets) {
         try {
-            renderQueue.add(indices, widgets);
+            for (int i = 0; i < indices.length; i++) {
+                replaceComponent(widgets[i], indices[i]);
+            }
+            // renderQueue.add(indices, widgets);
         } catch (final IllegalArgumentException e) {
             VConsole.error(e);
         }
