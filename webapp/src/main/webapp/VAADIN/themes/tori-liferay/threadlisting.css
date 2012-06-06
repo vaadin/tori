@@ -93,6 +93,7 @@
 .thread-listing-row a > div {
 	display: block;
 	position: absolute;
+	box-sizing: border-box;
 }
 
 .thread-listing-row div.locked,
@@ -101,7 +102,7 @@
 	width: 8px;
 	margin:0;
 	padding:0;
-	top: 8px;
+	top: 16px;
 }
 
 .thread-listing-row .locked {
@@ -155,6 +156,12 @@
 	visibility: hidden;
 	position: absolute;
 	right: 350px;
+}
+
+.thread-listing-row .topic, 
+.thread-listing-row .startedBy, 
+.thread-listing-row .postcount {
+	padding-top: 9px;
 }
 
 .thread-listing-row:hover .menutrigger,
