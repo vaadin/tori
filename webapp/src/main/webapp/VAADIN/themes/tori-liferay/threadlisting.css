@@ -16,30 +16,10 @@
 
 .thread-listing .topic .modifiers, 
 .thread-listing .topic .link, 
-.thread-listing-row .started-by, 
-.thread-listing-row .posts, 
-.thread-listing-row .latest-post, 
 .thread-listing .column-header {
 	float: left;
 }
 
-.thread-listing-row .topic {
-	height: 100%;
-	position: absolute;
-	top: 2px;
-	left: 0;
-	right: 350px;
-	bottom: 0;
-}
-
-.thread-listing-row .contextmenu {
-	float: right;
-	visibility: hidden;
-}
-
-.thread-listing-row:hover .contextmenu {
-	visibility: visible;
-}
 .thread-listing .column-header.topic {
 	margin-left: 25px;
 }
@@ -102,6 +82,66 @@
 }
 
 .thread-listing .v-lazylayout-placeholder {
-/*	background: url("images/loadingthread-bg.png") left center no-repeat transparent;*/
 	background: url("images/loadingthread-bg.gif") left center no-repeat transparent;
+}
+
+.thread-listing-row a {
+        display: block;
+        color: inherit;
+}
+
+.thread-listing-row a > div {
+	display: block;
+	position: absolute;
+}
+
+.thread-listing-row div.locked,
+.thread-listing-row div.sticky {
+	height: 8px;
+	width: 8px;
+	margin:0;
+	padding:0;
+	top: 8px;
+}
+
+.thread-listing-row .locked {
+	background-image: url("images/icon-small-locked.png");
+	left: 4px;
+}
+.thread-listing-row .sticky {
+	background-image: url("images/icon-small-sticky.png");
+	left: 14px;
+}
+
+.thread-listing-row .topic {
+	left: 25px;
+}
+
+.thread-listing-row:hover .topic {
+	text-decoration: underline;
+}
+
+.thread-listing .thread-listing-row {
+	text-decoration: none;
+	height: 40px;
+}
+
+.thread-listing-row .startedBy {
+	right: 190px;
+	width: 150px;
+}
+
+.thread-listing-row .postcount {
+	width: 50px;
+	padding-right: 10px;
+	text-align: right;
+	right: 140px;
+}
+.thread-listing-row .latestpost {
+	width: 140px;
+	right: 0;
+}
+
+.thread-listing-row .latestauthor {
+	font-size: smaller;
 }
