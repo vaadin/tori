@@ -4,16 +4,162 @@ import java.util.Date;
 
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.category.CategoryPresenter;
+import org.vaadin.tori.component.MenuPopup;
+import org.vaadin.tori.component.MenuPopup.ContextAction;
+import org.vaadin.tori.component.MenuPopup.ContextComponentSwapper;
 import org.vaadin.tori.data.entity.DiscussionThread;
+import org.vaadin.tori.exception.DataSourceException;
 
+import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupView;
 
 @SuppressWarnings("serial")
 public class ThreadListingRow extends PopupView {
+
+    private static final String FOLLOW_CAPTION = "Follow thread";
+    private static final Resource FOLLOW_ICON = new ThemeResource(
+            "images/icon-follow.png");
+
+    private static final String UNFOLLOW_CAPTION = "Unfollow thread";
+    private static final Resource UNFOLLOW_ICON = new ThemeResource(
+            "images/icon-unfollow.png");
+
+    private static final String STICKY_CAPTION = "Make thread sticky";
+    private static final Resource STICKY_ICON = new ThemeResource(
+
+    "images/icon-sticky.png");
+    private static final String UNSTICKY_CAPTION = "Remove thread stickiness";
+    private static final Resource UNSTICKY_ICON = new ThemeResource(
+            "images/icon-unsticky.png");
+
+    private static final String LOCK_CAPTION = "Lock thread";
+    private static final Resource LOCK_ICON = new ThemeResource(
+            "images/icon-lock.png");
+
+    private static final String UNLOCK_CAPTION = "Unlock thread";
+    private static final Resource UNLOCK_ICON = new ThemeResource(
+            "images/icon-unlock.png");
+
+    private static final String STYLE_OPEN = "open";
+
+    private class FollowAction implements ContextAction {
+        @Override
+        public void contextClicked() {
+            try {
+                presenter.follow(thread);
+                menu.swap(this, UNFOLLOW_ICON, UNFOLLOW_CAPTION,
+                        new UnfollowAction(thread));
+            } catch (final DataSourceException e) {
+                getRoot().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private class UnfollowAction implements ContextAction {
+        private final DiscussionThread thread;
+
+        public UnfollowAction(final DiscussionThread thread) {
+            this.thread = thread;
+        }
+
+        @Override
+        public void contextClicked() {
+            try {
+                presenter.unfollow(thread);
+                menu.swap(this, FOLLOW_ICON, FOLLOW_CAPTION, new FollowAction());
+            } catch (final DataSourceException e) {
+                getRoot().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private class StickyAction implements ContextAction {
+        private final DiscussionThread thread;
+
+        public StickyAction(final DiscussionThread thread) {
+            this.thread = thread;
+        }
+
+        @Override
+        public void contextClicked() {
+            try {
+                presenter.sticky(thread);
+                menu.swap(this, UNSTICKY_ICON, UNSTICKY_CAPTION,
+                        new UnstickyAction(thread));
+            } catch (final DataSourceException e) {
+                getRoot().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            }
+
+        }
+    }
+
+    private class UnstickyAction implements ContextAction {
+        private final DiscussionThread thread;
+
+        public UnstickyAction(final DiscussionThread thread) {
+            this.thread = thread;
+        }
+
+        @Override
+        public void contextClicked() {
+            try {
+                presenter.unsticky(thread);
+                menu.swap(this, STICKY_ICON, STICKY_CAPTION, new StickyAction(
+                        thread));
+            } catch (final DataSourceException e) {
+                getRoot().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            }
+
+        }
+    }
+
+    private class LockAction implements ContextAction {
+        private final DiscussionThread thread;
+
+        public LockAction(final DiscussionThread thread) {
+            this.thread = thread;
+        }
+
+        @Override
+        public void contextClicked() {
+            try {
+                presenter.lock(thread);
+                menu.swap(this, UNLOCK_ICON, UNLOCK_CAPTION, new UnlockAction(
+                        thread));
+            } catch (final DataSourceException e) {
+                getRoot().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            }
+
+        }
+    }
+
+    private class UnlockAction implements ContextAction {
+        private final DiscussionThread thread;
+
+        public UnlockAction(final DiscussionThread thread) {
+            this.thread = thread;
+        }
+
+        @Override
+        public void contextClicked() {
+            try {
+                presenter.unlock(thread);
+                menu.swap(this, LOCK_ICON, LOCK_CAPTION, new LockAction(thread));
+            } catch (final DataSourceException e) {
+                getRoot().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            }
+
+        }
+    }
 
     private class RowContent implements Content {
 
@@ -46,15 +192,18 @@ public class ThreadListingRow extends PopupView {
                     + ToriNavigator.ApplicationView.THREADS.getUrl() + "/"
                     + threadId;
 
+            final String contextMenu = menu.hasItems() ? "<div class='menutrigger'></div>"
+                    : "";
+
             return String
-                    .format("<a href='%s'>%s %s %s %s %s <div class='latestpost'>%s %s</div></a>",
+                    .format("<a href='%s'>%s %s %s %s %s <div class='latestpost'>%s %s</div></a>%s",
                             url, locked, sticky, topic, startedBy, postCount,
-                            time, latestAuthor);
+                            time, latestAuthor, contextMenu);
         }
 
         @Override
         public Component getPopupComponent() {
-            return contextMenu;
+            return menu;
         }
 
         public void setStartedBy(final String displayedName) {
@@ -91,39 +240,95 @@ public class ThreadListingRow extends PopupView {
 
     }
 
-    private static class ContextMenu extends CustomComponent {
-        private final CategoryPresenter presenter;
-        private final CssLayout layout = new CssLayout();
-
-        public ContextMenu(final CategoryPresenter presenter) {
-            this.presenter = presenter;
-            setCompositionRoot(layout);
-        }
-    }
-
     private final DiscussionThread thread;
-    private final ContextMenu contextMenu;
+    private final CategoryPresenter presenter;
+
+    private MenuPopup menu;
 
     public ThreadListingRow(final DiscussionThread thread,
             final CategoryPresenter presenter) {
         super("", new Label());
+        this.presenter = presenter;
+        this.thread = thread;
 
         setStyleName("thread-listing-row");
 
         final RowContent content = new RowContent();
-        this.thread = thread;
 
         initializePreview(thread, content);
-        contextMenu = createContextMenu(thread, presenter);
+        try {
+            menu = createContextMenu(thread, presenter);
+        } catch (final DataSourceException e) {
+            menu = new MenuPopup();
+            menu.add(null, DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
+                    ContextAction.NULL);
+        }
 
         setContent(content);
 
         super.setHideOnMouseOut(false);
+        super.addListener(new PopupVisibilityListener() {
+            @Override
+            public void popupVisibilityChange(final PopupVisibilityEvent event) {
+                if (event.isPopupVisible()) {
+                    addStyleName(STYLE_OPEN);
+                } else {
+                    removeStyleName(STYLE_OPEN);
+                }
+            }
+        });
     }
 
-    private static ContextMenu createContextMenu(final DiscussionThread thread,
-            final CategoryPresenter presenter) {
-        final ContextMenu menu = new ContextMenu(presenter);
+    private MenuPopup createContextMenu(final DiscussionThread thread,
+            final CategoryPresenter presenter) throws DataSourceException {
+        final MenuPopup menu = new MenuPopup();
+
+        if (presenter.userCanFollow(thread)) {
+            menu.add(FOLLOW_ICON, FOLLOW_CAPTION, new FollowAction());
+        } else if (presenter.userCanUnFollow(thread)) {
+            menu.add(UNFOLLOW_ICON, UNFOLLOW_CAPTION,
+                    new UnfollowAction(thread));
+        }
+
+        if (presenter.userMayMove(thread)) {
+            menu.add(new ThemeResource("images/icon-move.png"), "Move thread",
+                    new ContextComponentSwapper() {
+                        @Override
+                        public Component swapContextComponent() {
+                            return new ThreadMoveComponent(thread,
+                                    ThreadListingRow.this, presenter);
+                        }
+                    });
+        }
+
+        if (presenter.userCanSticky(thread)) {
+            menu.add(STICKY_ICON, STICKY_CAPTION, new StickyAction(thread));
+        } else if (presenter.userCanUnSticky(thread)) {
+            menu.add(UNSTICKY_ICON, UNSTICKY_CAPTION,
+                    new UnstickyAction(thread));
+        }
+
+        if (presenter.userCanLock(thread)) {
+            menu.add(LOCK_ICON, LOCK_CAPTION, new LockAction(thread));
+        } else if (presenter.userCanUnLock(thread)) {
+            menu.add(UNLOCK_ICON, UNLOCK_CAPTION, new UnlockAction(thread));
+        }
+
+        if (presenter.userMayDelete(thread)) {
+            menu.add(new ThemeResource("images/icon-delete.png"),
+                    "Delete thread", new ContextAction() {
+                        @Override
+                        public void contextClicked() {
+                            try {
+                                presenter.delete(thread);
+                            } catch (final DataSourceException e) {
+                                getRoot()
+                                        .showNotification(
+                                                DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                            }
+                        }
+                    });
+        }
 
         return menu;
     }

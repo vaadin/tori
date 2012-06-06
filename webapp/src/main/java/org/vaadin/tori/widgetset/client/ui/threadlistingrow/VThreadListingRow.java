@@ -27,18 +27,17 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.ComponentConnector;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.VCaptionWrapper;
+import com.vaadin.terminal.gwt.client.VConsole;
 import com.vaadin.terminal.gwt.client.VTooltip;
 import com.vaadin.terminal.gwt.client.ui.VOverlay;
 import com.vaadin.terminal.gwt.client.ui.richtextarea.VRichTextArea;
@@ -57,8 +56,8 @@ public class VThreadListingRow extends HTML {
     final CustomPopup popup;
     private final Label loading = new Label();
 
-    private int x;
-    private int y;
+    private int x = -1;
+    private int y = -1;
 
     /**
      * loading constructor
@@ -78,9 +77,16 @@ public class VThreadListingRow extends HTML {
         addClickHandler(new ClickHandler() {
             @Override
             public void onClick(final ClickEvent event) {
-                x = event.getClientX() + Window.getScrollLeft();
-                y = event.getClientY() + Window.getScrollTop();
-                updateState(true);
+                final com.google.gwt.dom.client.Element elem = Element.as(event
+                        .getNativeEvent().getEventTarget());
+                if (elem.getClassName().contains("menutrigger")) {
+                    // bottom right corner of the menutrigger
+                    x = elem.getAbsoluteLeft() + elem.getOffsetWidth();
+                    y = elem.getAbsoluteTop() + elem.getOffsetHeight();
+                    // x = event.getClientX() + Window.getScrollLeft();
+                    // y = event.getClientY() + Window.getScrollTop();
+                    updateState(true);
+                }
             }
         });
 
@@ -137,43 +143,12 @@ public class VThreadListingRow extends HTML {
         popup.setVisible(true);
     }
 
-    void center() {
-        final int windowTop = RootPanel.get().getAbsoluteTop();
-        final int windowLeft = RootPanel.get().getAbsoluteLeft();
-        final int windowRight = windowLeft + RootPanel.get().getOffsetWidth();
-        final int windowBottom = windowTop + RootPanel.get().getOffsetHeight();
-
-        final int offsetWidth = popup.getOffsetWidth();
-        final int offsetHeight = popup.getOffsetHeight();
-
-        final int hostHorizontalCenter = VThreadListingRow.this
-                .getAbsoluteLeft()
-                + VThreadListingRow.this.getOffsetWidth()
-                / 2;
-        final int hostVerticalCenter = VThreadListingRow.this.getAbsoluteTop()
-                + VThreadListingRow.this.getOffsetHeight() / 2;
-
-        int left = hostHorizontalCenter - offsetWidth / 2;
-        int top = hostVerticalCenter - offsetHeight / 2;
-
-        // Don't show the popup outside the screen.
-        if ((left + offsetWidth) > windowRight) {
-            left -= (left + offsetWidth) - windowRight;
+    void reposition() {
+        if (x > 0 && y > 0) {
+            popup.setPopupPosition(x, y);
+        } else {
+            VConsole.error("Can't position " + getClass().getName() + " popup.");
         }
-
-        if ((top + offsetHeight) > windowBottom) {
-            top -= (top + offsetHeight) - windowBottom;
-        }
-
-        if (left < 0) {
-            left = 0;
-        }
-
-        if (top < 0) {
-            top = 0;
-        }
-
-        popup.setPopupPosition(left, top);
     }
 
     /**

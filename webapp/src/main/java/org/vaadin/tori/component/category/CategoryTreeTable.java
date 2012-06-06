@@ -8,7 +8,8 @@ import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.component.ConfirmationDialog;
 import org.vaadin.tori.component.ConfirmationDialog.ConfirmationListener;
 import org.vaadin.tori.component.ContextMenu;
-import org.vaadin.tori.component.ContextMenu.ContextAction;
+import org.vaadin.tori.component.MenuPopup.ContextAction;
+import org.vaadin.tori.component.MenuPopup.ContextComponentSwapper;
 import org.vaadin.tori.component.category.CategoryListing.Mode;
 import org.vaadin.tori.component.category.CategoryListingPresenter.ContextMenuOperation;
 import org.vaadin.tori.component.category.EditCategoryForm.EditCategoryListener;
@@ -211,8 +212,7 @@ class CategoryTreeTable extends TreeTable {
                 switch (menuItem) {
                 case EDIT:
                     contextMenu.add(new ThemeResource("images/icon-edit.png"),
-                            "Edit category",
-                            new ContextMenu.ContextComponentSwapper() {
+                            "Edit category", new ContextComponentSwapper() {
                                 @Override
                                 public Component swapContextComponent() {
                                     final EditCategoryListener listener = new EditCategoryListener() {
@@ -241,8 +241,7 @@ class CategoryTreeTable extends TreeTable {
                 case DELETE:
                     contextMenu.add(
                             new ThemeResource("images/icon-delete.png"),
-                            "Delete category",
-                            new ContextMenu.ContextComponentSwapper() {
+                            "Delete category", new ContextComponentSwapper() {
                                 @Override
                                 public Component swapContextComponent() {
                                     final String title = String.format(String

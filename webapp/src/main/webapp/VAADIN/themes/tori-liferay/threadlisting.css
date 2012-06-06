@@ -114,7 +114,9 @@
 }
 
 .thread-listing-row .topic {
-	left: 25px;
+	padding-left: 25px;
+	width: 100%;
+	height: 100%;
 }
 
 .thread-listing-row:hover .topic {
@@ -144,4 +146,18 @@
 
 .thread-listing-row .latestauthor {
 	font-size: smaller;
+}
+
+.thread-listing-row .menutrigger {
+	height: 16px;
+	width: 16px;
+	background-image: url("images/icon-settings.png");
+	visibility: hidden;
+	position: absolute;
+	right: 350px;
+}
+
+.thread-listing-row:hover .menutrigger,
+.thread-listing-row.open .menutrigger {
+	visibility: visible;
 }

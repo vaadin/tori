@@ -25,9 +25,21 @@ public class ThreadMoveComponent extends CustomComponent {
     private Tree categories;
 
     public ThreadMoveComponent(final DiscussionThread thread,
+            final ThreadListingRow threadListingRow,
+            final CategoryPresenter presenter) {
+        this.thread = thread;
+        init(thread, null, threadListingRow, presenter);
+    }
+
+    public ThreadMoveComponent(final DiscussionThread thread,
             final ContextMenu menu, final CategoryPresenter presenter) {
         this.thread = thread;
+        init(thread, menu, null, presenter);
+    }
 
+    private void init(final DiscussionThread thread, final ContextMenu menu,
+            final ThreadListingRow threadListingRow,
+            final CategoryPresenter presenter) {
         try {
             setCompositionRoot(layout);
             setWidth("300px");
@@ -55,19 +67,30 @@ public class ThreadMoveComponent extends CustomComponent {
                                                 DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                             }
 
-                            menu.close();
+                            if (threadListingRow != null) {
+                                threadListingRow.setPopupVisible(false);
+                            }
+                            if (menu != null) {
+                                menu.close();
+                            }
                         }
                     }));
             layout.addComponent(new NativeButton("Cancel",
                     new NativeButton.ClickListener() {
                         @Override
                         public void buttonClick(final ClickEvent event) {
-                            menu.close();
+                            if (threadListingRow != null) {
+                                threadListingRow.setPopupVisible(false);
+                            }
+                            if (menu != null) {
+                                menu.close();
+                            }
                         }
                     }));
         }
 
         catch (final DataSourceException e1) {
+            e1.printStackTrace();
             setCompositionRoot(new Label(
                     DataSourceException.BORING_GENERIC_ERROR_MESSAGE));
         }

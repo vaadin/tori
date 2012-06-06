@@ -1,28 +1,31 @@
-.v-popupbutton-popup-contextmenu .link {
+.menupopup .link {
 	display: block;
 	padding: 5px;
 	border-bottom: 1px solid #d2d2d2;
 	box-sizing: border-box;
 }
 
-.v-popupbutton-popup-contextmenu .link:last-child {
+.menupopup .link:last-child {
 	border: 0;
 }
 
-.v-popupbutton-popup-contextmenu {
-	padding: 0;
-	margin: 0;
-	border: 1px solid #d2d2d2;
-	box-sizing: border-box;
-}
-
-.v-popupbutton-popup-contextmenu .v-button-caption {
+.menupopup .v-button-caption {
 	color: black;
 	text-decoration: none;
 }
 
-.v-popupbutton-popup-contextmenu .link:hover {
+.menupopup .link:hover {
 	background-color: #DDD;
+}
+
+.v-popupbutton-popup,
+.v-popupview-popup-thread-listing-row {
+	background-color: #F8F8F9;
+	background-image: none;
+	padding: 0;
+	margin: 0;
+	border: 1px solid #d2d2d2;
+	box-sizing: border-box;
 }
 
 .contextmenu .v-button-opened {

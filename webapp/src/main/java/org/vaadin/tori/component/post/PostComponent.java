@@ -9,7 +9,8 @@ import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.component.ConfirmationDialog;
 import org.vaadin.tori.component.ConfirmationDialog.ConfirmationListener;
 import org.vaadin.tori.component.ContextMenu;
-import org.vaadin.tori.component.ContextMenu.ContextAction;
+import org.vaadin.tori.component.MenuPopup.ContextAction;
+import org.vaadin.tori.component.MenuPopup.ContextComponentSwapper;
 import org.vaadin.tori.component.post.EditComponent.EditListener;
 import org.vaadin.tori.data.entity.Attachment;
 import org.vaadin.tori.data.entity.Post;
@@ -140,7 +141,7 @@ public class PostComponent extends CustomComponent {
     private final PostScoreComponent score;
     private Component scrollToComponent;
 
-    private final ContextAction followAction = new ContextMenu.ContextAction() {
+    private final ContextAction followAction = new ContextAction() {
         @Override
         public void contextClicked() {
             try {
@@ -152,7 +153,7 @@ public class PostComponent extends CustomComponent {
         }
     };
 
-    private final ContextAction unfollowAction = new ContextMenu.ContextAction() {
+    private final ContextAction unfollowAction = new ContextAction() {
         @Override
         public void contextClicked() {
             try {
@@ -289,7 +290,7 @@ public class PostComponent extends CustomComponent {
 
     public void enableBanning() {
         contextMenu.add(new ThemeResource("images/icon-ban.png"), "Ban Author",
-                new ContextMenu.ContextComponentSwapper() {
+                new ContextComponentSwapper() {
                     @Override
                     public Component swapContextComponent() {
                         return Util.newConfirmBanComponent(presenter,
@@ -300,7 +301,7 @@ public class PostComponent extends CustomComponent {
 
     public void enableDeleting() {
         contextMenu.add(new ThemeResource("images/icon-delete.png"),
-                "Delete Post", new ContextMenu.ContextComponentSwapper() {
+                "Delete Post", new ContextComponentSwapper() {
                     @Override
                     public Component swapContextComponent() {
                         return Util.newConfirmDeleteComponent(presenter, post,

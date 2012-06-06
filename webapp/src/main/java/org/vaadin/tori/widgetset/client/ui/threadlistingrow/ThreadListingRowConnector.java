@@ -125,7 +125,7 @@ public class ThreadListingRowConnector extends
     public void postLayout() {
         if (centerAfterLayout) {
             centerAfterLayout = false;
-            getWidget().center();
+            getWidget().reposition();
         }
     }
 

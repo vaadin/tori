@@ -4,8 +4,8 @@ import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.category.CategoryPresenter;
 import org.vaadin.tori.component.ContextMenu;
-import org.vaadin.tori.component.ContextMenu.ContextAction;
-import org.vaadin.tori.component.ContextMenu.ContextComponentSwapper;
+import org.vaadin.tori.component.MenuPopup.ContextAction;
+import org.vaadin.tori.component.MenuPopup.ContextComponentSwapper;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.exception.DataSourceException;
 
