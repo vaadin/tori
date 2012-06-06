@@ -37,7 +37,7 @@ public class ThreadListing extends CustomComponent {
 
     protected static final String PLACEHOLDER_WIDTH = "100%";
     protected static final String PLACEHOLDER_HEIGHT = "40px";
-    protected static final int RENDER_DELAY_MILLIS = 50;
+    protected static final int RENDER_DELAY_MILLIS = 500;
     protected static final double RENDER_DISTANCE_MULTIPLIER = 1.5d;
 
     private static final long MAX_AMOUNT_OF_SHOWN_THREADS = 1000;
