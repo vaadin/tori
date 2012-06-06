@@ -97,3 +97,82 @@
 .thread-listing .v-lazylayout-placeholder {
 	background: url("../images/loadingthread-bg.png") left center no-repeat transparent;
 }
+
+.thread-listing-row a {
+	display: block;
+	color: #464440;
+}
+
+.thread-listing-row a > div {
+	display: block;
+	position: absolute;
+	color: #464440;
+}
+
+.thread-listing-row div.locked,
+.thread-listing-row div.sticky {
+	height: 8px;
+	width: 8px;
+	margin:0;
+	padding:0;
+	top: 6px;
+}
+
+.thread-listing-row .locked {
+	background-image: url("../images/icon-small-locked.png");
+	left: 4px;
+}
+.thread-listing-row .sticky {
+	background-image: url("../images/icon-small-sticky.png");
+	left: 14px;
+}
+
+.thread-listing-row .topic {
+	padding-left: 25px;
+	width: 100%;
+	height: 100%;
+	color: #00B4F0;
+}
+
+.thread-listing-row:hover .topic {
+	text-decoration: underline;
+}
+
+.thread-listing .thread-listing-row {
+	text-decoration: none;
+	height: 40px;
+}
+
+.thread-listing-row .startedBy {
+	right: 190px;
+	width: 150px;
+}
+
+.thread-listing-row .postcount {
+	width: 50px;
+	padding-right: 10px;
+	text-align: right;
+	right: 140px;
+}
+.thread-listing-row .latestpost {
+	width: 140px;
+	right: 0;
+}
+
+.thread-listing-row .latestauthor {
+	font-size: smaller;
+}
+
+.thread-listing-row .menutrigger {
+	height: 16px;
+	width: 16px;
+	background-image: url("../images/icon-settings.png");
+	visibility: hidden;
+	position: absolute;
+	right: 350px;
+}
+
+.thread-listing-row:hover .menutrigger,
+.thread-listing-row.open .menutrigger {
+	visibility: visible;
+}

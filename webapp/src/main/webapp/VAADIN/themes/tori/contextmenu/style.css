@@ -1,28 +1,35 @@
-.v-popupbutton-popup-contextmenu {
+.menupopup {
 	padding: 0;
 }
 
-.v-popupbutton-popup-contextmenu .v-button-link,
-.v-popupbutton-popup-contextmenu .v-button-link:focus,
-.v-popupbutton-popup-contextmenu .v-button-link:active {
+.menupopup .link,
+.menupopup .link:focus,
+.menupopup .link:active {
 	display: block;
 	padding: 4px;
 	border-bottom: 1px solid black;
 }
 
-.v-popupbutton-popup-contextmenu .v-button-link:last-child {
+.menupopup .link:last-child {
 	border-bottom: 0;
 }
 
-.v-popupbutton-popup-contextmenu .v-button-link:hover {
+.menupopup .link:hover {
 	background-color: #ccc;
 }
 
-.v-popupbutton-popup-contextmenu .v-button-link .v-button-caption {
+.menupopup .link .v-button-caption {
 	color: #222;
 	text-decoration: none;
 }
 
 .contextmenu .v-button-opened {
 	visibility: visible;
+}
+
+.v-popupbutton-popup, 
+.v-popupview-popup-thread-listing-row {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;	
 }
