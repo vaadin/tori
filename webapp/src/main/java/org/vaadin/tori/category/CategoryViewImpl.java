@@ -166,13 +166,11 @@ public class CategoryViewImpl extends
     @Override
     public void confirmFollowing(final DiscussionThread thread) {
         threadListing.refreshStyles(thread);
-        getRoot().showNotification("Following thread");
     }
 
     @Override
     public void confirmUnfollowing(final DiscussionThread thread) {
         threadListing.refreshStyles(thread);
-        getRoot().showNotification("Unfollowed thread");
     }
 
     @Override
@@ -194,13 +192,11 @@ public class CategoryViewImpl extends
 
     @Override
     public void confirmThreadLocked(final DiscussionThread thread) {
-        getRoot().showNotification("Thread locked");
         refreshVisually(thread);
     }
 
     @Override
     public void confirmThreadUnlocked(final DiscussionThread thread) {
-        getRoot().showNotification("Thread unlocked");
         refreshVisually(thread);
     }
 
