@@ -378,13 +378,11 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void confirmFollowingThread() {
-        getRoot().showNotification("Following thread");
         swapFollowingMenus();
     }
 
     @Override
     public void confirmUnFollowingThread() {
-        getRoot().showNotification("Not following thread anymore");
         swapFollowingMenus();
     }
 
