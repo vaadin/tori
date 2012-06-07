@@ -10,6 +10,7 @@ import org.vaadin.tori.component.MenuPopup.ContextComponentSwapper;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.exception.DataSourceException;
 
+import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Component;
@@ -185,8 +186,10 @@ public class ThreadListingRow extends PopupView {
                     + "</div>";
             final String latestAuthor = "<div class='latestauthor'>"
                     + this.latestAuthor + "</div>";
-            final String time = String.format(
-                    "<div class='time'>%1$td.%1$tm.%1$tY</div>", this.time);
+            final String time = String.format("<div class='latesttime'>"
+                    + "<span class='stamp'>%1$td.%1$tm.%1$tY</span>"
+                    + "<span class='pretty'>%2$s</span></div>", this.time,
+                    new PrettyTime().format(this.time));
 
             final String url = "#"
                     + ToriNavigator.ApplicationView.THREADS.getUrl() + "/"

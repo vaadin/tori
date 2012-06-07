@@ -166,6 +166,27 @@
 	padding-top: 3px;
 }
 
+.thread-listing-row .latesttime {
+	height: 1.3em;
+	overflow: hidden;
+	position: relative;
+}
+
+.thread-listing-row .latesttime .stamp,
+.thread-listing-row .latesttime .pretty {
+	position: absolute;
+	white-space: nowrap;
+	-moz-transition: all 0.2s ease-in-out;
+	-webkit-transition: all 0.2s ease-in-out;
+	-o-transition: all 0.2s ease-in-out;
+	transition: all 0.2s ease-in-out;
+}
+
+.thread-listing-row .latestpost .stamp { top: 1.5em; }
+.thread-listing-row .latestpost:hover .stamp { top: 0em; }
+.thread-listing-row .latestpost .pretty { top: 0em; }
+.thread-listing-row .latestpost:hover .pretty { top: -1.5em; }
+
 .thread-listing-row .latestauthor {
 	font-size: smaller;
 }
