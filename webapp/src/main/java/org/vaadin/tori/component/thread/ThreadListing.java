@@ -10,7 +10,6 @@ import org.vaadin.tori.component.GeneratedLazyLayout;
 import org.vaadin.tori.component.GeneratedLazyLayout.ComponentGenerator;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.exception.DataSourceException;
-import org.vaadin.tori.util.PoorMansProfiler;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -53,15 +52,11 @@ public class ThreadListing extends CustomComponent {
 
             final ArrayList<Component> components = new ArrayList<Component>();
             try {
-                final PoorMansProfiler pmp = new PoorMansProfiler("liferya");
-                pmp.mark("fetch");
                 final List<DiscussionThread> threads = presenter
                         .getThreadsBetween(from, to);
-                pmp.mark("fetched | added");
                 for (final DiscussionThread thread : threads) {
                     components.add(new ThreadListingRow(thread, presenter));
                 }
-                pmp.stop();
             } catch (final DataSourceException e) {
                 getRoot().showNotification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
