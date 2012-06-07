@@ -22,5 +22,4 @@
 
     <inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset" />
     <inherits name="org.vaadin.hene.expandingtextarea.widgetset.ExpandingtextareaWidgetset" />
-    <inherits name="com.github.wolfie.refresher.RefresherWidgetset" />
 </module>
