@@ -383,8 +383,8 @@
 	padding-bottom: 2px;
 }
 
-.authoring div[location="input"] textarea {
-	width: 100%;
+.authoring div[location="input"] textarea,
+.newthread .topicfield {
 	font-size: 14px;
 	color: #464440;
 	border: none;
@@ -399,10 +399,19 @@
 	box-sizing: border-box;
 }
 
+.authoring div[location="input"] textarea {
+	width: 100%;
+}
+
 .authoring div[location="captionlabel"] {
 	color: #64635a;
 	font-size: 18px;
-	font-weight: bold;	
+	font-weight: bold;
+	padding-top: 53px;
+}
+
+.authoring.collapsible div[location="captionlabel"] {
+	padding-top: 0;
 }
 
 .authoring .previewcaption {
@@ -495,11 +504,14 @@
 }
 
 .threadview .newthread .topiclabel {
-	text-align: right;
+	font-size: 18px;
+	font-weight: bold;
 }
 
 .threadview .newthread .topicfield {
-	font-size: 120%;
+	font-size: 18px;
+	background: transparent;
+	height: 30px;
 }
 
 .post div[location="signature"] {

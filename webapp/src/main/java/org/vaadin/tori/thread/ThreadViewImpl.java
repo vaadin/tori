@@ -452,7 +452,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
         final HorizontalLayout topicLayout = new HorizontalLayout();
         topicLayout.setSpacing(true);
-        topicLayout.setMargin(true, false, true, false);
+        topicLayout.setMargin(true, false, false, false);
         topicLayout.setWidth("50em");
         topicLayout.setStyleName("newthread");
         layout.addComponent(topicLayout);
