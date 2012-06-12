@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.vaadin.tori.category.CategoryViewImpl;
+import org.vaadin.tori.component.GoogleAnalyticsTracker;
 import org.vaadin.tori.dashboard.DashboardViewImpl;
 import org.vaadin.tori.indexing.IndexableCategoryView;
 import org.vaadin.tori.indexing.IndexableDashboardView;
@@ -18,6 +19,7 @@ import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.thread.ThreadViewImpl;
 
 import com.google.common.base.Joiner;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Root;
 import com.vaadin.ui.Root.FragmentChangedEvent;
@@ -77,17 +79,33 @@ public class ToriNavigator extends CustomComponent {
     private final HashMap<Class<? extends AbstractView<?, ?>>, String> classToUri = new HashMap<Class<? extends AbstractView<?, ?>>, String>();
     private final HashMap<Class<? extends AbstractView<?, ?>>, AbstractView<?, ?>> classToView = new HashMap<Class<? extends AbstractView<?, ?>>, AbstractView<?, ?>>();
     private String mainViewUri = null;
+    private final CssLayout rootLayout = new CssLayout();
     private final VerticalLayout layout = new VerticalLayout();
     private String currentFragment = "";
     private View currentView = null;
     private final LinkedList<ViewChangeListener> listeners = new LinkedList<ViewChangeListener>();
     private final Root root;
+    private final GoogleAnalyticsTracker analytics;
+    private final ViewChangeListener analyticsPageChangeListener = new ViewChangeListener() {
+        @Override
+        public void navigatorViewChange(final View previous, final View current) {
+            analytics.trackPageview(null);
+        }
+    };
 
     public ToriNavigator(final Root root) {
         this.root = root;
-        layout.setSizeFull();
+
+        analytics = new GoogleAnalyticsTracker("foo");
+        analytics.setAllowAnchor(true);
+        rootLayout.addComponent(analytics);
+        rootLayout.setSizeFull();
         setSizeFull();
-        setCompositionRoot(layout);
+        setCompositionRoot(rootLayout);
+
+        layout.setSizeFull();
+        rootLayout.addComponent(layout);
+
         root.addListener(new FragmentChangedListener() {
             @Override
             public void fragmentChanged(final FragmentChangedEvent source) {
@@ -100,6 +118,7 @@ public class ToriNavigator extends CustomComponent {
             addView(appView.getUrl(), appView.viewClass);
         }
 
+        addListener(analyticsPageChangeListener);
         setMainView(ApplicationView.getDefault().getUrl());
     }
 
