@@ -2,6 +2,7 @@ package org.vaadin.tori;
 
 import javax.portlet.PortletMode;
 
+import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriNavigator.ViewChangeListener;
 import org.vaadin.tori.component.DebugControlPanel;
 import org.vaadin.tori.component.GoogleAnalyticsTracker;
@@ -105,7 +106,12 @@ public class ToriRoot extends Root {
     public void trackAction(final String action) {
         if (analytics != null) {
             analytics.trackPageview(action);
+        } else {
+            logger().debug("Can't track an action - no analytics configured");
         }
     }
 
+    private Logger logger() {
+        return Logger.getLogger(getClass());
+    }
 }
