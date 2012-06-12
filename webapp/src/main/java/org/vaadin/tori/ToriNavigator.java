@@ -94,7 +94,7 @@ public class ToriNavigator extends CustomComponent {
         @Override
         @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "listener won't be added if analytics is null")
         public void navigatorViewChange(final View previous, final View current) {
-            analytics.trackPageview(null);
+            analytics.trackPageview("#" + currentFragment);
         }
     };
 
@@ -106,6 +106,7 @@ public class ToriNavigator extends CustomComponent {
         if (trackerId != null) {
             analytics = new GoogleAnalyticsTracker(trackerId);
             analytics.setAllowAnchor(true);
+            analytics.setIgnoreGetParameters(true);
             rootLayout.addComponent(analytics);
             addListener(analyticsPageChangeListener);
         } else {

@@ -18,6 +18,7 @@ public class VGoogleAnalyticsTracker extends Widget {
     private static String trackerId;
     private static String domainName;
     private static boolean allowAnchor;
+    private static boolean ignoreGetParameters;
 
     /**
      * The constructor should first call super() to initialize the component and
@@ -55,8 +56,7 @@ public class VGoogleAnalyticsTracker extends Widget {
                     VConsole.log("Sending " + QUEUE.length()
                             + " pageviews to google analytics");
                     while (QUEUE.length() > 0) {
-                        trackPageview(trackerId, QUEUE.shift(), domainName,
-                                allowAnchor);
+                        _trackPageview(QUEUE.shift());
                     }
                 } else if ((System.currentTimeMillis() - startTime) < GIVE_UP_AFTER_MILLIS) {
                     schedule(POLLING_INTERVAL_MILLIS);
@@ -75,11 +75,16 @@ public class VGoogleAnalyticsTracker extends Widget {
 
     public static String trackPageview(final String pageId) {
         if (trackerIsLoaded()) {
-            return trackPageview(trackerId, pageId, trackerId, allowAnchor);
+            return _trackPageview(pageId);
         } else {
             QUEUE.push(pageId);
             return "not ready, put into queue";
         }
+    }
+
+    private static String _trackPageview(final String pageId) {
+        return _trackPageview(trackerId, pageId, domainName, allowAnchor,
+                ignoreGetParameters);
     }
 
     /**
@@ -91,8 +96,9 @@ public class VGoogleAnalyticsTracker extends Widget {
      * @param allowAnchors
      * @return
      */
-    private native static String trackPageview(String trackerId, String pageId,
-            String domainName, boolean allowAnchor)
+    private native static String _trackPageview(String trackerId,
+            String pageId, String domainName, boolean allowAnchor,
+            boolean ignoreGetParams)
     /*-{
         if (!$wnd._gat) {
             return "Tracker not found (running offline?)";
@@ -110,9 +116,23 @@ public class VGoogleAnalyticsTracker extends Widget {
             pageTracker._setAllowAnchor(allowAnchor);
 
             if (pageId) {
-                pageTracker._trackPageview(pageId);
+                var location = "";
+                if (pageId.indexOf('#') === 0) {
+                    location = window.location.pathname; 
+                    if (!ignoreGetParams) {
+                        location += window.location.search;
+                    }
+                    location += pageId;
+                } else {
+                    location = pageId;
+                }
+                pageTracker._trackPageview(location);
             } else {
-                pageTracker._trackPageview();
+                if (ignoreGetParams) {
+                    pageTracker._trackPageview(window.location.pathname + window.location.search);
+                } else {
+                    pageTracker._trackPageview();
+                }
             }
             return null;
         } catch(err) {
@@ -130,6 +150,10 @@ public class VGoogleAnalyticsTracker extends Widget {
 
     public static void setAllowAnchor(final boolean allowAnchor) {
         VGoogleAnalyticsTracker.allowAnchor = allowAnchor;
+    }
+
+    public static void setIgnoreGetParameters(final boolean ignoreGetParameters) {
+        VGoogleAnalyticsTracker.ignoreGetParameters = ignoreGetParameters;
     }
 
 }

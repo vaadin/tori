@@ -30,6 +30,8 @@ public class GoogleAnalyticsTracker extends AbstractComponent implements
     private String domainName;
     private boolean allowAnchor;
 
+    private boolean ignoreGetParams;
+
     /**
      * Instantiate new Google Analytics tracker by id.
      * 
@@ -96,6 +98,7 @@ public class GoogleAnalyticsTracker extends AbstractComponent implements
     public void paintContent(final PaintTarget target) throws PaintException {
         target.addAttribute("trackerid", trackerId);
         target.addAttribute("allowAnchor", allowAnchor);
+        target.addAttribute("ignoreget", ignoreGetParams);
         if (pageId != null) {
             target.addAttribute("pageid", pageId);
         }
@@ -129,5 +132,9 @@ public class GoogleAnalyticsTracker extends AbstractComponent implements
     @Override
     public void changeVariables(final Object source,
             final Map<String, Object> variables) {
+    }
+
+    public void setIgnoreGetParameters(final boolean b) {
+        ignoreGetParams = b;
     }
 }
