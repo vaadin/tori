@@ -151,8 +151,7 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     @Override
     public void setReplacements(final Map<String, String> postReplacements) {
         replacementsTable.removeAllItems();
-        for (final Entry<String, String> entry : postReplacements
-                .entrySet()) {
+        for (final Entry<String, String> entry : postReplacements.entrySet()) {
 
             final Item item = replacementsTable.addItem(entry);
             item.getItemProperty("regex").setValue(entry.getKey());

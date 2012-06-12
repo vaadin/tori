@@ -26,7 +26,7 @@ public class EditPresenter extends Presenter<EditView> {
     }
 
     public final void savePreferences(final Map<String, String> replacements,
-            final Boolean replaceMessageBoardsLinks) {
+            final boolean replaceMessageBoardsLinks) {
         try {
             dataSource.savePortletPreferences(replacements,
                     replaceMessageBoardsLinks);

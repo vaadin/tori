@@ -305,19 +305,22 @@ public interface DataSource {
      */
     void markRead(DiscussionThread thread) throws DataSourceException;
 
+    @NonNull
     List<DiscussionThread> getRecentPosts() throws DataSourceException;
 
+    @NonNull
     List<DiscussionThread> getMyPosts() throws DataSourceException;
 
     int getAttachmentMaxFileSize();
 
     boolean isLoggedInUser();
 
+    @NonNull
     Map<String, String> getPostReplacements();
 
     boolean getReplaceMessageBoardsLinks();
 
-    void savePortletPreferences(Map<String, String> postReplacements,
-            Boolean replaceMessageBoardsLinks) throws DataSourceException;
+    void savePortletPreferences(@NonNull Map<String, String> postReplacements,
+            boolean replaceMessageBoardsLinks) throws DataSourceException;
 
 }

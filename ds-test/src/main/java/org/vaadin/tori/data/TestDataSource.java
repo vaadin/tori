@@ -852,7 +852,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
 
     @Override
     public void savePortletPreferences(final Map<String, String> replacements,
-            final Boolean replaceMessageBoardsLinks) {
+            final boolean replaceMessageBoardsLinks) {
 
     }
 

@@ -74,6 +74,7 @@ import com.liferay.portlet.ratings.service.RatingsEntryLocalServiceUtil;
 import com.liferay.portlet.ratings.service.RatingsEntryServiceUtil;
 import com.liferay.portlet.ratings.service.RatingsStatsLocalServiceUtil;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class LiferayDataSource implements DataSource, PortletRequestAware {
@@ -1183,6 +1184,9 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     /** @see org.vaadin.tori.ToriApplication.TORI_MESSAGE_ID */
     private static final String TORI_MESSAGE_ID = "toriMessageId";
 
+    @CheckForNull
+    private Map<String, String> postReplacements;
+
     private void determineMessageBoardsParameters(final PortletRequest request) {
         final PortletSession session = request.getPortletSession();
         final Long categoryId = getOriginalRequestEntityIdParameter(request,
@@ -1283,22 +1287,27 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
+    @NonNull
     public final Map<String, String> getPostReplacements() {
-        final Map<String, String> replacements = new HashMap<String, String>();
-
-        if (portletPreferences != null) {
-            final String[] values = portletPreferences.getValues(
-                    POST_REPLACEMENTS_KEY, new String[0]);
-            if (values != null) {
-                for (final String value : values) {
-                    final String[] split = value.split(REPLACEMENT_SEPARATOR);
-                    if (split.length == 2) {
-                        replacements.put(split[0], split[1]);
+        if (postReplacements == null) {
+            if (portletPreferences != null) {
+                postReplacements = new HashMap<String, String>();
+                final String[] values = portletPreferences.getValues(
+                        POST_REPLACEMENTS_KEY, new String[0]);
+                if (values != null) {
+                    for (final String value : values) {
+                        final String[] split = value
+                                .split(REPLACEMENT_SEPARATOR);
+                        if (split.length == 2) {
+                            postReplacements.put(split[0], split[1]);
+                        }
                     }
                 }
+            } else {
+                return Collections.emptyMap();
             }
         }
-        return replacements;
+        return postReplacements;
 
     }
 
@@ -1315,8 +1324,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     @Override
     public final void savePortletPreferences(
-            final Map<String, String> postReplacements,
-            final Boolean replaceMessageBoardsLinks) throws DataSourceException {
+            @NonNull final Map<String, String> postReplacements,
+            final boolean replaceMessageBoardsLinks) throws DataSourceException {
         if (portletPreferences == null) {
             throw new DataSourceException("Portlet preferences not available.");
         } else {
