@@ -321,6 +321,14 @@ public interface DataSource {
     boolean getReplaceMessageBoardsLinks();
 
     void savePortletPreferences(@NonNull Map<String, String> postReplacements,
-            boolean replaceMessageBoardsLinks) throws DataSourceException;
+            boolean replaceMessageBoardsLinks,
+            @CheckForNull String googleAnalyticsTrackerId)
+            throws DataSourceException;
 
+    /**
+     * @return The tracker id to be used, or <code>null</code> if there is no
+     *         tracker id. Then the tracker won't be used at all.
+     */
+    @CheckForNull
+    String getGoogleAnalyticsTrackerId();
 }

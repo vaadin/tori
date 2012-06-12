@@ -100,12 +100,14 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     private PortletPreferences portletPreferences;
 
-    private static final String REPLACE_MESSAGE_BOARDS_LINKS_KEY = "toriReplaceMessageBoardsLinks";
+    private static final String PREFS_ANALYTICS_ID = "analytics";
+    private static final String PREFS_REPLACE_MESSAGE_BOARDS_LINKS = "toriReplaceMessageBoardsLinks";
+
     private static final String URL_PREFIX = "/#!/";
     private static final String CATEGORIES = URL_PREFIX + "category/";
     private static final String THREADS = URL_PREFIX + "thread/";
 
-    private static final String POST_REPLACEMENTS_KEY = "toriPostReplacements";
+    private static final String PREFS_REPLACEMENTS_KEY = "toriPostReplacements";
     private static final String REPLACEMENT_SEPARATOR = "<TORI-REPLACEMENT>";
 
     @Override
@@ -1293,7 +1295,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             if (portletPreferences != null) {
                 postReplacements = new HashMap<String, String>();
                 final String[] values = portletPreferences.getValues(
-                        POST_REPLACEMENTS_KEY, new String[0]);
+                        PREFS_REPLACEMENTS_KEY, new String[0]);
                 if (values != null) {
                     for (final String value : values) {
                         final String[] split = value
@@ -1316,7 +1318,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         boolean replace = true;
         if (portletPreferences != null) {
             final String replaceString = portletPreferences.getValue(
-                    REPLACE_MESSAGE_BOARDS_LINKS_KEY, "");
+                    PREFS_REPLACE_MESSAGE_BOARDS_LINKS, "");
             replace = !String.valueOf(Boolean.FALSE).equals(replaceString);
         }
         return replace;
@@ -1325,7 +1327,9 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     @Override
     public final void savePortletPreferences(
             @NonNull final Map<String, String> postReplacements,
-            final boolean replaceMessageBoardsLinks) throws DataSourceException {
+            final boolean replaceMessageBoardsLinks,
+            final String googleAnalyticsTrackerId) throws DataSourceException {
+
         if (portletPreferences == null) {
             throw new DataSourceException("Portlet preferences not available.");
         } else {
@@ -1337,11 +1341,14 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                         + entry.getValue();
             }
             try {
-                portletPreferences.setValues(POST_REPLACEMENTS_KEY, values);
+                portletPreferences.setValues(PREFS_REPLACEMENTS_KEY, values);
 
-                portletPreferences.setValue(REPLACE_MESSAGE_BOARDS_LINKS_KEY,
+                portletPreferences.setValue(PREFS_REPLACE_MESSAGE_BOARDS_LINKS,
                         String.valueOf(replaceMessageBoardsLinks ? Boolean.TRUE
                                 : Boolean.FALSE));
+
+                portletPreferences.setValue(PREFS_ANALYTICS_ID,
+                        googleAnalyticsTrackerId);
 
                 portletPreferences.store();
             } catch (final Exception e) {
@@ -1349,6 +1356,11 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                 throw new DataSourceException(e);
             }
         }
+    }
+
+    @Override
+    public String getGoogleAnalyticsTrackerId() {
+        return portletPreferences.getValue(PREFS_ANALYTICS_ID, null);
     }
 
 }

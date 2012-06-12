@@ -852,12 +852,17 @@ public class TestDataSource implements DataSource, DebugDataSource {
 
     @Override
     public void savePortletPreferences(final Map<String, String> replacements,
-            final boolean replaceMessageBoardsLinks) {
-
+            final boolean replaceMessageBoardsLinks,
+            final String googleAnalyticsTrackerId) {
     }
 
     @Override
     public boolean getReplaceMessageBoardsLinks() {
         return false;
+    }
+
+    @Override
+    public String getGoogleAnalyticsTrackerId() {
+        return null;
     }
 }

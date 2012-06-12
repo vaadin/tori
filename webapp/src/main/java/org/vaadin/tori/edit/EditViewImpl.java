@@ -37,6 +37,7 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     private Button newButton;
 
     private CheckBox convertMessageBoardsUrls;
+    private TextField analyticsTrackerIdField;
 
     @Override
     protected Component createCompositionRoot() {
@@ -47,12 +48,17 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     @Override
     public void initView() {
         layout.setSpacing(true);
+
+        analyticsTrackerIdField = new TextField("Google Analytics Tracker id");
+        layout.addComponent(analyticsTrackerIdField);
+
         layout.addComponent(new Label(
                 "Define post body regex-patterns/replacements to be "
                         + "applied whenever posts are being displayed/previewed."));
 
         replacementsTable = new Table();
-        replacementsTable.setWidth(100.0f, Unit.PERCENTAGE);
+        replacementsTable.setWidth("100%");
+        replacementsTable.setHeight("10em");
         replacementsTable.setSelectable(true);
         replacementsTable.setImmediate(true);
         replacementsTable.setEditable(true);
@@ -133,8 +139,12 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
 
                 }
 
+                final String trackerId = analyticsTrackerIdField.getValue();
+                final String fixedTrackerId = "".equals(trackerId) ? null
+                        : trackerId;
+
                 getPresenter().savePreferences(replacements,
-                        convertMessageBoardsUrls.getValue());
+                        convertMessageBoardsUrls.getValue(), fixedTrackerId);
             }
         });
         layout.addComponent(saveButton);
@@ -175,4 +185,11 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
         getRoot().showNotification(notification);
     }
 
+    @Override
+    public void setGoogleAnalyticsTrackerId(
+            final String googleAnalyticsTrackerId) {
+        final String value = (googleAnalyticsTrackerId == null) ? ""
+                : googleAnalyticsTrackerId;
+        analyticsTrackerIdField.setValue(value);
+    }
 }

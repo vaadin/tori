@@ -27,6 +27,7 @@ import com.vaadin.ui.Root.FragmentChangedListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 
 @SuppressWarnings("serial")
@@ -85,9 +86,13 @@ public class ToriNavigator extends CustomComponent {
     private View currentView = null;
     private final LinkedList<ViewChangeListener> listeners = new LinkedList<ViewChangeListener>();
     private final Root root;
+
+    @CheckForNull
     private final GoogleAnalyticsTracker analytics;
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "ignoring serialization")
     private final ViewChangeListener analyticsPageChangeListener = new ViewChangeListener() {
         @Override
+        @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "listener won't be added if analytics is null")
         public void navigatorViewChange(final View previous, final View current) {
             analytics.trackPageview(null);
         }
@@ -96,9 +101,17 @@ public class ToriNavigator extends CustomComponent {
     public ToriNavigator(final Root root) {
         this.root = root;
 
-        analytics = new GoogleAnalyticsTracker("foo");
-        analytics.setAllowAnchor(true);
-        rootLayout.addComponent(analytics);
+        final String trackerId = ToriApplication.getCurrent().getDataSource()
+                .getGoogleAnalyticsTrackerId();
+        if (trackerId != null) {
+            analytics = new GoogleAnalyticsTracker(trackerId);
+            analytics.setAllowAnchor(true);
+            rootLayout.addComponent(analytics);
+            addListener(analyticsPageChangeListener);
+        } else {
+            analytics = null;
+        }
+
         rootLayout.setSizeFull();
         setSizeFull();
         setCompositionRoot(rootLayout);
@@ -118,7 +131,6 @@ public class ToriNavigator extends CustomComponent {
             addView(appView.getUrl(), appView.viewClass);
         }
 
-        addListener(analyticsPageChangeListener);
         setMainView(ApplicationView.getDefault().getUrl());
     }
 
