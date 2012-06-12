@@ -27,11 +27,15 @@ public class ToriRoot extends Root {
 
     private static final int KEEPALIVE_PING_INTERVAL_MILLIS = 60000;
 
+    private static final String PATH_ACTION_SEPARATOR = "$";
+
     private final ToriNavigator navigator = new ToriNavigator(this);
     private VerticalLayout windowLayout;
 
     @CheckForNull
     private GoogleAnalyticsTracker analytics;
+
+    private String lastPath = "";
 
     @Override
     protected void init(final WrappedRequest request) {
@@ -103,9 +107,39 @@ public class ToriRoot extends Root {
         }
     }
 
-    public void trackAction(final String action) {
+    /**
+     * Send data to Google Analytics about what the user is doing.
+     * 
+     * @param path
+     *            the current logical path to the view. <code>null</code> to use
+     *            the last known path. E.g. "#/foo/bar"
+     * @param action
+     *            the action performed in the path. <code>null</code> to ignore.
+     *            E.g. "reply"
+     */
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH", justification = "false positive")
+    public void trackAction(final String path, final String action) {
         if (analytics != null) {
-            analytics.trackPageview(action);
+
+            final String pageString;
+            if (path != null && action != null) {
+                pageString = path + PATH_ACTION_SEPARATOR + action;
+            } else if (action != null) {
+                pageString = lastPath + PATH_ACTION_SEPARATOR + action;
+            } else if (path != null) {
+                pageString = path;
+            } else {
+                pageString = null;
+                logger().warn(
+                        "tracking an action with null path and "
+                                + "null action");
+            }
+
+            if (path != null) {
+                lastPath = path;
+            }
+
+            analytics.trackPageview(pageString);
         } else {
             logger().debug("Can't track an action - no analytics configured");
         }

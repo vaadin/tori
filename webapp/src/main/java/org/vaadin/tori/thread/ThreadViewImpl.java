@@ -64,6 +64,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             if (!rawBody.trim().isEmpty()) {
                 try {
                     getPresenter().sendReply(rawBody);
+                    getRoot().trackAction(null, "reply");
                 } catch (final DataSourceException e) {
                     getRoot().showNotification(
                             DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
@@ -487,6 +488,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                     try {
                         final DiscussionThread createdThread = getPresenter()
                                 .createNewThread(category, topic, rawBody);
+                        getRoot().trackAction(null, "new-thread");
                         getNavigator().navigateTo(
                                 ToriNavigator.ApplicationView.THREADS.getUrl()
                                         + "/" + createdThread.getId());

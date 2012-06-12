@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.ToriRoot;
 import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.component.ConfirmationDialog;
 import org.vaadin.tori.component.ConfirmationDialog.ConfirmationListener;
@@ -113,6 +114,7 @@ public class PostComponent extends CustomComponent {
         public void postEdited(final String newPostBody) {
             try {
                 presenter.saveEdited(post, newPostBody);
+                getRoot().trackAction(null, "edit-post");
                 // this component will be replaced with a new one. So no need to
                 // change the state.
             } catch (final DataSourceException e) {
@@ -450,5 +452,10 @@ public class PostComponent extends CustomComponent {
             root.addComponent(new Label(presenter.stripTags(formattedPost),
                     ContentMode.XHTML), "body");
         }
+    }
+
+    @Override
+    public ToriRoot getRoot() {
+        return (ToriRoot) super.getRoot();
     }
 }

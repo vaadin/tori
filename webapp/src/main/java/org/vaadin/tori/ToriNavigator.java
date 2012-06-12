@@ -110,7 +110,7 @@ public class ToriNavigator extends CustomComponent {
             @Override
             public void navigatorViewChange(final View previous,
                     final View current) {
-                root.trackAction("#" + currentFragment);
+                root.trackAction("#" + currentFragment, null);
             }
         });
 

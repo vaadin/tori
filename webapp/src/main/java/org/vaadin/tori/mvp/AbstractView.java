@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.ToriRoot;
 
 import com.vaadin.Application;
 import com.vaadin.ui.Component;
@@ -96,5 +97,10 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
 
     protected ToriNavigator getNavigator() {
         return navigator;
+    }
+
+    @Override
+    public ToriRoot getRoot() {
+        return (ToriRoot) super.getRoot();
     }
 }
