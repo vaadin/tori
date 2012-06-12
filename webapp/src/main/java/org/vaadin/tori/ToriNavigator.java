@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.vaadin.tori.category.CategoryViewImpl;
-import org.vaadin.tori.component.GoogleAnalyticsTracker;
 import org.vaadin.tori.dashboard.DashboardViewImpl;
 import org.vaadin.tori.indexing.IndexableCategoryView;
 import org.vaadin.tori.indexing.IndexableDashboardView;
@@ -21,13 +20,11 @@ import org.vaadin.tori.thread.ThreadViewImpl;
 import com.google.common.base.Joiner;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Root;
 import com.vaadin.ui.Root.FragmentChangedEvent;
 import com.vaadin.ui.Root.FragmentChangedListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 
 @SuppressWarnings("serial")
@@ -85,33 +82,10 @@ public class ToriNavigator extends CustomComponent {
     private String currentFragment = "";
     private View currentView = null;
     private final LinkedList<ViewChangeListener> listeners = new LinkedList<ViewChangeListener>();
-    private final Root root;
+    private final ToriRoot root;
 
-    @CheckForNull
-    private final GoogleAnalyticsTracker analytics;
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "ignoring serialization")
-    private final ViewChangeListener analyticsPageChangeListener = new ViewChangeListener() {
-        @Override
-        @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "listener won't be added if analytics is null")
-        public void navigatorViewChange(final View previous, final View current) {
-            analytics.trackPageview("#" + currentFragment);
-        }
-    };
-
-    public ToriNavigator(final Root root) {
+    public ToriNavigator(final ToriRoot root) {
         this.root = root;
-
-        final String trackerId = ToriApplication.getCurrent().getDataSource()
-                .getGoogleAnalyticsTrackerId();
-        if (trackerId != null) {
-            analytics = new GoogleAnalyticsTracker(trackerId);
-            analytics.setAllowAnchor(true);
-            analytics.setIgnoreGetParameters(true);
-            rootLayout.addComponent(analytics);
-            addListener(analyticsPageChangeListener);
-        } else {
-            analytics = null;
-        }
 
         rootLayout.setSizeFull();
         setSizeFull();
@@ -131,6 +105,14 @@ public class ToriNavigator extends CustomComponent {
         for (final ApplicationView appView : ApplicationView.values()) {
             addView(appView.getUrl(), appView.viewClass);
         }
+
+        addListener(new ViewChangeListener() {
+            @Override
+            public void navigatorViewChange(final View previous,
+                    final View current) {
+                root.trackAction("#" + currentFragment);
+            }
+        });
 
         setMainView(ApplicationView.getDefault().getUrl());
     }

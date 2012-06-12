@@ -4,6 +4,7 @@ import javax.portlet.PortletMode;
 
 import org.vaadin.tori.ToriNavigator.ViewChangeListener;
 import org.vaadin.tori.component.DebugControlPanel;
+import org.vaadin.tori.component.GoogleAnalyticsTracker;
 import org.vaadin.tori.component.breadcrumbs.Breadcrumbs;
 import org.vaadin.tori.edit.EditViewImpl;
 import org.vaadin.tori.mvp.View;
@@ -16,6 +17,8 @@ import com.vaadin.terminal.WrappedRequest;
 import com.vaadin.ui.Root;
 import com.vaadin.ui.VerticalLayout;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+
 @Theme("tori")
 @SuppressWarnings("serial")
 @Widgetset("org.vaadin.tori.widgetset.ToriWidgetset")
@@ -26,12 +29,26 @@ public class ToriRoot extends Root {
     private final ToriNavigator navigator = new ToriNavigator(this);
     private VerticalLayout windowLayout;
 
+    @CheckForNull
+    private GoogleAnalyticsTracker analytics;
+
     @Override
     protected void init(final WrappedRequest request) {
         setCaption("Tori");
         windowLayout = new VerticalLayout();
         windowLayout.setMargin(false);
         setContent(windowLayout);
+
+        final String trackerId = ToriApplication.getCurrent().getDataSource()
+                .getGoogleAnalyticsTrackerId();
+        if (trackerId != null) {
+            analytics = new GoogleAnalyticsTracker(trackerId);
+            analytics.setAllowAnchor(true);
+            analytics.setIgnoreGetParameters(true);
+            addComponent(analytics);
+        } else {
+            analytics = null;
+        }
 
         final Breadcrumbs breadcrumbs = new Breadcrumbs(navigator);
         addControlPanelIfInDevelopment();
@@ -82,6 +99,12 @@ public class ToriRoot extends Root {
         if (authorizationService instanceof DebugAuthorizationService) {
             addComponent(new DebugControlPanel(
                     (DebugAuthorizationService) authorizationService, navigator));
+        }
+    }
+
+    public void trackAction(final String action) {
+        if (analytics != null) {
+            analytics.trackPageview(action);
         }
     }
 
