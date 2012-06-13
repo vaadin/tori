@@ -1,5 +1,7 @@
 package org.vaadin.tori.component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.vaadin.terminal.PaintException;
@@ -26,7 +28,7 @@ public class GoogleAnalyticsTracker extends AbstractComponent implements
     private static final long serialVersionUID = 2973391903850855532L;
 
     private final String trackerId;
-    private String pageId;
+    private final List<String> pageIds = new ArrayList<String>();
     private String domainName;
     private boolean allowAnchor;
 
@@ -90,17 +92,21 @@ public class GoogleAnalyticsTracker extends AbstractComponent implements
      *            '/view/action'.
      */
     public void trackPageview(final String pageId) {
-        this.pageId = pageId;
+        System.out.println("GoogleAnalyticsTracker.trackPageview()");
+        this.pageIds.add(pageId);
         requestRepaint();
     }
 
     @Override
     public void paintContent(final PaintTarget target) throws PaintException {
+        System.out.println("GoogleAnalyticsTracker.paintContent()");
         target.addAttribute("trackerid", trackerId);
         target.addAttribute("allowAnchor", allowAnchor);
         target.addAttribute("ignoreget", ignoreGetParams);
-        if (pageId != null) {
-            target.addAttribute("pageid", pageId);
+        if (!pageIds.isEmpty()) {
+            target.addAttribute("pageids",
+                    pageIds.toArray(new String[pageIds.size()]));
+            pageIds.clear();
         }
         if (domainName != null) {
             target.addAttribute("domain", domainName);

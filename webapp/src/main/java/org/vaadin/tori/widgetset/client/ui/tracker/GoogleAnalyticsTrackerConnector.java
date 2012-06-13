@@ -24,10 +24,11 @@ public class GoogleAnalyticsTrackerConnector extends AbstractComponentConnector
     }
 
     @Override
+    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SBSC_USE_STRINGBUFFER_CONCATENATION", justification = "non-issue, readibility")
     public void updateFromUIDL(final UIDL uidl,
             final ApplicationConnection client) {
         final String trackerId = uidl.getStringAttribute("trackerid");
-        final String pageId = uidl.getStringAttribute("pageid");
+        final String[] pageIds = uidl.getStringArrayAttribute("pageids");
         final String domainName = uidl.getStringAttribute("domain");
         final boolean ignoreGetParameters = uidl.hasAttribute("ignoreget") ? uidl
                 .getBooleanAttribute("ignoreget") : false;
@@ -39,15 +40,17 @@ public class GoogleAnalyticsTrackerConnector extends AbstractComponentConnector
         VGoogleAnalyticsTracker.setAllowAnchor(allowAnchor);
         VGoogleAnalyticsTracker.setIgnoreGetParameters(ignoreGetParameters);
 
-        final String res = VGoogleAnalyticsTracker.trackPageview(pageId);
-
-        String message = "VGoogleAnalyticsTracker.trackPageview(" + trackerId
-                + "," + pageId + "," + domainName + "," + allowAnchor + ") ";
-        if (null != res) {
-            message += "FAILED: " + res;
-        } else {
-            message += "SUCCESS.";
+        for (final String pageId : pageIds) {
+            final String res = VGoogleAnalyticsTracker.trackPageview(pageId);
+            String message = "VGoogleAnalyticsTracker.trackPageview("
+                    + trackerId + "," + pageId + "," + domainName + ","
+                    + allowAnchor + ") ";
+            if (null != res) {
+                message += "FAILED: " + res;
+            } else {
+                message += "SUCCESS.";
+            }
+            VConsole.log(message);
         }
-        VConsole.log(message);
     }
 }
