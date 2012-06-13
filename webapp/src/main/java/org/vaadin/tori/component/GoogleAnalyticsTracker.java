@@ -92,14 +92,12 @@ public class GoogleAnalyticsTracker extends AbstractComponent implements
      *            '/view/action'.
      */
     public void trackPageview(final String pageId) {
-        System.out.println("GoogleAnalyticsTracker.trackPageview()");
         this.pageIds.add(pageId);
         requestRepaint();
     }
 
     @Override
     public void paintContent(final PaintTarget target) throws PaintException {
-        System.out.println("GoogleAnalyticsTracker.paintContent()");
         target.addAttribute("trackerid", trackerId);
         target.addAttribute("allowAnchor", allowAnchor);
         target.addAttribute("ignoreget", ignoreGetParams);
