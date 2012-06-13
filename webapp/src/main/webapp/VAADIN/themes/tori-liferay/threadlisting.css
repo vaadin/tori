@@ -86,8 +86,10 @@
 }
 
 .thread-listing-row a {
-        display: block;
-        color: inherit;
+	display: block;
+	color: inherit;
+	height: 100%;
+	width: 100%;
 }
 
 .thread-listing-row a > div {

@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -27,6 +29,7 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -86,6 +89,15 @@ public class VThreadListingRow extends HTML {
                     // x = event.getClientX() + Window.getScrollLeft();
                     // y = event.getClientY() + Window.getScrollTop();
                     updateState(true);
+                } else {
+                    final String threadURI = getThreadURI(getElement());
+                    if (threadURI != null) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        Window.Location.replace(threadURI);
+                    } else {
+                        VConsole.error("Thread was clicked, but no URI was found for the thread.");
+                    }
                 }
             }
         });
@@ -103,6 +115,18 @@ public class VThreadListingRow extends HTML {
 
         popup.setAnimationEnabled(true);
         sinkEvents(VTooltip.TOOLTIP_EVENTS);
+    }
+
+    private String getThreadURI(final Element thisElement) {
+        final NodeList<Node> childNodes = thisElement.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            final Element e = (Element) childNodes.getItem(i);
+            final String tagName = e.getTagName();
+            if ("a".equalsIgnoreCase(tagName)) {
+                return e.getPropertyString("href");
+            }
+        }
+        return null;
     }
 
     /**

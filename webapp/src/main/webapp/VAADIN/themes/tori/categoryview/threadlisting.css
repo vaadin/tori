@@ -101,6 +101,7 @@
 .thread-listing-row a {
 	display: block;
 	color: #464440;
+	height: 100%;
 }
 
 .thread-listing-row a > div {
