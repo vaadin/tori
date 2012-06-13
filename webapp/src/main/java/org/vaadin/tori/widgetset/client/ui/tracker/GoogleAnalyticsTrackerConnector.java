@@ -28,20 +28,26 @@ public class GoogleAnalyticsTrackerConnector extends AbstractComponentConnector
     public void updateFromUIDL(final UIDL uidl,
             final ApplicationConnection client) {
         final String trackerId = uidl.getStringAttribute("trackerid");
-        final String[] pageIds = uidl.getStringArrayAttribute("pageids");
         final String domainName = uidl.getStringAttribute("domain");
         final boolean ignoreGetParameters = uidl.hasAttribute("ignoreget") ? uidl
                 .getBooleanAttribute("ignoreget") : false;
         final boolean allowAnchor = uidl.hasAttribute("allowAnchor") ? uidl
                 .getBooleanAttribute("allowAnchor") : false;
 
-        VGoogleAnalyticsTracker.setTrackerId(trackerId);
-        VGoogleAnalyticsTracker.setDomainName(domainName);
-        VGoogleAnalyticsTracker.setAllowAnchor(allowAnchor);
-        VGoogleAnalyticsTracker.setIgnoreGetParameters(ignoreGetParameters);
+        final String[] pageIds;
+        if (uidl.hasAttribute("pageids")) {
+            pageIds = uidl.getStringArrayAttribute("pageids");
+        } else {
+            pageIds = new String[] {};
+        }
+
+        getWidget().setTrackerId(trackerId);
+        getWidget().setDomainName(domainName);
+        getWidget().setAllowAnchor(allowAnchor);
+        getWidget().setIgnoreGetParameters(ignoreGetParameters);
 
         for (final String pageId : pageIds) {
-            final String res = VGoogleAnalyticsTracker.trackPageview(pageId);
+            final String res = getWidget().trackPageview(pageId);
             String message = "VGoogleAnalyticsTracker.trackPageview("
                     + trackerId + "," + pageId + "," + domainName + ","
                     + allowAnchor + ") ";

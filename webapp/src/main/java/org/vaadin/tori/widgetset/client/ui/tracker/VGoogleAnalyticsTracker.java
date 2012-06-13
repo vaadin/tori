@@ -12,24 +12,29 @@ public class VGoogleAnalyticsTracker extends Widget {
 
     private static final int POLLING_INTERVAL_MILLIS = 1000;
     private static final int GIVE_UP_AFTER_MILLIS = 10000;
-    private static final JsArrayString QUEUE = (JsArrayString) JsArrayString
-            .createArray();
+    private final JsArrayString QUEUE;
 
-    private static String trackerId;
-    private static String domainName;
-    private static boolean allowAnchor;
-    private static boolean ignoreGetParameters;
+    private String trackerId;
+    private String domainName;
+    private boolean allowAnchor;
+    private boolean ignoreGetParameters;
 
     /**
      * The constructor should first call super() to initialize the component and
      * then handle any initialization relevant to Vaadin.
      */
     public VGoogleAnalyticsTracker() {
+        QUEUE = getEmptyArray();
         setElement(Document.get().createDivElement());
         loadGoogleJavascript(RootPanel.getBodyElement());
     }
 
-    private static native void loadGoogleJavascript(Element element)
+    private native JsArrayString getEmptyArray()
+    /*-{
+       return [];
+    }-*/;
+
+    private native void loadGoogleJavascript(Element element)
     /*-{
       if (!!($wnd._gat)) {
           return;
@@ -44,10 +49,10 @@ public class VGoogleAnalyticsTracker extends Widget {
       
       element.appendChild(googleScriptTag);
       
-      @org.vaadin.tori.widgetset.client.ui.tracker.VGoogleAnalyticsTracker::pollForLodadedScript()();
+      this.@org.vaadin.tori.widgetset.client.ui.tracker.VGoogleAnalyticsTracker::pollForLodadedScript()();
     }-*/;
 
-    private static void pollForLodadedScript() {
+    private void pollForLodadedScript() {
         final long startTime = System.currentTimeMillis();
         new Timer() {
             @Override
@@ -72,12 +77,12 @@ public class VGoogleAnalyticsTracker extends Widget {
         }.schedule(POLLING_INTERVAL_MILLIS);
     }
 
-    private static native boolean trackerIsLoaded()
+    private native boolean trackerIsLoaded()
     /*-{
         return !!($wnd._gat);
     }-*/;
 
-    public static String trackPageview(final String pageId) {
+    public String trackPageview(final String pageId) {
         if (trackerIsLoaded()) {
             return _trackPageview(pageId);
         } else {
@@ -86,7 +91,7 @@ public class VGoogleAnalyticsTracker extends Widget {
         }
     }
 
-    private static String _trackPageview(final String pageId) {
+    private String _trackPageview(final String pageId) {
         return _trackPageview(trackerId, pageId, domainName, allowAnchor,
                 ignoreGetParameters);
     }
@@ -100,9 +105,8 @@ public class VGoogleAnalyticsTracker extends Widget {
      * @param allowAnchors
      * @return
      */
-    private native static String _trackPageview(String trackerId,
-            String pageId, String domainName, boolean allowAnchor,
-            boolean ignoreGetParams)
+    private native String _trackPageview(String trackerId, String pageId,
+            String domainName, boolean allowAnchor, boolean ignoreGetParams)
     /*-{
         if (!$wnd._gat) {
             return "Tracker not found (running offline?)";
@@ -144,20 +148,20 @@ public class VGoogleAnalyticsTracker extends Widget {
         }
     }-*/;
 
-    public static void setTrackerId(final String trackerId) {
-        VGoogleAnalyticsTracker.trackerId = trackerId;
+    public void setTrackerId(final String trackerId) {
+        this.trackerId = trackerId;
     }
 
-    public static void setDomainName(final String domainName) {
-        VGoogleAnalyticsTracker.domainName = domainName;
+    public void setDomainName(final String domainName) {
+        this.domainName = domainName;
     }
 
-    public static void setAllowAnchor(final boolean allowAnchor) {
-        VGoogleAnalyticsTracker.allowAnchor = allowAnchor;
+    public void setAllowAnchor(final boolean allowAnchor) {
+        this.allowAnchor = allowAnchor;
     }
 
-    public static void setIgnoreGetParameters(final boolean ignoreGetParameters) {
-        VGoogleAnalyticsTracker.ignoreGetParameters = ignoreGetParameters;
+    public void setIgnoreGetParameters(final boolean ignoreGetParameters) {
+        this.ignoreGetParameters = ignoreGetParameters;
     }
 
 }
