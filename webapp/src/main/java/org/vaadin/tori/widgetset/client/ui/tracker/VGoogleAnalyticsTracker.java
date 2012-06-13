@@ -62,7 +62,11 @@ public class VGoogleAnalyticsTracker extends Widget {
                     schedule(POLLING_INTERVAL_MILLIS);
                 } else {
                     VConsole.error("Google Analytics Tracker wasn't loaded in "
-                            + GIVE_UP_AFTER_MILLIS + "ms. Giving up.");
+                            + GIVE_UP_AFTER_MILLIS + "ms.");
+                    if (QUEUE.length() > 0) {
+                        VConsole.error("Discarding analytics queue of "
+                                + QUEUE.length() + " entries.");
+                    }
                 }
             }
         }.schedule(POLLING_INTERVAL_MILLIS);
