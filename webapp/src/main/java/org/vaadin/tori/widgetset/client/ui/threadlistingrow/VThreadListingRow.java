@@ -35,6 +35,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.ComponentConnector;
@@ -90,6 +91,11 @@ public class VThreadListingRow extends HTML {
                     // y = event.getClientY() + Window.getScrollTop();
                     updateState(true);
                 } else {
+                    /*
+                     * not at all sure if this else-block is needed at all. It
+                     * might've been trying to solve the same problem as
+                     * fixIphoneClickBug() does.
+                     */
                     final String threadURI = getThreadURI(getElement());
                     if (threadURI != null) {
                         event.preventDefault();
@@ -331,7 +337,6 @@ public class VThreadListingRow extends HTML {
                 popupComponentWidget = newWidget;
                 popupComponentPaintable = newPopupComponent;
             }
-
         }
 
         public void setHideOnMouseOut(final boolean hideOnMouseOut) {
@@ -378,4 +383,24 @@ public class VThreadListingRow extends HTML {
         }
     }
 
+    @Override
+    public void setHTML(final String html) {
+        super.setHTML(html);
+        fixIphoneClickBug();
+    }
+
+    private void fixIphoneClickBug() {
+        final Element bodyElement = RootPanel.getBodyElement();
+        final String classNames = bodyElement.getClassName();
+        if (classNames.contains("v-ios") || classNames.contains("v-android")) {
+            final NodeList<Node> childNodes = getElement().getChildNodes();
+            for (int i = 0; i < childNodes.getLength(); i++) {
+                final Element e = (Element) childNodes.getItem(i);
+                if ("menutrigger".equals(e.getClassName())) {
+                    getElement().removeChild(e);
+                    break;
+                }
+            }
+        }
+    }
 }// class VPopupView

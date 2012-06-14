@@ -199,6 +199,7 @@
 	visibility: hidden;
 	position: absolute;
 	right: 350px;
+	top: 0;
 }
 
 .thread-listing-row:hover .menutrigger,
