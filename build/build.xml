@@ -346,9 +346,10 @@
 			<arg value="${client-side-destination}" />
 			<arg value="${widgetset}" />
 			<arg value="-localWorkers" />
-			<arg value="4" />
+			<arg value="2" />
 			<arg value="-logLevel"/>
 			<arg value="TRACE"/>
+			<arg value="-strict"/>
             <jvmarg value="-Xss1024k"/>
             <jvmarg value="-Djava.awt.headless=true"/>
 			<classpath>
