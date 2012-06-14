@@ -94,7 +94,7 @@ public class VThreadListingRow extends HTML {
                     if (threadURI != null) {
                         event.preventDefault();
                         event.stopPropagation();
-                        Window.Location.replace(threadURI);
+                        Window.Location.assign(threadURI);
                     } else {
                         VConsole.error("Thread was clicked, but no URI was found for the thread.");
                     }
