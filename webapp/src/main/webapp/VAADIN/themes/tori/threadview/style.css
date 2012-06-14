@@ -8,6 +8,10 @@
 	width: 100%;
 }
 
+.post table.container {
+	table-layout: fixed;
+}
+
 .post .author {
 	width: 153px; /* 158px - padding */ 
 	min-width: 153px; /* 158px - padding */ 
@@ -555,7 +559,7 @@
 }
 .post .body .code,
 .authoring .code {
-	white-space: nowrap;
+	white-space: pre;
 	padding: 0;
 	margin: 20px 0 30px 0;
 	font-size: 13px;
