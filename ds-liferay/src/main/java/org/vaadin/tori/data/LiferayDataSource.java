@@ -55,6 +55,7 @@ import com.liferay.portlet.messageboards.model.MBBan;
 import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBMessageConstants;
+import com.liferay.portlet.messageboards.model.MBMessageFlagConstants;
 import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.model.MBThreadConstants;
 import com.liferay.portlet.messageboards.service.MBBanServiceUtil;
@@ -691,14 +692,15 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         try {
             connection = JdbcUtil.getJdbcConnection();
             statement = connection
-                    .prepareStatement("select (? - count(MBThreadFlag.threadFlagId)) "
-                            + "from MBThreadFlag, MBThread "
-                            + "where MBThreadFlag.threadId = MBThread.threadId "
-                            + "and MBThread.categoryId = ? and MBThreadFlag.userId = ?");
+                    .prepareStatement("select (? - count(MBMessageFlag.messageFlagId)) "
+                            + "from MBMessageFlag, MBThread "
+                            + "where flag = ? and MBMessageFlag.threadId = MBThread.threadId "
+                            + "and MBThread.categoryId = ? and MBMessageFlag.userId = ?");
 
             statement.setLong(1, totalThreadCount);
-            statement.setLong(2, category.getId());
-            statement.setLong(3, currentUserId);
+            statement.setLong(2, MBMessageFlagConstants.READ_FLAG);
+            statement.setLong(3, category.getId());
+            statement.setLong(4, currentUserId);
 
             result = statement.executeQuery();
             if (result.next()) {
