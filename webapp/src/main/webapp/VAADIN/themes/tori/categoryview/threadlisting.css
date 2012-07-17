@@ -13,10 +13,6 @@
 	position: relative;
 	padding: 2px 0;
 }
-.thread-listing-row .unread a span {
-	color: #0094d0 !important;
-	font-weight: bold;	
-}
 .thread-listing-row .topic {
 	height: 100%;
 	position: absolute;
@@ -24,10 +20,6 @@
 	left: 0;
 	right: 350px;
 	bottom: 0;
-}
-.thread-listing-row .topic.unread {
-	font-weight: bold;
-	background-color: #eceac4;
 }
 
 .thread-listing-row .details,
@@ -108,6 +100,11 @@
 	display: block;
 	position: absolute;
 	color: #464440;
+}
+
+.thread-listing-row.unread a > div.topic {
+	color: #0A85B4 !important;
+	font-weight: bold;	
 }
 
 .thread-listing-row div.locked,

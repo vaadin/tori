@@ -98,6 +98,11 @@
 	box-sizing: border-box;
 }
 
+.thread-listing-row.unread a > div.topic {
+	color: #0A85B4 !important;
+	font-weight: bold;	
+}
+
 .thread-listing-row div.locked,
 .thread-listing-row div.sticky {
 	height: 8px;

@@ -256,6 +256,10 @@ public class ThreadListingRow extends PopupView {
 
         setStyleName("thread-listing-row");
 
+        if (!presenter.userHasRead(thread)) {
+            addStyleName("unread");
+        }
+
         final RowContent content = new RowContent();
 
         initializePreview(thread, content);
