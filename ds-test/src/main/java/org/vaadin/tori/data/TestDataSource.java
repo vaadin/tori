@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -773,7 +774,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
     @Override
     public boolean isRead(final DiscussionThread thread) {
         // TODO actual implementation
-        return true;
+        return new Random().nextBoolean();
     }
 
     @Override
