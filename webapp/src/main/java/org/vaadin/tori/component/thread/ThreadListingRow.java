@@ -3,6 +3,7 @@ package org.vaadin.tori.component.thread;
 import java.util.Date;
 
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.category.CategoryPresenter;
 import org.vaadin.tori.component.MenuPopup;
 import org.vaadin.tori.component.MenuPopup.ContextAction;
@@ -179,13 +180,14 @@ public class ThreadListingRow extends PopupView {
                     : "";
             final String sticky = this.sticky ? "<div class='sticky'></div>"
                     : "";
-            final String topic = "<div class='topic'>" + this.topic + "</div>";
-            final String startedBy = "<div class='startedBy'>" + this.startedBy
-                    + "</div>";
+            final String topic = "<div class='topic'>"
+                    + ToriUtil.escapeXhtml(this.topic) + "</div>";
+            final String startedBy = "<div class='startedBy'>"
+                    + ToriUtil.escapeXhtml(this.startedBy) + "</div>";
             final String postCount = "<div class='postcount'>" + this.postCount
                     + "</div>";
             final String latestAuthor = "<div class='latestauthor'>"
-                    + this.latestAuthor + "</div>";
+                    + ToriUtil.escapeXhtml(this.latestAuthor) + "</div>";
             final String time = String.format("<div class='latesttime'>"
                     + "<span class='stamp'>%1$td.%1$tm.%1$tY</span>"
                     + "<span class='pretty'>%2$s</span></div>", this.time,

@@ -3,6 +3,7 @@ package org.vaadin.tori.indexing;
 import java.util.List;
 
 import org.vaadin.tori.ToriNavigator.ApplicationView;
+import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.exception.DataSourceException;
@@ -36,14 +37,14 @@ public class IndexableThreadView extends IndexableView {
             final StringBuilder sb = new StringBuilder();
             sb.append(String.format("<a href='#%s'>Back to Category</a>",
                     getCategoryLink(thread)));
-            sb.append("<h2>" + escapeXhtml(thread.getTopic()) + "</h2>");
+            sb.append("<h2>" + ToriUtil.escapeXhtml(thread.getTopic()) + "</h2>");
             if (!posts.isEmpty()) {
                 for (final Post post : posts) {
                     sb.append("<article>");
 
                     sb.append("<header>");
                     sb.append("<span class='author'>"
-                            + escapeXhtml(post.getAuthor().getDisplayedName())
+                            + ToriUtil.escapeXhtml(post.getAuthor().getDisplayedName())
                             + "</span>");
                     sb.append(String.format(
                             "<time pubdate>%1$tY-%1$tm-%1$td</time>",

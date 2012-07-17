@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.exception.DataSourceException;
@@ -46,8 +47,8 @@ public class IndexableDashboardView extends IndexableView {
     }
 
     private static String getDescription(final Category category) {
-        return escapeXhtml(category.getName()) + "<br>"
-                + escapeXhtml(category.getDescription());
+        return ToriUtil.escapeXhtml(category.getName()) + "<br>"
+                + ToriUtil.escapeXhtml(category.getDescription());
     }
 
     private static String getLink(final Category category) {
