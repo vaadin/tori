@@ -22,7 +22,7 @@ public interface ThreadView extends View {
 
     void displayPosts(@NonNull List<Post> posts);
 
-    void displayThreadNotFoundError(String threadIdString);
+    void displayThreadNotFoundError(@NonNull String threadIdString);
 
     void confirmPostReported();
 
@@ -34,7 +34,7 @@ public interface ThreadView extends View {
 
     void confirmPostDeleted();
 
-    void refreshScores(Post post, long newScore);
+    void refreshScores(@NonNull Post post, long newScore);
 
     /**
      * Acknowledge that the post was properly accepted and saved.
@@ -43,7 +43,7 @@ public interface ThreadView extends View {
      *            The new {@link Post} <strong>that should be added to the
      *            thread visually (if applicable).</strong>
      */
-    void confirmReplyPostedAndShowIt(Post updatedPost);
+    void confirmReplyPostedAndShowIt(@NonNull Post updatedPost);
 
     /**
      * This method is called when a reply is tried to be sent, but the current
@@ -65,7 +65,7 @@ public interface ThreadView extends View {
 
     void redirectToDashboard();
 
-    void displayNewThreadFormFor(Category category);
+    void displayNewThreadFormFor(@NonNull Category category);
 
     /** May return <code>null</code>, e.g. when the user visited an invalid URL */
     @CheckForNull
@@ -74,11 +74,11 @@ public interface ThreadView extends View {
     /** For those occasions when a regular error message simply doesn't suffice. */
     void panic();
 
-    void appendToReply(String textToAppend);
+    void appendToReply(@NonNull String textToAppend);
 
     /** Re-renders the post with the given post. */
     void refresh(Post post);
 
-    void updateAttachmentList(LinkedHashMap<String, byte[]> attachments);
+    void updateAttachmentList(@NonNull LinkedHashMap<String, byte[]> attachments);
 
 }
