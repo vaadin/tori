@@ -42,7 +42,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
 
 @SuppressWarnings("serial")
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD_STORE", justification = "We're ignoring serialization")
@@ -142,8 +141,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void displayPosts(final List<Post> posts,
-            @NonNull final DiscussionThread currentThread) {
+    public void displayPosts(final List<Post> posts) {
         layout.removeAllComponents();
 
         postsLayout.removeAllComponents();

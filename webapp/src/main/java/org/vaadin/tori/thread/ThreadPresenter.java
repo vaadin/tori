@@ -48,8 +48,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                 currentThread = requestedThread;
 
                 final ThreadView view = getView();
-                view.displayPosts(dataSource.getPosts(requestedThread),
-                        requestedThread);
+                view.displayPosts(dataSource.getPosts(requestedThread));
             } else {
                 getView().displayThreadNotFoundError(threadIdString);
             }
@@ -346,7 +345,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             final DiscussionThread thread = currentThread;
 
             if (thread != null) {
-                getView().displayPosts(dataSource.getPosts(thread), thread);
+                getView().displayPosts(dataSource.getPosts(thread));
             } else {
                 throw new IllegalStateException(
                         "This method may not be called while currentThread is null");

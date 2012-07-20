@@ -20,7 +20,7 @@ public interface ThreadView extends View {
     @CheckForNull
     DiscussionThread getCurrentThread();
 
-    void displayPosts(List<Post> posts, @NonNull DiscussionThread currentThread);
+    void displayPosts(@NonNull List<Post> posts);
 
     void displayThreadNotFoundError(String threadIdString);
 
