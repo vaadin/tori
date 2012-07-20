@@ -207,6 +207,11 @@
 	font-size: 13px;
 	white-space: nowrap;
 }
+.threadSummary .post [location="body"] {
+	max-height: 200px;
+	overflow-y: auto;
+}
+
 .threadSummary .topRow,
 .threadSummary .topRow .v-label {
 	cursor: pointer;
