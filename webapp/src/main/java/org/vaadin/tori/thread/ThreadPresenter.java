@@ -368,12 +368,19 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             if (!arguments[0].equals(NEW_THREAD_ARGUMENT)) {
                 setCurrentThreadById(arguments[0]);
                 return;
-            } else if (arguments.length > 1 && categoryExists(arguments[1])) {
-                final Category category = dataSource.getCategory(Long
-                        .parseLong(arguments[1]));
-                categoryWhileCreatingNewThread = category;
-                getView().displayNewThreadFormFor(category);
-                return;
+            } else if (arguments.length > 1) {
+                try {
+                    final Category category = dataSource.getCategory(Long
+                            .parseLong(arguments[1]));
+
+                    if (category != null) {
+                        categoryWhileCreatingNewThread = category;
+
+                        getView().displayNewThreadFormFor(category);
+                        return;
+                    }
+                } catch (final NumberFormatException IGNORE) {
+                }
             }
         } else {
             log.info("Tried to visit a thread without arguments");
@@ -385,16 +392,6 @@ public class ThreadPresenter extends Presenter<ThreadView> {
          */
         getView().redirectToDashboard();
 
-    }
-
-    private boolean categoryExists(final @NonNull String string)
-            throws DataSourceException {
-        try {
-            final long categoryId = Long.parseLong(string);
-            return dataSource.getCategory(categoryId) != null;
-        } catch (final NumberFormatException e) {
-            return false;
-        }
     }
 
     @NonNull
