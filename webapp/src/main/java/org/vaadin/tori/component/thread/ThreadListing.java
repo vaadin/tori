@@ -55,7 +55,10 @@ public class ThreadListing extends CustomComponent {
                 final List<DiscussionThread> threads = presenter
                         .getThreadsBetween(from, to);
                 for (final DiscussionThread thread : threads) {
-                    components.add(new ThreadListingRow(thread, presenter));
+                    final ThreadListingRow threadListingRow = new ThreadListingRow(
+                            thread, presenter);
+                    assignStyles(threadListingRow);
+                    components.add(threadListingRow);
                 }
             } catch (final DataSourceException e) {
                 getRoot().showNotification(
@@ -124,7 +127,7 @@ public class ThreadListing extends CustomComponent {
         return label;
     }
 
-    private void assignStyles(final ThreadListingRow row) {
+    protected void assignStyles(final ThreadListingRow row) {
         if (presenter.userIsFollowing(row.getThread())) {
             row.addStyleName(STYLE_FOLLOWING);
         } else {

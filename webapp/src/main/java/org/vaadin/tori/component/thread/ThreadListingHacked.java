@@ -29,6 +29,7 @@ public class ThreadListingHacked extends ThreadListing {
             } else {
                 layout.addComponent(row);
             }
+            assignStyles(row);
         }
     }
 }
