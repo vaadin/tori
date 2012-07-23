@@ -265,6 +265,54 @@ public class ThreadListingRow extends PopupView {
         final RowContent content = new RowContent();
 
         initializePreview(thread, content);
+        menu = getNewMenuPopup(thread, presenter);
+
+        setContent(content);
+
+        super.setHideOnMouseOut(false);
+        super.addListener(new PopupVisibilityListener() {
+            private boolean isBeingReloaded;
+
+            @Override
+            public void popupVisibilityChange(final PopupVisibilityEvent event) {
+                if (event.isPopupVisible()) {
+                    /*
+                     * This is a big nasty workaround for Vaadin's PopupView bug
+                     * (affects ThreadListingRow, since it's a fork of
+                     * PopupView) where components' connectors are lost when the
+                     * PopupView is opened the second time, and the fact that it
+                     * doesn't support .replaceComponent().
+                     * 
+                     * Instead, we set a new content to the PopupButton whenever
+                     * it's opened. But, since this event is called _after_ the
+                     * menu is being displayed, we need to do this so that the
+                     * right component is shown in the browser.
+                     */
+                    if (!isBeingReloaded) {
+                        menu = getNewMenuPopup(thread, presenter);
+                        addStyleName(STYLE_OPEN);
+                        isBeingReloaded = true;
+
+                        // this is the hack above talks about.
+                        setPopupVisible(false);
+                        setPopupVisible(true);
+                    } else {
+                        isBeingReloaded = false;
+                    }
+                } else {
+                    removeStyleName(STYLE_OPEN);
+                }
+            }
+        });
+    }
+
+    /**
+     * Fills the popup menu with all the appropriate menu items. If there's an
+     * error, an error message will be displayed within the popup menu.
+     */
+    private MenuPopup getNewMenuPopup(final DiscussionThread thread,
+            final CategoryPresenter presenter) {
+        MenuPopup menu;
         try {
             menu = createContextMenu(thread, presenter);
         } catch (final DataSourceException e) {
@@ -272,20 +320,8 @@ public class ThreadListingRow extends PopupView {
             menu.add(null, DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
                     ContextAction.NULL);
         }
-
-        setContent(content);
-
-        super.setHideOnMouseOut(false);
-        super.addListener(new PopupVisibilityListener() {
-            @Override
-            public void popupVisibilityChange(final PopupVisibilityEvent event) {
-                if (event.isPopupVisible()) {
-                    addStyleName(STYLE_OPEN);
-                } else {
-                    removeStyleName(STYLE_OPEN);
-                }
-            }
-        });
+        requestRepaint();
+        return menu;
     }
 
     private MenuPopup createContextMenu(final DiscussionThread thread,

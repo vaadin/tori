@@ -11,10 +11,8 @@ import com.vaadin.terminal.Resource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.themes.Reindeer;
 
 public class MenuPopup extends CustomComponent {
@@ -77,6 +75,7 @@ public class MenuPopup extends CustomComponent {
 
     public void addListener(final MenuClickListener listener) {
         menuClickListeners.add(listener);
+
     }
 
     public void removeListener(final MenuClickListener listener) {
@@ -93,30 +92,13 @@ public class MenuPopup extends CustomComponent {
 
     private Button createButton(final Resource icon, final String caption,
             final ContextComponentSwapper swapper) {
+        @SuppressWarnings("serial")
         final Button button = new Button(caption + '\u2026',
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(final ClickEvent event) {
-                        final HasComponents parent = MenuPopup.this.getParent();
-                        if (parent != null) {
-                            if (parent instanceof ComponentContainer) {
-                                final ComponentContainer parentContainer = (ComponentContainer) parent;
-                                parentContainer.removeAllComponents();
-                                parentContainer.addComponent(swapper
-                                        .swapContextComponent());
-                            } else {
-                                throw new IllegalStateException(
-                                        "Parent is not an instance of "
-                                                + ComponentContainer.class
-                                                        .getSimpleName()
-                                                + " - can't swap anything there.");
-                            }
-                        } else {
-                            throw new IllegalStateException(
-                                    "Tried to swap the manu, "
-                                            + "but the menu didn't "
-                                            + "have a parent");
-                        }
+                        layout.removeAllComponents();
+                        layout.addComponent(swapper.swapContextComponent());
                     }
                 });
         button.setIcon(icon);
