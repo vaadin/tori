@@ -13,6 +13,10 @@
 	position: relative;
 	padding: 2px 0;
 }
+.thread-listing-row {
+	background-color: white;
+}
+
 .thread-listing-row .topic {
 	height: 100%;
 	position: absolute;

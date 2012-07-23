@@ -290,7 +290,6 @@ public class ThreadListingRow extends PopupView {
                      */
                     if (!isBeingReloaded) {
                         menu = getNewMenuPopup(thread, presenter);
-                        addStyleName(STYLE_OPEN);
                         isBeingReloaded = true;
 
                         // this is the hack above talks about.
@@ -299,11 +298,22 @@ public class ThreadListingRow extends PopupView {
                     } else {
                         isBeingReloaded = false;
                     }
+                    addStyleName(STYLE_OPEN);
                 } else {
                     removeStyleName(STYLE_OPEN);
                 }
             }
         });
+    }
+
+    @Override
+    public void addStyleName(final String style) {
+        super.addStyleName(style);
+    }
+
+    @Override
+    public void removeStyleName(final String style) {
+        super.removeStyleName(style);
     }
 
     /**
