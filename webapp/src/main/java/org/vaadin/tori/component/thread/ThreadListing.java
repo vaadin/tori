@@ -149,10 +149,13 @@ public class ThreadListing extends CustomComponent {
     public void refresh(final DiscussionThread thread) {
         final ThreadListingRow row = getRow(thread);
         if (row != null) {
+            row.refresh();
+            /*-
             final ThreadListingRow newRow = new ThreadListingRow(thread,
                     presenter);
             assignStyles(newRow);
             layout.replaceComponent(row, newRow);
+             */
         }
     }
 

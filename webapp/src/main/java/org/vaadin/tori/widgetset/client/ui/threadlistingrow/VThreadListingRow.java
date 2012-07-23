@@ -271,15 +271,6 @@ public class VThreadListingRow extends HTML {
             super.hide(autoClosed);
         }
 
-        @Override
-        public void show() {
-            if (!hiding) {
-                hide(true);
-            }
-            hiding = false;
-            super.show();
-        }
-
         /**
          * Try to sync all known active child widgets to server
          */

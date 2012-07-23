@@ -363,4 +363,10 @@ public class ThreadListingRow extends PopupView {
     public void setHideOnMouseOut(final boolean hideOnMouseOut) {
         // ignore calls.
     }
+
+    public void refresh() {
+        final RowContent rowContent = new RowContent();
+        initializePreview(thread, rowContent);
+        setContent(rowContent);
+    }
 }
