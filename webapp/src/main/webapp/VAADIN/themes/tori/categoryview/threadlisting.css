@@ -13,20 +13,7 @@
 	position: relative;
 	padding: 2px 0;
 }
-.thread-listing-row {
-	background-color: white;
-}
 
-.thread-listing-row .topic {
-	height: 100%;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 350px;
-	bottom: 0;
-}
-
-.thread-listing-row .details,
 .thread-listing .fixed-column-headers {
 	float: right;
 }
@@ -92,12 +79,6 @@
 }
 .thread-listing .v-lazylayout-placeholder {
 	background: url("../images/loadingthread-bg.png") left center no-repeat transparent;
-}
-
-.thread-listing-row a {
-	display: block;
-	color: #464440;
-	height: 100%;
 }
 
 .thread-listing-row a > div {
