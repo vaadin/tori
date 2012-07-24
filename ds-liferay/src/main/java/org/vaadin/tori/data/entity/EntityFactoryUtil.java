@@ -77,14 +77,17 @@ public class EntityFactoryUtil {
         return entity;
     }
 
+    @SuppressWarnings("deprecation")
     public static User createUser(
             final com.liferay.portal.model.User liferayUser,
-            final String imagePath, final boolean isFemale) {
+            final String imagePath, final boolean isFemale,
+            final boolean isBanned) {
         final User entity = new User();
         entity.setId(liferayUser.getUserId());
         entity.setDisplayedName(liferayUser.getFullName());
         entity.setAvatarUrl(getAvatarUrl(liferayUser.getPortraitId(),
                 imagePath, isFemale));
+        entity.setBanned(isBanned);
         return entity;
     }
 

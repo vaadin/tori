@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
@@ -24,6 +25,7 @@ import org.vaadin.tori.component.post.PostComponent;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.AbstractView;
 
@@ -194,6 +196,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     private PostComponent newPostComponent(final Post post) {
         final PostComponent c = new PostComponent(post, getPresenter());
         postsToComponents.put(post, c);
+
+        if (post.getAuthor().isBanned()) {
+            c.setUserIsBanned();
+        }
 
         // main component permissions
 
@@ -370,9 +376,29 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void confirmBanned() {
-        getRoot().showNotification("User is banned");
-        reloadPage();
+    public void confirmBanned(final User user) {
+        for (final Entry<Post, PostComponent> entry : postsToComponents
+                .entrySet()) {
+            final Post post = entry.getKey();
+            if (post.getAuthor().equals(user)) {
+                final PostComponent postComponent = entry.getValue();
+                postComponent.setUserIsBanned();
+                postComponent.swapBannedMenu();
+            }
+        }
+    }
+
+    @Override
+    public void confirmUnbanned(final User user) {
+        for (final Entry<Post, PostComponent> entry : postsToComponents
+                .entrySet()) {
+            final Post post = entry.getKey();
+            if (post.getAuthor().equals(user)) {
+                final PostComponent postComponent = entry.getValue();
+                postComponent.setUserIsUnbanned();
+                postComponent.swapBannedMenu();
+            }
+        }
     }
 
     @Override
@@ -550,5 +576,4 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             newThreadComponent.updateAttachmentList(attachments);
         }
     }
-
 }

@@ -375,11 +375,30 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_ALWAYS_NULL", justification = "System.out will never be null, afaik")
-    public void ban(final User user) {
-        // TODO Auto-generated method stub
-        System.out.println("TestDataSource.ban()");
-        System.out.println("Banning, it does nothing!");
+    @SuppressWarnings("deprecation")
+    public void ban(final User user) throws DataSourceException {
+        user.setBanned(true);
+        save(user);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void unban(@NonNull final User user) throws DataSourceException {
+        user.setBanned(false);
+        save(user);
+    }
+
+    private void save(final User user) throws DataSourceException {
+        executeWithEntityManager(new Command<Void>() {
+            @Override
+            public Void execute(final EntityManager em) {
+                final EntityTransaction transaction = em.getTransaction();
+                transaction.begin();
+                em.merge(user);
+                transaction.commit();
+                return null;
+            }
+        });
     }
 
     @Override

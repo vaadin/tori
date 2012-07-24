@@ -26,7 +26,9 @@ public interface ThreadView extends View {
 
     void confirmPostReported();
 
-    void confirmBanned();
+    void confirmBanned(User user);
+
+    void confirmUnbanned(User user);
 
     void confirmFollowingThread();
 

@@ -1,3 +1,11 @@
+.post.banned-author {
+	/* These two first rules are for IE */
+	zoom: 1;
+	filter: alpha(opacity=50);
+	
+	opacity: 0.5;
+}
+
 .post {
 	padding-top: 50px;
 	border-bottom: 2px solid #eee;

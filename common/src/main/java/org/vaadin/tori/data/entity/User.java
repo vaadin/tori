@@ -4,6 +4,7 @@ import javax.annotation.CheckForNull;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
+import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.util.SignatureFormatter;
 
 @Entity
@@ -19,6 +20,9 @@ public class User extends AbstractEntity {
     @Column(nullable = true)
     @CheckForNull
     private String rawSignature;
+
+    @Column(nullable = false)
+    private boolean banned;
 
     public void setDisplayedName(final String displayedName) {
         this.displayedName = displayedName;
@@ -68,5 +72,19 @@ public class User extends AbstractEntity {
      */
     public void setRawSignature(final String rawSignature) {
         this.rawSignature = rawSignature;
+    }
+
+    public boolean isBanned() {
+        return banned;
+    }
+
+    /**
+     * @deprecated Don't call this method directly, use
+     *             {@link DataSource#ban(User)} or
+     *             {@link DataSource#unban(User)} instead.
+     */
+    @Deprecated
+    public void setBanned(final boolean banned) {
+        this.banned = banned;
     }
 }

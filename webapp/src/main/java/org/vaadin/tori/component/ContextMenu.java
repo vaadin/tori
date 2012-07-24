@@ -42,8 +42,10 @@ public class ContextMenu extends CustomComponent {
 
             if (!event.isPopupVisible()) {
                 settingsIcon.removeStyleName(OPENED_CLASS_NAME);
+                popupLayout.beingOpenedHook();
             } else {
                 settingsIcon.addStyleName(OPENED_CLASS_NAME);
+                popupLayout.beingClosedHook();
             }
         }
     };
@@ -119,5 +121,17 @@ public class ContextMenu extends CustomComponent {
     public void swap(final ContextAction oldToSwapOut, final Resource icon,
             final String caption, final ContextAction newAction) {
         popupLayout.swap(oldToSwapOut, icon, caption, newAction);
+    }
+
+    public void swap(final ContextComponentSwapper oldToSwapOut,
+            final Resource icon, final String caption,
+            final ContextAction newAction) {
+        popupLayout.swap(oldToSwapOut, icon, caption, newAction);
+    }
+
+    public void swap(final ContextAction oldToSwapOut,
+            final ThemeResource icon, final String caption,
+            final ContextComponentSwapper newSwapper) {
+        popupLayout.swap(oldToSwapOut, icon, caption, newSwapper);
     }
 }

@@ -107,13 +107,23 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     public void ban(final @NonNull User user) throws DataSourceException {
         try {
             dataSource.ban(user);
-            getView().confirmBanned();
+            getView().confirmBanned(user);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
             throw e;
         }
+    }
 
+    public void unban(@NonNull final User user) throws DataSourceException {
+        try {
+            dataSource.unban(user);
+            getView().confirmUnbanned(user);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public boolean userMayBan() {
@@ -444,5 +454,4 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             getView().displayUserCanNotEdit();
         }
     }
-
 }

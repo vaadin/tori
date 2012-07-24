@@ -59,6 +59,7 @@ import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBMessageConstants;
 import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.model.MBThreadConstants;
+import com.liferay.portlet.messageboards.service.MBBanLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBBanServiceUtil;
 import com.liferay.portlet.messageboards.service.MBCategoryLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBCategoryServiceUtil;
@@ -285,8 +286,10 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             if (liferayUser.isDefaultUser()) {
                 return EntityFactoryUtil.createAnonymousUser(imagePath);
             } else {
+                final boolean isBanned = MBBanLocalServiceUtil.hasBan(
+                        scopeGroupId, liferayUser.getUserId());
                 return EntityFactoryUtil.createUser(liferayUser, imagePath,
-                        liferayUser.isFemale());
+                        liferayUser.isFemale(), isBanned);
             }
         }
     }
@@ -741,6 +744,19 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             throw new DataSourceException(e);
         } catch (final SystemException e) {
             log.error(String.format("Cannot ban user %d", user.getId()), e);
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Override
+    public void unban(@NonNull final User user) throws DataSourceException {
+        try {
+            MBBanServiceUtil.deleteBan(user.getId(), mbBanServiceContext);
+        } catch (final PortalException e) {
+            log.error(String.format("Cannot unban user %d", user.getId()), e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error(String.format("Cannot unban user %d", user.getId()), e);
             throw new DataSourceException(e);
         }
     }

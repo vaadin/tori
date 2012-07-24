@@ -44,6 +44,9 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't bother us with serialization.")
 public class PostComponent extends CustomComponent {
 
+    private static final String BAN_CAPTION = "Ban Author";
+    private static final ThemeResource BAN_ICON = new ThemeResource(
+            "images/icon-ban.png");
     private static final String UNFOLLOW_CAPTION = "Unfollow Thread";
     private static final ThemeResource UNFOLLOW_ICON = new ThemeResource(
             "images/icon-unfollow.png");
@@ -51,6 +54,10 @@ public class PostComponent extends CustomComponent {
     private static final String FOLLOW_CAPTION = "Follow Thread";
     private static final ThemeResource FOLLOW_ICON = new ThemeResource(
             "images/icon-follow.png");
+    private static final String STYLE_BANNED = "banned-author";
+    private static final Resource UNBAN_ICON = new ThemeResource(
+            "images/icon-unban.png");
+    private static final String UNBAN_CAPTION = "Unban Author";
 
     private final PrettyTime prettyTime = new PrettyTime();
     private final DateFormat dateFormat = new SimpleDateFormat(
@@ -168,10 +175,32 @@ public class PostComponent extends CustomComponent {
         }
     };
 
+    private final ContextComponentSwapper banActionSwapper = new ContextComponentSwapper() {
+        @Override
+        public Component swapContextComponent() {
+            return Util.newConfirmBanComponent(presenter, post.getAuthor(),
+                    contextMenu);
+        }
+    };
+
+    private final ContextAction unbanAction = new ContextAction() {
+        @Override
+        public void contextClicked() {
+            try {
+                presenter.unban(post.getAuthor());
+            } catch (final DataSourceException e) {
+                getRoot().showNotification(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            }
+        }
+    };
+
     private boolean followingEnabled = false;
     private boolean unfollowingEnabled = false;
     private final EditComponent editComponent;
     private final boolean allowHtml;
+    private boolean banEnabled;
+    private boolean unbanEnabled;
 
     /**
      * @throws IllegalArgumentException
@@ -291,14 +320,15 @@ public class PostComponent extends CustomComponent {
     }
 
     public void enableBanning() {
-        contextMenu.add(new ThemeResource("images/icon-ban.png"), "Ban Author",
-                new ContextComponentSwapper() {
-                    @Override
-                    public Component swapContextComponent() {
-                        return Util.newConfirmBanComponent(presenter,
-                                post.getAuthor(), contextMenu);
-                    }
-                });
+        contextMenu.add(BAN_ICON, BAN_CAPTION, banActionSwapper);
+        banEnabled = true;
+        unbanEnabled = false;
+    }
+
+    public void enableUnbanning() {
+        contextMenu.add(UNBAN_ICON, UNBAN_CAPTION, unbanAction);
+        banEnabled = false;
+        unbanEnabled = true;
     }
 
     public void enableDeleting() {
@@ -314,6 +344,16 @@ public class PostComponent extends CustomComponent {
 
     public void enableUpDownVoting(final PostVote postVote) {
         score.enableUpDownVoting(postVote);
+    }
+
+    public void setUserIsBanned() {
+        addStyleName(STYLE_BANNED);
+        root.setDescription(post.getAuthor().getDisplayedName() + " is banned.");
+    }
+
+    public void setUserIsUnbanned() {
+        removeStyleName(STYLE_BANNED);
+        root.setDescription(null);
     }
 
     /*-
@@ -439,6 +479,21 @@ public class PostComponent extends CustomComponent {
 
             followingEnabled = !followingEnabled;
             unfollowingEnabled = !unfollowingEnabled;
+        }
+    }
+
+    public void swapBannedMenu() {
+        if (banEnabled || unbanEnabled) {
+            if (banEnabled) {
+                contextMenu.swap(banActionSwapper, UNBAN_ICON, UNBAN_CAPTION,
+                        unbanAction);
+            } else {
+                contextMenu.swap(unbanAction, BAN_ICON, BAN_CAPTION,
+                        banActionSwapper);
+            }
+
+            banEnabled = !banEnabled;
+            unbanEnabled = !unbanEnabled;
         }
     }
 

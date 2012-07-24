@@ -171,6 +171,8 @@ public interface DataSource {
 
     void ban(@NonNull User user) throws DataSourceException;
 
+    void unban(@NonNull User user) throws DataSourceException;
+
     void follow(@NonNull DiscussionThread thread) throws DataSourceException;
 
     void unFollow(@NonNull DiscussionThread thread) throws DataSourceException;
