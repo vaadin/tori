@@ -56,7 +56,7 @@ public class PostComponent extends CustomComponent {
     private final DateFormat dateFormat = new SimpleDateFormat(
             "MM/dd/yyyy kk:mm");
 
-    // trying a new pattern here by grouping auxiliray methods in an inner class
+    // trying a new pattern here by grouping auxiliary methods in an inner class
     private static class Util {
         private static Component newConfirmBanComponent(
                 final ThreadPresenter presenter, final User user,
