@@ -47,7 +47,7 @@ import com.vaadin.terminal.gwt.client.ui.richtextarea.VRichTextArea;
 
 public class VThreadListingRow extends HTML {
 
-    public static final String CLASSNAME = "v-popupview";
+    public static final String CLASSNAME = "v-thread-listing-row";
 
     /** For server-client communication */
     String uidlId;
