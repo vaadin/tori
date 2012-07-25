@@ -46,7 +46,7 @@ public class ToriApplication extends Application implements
 
     @Override
     public void init() {
-        if (ToriApplication.getCurrent().getDataSource() instanceof DebugDataSource) {
+        if (getDataSource() instanceof DebugDataSource) {
             addAttachmentDownloadHandler();
         }
     }
@@ -63,7 +63,7 @@ public class ToriApplication extends Application implements
      * @return ToriApplication instance for the current Thread.
      */
     public static ToriApplication getCurrent() {
-        return (ToriApplication) Application.getCurrentApplication();
+        return (ToriApplication) Application.getCurrent();
     }
 
     /**
@@ -207,7 +207,7 @@ public class ToriApplication extends Application implements
 
                 if (fragment != null) {
                     // Apply changes to Tori root's fragment
-                    root.setFragment(fragment);
+                    Root.getCurrent().getPage().setFragment(fragment);
                 }
 
                 ((ToriRoot) root).setPortletMode(portletRequest
