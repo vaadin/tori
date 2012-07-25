@@ -1,7 +1,5 @@
 package org.vaadin.tori.util;
 
-import org.vaadin.hene.popupbutton.PopupButton;
-
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
