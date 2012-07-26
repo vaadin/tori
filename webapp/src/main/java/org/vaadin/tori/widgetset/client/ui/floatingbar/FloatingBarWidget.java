@@ -32,6 +32,7 @@ public final class FloatingBarWidget extends Widget implements ResizeHandler {
     public FloatingBarWidget() {
         setElement(Document.get().createDivElement());
         attachResizeHandler();
+        setStyleName(CLASSNAME);
     }
 
     @Override
@@ -41,8 +42,9 @@ public final class FloatingBarWidget extends Widget implements ResizeHandler {
     }
 
     @Override
-    public String getStylePrimaryName() {
-        return CLASSNAME;
+    public void setStyleName(final String style, final boolean add) {
+        super.setStyleName(style, add);
+        overlay.setStyleName(style, add);
     }
 
     public void setListener(final FloatingBarWidgetListener listener) {
