@@ -19,7 +19,7 @@
 }
 
 .v-popupbutton-popup,
-.v-popupview-popup-thread-listing-row {
+.v-thread-listing-row-popup {
 	background-color: #F8F8F9;
 	background-image: none;
 	padding: 0;

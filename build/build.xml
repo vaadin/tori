@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Tori">
 	
-	<loadproperties srcfile="build.properties"/>
-	
 	<property name="dir.project" value=".."/>
 	<property name="dir.common" value="${dir.project}/common" />
 	<property name="dir.webapp" value="${dir.project}/webapp" />
@@ -27,11 +25,7 @@
 	<property name="file.webapp.jar" value="${dir.build-artifacts}/webapp.jar" />
 	<property name="file.ds.liferay.jar" value="${dir.build-artifacts}/ds-liferay.jar" />
 	<property name="file.ds.test.jar" value="${dir.build-artifacts}/ds-test.jar" />
-	<property name="file.servlet-api.jar" value="build-libs/servlet-api.jar" />
 	<property name="file.findbugs-ant.jar" value="build-libs/findbugs/findbugs-ant.jar" />
-	
-	<property name="file.gwt-user.jar" value="build-libs/gwt-user.jar" />
-	<property name="file.gwt-dev.jar" value="build-libs/gwt-dev.jar" />
 	
 	<property name="file.junit.jar" value="build-libs/junit-4.10.jar" />
 	<property name="file.mockito.jar" value="build-libs/mockito-all-1.8.5.jar" />
@@ -59,9 +53,6 @@
 	<path id="webapp-classpath">
 		<path refid="common-classpath"/>
 		<pathelement location="${file.common.jar}"/>
-		<pathelement location="${file.servlet-api.jar}"/>
-		<pathelement location="${file.gwt-user.jar}"/>
-		<pathelement location="${file.gwt-dev.jar}"/>
 		<fileset dir="${dir.web-inf.lib}" includes="**/*.jar"/>
 	</path>
 
@@ -152,7 +143,6 @@
 		<war destfile="${file.tori.liferay.war}" webxml="${dir.web-inf}/web-liferay.xml" manifest="${dir.meta-inf}/MANIFEST.MF">
 			<webinf dir="${dir.web-inf}">
 				<exclude name="**/portlet.jar"/>
-				<!--<exclude name="**/vaadin-*.jar"/>-->
 			</webinf>
 			<metainf dir="${dir.meta-inf}"/>
 			<lib file="${file.common.jar}" />
@@ -267,14 +257,6 @@
 		<property name="base" 
 			      value="${dir.webapp}" />
 		
-		<!-- Location of GWT distribution -->
-		<property name="gwt-location" 
-			      value="build-libs" />
-		
-		<!-- Location of Vaadin JAR -->
-		<property name="vaadin-jar-location" 
-			      value="${file.vaadin.jar}" />
-		
 		<!-- Location of project source code -->
 		<property name="src-location" 
 			      value="${dir.webapp}/src/main/java" />
@@ -306,19 +288,7 @@
 	
 	<target name="-init" depends="-configure">
 
-		<echo>Requirements for classpath:</echo>
-		<echo>  ${gwt-location}/gwt-dev.jar</echo>
-		<echo>  ${gwt-location}/gwt-user.jar</echo>
-		<echo>  ${vaadin-jar-location}</echo>
-		<echo>  ${src-location}</echo>
 		<echo>Output will be written into ${client-side-destination}</echo>
-
-		<!-- Check that files exist -->
-		<fail message="Some of the required files (listed above) are missing.">
-			<condition><not><resourcecount count="3">
-				<filelist files="${gwt-location}/gwt-dev.jar,${gwt-location}/gwt-user.jar,${vaadin-jar-location}"/>
-			</resourcecount></not></condition>
-		</fail>
 
 		<!-- Construct and check classpath -->
 		<!-- Includes paths required for both server and client-side compilation -->
@@ -326,15 +296,55 @@
 			<!-- The source location must be first, as required by generate-widgetset. -->
             <pathelement path="${src-location}" />
 			<pathelement path="${server-side-destination}" />
-			<pathelement path="${vaadin-jar-location}" />
-			<pathelement path="${gwt-location}/gwt-dev.jar"/>
-			<pathelement path="${gwt-location}/gwt-user.jar"/>
-			<pathelement path="${gwt-location}/validation-api-1.0.0.GA.jar"/>
-			<pathelement path="${gwt-location}/validation-api-1.0.0.GA-sources.jar"/>
+			<fileset dir="build-libs">
+				<include name="validation-api-*.jar"/>
+			</fileset>
 		    <fileset dir="${dir.web-inf.lib}">
 		    	<include name="*.jar"/>
 		     </fileset>
 		</path>
+		
+		<pathconvert pathsep="${line.separator} * "
+			property="echo.compile.classpath"
+			refid="compile.classpath"
+		/>
+		<echo message="${line.separator}compile.classpath:"/>
+		<echo message=" * ${echo.compile.classpath}"/>
+
+		<pathconvert pathsep="${line.separator} * "
+			property="echo.common-classpath"
+			refid="common-classpath"
+		/>
+		<echo message="${line.separator}common-classpath:"/>
+		<echo message=" * ${echo.common-classpath}"/>
+	
+		<pathconvert pathsep="${line.separator} * "
+			property="echo.webapp-classpath"
+			refid="webapp-classpath"
+		/>
+		<echo message="${line.separator}webapp-classpath:"/>
+		<echo message=" * ${echo.webapp-classpath}"/>
+
+		<pathconvert pathsep="${line.separator} * "
+			property="echo.ds-liferay-classpath"
+			refid="ds-liferay-classpath"
+		/>
+		<echo message="${line.separator}ds-liferay-classpath:"/>
+		<echo message=" * ${echo.ds-liferay-classpath}"/>
+			
+		<pathconvert pathsep="${line.separator} * "
+			property="echo.ds-test-classpath"
+			refid="ds-test-classpath"
+		/>
+		<echo message="${line.separator}ds-test-classpath:"/>
+		<echo message=" * ${echo.ds-test-classpath}"/>
+		
+		<pathconvert pathsep="${line.separator} * "
+			property="echo.test-classpath"
+			refid="test-classpath"
+		/>
+		<echo message="${line.separator}test-classpath:"/>
+		<echo message=" * ${echo.test-classpath}"/>
 	</target>
 
 	<!-- Build the widget set. -->
@@ -403,8 +413,6 @@
 	<target name="-findbugs-shared-target">
 		<findbugs home="${findbugs.home}" output="xml:withMessages" outputfile="${dir.build-artifacts}/${findbugs.outputfile}">
 			<auxclasspath refid="${findbugs.acp.refid}"/>
-			<auxclasspath path="${file.gwt-dev.jar}"/>
-			<auxclasspath path="${file.gwt-user.jar}"/>
 			<sourcepath path="${findbugs.sourcepath}"/>
 		 	<class location="${findbugs.target}"/>
 		</findbugs>

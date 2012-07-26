@@ -42,13 +42,12 @@ import com.vaadin.terminal.gwt.client.ComponentConnector;
 import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.VCaptionWrapper;
 import com.vaadin.terminal.gwt.client.VConsole;
-import com.vaadin.terminal.gwt.client.VTooltip;
 import com.vaadin.terminal.gwt.client.ui.VOverlay;
 import com.vaadin.terminal.gwt.client.ui.richtextarea.VRichTextArea;
 
 public class VThreadListingRow extends HTML {
 
-    public static final String CLASSNAME = "v-popupview";
+    public static final String CLASSNAME = "v-thread-listing-row";
 
     /** For server-client communication */
     String uidlId;
@@ -120,7 +119,6 @@ public class VThreadListingRow extends HTML {
         });
 
         popup.setAnimationEnabled(true);
-        sinkEvents(VTooltip.TOOLTIP_EVENTS);
     }
 
     private String getThreadURI(final Element thisElement) {
@@ -365,14 +363,6 @@ public class VThreadListingRow extends HTML {
         }
 
     }// class CustomPopup
-
-    @Override
-    public void onBrowserEvent(final Event event) {
-        super.onBrowserEvent(event);
-        if (client != null) {
-            client.handleTooltipEvent(event, this);
-        }
-    }
 
     @Override
     public void setHTML(final String html) {
