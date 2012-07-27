@@ -233,9 +233,15 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             // NOP - everything's logged. If you can't follow, you can't
             // unfollow either.
         }
+
         if (getPresenter().userMayBan()) {
-            c.enableBanning();
+            if (!post.getAuthor().isBanned()) {
+                c.enableBanning();
+            } else {
+                c.enableUnbanning();
+            }
         }
+
         if (getPresenter().userMayDelete(post)) {
             c.enableDeleting();
         }
