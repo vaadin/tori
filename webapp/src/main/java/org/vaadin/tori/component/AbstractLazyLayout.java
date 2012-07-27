@@ -178,12 +178,13 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
 
     protected void _replaceComponent(final int oldIndex,
             final Component newComponent) {
-        components.remove(oldIndex);
+        final Component oldComponent = components.remove(oldIndex);
         components.add(oldIndex, newComponent);
 
         connectors.remove(oldIndex);
         connectors.add(oldIndex, newComponent);
 
+        super.removeComponent(oldComponent);
         super.addComponent(newComponent);
         requestRepaint();
     }
