@@ -27,6 +27,7 @@ import com.vaadin.terminal.gwt.client.ui.AbstractComponentContainerConnector;
 import com.vaadin.terminal.gwt.client.ui.Connect;
 import com.vaadin.terminal.gwt.client.ui.PostLayoutListener;
 
+@SuppressWarnings({ "serial", "deprecation" })
 @Connect(ThreadListingRow.class)
 public class ThreadListingRowConnector extends
         AbstractComponentContainerConnector implements Paintable,
@@ -48,7 +49,7 @@ public class ThreadListingRowConnector extends
     @Override
     public void updateFromUIDL(final UIDL uidl,
             final ApplicationConnection client) {
-        if (!isRealUpdate(uidl)) {
+        if (!uidl.hasAttribute("cached")) {
             return;
         }
         // These are for future server connections

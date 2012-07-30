@@ -416,6 +416,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void incrementViewCount(final DiscussionThread thread)
             throws DataSourceException {
         try {
@@ -1347,7 +1348,10 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             final String googleAnalyticsTrackerId) throws DataSourceException {
 
         if (portletPreferences == null) {
-            throw new DataSourceException("Portlet preferences not available.");
+            @SuppressWarnings("deprecation")
+            final DataSourceException e = new DataSourceException(
+                    "Portlet preferences not available.");
+            throw e;
         } else {
             final String[] values = new String[postReplacements.size()];
             int index = 0;

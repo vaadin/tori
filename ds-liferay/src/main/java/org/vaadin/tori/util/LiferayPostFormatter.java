@@ -9,10 +9,8 @@ import java.util.regex.PatternSyntaxException;
 
 import org.apache.log4j.Logger;
 import org.vaadin.tori.data.entity.Post;
-import org.vaadin.tori.util.PostFormatter.FontsInfo;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
-import org.vaadin.tori.util.PostFormatter.FormatInfo;
 
 import com.liferay.portlet.messageboards.util.BBCodeUtil;
 
@@ -71,7 +69,7 @@ public class LiferayPostFormatter implements PostFormatter {
                     try {
                         body = body
                                 .replaceAll(entry.getKey(), entry.getValue());
-                    } catch (PatternSyntaxException e) {
+                    } catch (final PatternSyntaxException e) {
                         log.warn(
                                 "Invalid replacement regex pattern: "
                                         + entry.getKey(), e);
@@ -129,6 +127,7 @@ public class LiferayPostFormatter implements PostFormatter {
                 .getDisplayedName(), postToQuote.getBodyRaw());
     }
 
+    @Override
     public final void setPostReplacements(
             final Map<String, String> postReplacements) {
         this.postReplacements = postReplacements;

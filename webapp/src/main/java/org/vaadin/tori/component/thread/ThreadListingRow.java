@@ -16,6 +16,7 @@ import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupView;
 
 @SuppressWarnings("serial")
@@ -55,8 +56,8 @@ public class ThreadListingRow extends PopupView {
                 menu.swap(this, UNFOLLOW_ICON, UNFOLLOW_CAPTION,
                         new UnfollowAction(thread));
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
-                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification
+                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
         }
     }
@@ -74,8 +75,8 @@ public class ThreadListingRow extends PopupView {
                 presenter.unfollow(thread);
                 menu.swap(this, FOLLOW_ICON, FOLLOW_CAPTION, new FollowAction());
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
-                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification
+                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
         }
     }
@@ -94,8 +95,8 @@ public class ThreadListingRow extends PopupView {
                 menu.swap(this, UNSTICKY_ICON, UNSTICKY_CAPTION,
                         new UnstickyAction(thread));
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
-                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification
+                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
 
         }
@@ -115,8 +116,8 @@ public class ThreadListingRow extends PopupView {
                 menu.swap(this, STICKY_ICON, STICKY_CAPTION, new StickyAction(
                         thread));
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
-                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification
+                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
 
         }
@@ -136,8 +137,8 @@ public class ThreadListingRow extends PopupView {
                 menu.swap(this, UNLOCK_ICON, UNLOCK_CAPTION, new UnlockAction(
                         thread));
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
-                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification
+                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
 
         }
@@ -156,8 +157,8 @@ public class ThreadListingRow extends PopupView {
                 presenter.unlock(thread);
                 menu.swap(this, LOCK_ICON, LOCK_CAPTION, new LockAction(thread));
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
-                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification
+                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
 
         }
@@ -375,9 +376,8 @@ public class ThreadListingRow extends PopupView {
                             try {
                                 presenter.delete(thread);
                             } catch (final DataSourceException e) {
-                                getRoot()
-                                        .showNotification(
-                                                DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                                Notification
+                                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                             }
                         }
                     });

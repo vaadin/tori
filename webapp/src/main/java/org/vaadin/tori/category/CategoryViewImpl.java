@@ -152,9 +152,10 @@ public class CategoryViewImpl extends
     @Override
     public void displayCategoryNotFoundError(final String requestedCategoryId) {
         log.error("No such category: " + requestedCategoryId);
-        getRoot().showNotification(
-                "No category found for " + requestedCategoryId,
-                Notification.TYPE_ERROR_MESSAGE);
+
+        final Notification n = new Notification("No category found for "
+                + requestedCategoryId, Notification.TYPE_ERROR_MESSAGE);
+        n.show(getRoot().getPage());
     }
 
     @Override
@@ -175,18 +176,18 @@ public class CategoryViewImpl extends
 
     @Override
     public void confirmThreadMoved() {
-        getRoot().showNotification("Thread moved");
+        Notification.show("Thread moved");
     }
 
     @Override
     public void confirmThreadStickied(final DiscussionThread thread) {
-        getRoot().showNotification("Thread stickied");
+        Notification.show("Thread stickied");
         // presenter will reset the view here
     }
 
     @Override
     public void confirmThreadUnstickied(final DiscussionThread thread) {
-        getRoot().showNotification("Thread unstickied");
+        Notification.show("Thread unstickied");
         // presenter will reset the view here
     }
 
@@ -206,7 +207,7 @@ public class CategoryViewImpl extends
 
     @Override
     public void confirmThreadDeleted() {
-        getRoot().showNotification("Thread deleted");
+        Notification.show("Thread deleted");
     }
 
     @Override

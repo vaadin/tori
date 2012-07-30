@@ -17,6 +17,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.themes.Reindeer;
 
+@SuppressWarnings("serial")
 public class MenuPopup extends CustomComponent {
 
     public interface ContextAction {
@@ -94,7 +95,6 @@ public class MenuPopup extends CustomComponent {
 
     private Button createButton(final Resource icon, final String caption,
             final ContextComponentSwapper swapper) {
-        @SuppressWarnings("serial")
         final Button button = new Button(caption + '\u2026',
                 new Button.ClickListener() {
                     @Override

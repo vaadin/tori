@@ -125,9 +125,10 @@ public class PostComponent extends CustomComponent {
                 // this component will be replaced with a new one. So no need to
                 // change the state.
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
+                final Notification n = new Notification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
                         Notification.TYPE_ERROR_MESSAGE);
+                n.show(getRoot().getPage());
             }
         }
     };
@@ -156,8 +157,8 @@ public class PostComponent extends CustomComponent {
             try {
                 presenter.followThread();
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
-                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification
+                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
         }
     };
@@ -168,8 +169,8 @@ public class PostComponent extends CustomComponent {
             try {
                 presenter.unFollowThread();
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
-                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification
+                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
 
         }
@@ -189,8 +190,8 @@ public class PostComponent extends CustomComponent {
             try {
                 presenter.unban(post.getAuthor());
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
-                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification
+                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
         }
     };
@@ -461,8 +462,7 @@ public class PostComponent extends CustomComponent {
             // just to refresh the up/down icon visuals. bad method name here.
             score.enableUpDownVoting(presenter.getPostVote(post));
         } catch (final DataSourceException e) {
-            getRoot().showNotification(
-                    DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            Notification.show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
         }
     }
 

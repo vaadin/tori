@@ -8,7 +8,6 @@ import javax.portlet.PortletSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriNavigator.NavigableApplication;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.DebugDataSource;
@@ -38,8 +37,6 @@ import com.vaadin.ui.Window;
 public class ToriApplication extends Application implements
         NavigableApplication, HttpServletRequestListener,
         PortletRequestListener {
-
-    private static Logger log = Logger.getLogger(ToriApplication.class);
 
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "ignoring serialization")
     private final ToriApiLoader apiLoader = new ToriApiLoader();

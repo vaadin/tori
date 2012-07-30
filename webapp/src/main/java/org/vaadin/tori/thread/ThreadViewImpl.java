@@ -67,8 +67,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                     getPresenter().sendReply(rawBody);
                     getRoot().trackAction(null, "reply");
                 } catch (final DataSourceException e) {
-                    getRoot().showNotification(
-                            DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                    Notification
+                            .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                 }
             }
         }
@@ -363,8 +363,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void displayThreadNotFoundError(final String threadIdString) {
-        getRoot().showNotification("No thread found for " + threadIdString,
-                Notification.TYPE_ERROR_MESSAGE);
+        final Notification n = new Notification("No thread found for "
+                + threadIdString, Notification.TYPE_ERROR_MESSAGE);
+        n.show(getRoot().getPage());
     }
 
     @Override
@@ -378,7 +379,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void confirmPostReported() {
-        getRoot().showNotification("Post is reported!");
+        Notification.show("Post is reported!");
     }
 
     @Override
@@ -425,7 +426,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void confirmPostDeleted() {
-        getRoot().showNotification("Post deleted");
+        Notification.show("Post deleted");
         reloadPage();
     }
 
@@ -457,14 +458,14 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void displayUserCanNotReply() {
-        getRoot().showNotification(
-                "Unfortunately, you are not allowed to reply to this thread.");
+        Notification.show("Unfortunately, you are not "
+                + "allowed to reply to this thread.");
     }
 
     @Override
     public void displayUserCanNotEdit() {
-        getRoot().showNotification(
-                "Unfortunately, you are not allowed to edit this post.");
+        Notification.show("Unfortunately, you are not "
+                + "allowed to edit this post.");
     }
 
     @Override
@@ -523,13 +524,12 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                                 ToriNavigator.ApplicationView.THREADS.getUrl()
                                         + "/" + createdThread.getId());
                     } catch (final DataSourceException e) {
-                        getRoot()
-                                .showNotification(
-                                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                        Notification.show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                     }
                 } else {
-                    getRoot().showNotification(errorMessages,
+                    final Notification n = new Notification(errorMessages,
                             Notification.TYPE_HUMANIZED_MESSAGE);
+                    n.show(getRoot().getPage());
                 }
             }
 

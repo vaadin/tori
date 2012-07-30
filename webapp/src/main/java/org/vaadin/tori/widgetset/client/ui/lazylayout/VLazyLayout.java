@@ -164,19 +164,6 @@ public class VLazyLayout extends SimplePanel {
             indices.addLast(index);
             widgets.addLast(widget);
         }
-
-        public void add(final int[] indices, final Widget[] widgets) {
-            if (indices.length != widgets.length) {
-                throw new IllegalArgumentException("The arguments given to "
-                        + getClass().getName()
-                        + "add() were of different lengths");
-            }
-
-            for (int i = 0; i < indices.length; i++) {
-                renderQueue._add(indices[i], widgets[i]);
-            }
-            schedule(RENDER_INTERVAL_MILLIS);
-        }
     }
 
     private final FlowPane panel = new FlowPane();

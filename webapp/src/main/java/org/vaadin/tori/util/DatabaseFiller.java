@@ -67,6 +67,7 @@ public class DatabaseFiller {
     private DatabaseFiller() {
     }
 
+    @SuppressWarnings("serial")
     public static Button getFillerButton() {
         return new Button("NUKE!", new ClickListener() {
             @Override

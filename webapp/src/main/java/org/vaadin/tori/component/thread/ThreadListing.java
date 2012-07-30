@@ -61,9 +61,10 @@ public class ThreadListing extends CustomComponent {
                     components.add(threadListingRow);
                 }
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
+                final Notification n = new Notification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
                         Notification.TYPE_ERROR_MESSAGE);
+                n.show(getRoot().getPage());
             }
             return components;
         }
@@ -74,9 +75,10 @@ public class ThreadListing extends CustomComponent {
                 return (int) Math.min(presenter.countThreads(),
                         MAX_AMOUNT_OF_SHOWN_THREADS);
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
+                final Notification n = new Notification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
                         Notification.TYPE_ERROR_MESSAGE);
+                n.show(getRoot().getPage());
                 return 0;
             }
         }

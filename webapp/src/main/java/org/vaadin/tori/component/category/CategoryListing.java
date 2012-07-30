@@ -22,6 +22,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 
 /**
  * UI component for displaying a vertical hierarchical list of categories.
@@ -124,8 +125,8 @@ public class CategoryListing extends
                              * FIXME: make sure that no categories were added to
                              * the UI.
                              */
-                            getRoot().showNotification(
-                                    "Couldn't save your modifications :(");
+                            Notification.show("Couldn't save "
+                                    + "your modifications :(");
                         }
                     }
                 }));
@@ -139,8 +140,7 @@ public class CategoryListing extends
                     getPresenter().applyRearrangement();
                 } catch (final DataSourceException e) {
                     /* FIXME: refresh view to show that nothing was rearranged? */
-                    getRoot().showNotification(
-                            "Couldn't save new arrangement :(");
+                    Notification.show("Couldn't save new arrangement :(");
                 }
             }
 

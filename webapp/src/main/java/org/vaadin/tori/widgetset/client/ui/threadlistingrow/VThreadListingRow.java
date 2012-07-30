@@ -317,6 +317,7 @@ public class VThreadListingRow extends HTML {
         public void updateFromUIDL(final UIDL uidl,
                 final ApplicationConnection client) {
 
+            @SuppressWarnings("deprecation")
             final ComponentConnector newPopupComponent = client
                     .getPaintable(uidl.getChildUIDL(0));
 

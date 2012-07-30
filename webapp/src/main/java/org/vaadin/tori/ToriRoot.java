@@ -25,8 +25,6 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 @Widgetset("org.vaadin.tori.widgetset.ToriWidgetset")
 public class ToriRoot extends Root {
 
-    private static final int KEEPALIVE_PING_INTERVAL_MILLIS = 60000;
-
     private static final String PATH_ACTION_SEPARATOR = "$";
 
     private final ToriNavigator navigator = new ToriNavigator(this);
@@ -72,16 +70,6 @@ public class ToriRoot extends Root {
                 }
             }
         });
-
-        /*
-         * refresher to stop the session from expiring. SessionGuard would be
-         * better, but it doesn't work in portlets
-         */
-        /*-
-        final Refresher refresher = new Refresher();
-        refresher.setRefreshInterval(KEEPALIVE_PING_INTERVAL_MILLIS);
-        addComponent(refresher);
-         */
     }
 
     public final void setPortletMode(final PortletMode portletMode) {

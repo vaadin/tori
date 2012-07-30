@@ -25,7 +25,6 @@ public class Category extends AbstractEntity {
     @OneToMany(mappedBy = "parentCategory", fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE })
     private List<Category> subCategories;
 
-    @SuppressWarnings("unused")
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE })
     private List<DiscussionThread> threads;
 

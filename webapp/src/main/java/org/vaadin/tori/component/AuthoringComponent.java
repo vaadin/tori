@@ -44,6 +44,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TextField;
@@ -499,7 +500,7 @@ public abstract class AuthoringComponent extends CustomComponent {
             public void uploadStarted(final StartedEvent event) {
                 if (event.getContentLength() > maxFileSize) {
                     attach.interruptUpload();
-                    getRoot().showNotification("File size too large");
+                    Notification.show("File size too large");
                     return;
                 }
             }

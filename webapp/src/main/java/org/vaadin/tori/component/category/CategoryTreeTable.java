@@ -31,6 +31,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TreeTable;
 
 @SuppressWarnings("serial")
@@ -66,7 +67,7 @@ class CategoryTreeTable extends TreeTable {
         // set visual properties
         setWidth("100%");
         setPageLength(0);
-        setSortDisabled(true);
+        setSortEnabled(false);
         setDropHandler(new CategoryTreeDropHandler());
         if (mode == Mode.SINGLE_COLUMN) {
             setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
@@ -227,9 +228,8 @@ class CategoryTreeTable extends TreeTable {
                                                  * FIXME: make sure that edits
                                                  * are reverted.
                                                  */
-                                                getRoot()
-                                                        .showNotification(
-                                                                "Sorry, there's something wrong with the database :(");
+                                                Notification
+                                                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                                             }
                                         }
                                     };
@@ -256,9 +256,8 @@ class CategoryTreeTable extends TreeTable {
                                             try {
                                                 presenter.delete(category);
                                             } catch (final DataSourceException e) {
-                                                getRoot()
-                                                        .showNotification(
-                                                                "Sorry, there's something wrong with the database :(");
+                                                Notification
+                                                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                                             }
                                             contextMenu.close();
                                         }
