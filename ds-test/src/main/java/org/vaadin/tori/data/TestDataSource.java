@@ -621,6 +621,10 @@ public class TestDataSource implements DataSource, DebugDataSource {
 
     private void persistPostAttachments(final Post post,
             final Map<String, byte[]> files, final EntityManager em) {
+        if (files == null) {
+            return;
+        }
+
         if (!em.getTransaction().isActive()) {
             throw new IllegalArgumentException("Transaction inactive");
         }
@@ -759,6 +763,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
                 final EntityTransaction transaction = em.getTransaction();
                 transaction.begin();
                 final DiscussionThread mergedThread = em.merge(newThread);
+                firstPost.setThread(mergedThread);
                 final Post post = em.merge(firstPost);
 
                 persistPostAttachments(post, files, em);
