@@ -49,7 +49,7 @@ public class ThreadListingRowConnector extends
     @Override
     public void updateFromUIDL(final UIDL uidl,
             final ApplicationConnection client) {
-        if (!uidl.hasAttribute("cached")) {
+        if (uidl.hasAttribute("cached")) {
             return;
         }
         // These are for future server connections
