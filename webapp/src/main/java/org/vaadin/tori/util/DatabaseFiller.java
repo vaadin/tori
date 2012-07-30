@@ -24,7 +24,7 @@ public class DatabaseFiller {
     private static final int POSTS_IN_THREAD_BASE = 10;
     private static final int POSTS_IN_THREAD_JITTER = 20;
 
-    private static final int THREAD_AMOUNT = 1500;
+    private static final int THREAD_AMOUNT = 500;
 
     private static final String[] LIPSUM = new String[] { "Lorem", "ipsum",
             "dolor", "sit", "amet,", "consectetur", "adipiscing", "elit.",
@@ -82,6 +82,7 @@ public class DatabaseFiller {
                         category = new Category();
                         final String name = "Generated Category";
                         category.setName(name);
+                        category.setDescription("");
                         category = ds.save(category);
 
                         for (final Category c : ds.getRootCategories()) {
@@ -92,8 +93,7 @@ public class DatabaseFiller {
                             }
                         }
                     } catch (final DataSourceException e) {
-                        e.printStackTrace();
-                        return;
+                        throw new RuntimeException(e);
                     }
                     try {
 
@@ -106,6 +106,10 @@ public class DatabaseFiller {
                             op.setBodyRaw(getLipsum());
                             op.setTime(new Date());
                             thread = ds.saveNewThread(thread, null, op);
+
+                            if (thread == null) {
+                                throw new RuntimeException("thread was null");
+                            }
 
                             final int cap = new Random()
                                     .nextInt(POSTS_IN_THREAD_JITTER)
@@ -125,7 +129,7 @@ public class DatabaseFiller {
                         }
 
                     } catch (final DataSourceException e) {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
                     try {
                         DiscussionThread thread = new DiscussionThread(
@@ -152,10 +156,9 @@ public class DatabaseFiller {
                             }
                         }
                     } catch (final DataSourceException e) {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
                 } catch (final RuntimeException e) {
-                    e.printStackTrace();
                     throw e;
                 }
             }
