@@ -8,6 +8,7 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.View;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 public interface CategoryView extends View {
     void displaySubCategories(List<Category> subCategories);
@@ -25,7 +26,7 @@ public interface CategoryView extends View {
     @CheckForNull
     Category getCurrentCategory();
 
-    void displayThreads(List<DiscussionThread> thread);
+    void displayThreads(@NonNull List<DiscussionThread> thread);
 
     void confirmFollowing(DiscussionThread thread);
 
