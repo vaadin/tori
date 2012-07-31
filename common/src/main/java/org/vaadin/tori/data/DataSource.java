@@ -308,10 +308,16 @@ public interface DataSource {
     void markRead(DiscussionThread thread) throws DataSourceException;
 
     @NonNull
-    List<DiscussionThread> getRecentPosts() throws DataSourceException;
+    List<DiscussionThread> getRecentPosts(int from, int to)
+            throws DataSourceException;
+
+    int getRecentPostsAmount() throws DataSourceException;
 
     @NonNull
-    List<DiscussionThread> getMyPosts() throws DataSourceException;
+    List<DiscussionThread> getMyPosts(int from, int to)
+            throws DataSourceException;
+
+    int getMyPostsAmount() throws DataSourceException;
 
     int getAttachmentMaxFileSize();
 
@@ -333,4 +339,5 @@ public interface DataSource {
      */
     @CheckForNull
     String getGoogleAnalyticsTrackerId();
+
 }

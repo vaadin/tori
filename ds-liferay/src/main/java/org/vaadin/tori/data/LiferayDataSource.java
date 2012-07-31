@@ -80,6 +80,9 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class LiferayDataSource implements DataSource, PortletRequestAware {
 
+    private static final boolean INCLUDE_SUBSCRIBED = false;
+    private static final boolean INCLUDE_ANONYMOUS = false;
+
     private static final Logger log = Logger.getLogger(LiferayDataSource.class);
 
     private static final long ROOT_CATEGORY_ID = 0;
@@ -207,9 +210,12 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public List<DiscussionThread> getRecentPosts() throws DataSourceException {
+    public List<DiscussionThread> getRecentPosts(final int from, final int to)
+            throws DataSourceException {
+        // TODO
         try {
-            final List<MBThread> liferayThreads = getLiferayRecentThreads();
+            final List<MBThread> liferayThreads = getLiferayRecentThreads(from,
+                    to);
 
             // collection for the final result
             final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
@@ -230,9 +236,22 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public List<DiscussionThread> getMyPosts() throws DataSourceException {
+    public int getRecentPostsAmount() throws DataSourceException {
         try {
-            final List<MBThread> liferayThreads = getLiferayMyPosts();
+            return MBThreadServiceUtil.getGroupThreadsCount(scopeGroupId, 0,
+                    WorkflowConstants.STATUS_APPROVED, INCLUDE_ANONYMOUS,
+                    INCLUDE_SUBSCRIBED);
+        } catch (final SystemException e) {
+            log.error("Couldn't get amount of recent threads.", e);
+            throw new DataSourceException(e);
+        }
+    };
+
+    @Override
+    public List<DiscussionThread> getMyPosts(final int from, final int to)
+            throws DataSourceException {
+        try {
+            final List<MBThread> liferayThreads = getLiferayMyPosts(from, to);
 
             // collection for the final result
             final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
@@ -248,6 +267,21 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             throw new DataSourceException(e);
         } catch (final PortalException e) {
             log.error("Couldn't get my posts.", e);
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Override
+    public int getMyPostsAmount() throws DataSourceException {
+        try {
+            final int groupThreadsCount = MBThreadServiceUtil
+                    .getGroupThreadsCount(scopeGroupId, currentUserId,
+                            WorkflowConstants.STATUS_ANY);
+            log.debug("LiferayDataSource.getMyPostsAmount(): "
+                    + groupThreadsCount);
+            return groupThreadsCount;
+        } catch (final SystemException e) {
+            log.error("Couldn't get my posts' count.", e);
             throw new DataSourceException(e);
         }
     }
@@ -307,33 +341,17 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         return liferayThreads;
     }
 
-    private List<MBThread> getLiferayRecentThreads() throws SystemException,
-            PortalException {
-        final int start = 0; // use QUERY_ALL if you'd like to get all
-        final int end = 40; // use QUERY_ALL if you'd like to get all
-        final List<MBThread> liferayThreads = MBThreadServiceUtil
-                .getGroupThreads(scopeGroupId, 0,
-                        WorkflowConstants.STATUS_APPROVED, false, false, start,
-                        end);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Found %d recent threads.",
-                    liferayThreads.size()));
-        }
-        return liferayThreads;
+    private List<MBThread> getLiferayRecentThreads(final int start,
+            final int end) throws SystemException, PortalException {
+        return MBThreadServiceUtil.getGroupThreads(scopeGroupId, 0,
+                WorkflowConstants.STATUS_APPROVED, INCLUDE_ANONYMOUS,
+                INCLUDE_SUBSCRIBED, start, end + 1);
     }
 
-    private List<MBThread> getLiferayMyPosts() throws SystemException,
-            PortalException {
-        final int start = 0; // use QUERY_ALL if you'd like to get all
-        final int end = 40; // use QUERY_ALL if you'd like to get all
-        final List<MBThread> liferayThreads = MBThreadServiceUtil
-                .getGroupThreads(scopeGroupId, currentUserId,
-                        WorkflowConstants.STATUS_ANY, start, end);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Found %d my threads.",
-                    liferayThreads.size()));
-        }
-        return liferayThreads;
+    private List<MBThread> getLiferayMyPosts(final int start, final int end)
+            throws SystemException, PortalException {
+        return MBThreadServiceUtil.getGroupThreads(scopeGroupId, currentUserId,
+                WorkflowConstants.STATUS_ANY, start, end + 1);
     }
 
     @Override

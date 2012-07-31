@@ -5,12 +5,31 @@ import java.util.List;
 import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
+import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.View;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 public interface CategoryView extends View {
+    public interface ThreadProvider {
+        /**
+         * The total amount of threads available in the current category.
+         * 
+         * @return
+         * @throws DataSourceException
+         */
+        public int getThreadAmount() throws DataSourceException;
+
+        /**
+         * Get all threads in indices between, and including, <code>from</code>
+         * and <code>to</code>.
+         */
+        @NonNull
+        public List<DiscussionThread> getThreadsBetween(int from, int to)
+                throws DataSourceException;
+    }
+
     void displaySubCategories(List<Category> subCategories);
 
     // void displayThreads(List<DiscussionThread> threadsInCategory);
@@ -26,7 +45,7 @@ public interface CategoryView extends View {
     @CheckForNull
     Category getCurrentCategory();
 
-    void displayThreads(@NonNull List<DiscussionThread> thread);
+    void displayThreads(@NonNull ThreadProvider threadProvider);
 
     void confirmFollowing(DiscussionThread thread);
 
@@ -67,8 +86,6 @@ public interface CategoryView extends View {
      * @see PanicComponent
      */
     void panic();
-
-    void displayThreads();
 
     void hideThreads();
 

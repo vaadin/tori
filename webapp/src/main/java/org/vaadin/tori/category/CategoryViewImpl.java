@@ -10,7 +10,6 @@ import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.component.category.CategoryListing;
 import org.vaadin.tori.component.category.CategoryListing.Mode;
 import org.vaadin.tori.component.thread.ThreadListing;
-import org.vaadin.tori.component.thread.ThreadListingHacked;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.AbstractView;
@@ -28,6 +27,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 @SuppressWarnings("serial")
 public class CategoryViewImpl extends
@@ -120,19 +120,6 @@ public class CategoryViewImpl extends
         categoryListing.setCategories(subCategories);
     }
 
-    @Override
-    public void displayThreads(final List<DiscussionThread> threadsInCategory) {
-        if (!threadsInCategory.isEmpty()) {
-            final ThreadListingHacked tlhack = new ThreadListingHacked(
-                    getPresenter());
-            tlhack.setThreads(threadsInCategory);
-            threadListing = tlhack;
-            replacePlaceholder();
-        } else {
-            hideThreads();
-        }
-    }
-
     private void replacePlaceholder() {
         final ComponentContainer listingParent = (ComponentContainer) threadListingPlaceHolder
                 .getParent();
@@ -217,8 +204,8 @@ public class CategoryViewImpl extends
     }
 
     @Override
-    public void displayThreads() {
-        threadListing = new ThreadListing(getPresenter());
+    public void displayThreads(@NonNull final ThreadProvider threadProvider) {
+        threadListing = new ThreadListing(getPresenter(), threadProvider);
         replacePlaceholder();
         setThreadLabel(THREADS);
     }
