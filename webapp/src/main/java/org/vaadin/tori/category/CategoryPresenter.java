@@ -58,8 +58,8 @@ public class CategoryPresenter extends Presenter<CategoryView> {
                 } else {
                     view.hideThreads();
                 }
+                view.setUserMayStartANewThread(userMayStartANewThread());
             }
-            view.setUserMayStartANewThread(userMayStartANewThread());
         } catch (final DataSourceException e) {
             e.printStackTrace();
             getView().panic();
