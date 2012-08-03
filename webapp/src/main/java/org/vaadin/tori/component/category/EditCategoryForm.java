@@ -50,8 +50,8 @@ class EditCategoryForm extends CustomComponent {
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(final ClickEvent event) {
-                        listener.commit((String) nameField.getValue(),
-                                (String) descriptionField.getValue());
+                        listener.commit(nameField.getValue(),
+                                descriptionField.getValue());
                     }
                 });
         newCategoryLayout.addComponent(saveButton);
