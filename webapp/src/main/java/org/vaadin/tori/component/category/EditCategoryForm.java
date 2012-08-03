@@ -52,6 +52,13 @@ class EditCategoryForm extends CustomComponent {
                     public void buttonClick(final ClickEvent event) {
                         listener.commit(nameField.getValue(),
                                 descriptionField.getValue());
+
+                        /*
+                         * exceptions would be thrown by now. If everything went
+                         * okay, clear the inputs.
+                         */
+                        nameField.setValue("");
+                        descriptionField.setValue("");
                     }
                 });
         newCategoryLayout.addComponent(saveButton);
