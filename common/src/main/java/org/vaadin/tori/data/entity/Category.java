@@ -67,4 +67,11 @@ public class Category extends AbstractEntity {
     public void setDisplayOrder(final int displayOrder) {
         this.displayOrder = displayOrder;
     }
+
+    @Override
+    public String toString() {
+        return "Category [getId()=" + getId() + " name=" + name
+                + ", description=" + description + "]";
+    }
+
 }
