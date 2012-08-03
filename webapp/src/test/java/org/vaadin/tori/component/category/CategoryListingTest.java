@@ -116,7 +116,7 @@ public class CategoryListingTest {
         categories.add(max);
         categories.add(mid);
 
-        presenter.setCategories(categories);
+        presenter.setCategories(categories, null);
         assertEquals(100, presenter.getMaxDisplayOrder());
     }
 

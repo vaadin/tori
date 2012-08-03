@@ -115,9 +115,22 @@ public class CategoryViewImpl extends
 
     @Override
     public void displaySubCategories(final List<Category> subCategories) {
-        // show contained categories only if there are any
-        categoryLayout.setVisible(!subCategories.isEmpty());
-        categoryListing.setCategories(subCategories);
+        if (!subCategories.isEmpty()) {
+            categoryListing.replaceCreateCategoryButton();
+            categoryListing.setCategories(subCategories, getCurrentCategory());
+        } else {
+            if (getPresenter().userCanCreateSubcategory()) {
+                categoryLayout.setVisible(true);
+                final Component createCategoryButton = categoryListing
+                        .removeAndGetCreateCategoryButton();
+                categoryLayout.addComponent(createCategoryButton, 1);
+                categoryListing.setCategories(subCategories,
+                        getCurrentCategory());
+                categoryListing.setVisible(false);
+            } else {
+                categoryLayout.setVisible(false);
+            }
+        }
     }
 
     private void replacePlaceholder() {

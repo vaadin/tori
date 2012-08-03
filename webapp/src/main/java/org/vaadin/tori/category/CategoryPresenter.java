@@ -372,4 +372,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         }
     }
 
+    public boolean userCanCreateSubcategory() {
+        return authorizationService.mayEditCategories();
+    }
 }

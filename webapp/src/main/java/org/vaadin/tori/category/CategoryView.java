@@ -30,7 +30,7 @@ public interface CategoryView extends View {
                 throws DataSourceException;
     }
 
-    void displaySubCategories(List<Category> subCategories);
+    void displaySubCategories(@NonNull List<Category> subCategories);
 
     // void displayThreads(List<DiscussionThread> threadsInCategory);
 

@@ -53,6 +53,7 @@ public class CategoryListing extends
     private PopupButton createCategoryButton;
     private Button rearrangeCategoriesButton;
     private ComponentContainer rearrangeControls;
+    private HorizontalLayout buttonWrapper;
 
     public CategoryListing(final Mode listingMode) {
         this.mode = listingMode;
@@ -87,8 +88,9 @@ public class CategoryListing extends
         createCategoryButton.setVisible(visible);
     }
 
-    public void setCategories(final List<Category> categories) {
-        getPresenter().setCategories(categories);
+    public void setCategories(final List<Category> categories,
+            final Category root) {
+        getPresenter().setCategories(categories, root);
     }
 
     @Override
@@ -120,6 +122,15 @@ public class CategoryListing extends
                             final String description) {
                         try {
                             getPresenter().createNewCategory(name, description);
+
+                            /*
+                             * this is an ugly piece of code. Maybe the edit
+                             * listener could be propagated outside of
+                             * CategoryListing. It's either this code, or giving
+                             * CategoryViewImpl access to the edit event.
+                             */
+                            replaceCreateCategoryButton();
+                            setVisible(true);
                         } catch (final DataSourceException e) {
                             /*
                              * FIXME: make sure that no categories were added to
@@ -152,7 +163,7 @@ public class CategoryListing extends
         });
         rearrangeControls.setVisible(false);
 
-        final HorizontalLayout buttonWrapper = new HorizontalLayout();
+        buttonWrapper = new HorizontalLayout();
         buttonWrapper.setSpacing(true);
         buttonWrapper.addComponent(createCategoryButton);
         buttonWrapper.addComponent(rearrangeCategoriesButton);
@@ -244,4 +255,40 @@ public class CategoryListing extends
         // NOP
     }
 
+    /**
+     * <p>
+     * Remove the create category button, and return the button component.
+     * </p>
+     * <p>
+     * If it's already removed, it just returns the button component
+     * </p>
+     * 
+     * @return createCategoryButton
+     * @see #replaceCreateCategoryButton()
+     */
+    public Component removeAndGetCreateCategoryButton() {
+        if (createCategoryButton.getParent() == buttonWrapper) {
+            buttonWrapper.removeComponent(createCategoryButton);
+        }
+        return createCategoryButton;
+    }
+
+    /**
+     * <p>
+     * This method undoes what {@link #removeAndGetCreateCategoryButton()} does:
+     * it re-inserts the categorybutton where it should be within
+     * {@link CategoryListing} and removes it from wherever it was before.
+     * </p>
+     * 
+     * <p>
+     * If the button is already in place, this method does nothing.
+     * </p>
+     * 
+     * @see #removeAndGetCreateCategoryButton()
+     */
+    public void replaceCreateCategoryButton() {
+        if (createCategoryButton.getParent() != buttonWrapper) {
+            buttonWrapper.addComponent(createCategoryButton, 0);
+        }
+    }
 }
