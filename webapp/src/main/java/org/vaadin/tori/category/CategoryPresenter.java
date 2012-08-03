@@ -26,18 +26,12 @@ public class CategoryPresenter extends Presenter<CategoryView> {
                 final int to) throws DataSourceException {
             final List<DiscussionThread> recentPosts = dataSource
                     .getRecentPosts(from, to);
-            System.out
-                    .println("CategoryPresenter.recentPostsProvider.new ThreadProvider() {...}.getThreadsBetween("
-                            + from + ", " + to + "): " + recentPosts.size());
             return recentPosts;
         }
 
         @Override
         public int getThreadAmount() throws DataSourceException {
             final int recentPostsAmount = dataSource.getRecentPostsAmount();
-            System.out
-                    .println("CategoryPresenter.recentPostsProvider.new ThreadProvider() {...}.getThreadAmount(): "
-                            + recentPostsAmount);
             return recentPostsAmount;
         }
     };
