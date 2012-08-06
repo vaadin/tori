@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.vaadin.hene.popupbutton.PopupButton;
+import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
+import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.component.category.EditCategoryForm.EditCategoryListener;
 import org.vaadin.tori.component.category.RearrangeControls.RearrangeListener;
@@ -115,7 +117,7 @@ public class CategoryListing extends
         createCategoryButton
                 .addStyleName(StyleConstants.POPUP_INDICATOR_HIDDEN);
         createCategoryButton.setIcon(new ThemeResource("images/icon-add.png"));
-        createCategoryButton.setComponent(new EditCategoryForm(
+        final EditCategoryForm editCategoryForm = new EditCategoryForm(
                 new EditCategoryListener() {
                     @Override
                     public void commit(final String name,
@@ -140,7 +142,18 @@ public class CategoryListing extends
                                     + "your modifications :(");
                         }
                     }
-                }));
+                });
+        createCategoryButton.setComponent(editCategoryForm);
+        createCategoryButton
+                .addPopupVisibilityListener(new PopupVisibilityListener() {
+                    @Override
+                    public void popupVisibilityChange(
+                            final PopupVisibilityEvent event) {
+                        if (event.isPopupVisible()) {
+                            editCategoryForm.getTitleField().focus();
+                        }
+                    }
+                });
 
         rearrangeControls = new RearrangeControls(new RearrangeListener() {
             @Override
