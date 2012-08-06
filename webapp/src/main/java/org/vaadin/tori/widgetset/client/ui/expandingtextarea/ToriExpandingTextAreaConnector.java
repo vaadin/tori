@@ -3,7 +3,7 @@ package org.vaadin.tori.widgetset.client.ui.expandingtextarea;
 import org.vaadin.hene.expandingtextarea.widgetset.client.ui.ExpandingTextAreaConnector;
 import org.vaadin.tori.component.ToriExpandingTextArea;
 
-import com.vaadin.terminal.gwt.client.ui.Connect;
+import com.vaadin.shared.ui.Connect;
 
 @Connect(ToriExpandingTextArea.class)
 @SuppressWarnings("serial")

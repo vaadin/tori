@@ -19,9 +19,9 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.shared.ui.VMarginInfo;
 import com.vaadin.terminal.gwt.client.StyleConstants;
 import com.vaadin.terminal.gwt.client.VConsole;
-import com.vaadin.terminal.gwt.client.ui.VMarginInfo;
 import com.vaadin.terminal.gwt.client.ui.csslayout.VCssLayout;
 
 public class VLazyLayout extends SimplePanel {

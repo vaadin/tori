@@ -226,7 +226,7 @@ public final class FloatingBarWidget extends Widget implements ResizeHandler {
     public void onResize(final ResizeEvent event) {
         // resizing the window might also reveal/hide the scroll component
         overlay.setVisible(getVisibilityPercentage());
-        overlay.updateShadowSizeAndPosition();
+        overlay.sizeOrPositionUpdated();
         overlay.update(rootWidget);
     }
 }

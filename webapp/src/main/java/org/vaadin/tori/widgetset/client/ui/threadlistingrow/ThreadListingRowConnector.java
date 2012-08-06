@@ -17,6 +17,7 @@ package org.vaadin.tori.widgetset.client.ui.threadlistingrow;
 
 import org.vaadin.tori.component.thread.ThreadListingRow;
 
+import com.vaadin.shared.ui.Connect;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.ComponentConnector;
 import com.vaadin.terminal.gwt.client.Paintable;
@@ -24,7 +25,6 @@ import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.VCaption;
 import com.vaadin.terminal.gwt.client.VCaptionWrapper;
 import com.vaadin.terminal.gwt.client.ui.AbstractComponentContainerConnector;
-import com.vaadin.terminal.gwt.client.ui.Connect;
 import com.vaadin.terminal.gwt.client.ui.PostLayoutListener;
 
 @SuppressWarnings({ "serial", "deprecation" })

@@ -25,8 +25,8 @@ import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRp
 import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutServerRpc;
 import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutState;
 
-import com.vaadin.terminal.gwt.client.ComponentState;
-import com.vaadin.terminal.gwt.client.Connector;
+import com.vaadin.shared.ComponentState;
+import com.vaadin.shared.Connector;
 import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Component;
 

@@ -34,7 +34,7 @@ import com.vaadin.event.FieldEvents;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.terminal.gwt.client.ui.label.ContentMode;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;

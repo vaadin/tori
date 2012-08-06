@@ -1,7 +1,7 @@
 package org.vaadin.tori.widgetset.client.ui.floatingbar;
 
-import com.vaadin.terminal.gwt.client.ComponentState;
-import com.vaadin.terminal.gwt.client.Connector;
+import com.vaadin.shared.ComponentState;
+import com.vaadin.shared.Connector;
 
 @SuppressWarnings("serial")
 public class FloatingBarState extends ComponentState {

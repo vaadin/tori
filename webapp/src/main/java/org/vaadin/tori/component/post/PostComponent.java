@@ -21,10 +21,10 @@ import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.thread.ThreadPresenter;
 
 import com.ocpsoft.pretty.time.PrettyTime;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
-import com.vaadin.terminal.gwt.client.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;

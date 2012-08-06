@@ -132,8 +132,8 @@ class FloatingBarOverlay extends VOverlay {
 
     // overridden for method visibility
     @Override
-    public void updateShadowSizeAndPosition() {
-        super.updateShadowSizeAndPosition();
+    public void sizeOrPositionUpdated() {
+        super.sizeOrPositionUpdated();
     }
 
     public void setTopAligned(final boolean topAligned) {
