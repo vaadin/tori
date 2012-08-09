@@ -25,6 +25,7 @@ import com.vaadin.ui.themes.Reindeer;
 @SuppressWarnings("serial")
 public class ContextMenu extends CustomComponent {
 
+    private static final String POPUP_WIDTH = "200px";
     private static final String OPENED_CLASS_NAME = "opened";
     private static final String ICON_SIZE = "16px";
 
@@ -46,6 +47,12 @@ public class ContextMenu extends CustomComponent {
             } else {
                 settingsIcon.addStyleName(OPENED_CLASS_NAME);
                 popupLayout.beingClosedHook();
+
+                /*
+                 * a switcher may have modified the size of the popup, so we
+                 * reset it here
+                 */
+                popupLayout.setWidth(POPUP_WIDTH);
             }
         }
     };
@@ -109,7 +116,7 @@ public class ContextMenu extends CustomComponent {
         popupButton.setWidth("0");
         popupButton.setHeight("0");
         popupButton.addPopupVisibilityListener(popupListener);
-        popupLayout.setWidth("200px");
+        popupLayout.setWidth(POPUP_WIDTH);
         return popupButton;
     }
 

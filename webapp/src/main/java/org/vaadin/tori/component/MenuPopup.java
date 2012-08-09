@@ -101,7 +101,20 @@ public class MenuPopup extends CustomComponent {
                     public void buttonClick(final ClickEvent event) {
                         componentsBeforeSwapping = getCurrentComponents();
                         layout.removeAllComponents();
-                        layout.addComponent(swapper.swapContextComponent());
+                        final Component swappedComponent = swapper
+                                .swapContextComponent();
+                        layout.addComponent(swappedComponent);
+                        if (swappedComponent.getWidth() >= 0) {
+                            /*
+                             * We need to copy the width of the swapped
+                             * component, otherwise the popup will clip the
+                             * contents. The size is reset in
+                             * ContextMenu.popupListener
+                             */
+                            layout.getParent().setWidth(
+                                    swappedComponent.getWidth(),
+                                    swappedComponent.getWidthUnits());
+                        }
                     }
                 });
         button.setIcon(icon);
