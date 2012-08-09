@@ -20,7 +20,6 @@
 	<property name="dir.web-inf" value="${dir.webapp}/src/main/webapp/WEB-INF" />
 	<property name="dir.web-inf.lib" value="${dir.web-inf}/lib" />
 	
-	<property name="file.vaadin.jar" value="${dir.web-inf.lib}/${vaadin.jar}" />
 	<property name="file.common.jar" value="${dir.build-artifacts}/common.jar" />
 	<property name="file.webapp.jar" value="${dir.build-artifacts}/webapp.jar" />
 	<property name="file.ds.liferay.jar" value="${dir.build-artifacts}/ds-liferay.jar" />
