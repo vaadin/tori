@@ -10,7 +10,6 @@ import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.component.category.CategoryListing;
 import org.vaadin.tori.component.category.CategoryListing.Mode;
 import org.vaadin.tori.component.thread.ThreadListing;
-import org.vaadin.tori.component.thread.ThreadListingHacked;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.AbstractView;
@@ -28,6 +27,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 @SuppressWarnings("serial")
 public class CategoryViewImpl extends
@@ -115,21 +115,21 @@ public class CategoryViewImpl extends
 
     @Override
     public void displaySubCategories(final List<Category> subCategories) {
-        // show contained categories only if there are any
-        categoryLayout.setVisible(!subCategories.isEmpty());
-        categoryListing.setCategories(subCategories);
-    }
-
-    @Override
-    public void displayThreads(final List<DiscussionThread> threadsInCategory) {
-        if (!threadsInCategory.isEmpty()) {
-            final ThreadListingHacked tlhack = new ThreadListingHacked(
-                    getPresenter());
-            tlhack.setThreads(threadsInCategory);
-            threadListing = tlhack;
-            replacePlaceholder();
+        if (!subCategories.isEmpty()) {
+            categoryListing.replaceCreateCategoryButton();
+            categoryListing.setCategories(subCategories, getCurrentCategory());
         } else {
-            hideThreads();
+            if (getPresenter().userCanCreateSubcategory()) {
+                categoryLayout.setVisible(true);
+                final Component createCategoryButton = categoryListing
+                        .removeAndGetCreateCategoryButton();
+                categoryLayout.addComponent(createCategoryButton, 1);
+                categoryListing.setCategories(subCategories,
+                        getCurrentCategory());
+                categoryListing.setVisible(false);
+            } else {
+                categoryLayout.setVisible(false);
+            }
         }
     }
 
@@ -152,9 +152,10 @@ public class CategoryViewImpl extends
     @Override
     public void displayCategoryNotFoundError(final String requestedCategoryId) {
         log.error("No such category: " + requestedCategoryId);
-        getRoot().showNotification(
-                "No category found for " + requestedCategoryId,
-                Notification.TYPE_ERROR_MESSAGE);
+
+        final Notification n = new Notification("No category found for "
+                + requestedCategoryId, Notification.TYPE_ERROR_MESSAGE);
+        n.show(getRoot().getPage());
     }
 
     @Override
@@ -175,18 +176,18 @@ public class CategoryViewImpl extends
 
     @Override
     public void confirmThreadMoved() {
-        getRoot().showNotification("Thread moved");
+        Notification.show("Thread moved");
     }
 
     @Override
     public void confirmThreadStickied(final DiscussionThread thread) {
-        getRoot().showNotification("Thread stickied");
+        Notification.show("Thread stickied");
         // presenter will reset the view here
     }
 
     @Override
     public void confirmThreadUnstickied(final DiscussionThread thread) {
-        getRoot().showNotification("Thread unstickied");
+        Notification.show("Thread unstickied");
         // presenter will reset the view here
     }
 
@@ -206,7 +207,7 @@ public class CategoryViewImpl extends
 
     @Override
     public void confirmThreadDeleted() {
-        getRoot().showNotification("Thread deleted");
+        Notification.show("Thread deleted");
     }
 
     @Override
@@ -216,8 +217,8 @@ public class CategoryViewImpl extends
     }
 
     @Override
-    public void displayThreads() {
-        threadListing = new ThreadListing(getPresenter());
+    public void displayThreads(@NonNull final ThreadProvider threadProvider) {
+        threadListing = new ThreadListing(getPresenter(), threadProvider);
         replacePlaceholder();
         setThreadLabel(THREADS);
     }

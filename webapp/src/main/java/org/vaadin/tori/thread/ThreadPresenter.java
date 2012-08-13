@@ -48,8 +48,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                 currentThread = requestedThread;
 
                 final ThreadView view = getView();
-                view.displayPosts(dataSource.getPosts(requestedThread),
-                        requestedThread);
+                view.displayPosts(dataSource.getPosts(requestedThread));
             } else {
                 getView().displayThreadNotFoundError(threadIdString);
             }
@@ -108,13 +107,23 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     public void ban(final @NonNull User user) throws DataSourceException {
         try {
             dataSource.ban(user);
-            getView().confirmBanned();
+            getView().confirmBanned(user);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
             throw e;
         }
+    }
 
+    public void unban(@NonNull final User user) throws DataSourceException {
+        try {
+            dataSource.unban(user);
+            getView().confirmUnbanned(user);
+        } catch (final DataSourceException e) {
+            log.error(e);
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public boolean userMayBan() {
@@ -346,7 +355,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             final DiscussionThread thread = currentThread;
 
             if (thread != null) {
-                getView().displayPosts(dataSource.getPosts(thread), thread);
+                getView().displayPosts(dataSource.getPosts(thread));
             } else {
                 throw new IllegalStateException(
                         "This method may not be called while currentThread is null");
@@ -369,12 +378,19 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             if (!arguments[0].equals(NEW_THREAD_ARGUMENT)) {
                 setCurrentThreadById(arguments[0]);
                 return;
-            } else if (arguments.length > 1 && categoryExists(arguments[1])) {
-                final Category category = dataSource.getCategory(Long
-                        .parseLong(arguments[1]));
-                categoryWhileCreatingNewThread = category;
-                getView().displayNewThreadFormFor(category);
-                return;
+            } else if (arguments.length > 1) {
+                try {
+                    final Category category = dataSource.getCategory(Long
+                            .parseLong(arguments[1]));
+
+                    if (category != null) {
+                        categoryWhileCreatingNewThread = category;
+
+                        getView().displayNewThreadFormFor(category);
+                        return;
+                    }
+                } catch (final NumberFormatException IGNORE) {
+                }
             }
         } else {
             log.info("Tried to visit a thread without arguments");
@@ -386,16 +402,6 @@ public class ThreadPresenter extends Presenter<ThreadView> {
          */
         getView().redirectToDashboard();
 
-    }
-
-    private boolean categoryExists(final @NonNull String string)
-            throws DataSourceException {
-        try {
-            final long categoryId = Long.parseLong(string);
-            return dataSource.getCategory(categoryId) != null;
-        } catch (final NumberFormatException e) {
-            return false;
-        }
     }
 
     @NonNull
@@ -448,5 +454,4 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             getView().displayUserCanNotEdit();
         }
     }
-
 }

@@ -21,6 +21,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextField;
@@ -182,7 +183,7 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
 
     @Override
     public void showNotification(final String notification) {
-        getRoot().showNotification(notification);
+        Notification.show(notification);
     }
 
     @Override

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.vaadin.hene.popupbutton.PopupButton;
+import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
+import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.component.category.EditCategoryForm.EditCategoryListener;
 import org.vaadin.tori.component.category.RearrangeControls.RearrangeListener;
@@ -22,6 +24,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 
 /**
  * UI component for displaying a vertical hierarchical list of categories.
@@ -52,6 +55,7 @@ public class CategoryListing extends
     private PopupButton createCategoryButton;
     private Button rearrangeCategoriesButton;
     private ComponentContainer rearrangeControls;
+    private HorizontalLayout buttonWrapper;
 
     public CategoryListing(final Mode listingMode) {
         this.mode = listingMode;
@@ -86,8 +90,9 @@ public class CategoryListing extends
         createCategoryButton.setVisible(visible);
     }
 
-    public void setCategories(final List<Category> categories) {
-        getPresenter().setCategories(categories);
+    public void setCategories(final List<Category> categories,
+            final Category root) {
+        getPresenter().setCategories(categories, root);
     }
 
     @Override
@@ -112,23 +117,43 @@ public class CategoryListing extends
         createCategoryButton
                 .addStyleName(StyleConstants.POPUP_INDICATOR_HIDDEN);
         createCategoryButton.setIcon(new ThemeResource("images/icon-add.png"));
-        createCategoryButton.setComponent(new EditCategoryForm(
+        final EditCategoryForm editCategoryForm = new EditCategoryForm(
                 new EditCategoryListener() {
                     @Override
                     public void commit(final String name,
                             final String description) {
                         try {
                             getPresenter().createNewCategory(name, description);
+
+                            /*
+                             * this is an ugly piece of code. Maybe the edit
+                             * listener could be propagated outside of
+                             * CategoryListing. It's either this code, or giving
+                             * CategoryViewImpl access to the edit event.
+                             */
+                            replaceCreateCategoryButton();
+                            setVisible(true);
                         } catch (final DataSourceException e) {
                             /*
                              * FIXME: make sure that no categories were added to
                              * the UI.
                              */
-                            getRoot().showNotification(
-                                    "Couldn't save your modifications :(");
+                            Notification.show("Couldn't save "
+                                    + "your modifications :(");
                         }
                     }
-                }));
+                });
+        createCategoryButton.setComponent(editCategoryForm);
+        createCategoryButton
+                .addPopupVisibilityListener(new PopupVisibilityListener() {
+                    @Override
+                    public void popupVisibilityChange(
+                            final PopupVisibilityEvent event) {
+                        if (event.isPopupVisible()) {
+                            editCategoryForm.getTitleField().focus();
+                        }
+                    }
+                });
 
         rearrangeControls = new RearrangeControls(new RearrangeListener() {
             @Override
@@ -139,8 +164,7 @@ public class CategoryListing extends
                     getPresenter().applyRearrangement();
                 } catch (final DataSourceException e) {
                     /* FIXME: refresh view to show that nothing was rearranged? */
-                    getRoot().showNotification(
-                            "Couldn't save new arrangement :(");
+                    Notification.show("Couldn't save new arrangement :(");
                 }
             }
 
@@ -152,7 +176,7 @@ public class CategoryListing extends
         });
         rearrangeControls.setVisible(false);
 
-        final HorizontalLayout buttonWrapper = new HorizontalLayout();
+        buttonWrapper = new HorizontalLayout();
         buttonWrapper.setSpacing(true);
         buttonWrapper.addComponent(createCategoryButton);
         buttonWrapper.addComponent(rearrangeCategoriesButton);
@@ -244,4 +268,40 @@ public class CategoryListing extends
         // NOP
     }
 
+    /**
+     * <p>
+     * Remove the create category button, and return the button component.
+     * </p>
+     * <p>
+     * If it's already removed, it just returns the button component
+     * </p>
+     * 
+     * @return createCategoryButton
+     * @see #replaceCreateCategoryButton()
+     */
+    public Component removeAndGetCreateCategoryButton() {
+        if (createCategoryButton.getParent() == buttonWrapper) {
+            buttonWrapper.removeComponent(createCategoryButton);
+        }
+        return createCategoryButton;
+    }
+
+    /**
+     * <p>
+     * This method undoes what {@link #removeAndGetCreateCategoryButton()} does:
+     * it re-inserts the categorybutton where it should be within
+     * {@link CategoryListing} and removes it from wherever it was before.
+     * </p>
+     * 
+     * <p>
+     * If the button is already in place, this method does nothing.
+     * </p>
+     * 
+     * @see #removeAndGetCreateCategoryButton()
+     */
+    public void replaceCreateCategoryButton() {
+        if (createCategoryButton.getParent() != buttonWrapper) {
+            buttonWrapper.addComponent(createCategoryButton, 0);
+        }
+    }
 }

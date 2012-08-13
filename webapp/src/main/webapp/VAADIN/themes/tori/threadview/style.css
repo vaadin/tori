@@ -1,3 +1,11 @@
+.post.banned-author {
+	/* These two first rules are for IE */
+	zoom: 1;
+	filter: alpha(opacity=50);
+	
+	opacity: 0.5;
+}
+
 .post {
 	padding-top: 50px;
 	border-bottom: 2px solid #e9e9e1;
@@ -207,6 +215,11 @@
 	font-size: 13px;
 	white-space: nowrap;
 }
+.threadSummary .post [location="body"] {
+	max-height: 200px;
+	overflow-y: auto;
+}
+
 .threadSummary .topRow,
 .threadSummary .topRow .v-label {
 	cursor: pointer;

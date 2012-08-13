@@ -25,8 +25,8 @@ import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRp
 import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutServerRpc;
 import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutState;
 
-import com.vaadin.terminal.gwt.client.ComponentState;
-import com.vaadin.terminal.gwt.client.Connector;
+import com.vaadin.shared.ComponentState;
+import com.vaadin.shared.Connector;
 import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Component;
 
@@ -178,12 +178,13 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
 
     protected void _replaceComponent(final int oldIndex,
             final Component newComponent) {
-        components.remove(oldIndex);
+        final Component oldComponent = components.remove(oldIndex);
         components.add(oldIndex, newComponent);
 
         connectors.remove(oldIndex);
         connectors.add(oldIndex, newComponent);
 
+        super.removeComponent(oldComponent);
         super.addComponent(newComponent);
         requestRepaint();
     }

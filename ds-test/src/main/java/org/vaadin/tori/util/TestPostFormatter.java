@@ -7,10 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.vaadin.tori.data.entity.Post;
-import org.vaadin.tori.util.PostFormatter.FontsInfo;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
-import org.vaadin.tori.util.PostFormatter.FormatInfo;
 
 public class TestPostFormatter implements PostFormatter {
 
@@ -155,7 +153,7 @@ public class TestPostFormatter implements PostFormatter {
     }
 
     @Override
-    public void setPostReplacements(Map<String, String> postReplacements) {
+    public void setPostReplacements(final Map<String, String> postReplacements) {
 
     }
 }

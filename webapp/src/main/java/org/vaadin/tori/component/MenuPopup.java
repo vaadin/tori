@@ -2,21 +2,22 @@ package org.vaadin.tori.component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.vaadin.tori.ToriUtil;
 
 import com.vaadin.terminal.Resource;
+import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.themes.Reindeer;
 
+@SuppressWarnings("serial")
 public class MenuPopup extends CustomComponent {
 
     public interface ContextAction {
@@ -44,6 +45,7 @@ public class MenuPopup extends CustomComponent {
     private final Map<ContextComponentSwapper, Component> swappers = new HashMap<ContextComponentSwapper, Component>();
 
     private final List<MenuClickListener> menuClickListeners = new ArrayList<MenuPopup.MenuClickListener>();
+    private ArrayList<Component> componentsBeforeSwapping = null;
 
     public MenuPopup() {
         setCompositionRoot(layout);
@@ -97,25 +99,21 @@ public class MenuPopup extends CustomComponent {
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(final ClickEvent event) {
-                        final HasComponents parent = MenuPopup.this.getParent();
-                        if (parent != null) {
-                            if (parent instanceof ComponentContainer) {
-                                final ComponentContainer parentContainer = (ComponentContainer) parent;
-                                parentContainer.removeAllComponents();
-                                parentContainer.addComponent(swapper
-                                        .swapContextComponent());
-                            } else {
-                                throw new IllegalStateException(
-                                        "Parent is not an instance of "
-                                                + ComponentContainer.class
-                                                        .getSimpleName()
-                                                + " - can't swap anything there.");
-                            }
-                        } else {
-                            throw new IllegalStateException(
-                                    "Tried to swap the manu, "
-                                            + "but the menu didn't "
-                                            + "have a parent");
+                        componentsBeforeSwapping = getCurrentComponents();
+                        layout.removeAllComponents();
+                        final Component swappedComponent = swapper
+                                .swapContextComponent();
+                        layout.addComponent(swappedComponent);
+                        if (swappedComponent.getWidth() >= 0) {
+                            /*
+                             * We need to copy the width of the swapped
+                             * component, otherwise the popup will clip the
+                             * contents. The size is reset in
+                             * ContextMenu.popupListener
+                             */
+                            layout.getParent().setWidth(
+                                    swappedComponent.getWidth(),
+                                    swappedComponent.getWidthUnits());
                         }
                     }
                 });
@@ -124,13 +122,85 @@ public class MenuPopup extends CustomComponent {
         return button;
     }
 
+    private ArrayList<Component> getCurrentComponents() {
+        final ArrayList<Component> components = new ArrayList<Component>();
+        final Iterator<Component> i = layout.getComponentIterator();
+        while (i.hasNext()) {
+            components.add(i.next());
+        }
+        return components;
+    }
+
     public void swap(final ContextAction oldToSwapOut, final Resource icon,
             final String caption, final ContextAction newAction) {
         final Component oldComponent = actions.remove(oldToSwapOut);
         if (oldComponent != null) {
             final Button newButton = createButton(icon, caption, newAction);
-            layout.replaceComponent(oldComponent, newButton);
+            _replaceComponents(oldComponent, newButton);
             actions.put(newAction, newButton);
         }
     }
+
+    public void swap(final ContextComponentSwapper oldToSwapOut,
+            final Resource icon, final String caption,
+            final ContextAction newAction) {
+        final Component oldComponent = swappers.remove(oldToSwapOut);
+        if (oldComponent != null) {
+            final Button newButton = createButton(icon, caption, newAction);
+            _replaceComponents(oldComponent, newButton);
+            actions.put(newAction, newButton);
+        }
+    }
+
+    public void swap(final ContextAction oldToSwapOut,
+            final ThemeResource icon, final String caption,
+            final ContextComponentSwapper newSwapper) {
+        final Component oldComponent = actions.remove(oldToSwapOut);
+        if (oldComponent != null) {
+            final Button newButton = createButton(icon, caption, newSwapper);
+            _replaceComponents(oldComponent, newButton);
+            swappers.put(newSwapper, newButton);
+        }
+    }
+
+    public void swap(final ContextComponentSwapper oldToSwapOut,
+            final ThemeResource icon, final String caption,
+            final ContextComponentSwapper newSwapper) {
+        final Component oldComponent = swappers.remove(oldToSwapOut);
+        if (oldComponent != null) {
+            final Button newButton = createButton(icon, caption, newSwapper);
+            _replaceComponents(oldComponent, newButton);
+            swappers.put(newSwapper, newButton);
+        }
+    }
+
+    private void _replaceComponents(final Component oldComponent,
+            final Component newComponent) {
+        if (oldComponent.getParent() == layout) {
+            System.out.println("MenuPopup._replaceComponents() 1");
+            layout.replaceComponent(oldComponent, newComponent);
+        } else {
+            System.out.println("MenuPopup._replaceComponents() 2");
+            final int i = componentsBeforeSwapping.indexOf(oldComponent);
+            if (i >= 0) {
+                System.out.println("MenuPopup._replaceComponents() 3");
+                componentsBeforeSwapping.remove(i);
+                componentsBeforeSwapping.add(i, newComponent);
+            }
+        }
+    }
+
+    public void beingOpenedHook() {
+    }
+
+    public void beingClosedHook() {
+        if (componentsBeforeSwapping != null) {
+            layout.removeAllComponents();
+            for (final Component c : componentsBeforeSwapping) {
+                layout.addComponent(c);
+            }
+            componentsBeforeSwapping = null;
+        }
+    }
+
 }

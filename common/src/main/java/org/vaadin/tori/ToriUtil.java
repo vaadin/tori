@@ -55,4 +55,9 @@ public final class ToriUtil {
 
         return (T[]) list.toArray();
     }
+
+    public static String escapeXhtml(final String xhtml) {
+        return xhtml.replace("&", "&amp;").replace("<", "&lt;")
+                .replace(">", "&gt;");
+    }
 }

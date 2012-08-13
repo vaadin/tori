@@ -13,6 +13,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Tree;
 
@@ -62,9 +63,8 @@ public class ThreadMoveComponent extends CustomComponent {
                             try {
                                 presenter.move(thread, newCategory);
                             } catch (final DataSourceException e) {
-                                getRoot()
-                                        .showNotification(
-                                                DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                                Notification
+                                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                             }
 
                             if (threadListingRow != null) {

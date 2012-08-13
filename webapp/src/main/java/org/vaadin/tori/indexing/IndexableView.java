@@ -48,9 +48,4 @@ public abstract class IndexableView {
     protected Logger getLogger() {
         return Logger.getLogger(getClass());
     }
-
-    protected static String escapeXhtml(final String xhtml) {
-        return xhtml.replace("&", "&amp;").replace("<", "&lt;")
-                .replace(">", "&gt;");
-    }
 }

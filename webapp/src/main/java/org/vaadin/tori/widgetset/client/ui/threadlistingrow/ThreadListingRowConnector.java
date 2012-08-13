@@ -17,6 +17,7 @@ package org.vaadin.tori.widgetset.client.ui.threadlistingrow;
 
 import org.vaadin.tori.component.thread.ThreadListingRow;
 
+import com.vaadin.shared.ui.Connect;
 import com.vaadin.terminal.gwt.client.ApplicationConnection;
 import com.vaadin.terminal.gwt.client.ComponentConnector;
 import com.vaadin.terminal.gwt.client.Paintable;
@@ -24,9 +25,9 @@ import com.vaadin.terminal.gwt.client.UIDL;
 import com.vaadin.terminal.gwt.client.VCaption;
 import com.vaadin.terminal.gwt.client.VCaptionWrapper;
 import com.vaadin.terminal.gwt.client.ui.AbstractComponentContainerConnector;
-import com.vaadin.terminal.gwt.client.ui.Connect;
 import com.vaadin.terminal.gwt.client.ui.PostLayoutListener;
 
+@SuppressWarnings({ "serial", "deprecation" })
 @Connect(ThreadListingRow.class)
 public class ThreadListingRowConnector extends
         AbstractComponentContainerConnector implements Paintable,
@@ -48,7 +49,7 @@ public class ThreadListingRowConnector extends
     @Override
     public void updateFromUIDL(final UIDL uidl,
             final ApplicationConnection client) {
-        if (!isRealUpdate(uidl)) {
+        if (uidl.hasAttribute("cached")) {
             return;
         }
         // These are for future server connections

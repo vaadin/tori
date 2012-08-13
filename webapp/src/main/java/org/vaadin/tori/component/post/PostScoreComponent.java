@@ -10,6 +10,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeButton;
+import com.vaadin.ui.Notification;
 
 @SuppressWarnings("serial")
 public class PostScoreComponent extends CustomComponent {
@@ -48,8 +49,8 @@ public class PostScoreComponent extends CustomComponent {
                 try {
                     presenter.upvote(post);
                 } catch (final DataSourceException e) {
-                    getRoot().showNotification(
-                            DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                    Notification
+                            .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                 }
             }
         });
@@ -67,8 +68,8 @@ public class PostScoreComponent extends CustomComponent {
                 try {
                     presenter.downvote(post);
                 } catch (final DataSourceException e) {
-                    getRoot().showNotification(
-                            DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                    Notification
+                            .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                 }
             }
         });

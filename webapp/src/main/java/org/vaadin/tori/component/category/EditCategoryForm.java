@@ -14,6 +14,8 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 class EditCategoryForm extends CustomComponent {
 
+    private final TextField nameField;
+
     public EditCategoryForm(final EditCategoryListener listener) {
         this(listener, null);
     }
@@ -28,7 +30,7 @@ class EditCategoryForm extends CustomComponent {
         newCategoryLayout.setMargin(true);
         newCategoryLayout.setWidth("100%");
 
-        final TextField nameField = new TextField();
+        nameField = new TextField();
         nameField.setInputPrompt("Category name");
         nameField.setWidth("100%");
         if (categoryToEdit != null) {
@@ -50,8 +52,15 @@ class EditCategoryForm extends CustomComponent {
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(final ClickEvent event) {
-                        listener.commit((String) nameField.getValue(),
-                                (String) descriptionField.getValue());
+                        listener.commit(nameField.getValue(),
+                                descriptionField.getValue());
+
+                        /*
+                         * exceptions would be thrown by now. If everything went
+                         * okay, clear the inputs.
+                         */
+                        nameField.setValue("");
+                        descriptionField.setValue("");
                     }
                 });
         newCategoryLayout.addComponent(saveButton);
@@ -66,6 +75,10 @@ class EditCategoryForm extends CustomComponent {
 
         void commit(String name, String description);
 
+    }
+
+    public Focusable getTitleField() {
+        return nameField;
     }
 
 }

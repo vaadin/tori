@@ -5,7 +5,7 @@ import java.util.List;
 import org.vaadin.tori.component.GeneratedLazyLayout;
 import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRpc.GeneratedLazyLayoutClientRpc;
 
-import com.vaadin.terminal.gwt.client.ui.Connect;
+import com.vaadin.shared.ui.Connect;
 
 @Connect(GeneratedLazyLayout.class)
 @SuppressWarnings("serial")

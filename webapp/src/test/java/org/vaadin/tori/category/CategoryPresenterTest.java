@@ -54,7 +54,7 @@ public class CategoryPresenterTest {
                 presenter.getCurrentCategory());
         assertFalse(presenter.userMayStartANewThread());
 
-        verify(mockDataSource).getRecentPosts();
+        verify(mockView).displayThreads(presenter.recentPostsProvider);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class CategoryPresenterTest {
                 presenter.getCurrentCategory());
         assertFalse(presenter.userMayStartANewThread());
 
-        verify(mockDataSource).getMyPosts();
+        verify(mockView).displayThreads(presenter.myPostsProvider);
     }
 
     @Test

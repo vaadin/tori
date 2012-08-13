@@ -1,10 +1,13 @@
 package org.vaadin.tori.component.thread;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.vaadin.tori.category.CategoryPresenter;
+import org.vaadin.tori.category.CategoryView.ThreadProvider;
 import org.vaadin.tori.component.AbstractLazyLayout;
 import org.vaadin.tori.component.GeneratedLazyLayout;
 import org.vaadin.tori.component.GeneratedLazyLayout.ComponentGenerator;
@@ -16,6 +19,8 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * UI component for displaying a vertical hierarchical list of threads.
@@ -39,56 +44,86 @@ public class ThreadListing extends CustomComponent {
     protected static final int RENDER_DELAY_MILLIS = 500;
     protected static final double RENDER_DISTANCE_MULTIPLIER = 1.5d;
 
-    private static final long MAX_AMOUNT_OF_SHOWN_THREADS = 1000;
+    private static final int MAX_AMOUNT_OF_SHOWN_THREADS = 1000;
 
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "ignoring serialization")
     protected final CategoryPresenter presenter;
     protected AbstractLazyLayout layout;
 
-    private transient final ComponentGenerator componentGenerator = new ComponentGenerator() {
+    private class ThreadComponentGenerator implements ComponentGenerator {
+        private final ThreadProvider provider;
+
+        public ThreadComponentGenerator(final ThreadProvider provider) {
+            this.provider = provider;
+        }
+
         @Override
         public List<Component> getComponentsAtIndexes(final int from,
                 final int to) {
-
-            final ArrayList<Component> components = new ArrayList<Component>();
             try {
-                final List<DiscussionThread> threads = presenter
-                        .getThreadsBetween(from, to);
-                for (final DiscussionThread thread : threads) {
-                    components.add(new ThreadListingRow(thread, presenter));
+                final List<Component> components = new ArrayList<Component>(to
+                        - from + 1);
+                for (final DiscussionThread thread : provider
+                        .getThreadsBetween(from, to)) {
+                    final ThreadListingRow threadListingRow = new ThreadListingRow(
+                            thread, presenter);
+                    assignStyles(threadListingRow);
+                    components.add(threadListingRow);
                 }
+                return components;
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
+                final Notification n = new Notification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
                         Notification.TYPE_ERROR_MESSAGE);
+                n.show(getRoot().getPage());
+                e.printStackTrace();
+                getLogger().error(e);
+                return Collections.emptyList();
             }
-            return components;
         }
 
         @Override
         public int getAmountOfComponents() {
             try {
-                return (int) Math.min(presenter.countThreads(),
-                        MAX_AMOUNT_OF_SHOWN_THREADS);
+                final long dbCount = provider.getThreadAmount();
+                if (dbCount <= MAX_AMOUNT_OF_SHOWN_THREADS) {
+                    return (int) dbCount;
+                } else {
+                    getLogger().info(
+                            "Database has " + dbCount
+                                    + " threads. That's more than the max ("
+                                    + MAX_AMOUNT_OF_SHOWN_THREADS
+                                    + "), so some results are omitted");
+                    return MAX_AMOUNT_OF_SHOWN_THREADS;
+                }
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
+                final Notification n = new Notification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
                         Notification.TYPE_ERROR_MESSAGE);
+                n.show(getRoot().getPage());
+                e.printStackTrace();
+                getLogger().error(e);
                 return 0;
             }
         }
-    };
+
+        private Logger getLogger() {
+            return Logger.getLogger(getClass());
+        }
+    }
 
     protected final CssLayout root = new CssLayout();
 
-    public ThreadListing(final CategoryPresenter presenter) {
+    public ThreadListing(final CategoryPresenter presenter,
+            final ThreadProvider threadProvider) {
         this.presenter = presenter;
 
         setStyleName("thread-listing");
 
         setCompositionRoot(root);
 
-        layout = new GeneratedLazyLayout(componentGenerator);
+        layout = new GeneratedLazyLayout(new ThreadComponentGenerator(
+                threadProvider));
         layout.setPlaceholderSize(PLACEHOLDER_HEIGHT, PLACEHOLDER_WIDTH);
         layout.setRenderDistanceMultiplier(RENDER_DISTANCE_MULTIPLIER);
         layout.setRenderDelay(RENDER_DELAY_MILLIS);
@@ -124,7 +159,7 @@ public class ThreadListing extends CustomComponent {
         return label;
     }
 
-    private void assignStyles(final ThreadListingRow row) {
+    protected void assignStyles(final ThreadListingRow row) {
         if (presenter.userIsFollowing(row.getThread())) {
             row.addStyleName(STYLE_FOLLOWING);
         } else {
@@ -132,6 +167,7 @@ public class ThreadListing extends CustomComponent {
         }
     }
 
+    @CheckForNull
     private ThreadListingRow getRow(final DiscussionThread thread) {
         for (final Iterator<Component> it = layout.getComponentIterator(); it
                 .hasNext();) {
@@ -149,10 +185,13 @@ public class ThreadListing extends CustomComponent {
     public void refresh(final DiscussionThread thread) {
         final ThreadListingRow row = getRow(thread);
         if (row != null) {
+            row.refresh();
+            /*-
             final ThreadListingRow newRow = new ThreadListingRow(thread,
                     presenter);
             assignStyles(newRow);
             layout.replaceComponent(row, newRow);
+             */
         }
     }
 
@@ -162,5 +201,4 @@ public class ThreadListing extends CustomComponent {
             assignStyles(row);
         }
     }
-
 }

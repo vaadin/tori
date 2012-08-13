@@ -3,6 +3,7 @@ package org.vaadin.tori.indexing;
 import java.util.List;
 
 import org.vaadin.tori.ToriNavigator.ApplicationView;
+import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.exception.DataSourceException;
@@ -85,8 +86,8 @@ public class IndexableCategoryView extends IndexableView {
 
     private String getThreadRow(final DiscussionThread thread) {
         final String threadUrl = getThreadUrl(thread);
-        final String topic = escapeXhtml(thread.getTopic());
-        final String authorName = escapeXhtml(thread.getOriginalPoster()
+        final String topic = ToriUtil.escapeXhtml(thread.getTopic());
+        final String authorName = ToriUtil.escapeXhtml(thread.getOriginalPoster()
                 .getDisplayedName());
         final int postCount = thread.getPostCount();
         return String

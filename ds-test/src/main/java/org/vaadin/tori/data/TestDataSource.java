@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -374,11 +375,30 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_ALWAYS_NULL", justification = "System.out will never be null, afaik")
-    public void ban(final User user) {
-        // TODO Auto-generated method stub
-        System.out.println("TestDataSource.ban()");
-        System.out.println("Banning, it does nothing!");
+    @SuppressWarnings("deprecation")
+    public void ban(final User user) throws DataSourceException {
+        user.setBanned(true);
+        save(user);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void unban(@NonNull final User user) throws DataSourceException {
+        user.setBanned(false);
+        save(user);
+    }
+
+    private void save(final User user) throws DataSourceException {
+        executeWithEntityManager(new Command<Void>() {
+            @Override
+            public Void execute(final EntityManager em) {
+                final EntityTransaction transaction = em.getTransaction();
+                transaction.begin();
+                em.merge(user);
+                transaction.commit();
+                return null;
+            }
+        });
     }
 
     @Override
@@ -601,6 +621,10 @@ public class TestDataSource implements DataSource, DebugDataSource {
 
     private void persistPostAttachments(final Post post,
             final Map<String, byte[]> files, final EntityManager em) {
+        if (files == null) {
+            return;
+        }
+
         if (!em.getTransaction().isActive()) {
             throw new IllegalArgumentException("Transaction inactive");
         }
@@ -739,6 +763,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
                 final EntityTransaction transaction = em.getTransaction();
                 transaction.begin();
                 final DiscussionThread mergedThread = em.merge(newThread);
+                firstPost.setThread(mergedThread);
                 final Post post = em.merge(firstPost);
 
                 persistPostAttachments(post, files, em);
@@ -773,7 +798,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
     @Override
     public boolean isRead(final DiscussionThread thread) {
         // TODO actual implementation
-        return true;
+        return new Random().nextBoolean();
     }
 
     @Override
@@ -785,7 +810,8 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    public List<DiscussionThread> getRecentPosts() throws DataSourceException {
+    public List<DiscussionThread> getRecentPosts(final int from, final int to)
+            throws DataSourceException {
         final List<Post> posts = executeWithEntityManager(new Command<List<Post>>() {
             @Override
             public List<Post> execute(final EntityManager em) {
@@ -795,7 +821,8 @@ public class TestDataSource implements DataSource, DebugDataSource {
                         .createQuery(
                                 "select p from Post p order by p.time desc",
                                 Post.class);
-                q.setMaxResults(100);
+                q.setFirstResult(from);
+                q.setMaxResults(to - from + 1);
                 final List<Post> result = q.getResultList();
                 tx.commit();
                 return result;
@@ -812,10 +839,37 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    public List<DiscussionThread> getMyPosts() throws DataSourceException {
-        System.out.println("My posts not implemented in "
-                + getClass().getSimpleName() + ".");
+    public int getRecentPostsAmount() throws DataSourceException {
+        final Number number = executeWithEntityManager(new Command<Number>() {
+            @Override
+            public Number execute(final EntityManager em) {
+                final EntityTransaction tx = em.getTransaction();
+                tx.begin();
+                final TypedQuery<Number> q = em.createQuery(
+                        "select count(p) from Post p", Number.class);
+                final Number result = q.getSingleResult();
+                tx.commit();
+                return result;
+            }
+        });
+        return number.intValue();
+    }
+
+    @Override
+    public List<DiscussionThread> getMyPosts(final int from, final int to)
+            throws DataSourceException {
+        System.out.println("TestDataSource.getMyPosts(): "
+                + "My posts not implemented in " + getClass().getSimpleName()
+                + ".");
         return Collections.emptyList();
+    }
+
+    @Override
+    public int getMyPostsAmount() throws DataSourceException {
+        System.out.println("TestDataSource.getMyPostsAmount(): "
+                + "My posts not implemented in " + getClass().getSimpleName()
+                + ".");
+        return 0;
     }
 
     @Override

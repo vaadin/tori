@@ -38,7 +38,7 @@ public class DashboardViewImpl extends
 
     @Override
     public void displayCategories(final List<Category> categories) {
-        categoryListing.setCategories(categories);
+        categoryListing.setCategories(categories, null);
     }
 
     @Override

@@ -3,6 +3,7 @@ package org.vaadin.tori.category;
 import java.util.Collections;
 import java.util.List;
 
+import org.vaadin.tori.category.CategoryView.ThreadProvider;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -11,10 +12,59 @@ import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class CategoryPresenter extends Presenter<CategoryView> {
 
     private Category currentCategory;
+
+    /* package protected due to testing */
+    final ThreadProvider recentPostsProvider = new ThreadProvider() {
+        @Override
+        @NonNull
+        public List<DiscussionThread> getThreadsBetween(final int from,
+                final int to) throws DataSourceException {
+            final List<DiscussionThread> recentPosts = dataSource
+                    .getRecentPosts(from, to);
+            return recentPosts;
+        }
+
+        @Override
+        public int getThreadAmount() throws DataSourceException {
+            final int recentPostsAmount = dataSource.getRecentPostsAmount();
+            return recentPostsAmount;
+        }
+    };
+
+    /* package protected due to testing */
+    final ThreadProvider myPostsProvider = new ThreadProvider() {
+        @Override
+        @NonNull
+        public List<DiscussionThread> getThreadsBetween(final int from,
+                final int to) throws DataSourceException {
+            return dataSource.getMyPosts(from, to);
+        }
+
+        @Override
+        public int getThreadAmount() throws DataSourceException {
+            return dataSource.getMyPostsAmount();
+        }
+    };
+
+    /* package protected due to testing */
+    final ThreadProvider defaultThreadsProvider = new ThreadProvider() {
+        @Override
+        @NonNull
+        public List<DiscussionThread> getThreadsBetween(final int from,
+                final int to) throws DataSourceException {
+            return dataSource.getThreads(currentCategory, from, to);
+        }
+
+        @Override
+        public int getThreadAmount() throws DataSourceException {
+            return (int) dataSource.getThreadCount(currentCategory);
+        }
+    };
 
     public CategoryPresenter(final DataSource dataSource,
             final AuthorizationService authorizationService) {
@@ -29,14 +79,14 @@ public class CategoryPresenter extends Presenter<CategoryView> {
 
                 final List<Category> empty = Collections.emptyList();
                 view.displaySubCategories(empty);
-                view.displayThreads(dataSource.getRecentPosts());
+                view.displayThreads(recentPostsProvider);
             } else if (categoryIdString
                     .equals(SpecialCategory.MY_POSTS.getId())) {
                 currentCategory = SpecialCategory.MY_POSTS.getInstance();
 
                 final List<Category> empty = Collections.emptyList();
                 view.displaySubCategories(empty);
-                view.displayThreads(dataSource.getMyPosts());
+                view.displayThreads(myPostsProvider);
             } else {
                 Category requestedCategory = null;
                 try {
@@ -54,12 +104,12 @@ public class CategoryPresenter extends Presenter<CategoryView> {
                     getView().displayCategoryNotFoundError(categoryIdString);
                 }
                 if (countThreads() > 0) {
-                    view.displayThreads();
+                    view.displayThreads(defaultThreadsProvider);
                 } else {
                     view.hideThreads();
                 }
+                view.setUserMayStartANewThread(userMayStartANewThread());
             }
-            view.setUserMayStartANewThread(userMayStartANewThread());
         } catch (final DataSourceException e) {
             e.printStackTrace();
             getView().panic();
@@ -276,13 +326,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     }
 
     private void resetView() throws DataSourceException {
-        try {
-            getView().displayThreads(dataSource.getThreads(currentCategory));
-        } catch (final DataSourceException e) {
-            log.error(e);
-            e.printStackTrace();
-            throw e;
-        }
+        getView().displayThreads(defaultThreadsProvider);
     }
 
     public boolean userHasRead(final DiscussionThread thread) {
@@ -328,4 +372,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         }
     }
 
+    public boolean userCanCreateSubcategory() {
+        return authorizationService.mayEditCategories();
+    }
 }

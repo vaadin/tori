@@ -75,6 +75,7 @@ public class ToriPortlet extends ApplicationPortlet2 {
     }
 
     @Override
+    @SuppressWarnings("serial")
     protected WrappedPortletRequest createWrappedRequest(
             final PortletRequest request) {
         WrappedPortletRequest wrapped = super.createWrappedRequest(request);

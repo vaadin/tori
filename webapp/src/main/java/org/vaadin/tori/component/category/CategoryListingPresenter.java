@@ -78,9 +78,10 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
     private void reloadCategoriesFromDataSource() throws DataSourceException {
         try {
             if (currentRoot == null) {
-                setCategories(dataSource.getRootCategories());
+                setCategories(dataSource.getRootCategories(), null);
             } else {
-                setCategories(dataSource.getSubCategories(currentRoot));
+                setCategories(dataSource.getSubCategories(currentRoot),
+                        currentRoot);
             }
         } catch (final DataSourceException e) {
             log.error(e);
@@ -97,11 +98,10 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         }
     }
 
-    void setCategories(final List<Category> categories) {
+    void setCategories(final List<Category> categories,
+            final Category rootCategory) {
         this.categories = categories;
-        if (!categories.isEmpty()) {
-            currentRoot = categories.get(0).getParentCategory();
-        }
+        currentRoot = rootCategory;
         getView().displayCategories(categories);
     }
 

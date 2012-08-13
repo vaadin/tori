@@ -9,7 +9,12 @@
 	background-color: #ddd;
 }
 
-.thread-listing-row .details, 
+.thread-listing .following {
+	background-image: url("images/following-badge.png");
+	background-position: top left;
+	background-repeat: no-repeat;
+}
+
 .thread-listing .fixed-column-headers {
 	float: right;
 }
@@ -57,7 +62,7 @@
 	margin-right: 10px;
 }
 
-.thread-listing-row, .thread-listing .v-lazylayout-placeholder {
+.v-thread-listing-row, .thread-listing .v-lazylayout-placeholder {
 	width: 100%;
 	border-width: 0 0 1px 0;
 	-moz-box-sizing: border-box;
@@ -65,13 +70,13 @@
 	box-sizing: border-box;
 }
 
-.thread-listing-row {
+.v-thread-listing-row {
 	position: relative;
 	padding: 2px 0;
 }
 
 .thread-listing, 
-.thread-listing-row, 
+.v-thread-listing-row, 
 .thread-listing .v-lazylayout-placeholder {
 	border-color: #DFDFDF;
 	border-style: solid;
@@ -85,21 +90,26 @@
 	background: url("images/loadingthread-bg.png") left center no-repeat transparent;
 }
 
-.thread-listing-row a {
+.v-thread-listing-row a {
 	display: block;
 	color: inherit;
 	height: 100%;
 	width: 100%;
 }
 
-.thread-listing-row a > div {
+.v-thread-listing-row a > div {
 	display: block;
 	position: absolute;
 	box-sizing: border-box;
 }
 
-.thread-listing-row div.locked,
-.thread-listing-row div.sticky {
+.v-thread-listing-row.unread a > div.topic {
+	color: #0A85B4 !important;
+	font-weight: bold;	
+}
+
+.v-thread-listing-row div.locked,
+.v-thread-listing-row div.sticky {
 	height: 8px;
 	width: 8px;
 	margin:0;
@@ -107,54 +117,54 @@
 	top: 16px;
 }
 
-.thread-listing-row .locked {
+.v-thread-listing-row .locked {
 	background-image: url("images/icon-small-locked.png");
 	left: 4px;
 }
-.thread-listing-row .sticky {
+.v-thread-listing-row .sticky {
 	background-image: url("images/icon-small-sticky.png");
 	left: 14px;
 }
 
-.thread-listing-row .topic {
+.v-thread-listing-row .topic {
 	padding-left: 25px;
 	width: 100%;
 	height: 100%;
 }
 
-.thread-listing-row:hover .topic {
+.v-thread-listing-row:hover .topic {
 	text-decoration: underline;
 }
 
-.thread-listing .thread-listing-row {
+.thread-listing .v-thread-listing-row {
 	text-decoration: none;
 	height: 40px;
 }
 
-.thread-listing-row .startedBy {
+.v-thread-listing-row .startedBy {
 	right: 190px;
 	width: 150px;
 }
 
-.thread-listing-row .postcount {
+.v-thread-listing-row .postcount {
 	width: 50px;
 	padding-right: 10px;
 	text-align: right;
 	right: 140px;
 }
-.thread-listing-row .latestpost {
+.v-thread-listing-row .latestpost {
 	width: 140px;
 	right: 0;
 }
 
-.thread-listing-row .latesttime {
+.v-thread-listing-row .latesttime {
 	height: 1.3em;
 	overflow: hidden;
 	position: relative;
 }
 
-.thread-listing-row .latesttime .stamp,
-.thread-listing-row .latesttime .pretty {
+.v-thread-listing-row .latesttime .stamp,
+.v-thread-listing-row .latesttime .pretty {
 	position: absolute;
 	white-space: nowrap;
 	-moz-transition: all 0.2s ease-in-out;
@@ -163,16 +173,16 @@
 	transition: all 0.2s ease-in-out;
 }
 
-.thread-listing-row .latestpost .stamp { top: 1.5em; }
-.thread-listing-row .latestpost:hover .stamp { top: 0em; }
-.thread-listing-row .latestpost .pretty { top: 0em; }
-.thread-listing-row .latestpost:hover .pretty { top: -1.5em; }
+.v-thread-listing-row .latestpost .stamp { top: 1.5em; }
+.v-thread-listing-row .latestpost:hover .stamp { top: 0em; }
+.v-thread-listing-row .latestpost .pretty { top: 0em; }
+.v-thread-listing-row .latestpost:hover .pretty { top: -1.5em; }
 
-.thread-listing-row .latestauthor {
+.v-thread-listing-row .latestauthor {
 	font-size: smaller;
 }
 
-.thread-listing-row .menutrigger {
+.v-thread-listing-row .menutrigger {
 	height: 16px;
 	width: 16px;
 	background-image: url("images/icon-settings.png");
@@ -182,13 +192,13 @@
 	top: 0;
 }
 
-.thread-listing-row .topic, 
-.thread-listing-row .startedBy, 
-.thread-listing-row .postcount {
+.v-thread-listing-row .topic, 
+.v-thread-listing-row .startedBy, 
+.v-thread-listing-row .postcount {
 	padding-top: 9px;
 }
 
-.thread-listing-row:hover .menutrigger,
-.thread-listing-row.open .menutrigger {
+.v-thread-listing-row:hover .menutrigger,
+.v-thread-listing-row.open .menutrigger {
 	visibility: visible;
 }

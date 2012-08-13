@@ -32,6 +32,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.themes.Reindeer;
@@ -114,7 +115,7 @@ public class DebugControlPanel extends CustomComponent implements
                 }
 
             } catch (final Exception e) {
-                getRoot().showNotification(e.getClass().getSimpleName());
+                Notification.show(e.getClass().getSimpleName());
                 e.printStackTrace();
             }
 
@@ -143,7 +144,7 @@ public class DebugControlPanel extends CustomComponent implements
             try {
                 setter.invoke(authorizationService, post, newValue);
             } catch (final Exception e) {
-                getRoot().showNotification(e.getClass().getSimpleName());
+                Notification.show(e.getClass().getSimpleName());
                 e.printStackTrace();
             }
         }

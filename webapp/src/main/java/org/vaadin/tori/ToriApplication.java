@@ -8,7 +8,6 @@ import javax.portlet.PortletSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriNavigator.NavigableApplication;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.DebugDataSource;
@@ -39,14 +38,12 @@ public class ToriApplication extends Application implements
         NavigableApplication, HttpServletRequestListener,
         PortletRequestListener {
 
-    private static Logger log = Logger.getLogger(ToriApplication.class);
-
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "ignoring serialization")
     private final ToriApiLoader apiLoader = new ToriApiLoader();
 
     @Override
     public void init() {
-        if (ToriApplication.getCurrent().getDataSource() instanceof DebugDataSource) {
+        if (getDataSource() instanceof DebugDataSource) {
             addAttachmentDownloadHandler();
         }
     }
@@ -63,7 +60,7 @@ public class ToriApplication extends Application implements
      * @return ToriApplication instance for the current Thread.
      */
     public static ToriApplication getCurrent() {
-        return (ToriApplication) Application.getCurrentApplication();
+        return (ToriApplication) Application.getCurrent();
     }
 
     /**
@@ -207,7 +204,7 @@ public class ToriApplication extends Application implements
 
                 if (fragment != null) {
                     // Apply changes to Tori root's fragment
-                    root.setFragment(fragment);
+                    Root.getCurrent().getPage().setFragment(fragment);
                 }
 
                 ((ToriRoot) root).setPortletMode(portletRequest

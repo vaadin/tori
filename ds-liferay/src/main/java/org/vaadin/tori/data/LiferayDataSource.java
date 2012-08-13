@@ -58,6 +58,7 @@ import com.liferay.portlet.messageboards.model.MBMessageConstants;
 import com.liferay.portlet.messageboards.model.MBMessageFlagConstants;
 import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.model.MBThreadConstants;
+import com.liferay.portlet.messageboards.service.MBBanLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBBanServiceUtil;
 import com.liferay.portlet.messageboards.service.MBCategoryLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBCategoryServiceUtil;
@@ -77,6 +78,9 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class LiferayDataSource implements DataSource, PortletRequestAware {
+
+    private static final boolean INCLUDE_SUBSCRIBED = false;
+    private static final boolean INCLUDE_ANONYMOUS = false;
 
     private static final Logger log = Logger.getLogger(LiferayDataSource.class);
 
@@ -205,9 +209,12 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public List<DiscussionThread> getRecentPosts() throws DataSourceException {
+    public List<DiscussionThread> getRecentPosts(final int from, final int to)
+            throws DataSourceException {
+        // TODO
         try {
-            final List<MBThread> liferayThreads = getLiferayRecentThreads();
+            final List<MBThread> liferayThreads = getLiferayRecentThreads(from,
+                    to);
 
             // collection for the final result
             final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
@@ -228,9 +235,22 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public List<DiscussionThread> getMyPosts() throws DataSourceException {
+    public int getRecentPostsAmount() throws DataSourceException {
         try {
-            final List<MBThread> liferayThreads = getLiferayMyPosts();
+            return MBThreadServiceUtil.getGroupThreadsCount(scopeGroupId, 0,
+                    WorkflowConstants.STATUS_APPROVED, INCLUDE_ANONYMOUS,
+                    INCLUDE_SUBSCRIBED);
+        } catch (final SystemException e) {
+            log.error("Couldn't get amount of recent threads.", e);
+            throw new DataSourceException(e);
+        }
+    };
+
+    @Override
+    public List<DiscussionThread> getMyPosts(final int from, final int to)
+            throws DataSourceException {
+        try {
+            final List<MBThread> liferayThreads = getLiferayMyPosts(from, to);
 
             // collection for the final result
             final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
@@ -246,6 +266,21 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             throw new DataSourceException(e);
         } catch (final PortalException e) {
             log.error("Couldn't get my posts.", e);
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Override
+    public int getMyPostsAmount() throws DataSourceException {
+        try {
+            final int groupThreadsCount = MBThreadServiceUtil
+                    .getGroupThreadsCount(scopeGroupId, currentUserId,
+                            WorkflowConstants.STATUS_ANY);
+            log.debug("LiferayDataSource.getMyPostsAmount(): "
+                    + groupThreadsCount);
+            return groupThreadsCount;
+        } catch (final SystemException e) {
+            log.error("Couldn't get my posts' count.", e);
             throw new DataSourceException(e);
         }
     }
@@ -284,8 +319,10 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             if (liferayUser.isDefaultUser()) {
                 return EntityFactoryUtil.createAnonymousUser(imagePath);
             } else {
+                final boolean isBanned = MBBanLocalServiceUtil.hasBan(
+                        scopeGroupId, liferayUser.getUserId());
                 return EntityFactoryUtil.createUser(liferayUser, imagePath,
-                        liferayUser.isFemale());
+                        liferayUser.isFemale(), isBanned);
             }
         }
     }
@@ -303,33 +340,17 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         return liferayThreads;
     }
 
-    private List<MBThread> getLiferayRecentThreads() throws SystemException,
-            PortalException {
-        final int start = 0; // use QUERY_ALL if you'd like to get all
-        final int end = 40; // use QUERY_ALL if you'd like to get all
-        final List<MBThread> liferayThreads = MBThreadServiceUtil
-                .getGroupThreads(scopeGroupId, 0,
-                        WorkflowConstants.STATUS_APPROVED, false, false, start,
-                        end);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Found %d recent threads.",
-                    liferayThreads.size()));
-        }
-        return liferayThreads;
+    private List<MBThread> getLiferayRecentThreads(final int start,
+            final int end) throws SystemException, PortalException {
+        return MBThreadServiceUtil.getGroupThreads(scopeGroupId, 0,
+                WorkflowConstants.STATUS_APPROVED, INCLUDE_ANONYMOUS,
+                INCLUDE_SUBSCRIBED, start, end + 1);
     }
 
-    private List<MBThread> getLiferayMyPosts() throws SystemException,
-            PortalException {
-        final int start = 0; // use QUERY_ALL if you'd like to get all
-        final int end = 40; // use QUERY_ALL if you'd like to get all
-        final List<MBThread> liferayThreads = MBThreadServiceUtil
-                .getGroupThreads(scopeGroupId, currentUserId,
-                        WorkflowConstants.STATUS_ANY, start, end);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Found %d my threads.",
-                    liferayThreads.size()));
-        }
-        return liferayThreads;
+    private List<MBThread> getLiferayMyPosts(final int start, final int end)
+            throws SystemException, PortalException {
+        return MBThreadServiceUtil.getGroupThreads(scopeGroupId, currentUserId,
+                WorkflowConstants.STATUS_ANY, start, end + 1);
     }
 
     @Override
@@ -412,6 +433,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void incrementViewCount(final DiscussionThread thread)
             throws DataSourceException {
         try {
@@ -738,6 +760,19 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             throw new DataSourceException(e);
         } catch (final SystemException e) {
             log.error(String.format("Cannot ban user %d", user.getId()), e);
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Override
+    public void unban(@NonNull final User user) throws DataSourceException {
+        try {
+            MBBanServiceUtil.deleteBan(user.getId(), mbBanServiceContext);
+        } catch (final PortalException e) {
+            log.error(String.format("Cannot unban user %d", user.getId()), e);
+            throw new DataSourceException(e);
+        } catch (final SystemException e) {
+            log.error(String.format("Cannot unban user %d", user.getId()), e);
             throw new DataSourceException(e);
         }
     }
@@ -1323,7 +1358,10 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             final String googleAnalyticsTrackerId) throws DataSourceException {
 
         if (portletPreferences == null) {
-            throw new DataSourceException("Portlet preferences not available.");
+            @SuppressWarnings("deprecation")
+            final DataSourceException e = new DataSourceException(
+                    "Portlet preferences not available.");
+            throw e;
         } else {
             this.postReplacements = postReplacements;
             final String[] values = new String[postReplacements.size()];

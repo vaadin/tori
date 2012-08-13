@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
@@ -24,6 +25,7 @@ import org.vaadin.tori.component.post.PostComponent;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.AbstractView;
 
@@ -32,7 +34,7 @@ import com.vaadin.event.FieldEvents;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.terminal.gwt.client.ui.label.ContentMode;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -42,7 +44,6 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
 
 @SuppressWarnings("serial")
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD_STORE", justification = "We're ignoring serialization")
@@ -66,8 +67,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                     getPresenter().sendReply(rawBody);
                     getRoot().trackAction(null, "reply");
                 } catch (final DataSourceException e) {
-                    getRoot().showNotification(
-                            DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                    Notification
+                            .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                 }
             }
         }
@@ -142,8 +143,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void displayPosts(final List<Post> posts,
-            @NonNull final DiscussionThread currentThread) {
+    public void displayPosts(final List<Post> posts) {
         layout.removeAllComponents();
 
         postsLayout.removeAllComponents();
@@ -197,6 +197,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         final PostComponent c = new PostComponent(post, getPresenter());
         postsToComponents.put(post, c);
 
+        if (post.getAuthor().isBanned()) {
+            c.setUserIsBanned();
+        }
+
         // main component permissions
 
         if (getPresenter().userMayReportPosts()) {
@@ -229,9 +233,15 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             // NOP - everything's logged. If you can't follow, you can't
             // unfollow either.
         }
+
         if (getPresenter().userMayBan()) {
-            c.enableBanning();
+            if (!post.getAuthor().isBanned()) {
+                c.enableBanning();
+            } else {
+                c.enableUnbanning();
+            }
         }
+
         if (getPresenter().userMayDelete(post)) {
             c.enableDeleting();
         }
@@ -353,8 +363,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void displayThreadNotFoundError(final String threadIdString) {
-        getRoot().showNotification("No thread found for " + threadIdString,
-                Notification.TYPE_ERROR_MESSAGE);
+        final Notification n = new Notification("No thread found for "
+                + threadIdString, Notification.TYPE_ERROR_MESSAGE);
+        n.show(getRoot().getPage());
     }
 
     @Override
@@ -368,13 +379,33 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void confirmPostReported() {
-        getRoot().showNotification("Post is reported!");
+        Notification.show("Post is reported!");
     }
 
     @Override
-    public void confirmBanned() {
-        getRoot().showNotification("User is banned");
-        reloadPage();
+    public void confirmBanned(final User user) {
+        for (final Entry<Post, PostComponent> entry : postsToComponents
+                .entrySet()) {
+            final Post post = entry.getKey();
+            if (post.getAuthor().equals(user)) {
+                final PostComponent postComponent = entry.getValue();
+                postComponent.setUserIsBanned();
+                postComponent.swapBannedMenu();
+            }
+        }
+    }
+
+    @Override
+    public void confirmUnbanned(final User user) {
+        for (final Entry<Post, PostComponent> entry : postsToComponents
+                .entrySet()) {
+            final Post post = entry.getKey();
+            if (post.getAuthor().equals(user)) {
+                final PostComponent postComponent = entry.getValue();
+                postComponent.setUserIsUnbanned();
+                postComponent.swapBannedMenu();
+            }
+        }
     }
 
     @Override
@@ -395,7 +426,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void confirmPostDeleted() {
-        getRoot().showNotification("Post deleted");
+        Notification.show("Post deleted");
         reloadPage();
     }
 
@@ -427,14 +458,14 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void displayUserCanNotReply() {
-        getRoot().showNotification(
-                "Unfortunately, you are not allowed to reply to this thread.");
+        Notification.show("Unfortunately, you are not "
+                + "allowed to reply to this thread.");
     }
 
     @Override
     public void displayUserCanNotEdit() {
-        getRoot().showNotification(
-                "Unfortunately, you are not allowed to edit this post.");
+        Notification.show("Unfortunately, you are not "
+                + "allowed to edit this post.");
     }
 
     @Override
@@ -493,13 +524,12 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                                 ToriNavigator.ApplicationView.THREADS.getUrl()
                                         + "/" + createdThread.getId());
                     } catch (final DataSourceException e) {
-                        getRoot()
-                                .showNotification(
-                                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                        Notification.show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                     }
                 } else {
-                    getRoot().showNotification(errorMessages,
+                    final Notification n = new Notification(errorMessages,
                             Notification.TYPE_HUMANIZED_MESSAGE);
+                    n.show(getRoot().getPage());
                 }
             }
 
@@ -552,5 +582,4 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             newThreadComponent.updateAttachmentList(attachments);
         }
     }
-
 }

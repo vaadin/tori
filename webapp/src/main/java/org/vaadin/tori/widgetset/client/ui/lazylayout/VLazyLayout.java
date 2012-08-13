@@ -19,9 +19,9 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.shared.ui.VMarginInfo;
 import com.vaadin.terminal.gwt.client.StyleConstants;
 import com.vaadin.terminal.gwt.client.VConsole;
-import com.vaadin.terminal.gwt.client.ui.VMarginInfo;
 import com.vaadin.terminal.gwt.client.ui.csslayout.VCssLayout;
 
 public class VLazyLayout extends SimplePanel {
@@ -163,19 +163,6 @@ public class VLazyLayout extends SimplePanel {
         private void _add(final int index, final Widget widget) {
             indices.addLast(index);
             widgets.addLast(widget);
-        }
-
-        public void add(final int[] indices, final Widget[] widgets) {
-            if (indices.length != widgets.length) {
-                throw new IllegalArgumentException("The arguments given to "
-                        + getClass().getName()
-                        + "add() were of different lengths");
-            }
-
-            for (int i = 0; i < indices.length; i++) {
-                renderQueue._add(indices[i], widgets[i]);
-            }
-            schedule(RENDER_INTERVAL_MILLIS);
         }
     }
 

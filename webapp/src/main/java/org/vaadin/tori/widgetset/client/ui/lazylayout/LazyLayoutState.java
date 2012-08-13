@@ -3,8 +3,8 @@ package org.vaadin.tori.widgetset.client.ui.lazylayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.terminal.gwt.client.Connector;
-import com.vaadin.terminal.gwt.client.ui.AbstractLayoutState;
+import com.vaadin.shared.Connector;
+import com.vaadin.shared.ui.AbstractLayoutState;
 
 @SuppressWarnings("serial")
 public class LazyLayoutState extends AbstractLayoutState {

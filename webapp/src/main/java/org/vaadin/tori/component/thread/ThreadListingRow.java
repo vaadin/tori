@@ -3,6 +3,7 @@ package org.vaadin.tori.component.thread;
 import java.util.Date;
 
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.category.CategoryPresenter;
 import org.vaadin.tori.component.MenuPopup;
 import org.vaadin.tori.component.MenuPopup.ContextAction;
@@ -15,6 +16,7 @@ import com.vaadin.terminal.Resource;
 import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupView;
 
 @SuppressWarnings("serial")
@@ -54,8 +56,8 @@ public class ThreadListingRow extends PopupView {
                 menu.swap(this, UNFOLLOW_ICON, UNFOLLOW_CAPTION,
                         new UnfollowAction(thread));
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
-                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification
+                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
         }
     }
@@ -73,8 +75,8 @@ public class ThreadListingRow extends PopupView {
                 presenter.unfollow(thread);
                 menu.swap(this, FOLLOW_ICON, FOLLOW_CAPTION, new FollowAction());
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
-                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification
+                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
         }
     }
@@ -93,8 +95,8 @@ public class ThreadListingRow extends PopupView {
                 menu.swap(this, UNSTICKY_ICON, UNSTICKY_CAPTION,
                         new UnstickyAction(thread));
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
-                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification
+                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
 
         }
@@ -114,8 +116,8 @@ public class ThreadListingRow extends PopupView {
                 menu.swap(this, STICKY_ICON, STICKY_CAPTION, new StickyAction(
                         thread));
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
-                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification
+                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
 
         }
@@ -135,8 +137,8 @@ public class ThreadListingRow extends PopupView {
                 menu.swap(this, UNLOCK_ICON, UNLOCK_CAPTION, new UnlockAction(
                         thread));
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
-                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification
+                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
 
         }
@@ -155,8 +157,8 @@ public class ThreadListingRow extends PopupView {
                 presenter.unlock(thread);
                 menu.swap(this, LOCK_ICON, LOCK_CAPTION, new LockAction(thread));
             } catch (final DataSourceException e) {
-                getRoot().showNotification(
-                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification
+                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
             }
 
         }
@@ -179,13 +181,14 @@ public class ThreadListingRow extends PopupView {
                     : "";
             final String sticky = this.sticky ? "<div class='sticky'></div>"
                     : "";
-            final String topic = "<div class='topic'>" + this.topic + "</div>";
-            final String startedBy = "<div class='startedBy'>" + this.startedBy
-                    + "</div>";
+            final String topic = "<div class='topic'>"
+                    + ToriUtil.escapeXhtml(this.topic) + "</div>";
+            final String startedBy = "<div class='startedBy'>"
+                    + ToriUtil.escapeXhtml(this.startedBy) + "</div>";
             final String postCount = "<div class='postcount'>" + this.postCount
                     + "</div>";
             final String latestAuthor = "<div class='latestauthor'>"
-                    + this.latestAuthor + "</div>";
+                    + ToriUtil.escapeXhtml(this.latestAuthor) + "</div>";
             final String time = String.format("<div class='latesttime'>"
                     + "<span class='stamp'>%1$td.%1$tm.%1$tY</span>"
                     + "<span class='pretty'>%2$s</span></div>", this.time,
@@ -254,11 +257,71 @@ public class ThreadListingRow extends PopupView {
         this.presenter = presenter;
         this.thread = thread;
 
-        setStyleName("thread-listing-row");
+        if (!presenter.userHasRead(thread)) {
+            addStyleName("unread");
+        }
 
         final RowContent content = new RowContent();
 
         initializePreview(thread, content);
+        menu = getNewMenuPopup(thread, presenter);
+
+        setContent(content);
+
+        super.setHideOnMouseOut(false);
+        super.addListener(new PopupVisibilityListener() {
+            private boolean isBeingReloaded;
+
+            @Override
+            public void popupVisibilityChange(final PopupVisibilityEvent event) {
+                if (event.isPopupVisible()) {
+                    /*
+                     * This is a big nasty workaround for Vaadin's PopupView bug
+                     * (affects ThreadListingRow, since it's a fork of
+                     * PopupView) where components' connectors are lost when the
+                     * PopupView is opened the second time, and the fact that it
+                     * doesn't support .replaceComponent().
+                     * 
+                     * Instead, we set a new content to the PopupButton whenever
+                     * it's opened. But, since this event is called _after_ the
+                     * menu is being displayed, we need to do this so that the
+                     * right component is shown in the browser.
+                     */
+                    if (!isBeingReloaded) {
+                        menu = getNewMenuPopup(thread, presenter);
+                        isBeingReloaded = true;
+
+                        // this is the hack above talks about.
+                        setPopupVisible(false);
+                        setPopupVisible(true);
+                    } else {
+                        isBeingReloaded = false;
+                    }
+                    addStyleName(STYLE_OPEN);
+                } else {
+                    removeStyleName(STYLE_OPEN);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void addStyleName(final String style) {
+        super.addStyleName(style);
+    }
+
+    @Override
+    public void removeStyleName(final String style) {
+        super.removeStyleName(style);
+    }
+
+    /**
+     * Fills the popup menu with all the appropriate menu items. If there's an
+     * error, an error message will be displayed within the popup menu.
+     */
+    private MenuPopup getNewMenuPopup(final DiscussionThread thread,
+            final CategoryPresenter presenter) {
+        MenuPopup menu;
         try {
             menu = createContextMenu(thread, presenter);
         } catch (final DataSourceException e) {
@@ -266,20 +329,8 @@ public class ThreadListingRow extends PopupView {
             menu.add(null, DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
                     ContextAction.NULL);
         }
-
-        setContent(content);
-
-        super.setHideOnMouseOut(false);
-        super.addListener(new PopupVisibilityListener() {
-            @Override
-            public void popupVisibilityChange(final PopupVisibilityEvent event) {
-                if (event.isPopupVisible()) {
-                    addStyleName(STYLE_OPEN);
-                } else {
-                    removeStyleName(STYLE_OPEN);
-                }
-            }
-        });
+        requestRepaint();
+        return menu;
     }
 
     private MenuPopup createContextMenu(final DiscussionThread thread,
@@ -325,9 +376,8 @@ public class ThreadListingRow extends PopupView {
                             try {
                                 presenter.delete(thread);
                             } catch (final DataSourceException e) {
-                                getRoot()
-                                        .showNotification(
-                                                DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                                Notification
+                                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                             }
                         }
                     });
@@ -356,5 +406,11 @@ public class ThreadListingRow extends PopupView {
     @Override
     public void setHideOnMouseOut(final boolean hideOnMouseOut) {
         // ignore calls.
+    }
+
+    public void refresh() {
+        final RowContent rowContent = new RowContent();
+        initializePreview(thread, rowContent);
+        setContent(rowContent);
     }
 }
