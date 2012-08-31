@@ -17,6 +17,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import org.vaadin.tori.Configuration;
 import org.vaadin.tori.data.entity.Attachment;
 import org.vaadin.tori.data.entity.AttachmentData;
 import org.vaadin.tori.data.entity.Category;
@@ -905,9 +906,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    public void savePortletPreferences(final Map<String, String> replacements,
-            final boolean replaceMessageBoardsLinks,
-            final String googleAnalyticsTrackerId) {
+    public void save(final Configuration conf) {
     }
 
     @Override
