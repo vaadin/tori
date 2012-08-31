@@ -1385,6 +1385,12 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                         String.valueOf(replaceMessageBoardsLinks ? Boolean.TRUE
                                 : Boolean.FALSE));
 
+                /*
+                 * this will make .getPostReplacements() fetch the replacements
+                 * again
+                 */
+                this.postReplacements = null;
+
                 portletPreferences.setValue(PREFS_ANALYTICS_ID,
                         googleAnalyticsTrackerId);
 
