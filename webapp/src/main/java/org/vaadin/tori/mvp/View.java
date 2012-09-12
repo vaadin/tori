@@ -2,8 +2,6 @@ package org.vaadin.tori.mvp;
 
 import org.vaadin.tori.ToriNavigator;
 
-import com.vaadin.Application;
-
 public interface View {
 
     /**
@@ -23,10 +21,8 @@ public interface View {
      * @param navigator
      *            Reference to navigator that controls the window where this
      *            view is attached to.
-     * @param application
-     *            Application instance this view lives in.
      */
-    public void init(ToriNavigator navigator, Application application);
+    public void init(ToriNavigator navigator);
 
     /**
      * This view is navigated to.

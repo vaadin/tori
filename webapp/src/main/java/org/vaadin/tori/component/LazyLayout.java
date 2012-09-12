@@ -70,6 +70,6 @@ public class LazyLayout extends AbstractLazyLayout {
             }
         }
 
-        requestRepaint();
+        markAsDirty();
     }
 }

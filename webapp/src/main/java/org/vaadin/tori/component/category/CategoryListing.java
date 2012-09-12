@@ -16,7 +16,7 @@ import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.util.StyleConstants;
 
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -187,7 +187,7 @@ public class CategoryListing extends
         adminControls.addComponent(rearrangeControls);
         adminControls.setComponentAlignment(rearrangeControls,
                 Alignment.TOP_RIGHT);
-        adminControls.setMargin(true, false, true, false);
+        // adminControls.setMargin(true, false, true, false);
         return adminControls;
     }
 

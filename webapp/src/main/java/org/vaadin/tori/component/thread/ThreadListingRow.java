@@ -12,8 +12,8 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.exception.DataSourceException;
 
 import com.ocpsoft.pretty.time.PrettyTime;
-import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.server.Resource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -269,7 +269,7 @@ public class ThreadListingRow extends PopupView {
         setContent(content);
 
         super.setHideOnMouseOut(false);
-        super.addListener(new PopupVisibilityListener() {
+        super.addPopupVisibilityListener(new PopupVisibilityListener() {
             private boolean isBeingReloaded;
 
             @Override
@@ -329,7 +329,7 @@ public class ThreadListingRow extends PopupView {
             menu.add(null, DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
                     ContextAction.NULL);
         }
-        requestRepaint();
+        markAsDirty();
         return menu;
     }
 

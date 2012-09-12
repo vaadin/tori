@@ -43,7 +43,7 @@ public class PostScoreComponent extends CustomComponent {
         if (postVote.isUpvote()) {
             upvote.addStyleName("done");
         }
-        upvote.addListener(new NativeButton.ClickListener() {
+        upvote.addClickListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 try {
@@ -62,7 +62,7 @@ public class PostScoreComponent extends CustomComponent {
         if (postVote.isDownvote()) {
             downvote.addStyleName("done");
         }
-        downvote.addListener(new NativeButton.ClickListener() {
+        downvote.addClickListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 try {

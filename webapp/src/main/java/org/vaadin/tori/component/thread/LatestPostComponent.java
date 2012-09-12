@@ -11,7 +11,7 @@ import com.vaadin.ui.Label;
 public class LatestPostComponent extends Label {
 
     public LatestPostComponent(final DiscussionThread thread) {
-        super("", ContentMode.XHTML);
+        super("", ContentMode.HTML);
         setWidth(null);
         setStyleName("latest-post");
 

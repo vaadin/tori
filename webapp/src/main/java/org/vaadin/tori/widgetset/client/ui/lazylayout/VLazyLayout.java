@@ -19,10 +19,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.shared.ui.VMarginInfo;
-import com.vaadin.terminal.gwt.client.StyleConstants;
-import com.vaadin.terminal.gwt.client.VConsole;
-import com.vaadin.terminal.gwt.client.ui.csslayout.VCssLayout;
+import com.vaadin.client.VConsole;
 
 public class VLazyLayout extends SimplePanel {
     public static final String TAGNAME = "lazylayout";
@@ -210,24 +207,6 @@ public class VLazyLayout extends SimplePanel {
     @Override
     protected Element getContainerElement() {
         return margin;
-    }
-
-    /**
-     * Sets CSS classes for margin based on the given parameters.
-     * 
-     * @param margins
-     *            A {@link VMarginInfo} object that provides info on
-     *            top/left/bottom/right margins
-     */
-    protected void setMarginStyles(final VMarginInfo margins) {
-        setStyleName(margin, VCssLayout.CLASSNAME + "-"
-                + StyleConstants.MARGIN_TOP, margins.hasTop());
-        setStyleName(margin, VCssLayout.CLASSNAME + "-"
-                + StyleConstants.MARGIN_RIGHT, margins.hasRight());
-        setStyleName(margin, VCssLayout.CLASSNAME + "-"
-                + StyleConstants.MARGIN_BOTTOM, margins.hasBottom());
-        setStyleName(margin, VCssLayout.CLASSNAME + "-"
-                + StyleConstants.MARGIN_LEFT, margins.hasLeft());
     }
 
     public void setComponentsAmount(final int newAmountOfComponents) {

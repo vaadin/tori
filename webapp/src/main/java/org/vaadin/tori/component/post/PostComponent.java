@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 
 import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.ToriRoot;
+import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.component.ConfirmationDialog;
 import org.vaadin.tori.component.ConfirmationDialog.ConfirmationListener;
@@ -21,10 +21,10 @@ import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.thread.ThreadPresenter;
 
 import com.ocpsoft.pretty.time.PrettyTime;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Resource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -32,7 +32,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.Embedded;
+import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
@@ -121,14 +121,14 @@ public class PostComponent extends CustomComponent {
         public void postEdited(final String newPostBody) {
             try {
                 presenter.saveEdited(post, newPostBody);
-                getRoot().trackAction(null, "edit-post");
+                getUI().trackAction(null, "edit-post");
                 // this component will be replaced with a new one. So no need to
                 // change the state.
             } catch (final DataSourceException e) {
                 final Notification n = new Notification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
-                        Notification.TYPE_ERROR_MESSAGE);
-                n.show(getRoot().getPage());
+                        Notification.Type.ERROR_MESSAGE);
+                n.show(getUI().getPage());
             }
         }
     };
@@ -250,11 +250,11 @@ public class PostComponent extends CustomComponent {
         scrollToButton = new Button("Scroll to Post");
         scrollToButton.setStyleName(BaseTheme.BUTTON_LINK);
         scrollToButton.setVisible(false);
-        scrollToButton.addListener(new Button.ClickListener() {
+        scrollToButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 if (scrollToComponent != null) {
-                    getRoot().scrollIntoView(scrollToComponent);
+                    getUI().scrollIntoView(scrollToComponent);
                 }
             }
         });
@@ -270,7 +270,7 @@ public class PostComponent extends CustomComponent {
         if (rawSignature != null && !rawSignature.isEmpty()) {
             final String formattedSignature = ToriApplication.getCurrent()
                     .getSignatureFormatter().format(rawSignature);
-            root.addComponent(new Label(formattedSignature, ContentMode.XHTML),
+            root.addComponent(new Label(formattedSignature, ContentMode.HTML),
                     "signature");
         }
 
@@ -424,7 +424,7 @@ public class PostComponent extends CustomComponent {
                 );
         // @formatter:on
 
-        final Label label = new Label(linkString, ContentMode.XHTML);
+        final Label label = new Label(linkString, ContentMode.HTML);
         return label;
     }
 
@@ -435,10 +435,10 @@ public class PostComponent extends CustomComponent {
         xhtml.append("</span><span class=\"timestamp\">");
         xhtml.append(dateFormat.format(post.getTime()));
         xhtml.append("</span>");
-        return new Label(xhtml.toString(), ContentMode.XHTML);
+        return new Label(xhtml.toString(), ContentMode.HTML);
     }
 
-    private Embedded getAvatarImage(final Post post) {
+    private Image getAvatarImage(final Post post) {
         final String avatarUrl = post.getAuthor().getAvatarUrl();
 
         final Resource imageResource;
@@ -449,8 +449,7 @@ public class PostComponent extends CustomComponent {
                     "images/icon-placeholder-avatar.gif");
         }
 
-        final Embedded image = new Embedded(null, imageResource);
-        image.setType(Embedded.TYPE_IMAGE);
+        final Image image = new Image(null, imageResource);
         image.setWidth("90px");
         return image;
     }
@@ -501,16 +500,16 @@ public class PostComponent extends CustomComponent {
         root.removeComponent("body");
         final String formattedPost = getFormattedXhtmlBody(post);
         if (allowHtml) {
-            root.addComponent(new Label(formattedPost, ContentMode.XHTML),
+            root.addComponent(new Label(formattedPost, ContentMode.HTML),
                     "body");
         } else {
             root.addComponent(new Label(presenter.stripTags(formattedPost),
-                    ContentMode.XHTML), "body");
+                    ContentMode.HTML), "body");
         }
     }
 
     @Override
-    public ToriRoot getRoot() {
-        return (ToriRoot) super.getRoot();
+    public ToriUI getUI() {
+        return (ToriUI) super.getUI();
     }
 }

@@ -14,8 +14,8 @@ import org.vaadin.tori.service.DebugAuthorizationService;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
-import com.vaadin.terminal.WrappedRequest;
-import com.vaadin.ui.Root;
+import com.vaadin.server.WrappedRequest;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -23,7 +23,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 @Theme("tori")
 @SuppressWarnings("serial")
 @Widgetset("org.vaadin.tori.widgetset.ToriWidgetset")
-public class ToriRoot extends Root {
+public class ToriUI extends UI {
 
     private static final String PATH_ACTION_SEPARATOR = "$";
 
@@ -76,7 +76,7 @@ public class ToriRoot extends Root {
         if (portletMode == PortletMode.EDIT) {
             if (getContent() == windowLayout) {
                 final EditViewImpl editView = new EditViewImpl();
-                editView.init(null, getApplication());
+                editView.init(null);
                 setContent(editView);
             }
         } else {

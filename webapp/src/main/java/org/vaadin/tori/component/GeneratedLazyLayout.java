@@ -180,7 +180,7 @@ public class GeneratedLazyLayout extends AbstractLazyLayout {
             throw exception;
         }
 
-        requestRepaint();
+        markAsDirty();
     }
 
 }

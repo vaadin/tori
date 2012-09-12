@@ -5,8 +5,8 @@ import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.category.SpecialCategory;
 import org.vaadin.tori.data.DataSource;
 
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Link;

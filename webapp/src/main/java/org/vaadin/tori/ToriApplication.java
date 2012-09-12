@@ -50,7 +50,7 @@ public class ToriApplication extends Application implements
 
     @Override
     protected String getRootClassName(final WrappedRequest request) {
-        return ToriRoot.class.getName();
+        return ToriUI.class.getName();
     }
 
     /**
@@ -207,7 +207,7 @@ public class ToriApplication extends Application implements
                     Root.getCurrent().getPage().setFragment(fragment);
                 }
 
-                ((ToriRoot) root).setPortletMode(portletRequest
+                ((ToriUI) root).setPortletMode(portletRequest
                         .getPortletMode());
             }
         }

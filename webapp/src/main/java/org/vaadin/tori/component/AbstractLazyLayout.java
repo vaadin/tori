@@ -49,7 +49,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
                 loadedComponents.add(getComponent(index));
             }
 
-            requestRepaintAll();
+            markAsDirty();
             getRpc().renderComponents(indicesToFetch);
         }
     };
@@ -95,7 +95,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
             super.addComponent(c);
             getState().setTotalAmountOfComponents(getComponentCount());
 
-            requestRepaint();
+            markAsDirty();
         } catch (final IllegalArgumentException e) {
             components.remove(c);
             connectors.remove(c);
@@ -120,7 +120,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
         loadedComponents.remove(c);
         super.removeComponent(c);
         getState().setTotalAmountOfComponents(getComponentCount());
-        requestRepaint();
+        markAsDirty();
     }
 
     /**
@@ -186,7 +186,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
 
         super.removeComponent(oldComponent);
         super.addComponent(newComponent);
-        requestRepaint();
+        markAsDirty();
     }
 
     /**

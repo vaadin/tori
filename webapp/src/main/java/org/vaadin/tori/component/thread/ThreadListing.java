@@ -74,8 +74,8 @@ public class ThreadListing extends CustomComponent {
             } catch (final DataSourceException e) {
                 final Notification n = new Notification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
-                        Notification.TYPE_ERROR_MESSAGE);
-                n.show(getRoot().getPage());
+                        Notification.Type.ERROR_MESSAGE);
+                n.show(getUI().getPage());
                 e.printStackTrace();
                 getLogger().error(e);
                 return Collections.emptyList();
@@ -99,8 +99,8 @@ public class ThreadListing extends CustomComponent {
             } catch (final DataSourceException e) {
                 final Notification n = new Notification(
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
-                        Notification.TYPE_ERROR_MESSAGE);
-                n.show(getRoot().getPage());
+                        Notification.Type.ERROR_MESSAGE);
+                n.show(getUI().getPage());
                 e.printStackTrace();
                 getLogger().error(e);
                 return 0;

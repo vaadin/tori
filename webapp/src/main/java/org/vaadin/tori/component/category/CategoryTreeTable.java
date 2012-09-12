@@ -23,10 +23,10 @@ import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.dd.VerticalDropLocation;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
@@ -180,7 +180,7 @@ class CategoryTreeTable extends TreeTable {
                 final long unreadPostCount) {
             final Label threadCountLabel = new Label(String.format(
                     "%d threads<br />%d new posts", threadCount,
-                    unreadPostCount), ContentMode.XHTML);
+                    unreadPostCount), ContentMode.HTML);
             threadCountLabel.setStyleName("threadCount");
             threadCountLabel.setWidth(null);
             return threadCountLabel;

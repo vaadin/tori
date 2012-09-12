@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
-import com.vaadin.terminal.Vaadin6Component;
+import com.vaadin.server.LegacyComponent;
+import com.vaadin.server.PaintException;
+import com.vaadin.server.PaintTarget;
 import com.vaadin.ui.AbstractComponent;
 
 /**
@@ -23,7 +23,7 @@ import com.vaadin.ui.AbstractComponent;
  * 
  */
 public class GoogleAnalyticsTracker extends AbstractComponent implements
-        Vaadin6Component {
+        LegacyComponent {
 
     private static final long serialVersionUID = 2973391903850855532L;
 
@@ -93,7 +93,7 @@ public class GoogleAnalyticsTracker extends AbstractComponent implements
      */
     public void trackPageview(final String pageId) {
         this.pageIds.add(pageId);
-        requestRepaint();
+        markAsDirty();
     }
 
     @Override

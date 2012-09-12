@@ -6,9 +6,9 @@ import java.util.List;
 import org.vaadin.tori.component.LazyLayout;
 import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRpc.LazyLayoutClientRpc;
 
+import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.shared.Connector;
 import com.vaadin.shared.ui.Connect;
-import com.vaadin.terminal.gwt.client.communication.StateChangeEvent;
 
 @Connect(LazyLayout.class)
 @SuppressWarnings("serial")

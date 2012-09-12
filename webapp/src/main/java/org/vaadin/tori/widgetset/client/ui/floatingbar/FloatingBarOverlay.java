@@ -6,8 +6,8 @@ import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.ui.VOverlay;
-import com.vaadin.terminal.gwt.client.ui.popupview.VPopupView;
+import com.vaadin.client.ui.VOverlay;
+import com.vaadin.client.ui.popupview.VPopupView;
 
 /**
  * The actual VOverlay that displays the content for the floating bar.
@@ -132,8 +132,8 @@ class FloatingBarOverlay extends VOverlay {
 
     // overridden for method visibility
     @Override
-    public void sizeOrPositionUpdated() {
-        super.sizeOrPositionUpdated();
+    public void positionOrSizeUpdated() {
+        super.positionOrSizeUpdated();
     }
 
     public void setTopAligned(final boolean topAligned) {

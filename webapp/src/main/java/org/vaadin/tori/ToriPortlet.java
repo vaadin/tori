@@ -15,11 +15,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vaadin.tori.indexing.ToriIndexableApplication;
 
-import com.vaadin.terminal.gwt.server.ApplicationPortlet2;
-import com.vaadin.terminal.gwt.server.Constants;
-import com.vaadin.terminal.gwt.server.WrappedPortletRequest;
+import com.vaadin.server.Constants;
+import com.vaadin.server.VaadinPortlet;
+import com.vaadin.server.WrappedPortletRequest;
 
-public class ToriPortlet extends ApplicationPortlet2 {
+public class ToriPortlet extends VaadinPortlet {
 
     private static final String PORTAL_UTIL_CLASS = "com.liferay.portal.util.PortalUtil";
 
@@ -84,7 +84,7 @@ public class ToriPortlet extends ApplicationPortlet2 {
                 .toLowerCase();
         if (portalInfo.contains("liferay")) {
             wrapped = new WrappedLiferayRequest(request,
-                    wrapped.getDeploymentConfiguration()) {
+                    wrapped.getVaadinService()) {
                 @Override
                 public String getPortalProperty(final String name) {
                     if (Constants.PORTAL_PARAMETER_VAADIN_RESOURCE_PATH
