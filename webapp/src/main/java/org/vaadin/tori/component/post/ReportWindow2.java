@@ -66,7 +66,7 @@ class ReportWindow2 extends Window {
                 "A moderator should take a look at it.");
 
         reason.setImmediate(true);
-        reason.addListener(new OptionGroup.ValueChangeListener() {
+        reason.addValueChangeListener(new OptionGroup.ValueChangeListener() {
             @Override
             public void valueChange(final ValueChangeEvent event) {
                 explanationLayout.setVisible(reason.getValue() == Reason.MODERATOR_ALERT);
@@ -89,7 +89,7 @@ class ReportWindow2 extends Window {
         addComponent(footer);
 
         reportButton = new NativeButton("Report Post");
-        reportButton.addListener(new NativeButton.ClickListener() {
+        reportButton.addClickListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 final PostReport report = new PostReport(post, (Reason) reason
@@ -110,7 +110,7 @@ class ReportWindow2 extends Window {
         footer.addComponent(reportButton);
 
         final NativeButton cancel = new NativeButton("Cancel");
-        cancel.addListener(new NativeButton.ClickListener() {
+        cancel.addClickListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 ReportWindow2.this.close();
