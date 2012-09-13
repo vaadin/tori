@@ -71,7 +71,7 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
                     final Component uiContext) {
                 final TextField textField = new TextField();
                 textField.setWidth(100.0f, Unit.PERCENTAGE);
-                textField.addListener(new FocusListener() {
+                textField.addFocusListener(new FocusListener() {
                     @Override
                     public void focus(final FocusEvent event) {
                         replacementsTable.setValue(itemId);
@@ -81,12 +81,14 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
             }
         });
 
-        replacementsTable.addListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(final ValueChangeEvent event) {
-                removeButton.setEnabled(event.getProperty().getValue() != null);
-            }
-        });
+        replacementsTable
+                .addValueChangeListener(new Property.ValueChangeListener() {
+                    @Override
+                    public void valueChange(final ValueChangeEvent event) {
+                        removeButton
+                                .setEnabled(event.getProperty().getValue() != null);
+                    }
+                });
 
         replacementsTable.addContainerProperty("regex", String.class, "",
                 "Regex", null, null);
