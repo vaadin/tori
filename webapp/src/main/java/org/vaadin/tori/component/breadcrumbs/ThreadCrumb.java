@@ -78,7 +78,7 @@ class ThreadCrumb extends CustomComponent {
         }
 
         root.setValue(thread);
-        root.addListener(new ValueChangeListener() {
+        root.addValueChangeListener(new ValueChangeListener() {
             @Override
             public void valueChange(final ValueChangeEvent event) {
                 if (listener != null) {
