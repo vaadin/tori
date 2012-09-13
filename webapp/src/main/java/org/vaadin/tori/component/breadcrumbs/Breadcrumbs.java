@@ -65,7 +65,7 @@ public class Breadcrumbs extends CustomComponent implements
     private void renderBreadCrumb() {
         layout.removeAllComponents();
         final Button dashboardButton = new Button("Dashboard");
-        dashboardButton.addListener(new Button.ClickListener() {
+        dashboardButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 navigator.navigateTo(ToriNavigator.ApplicationView.DASHBOARD);
