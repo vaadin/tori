@@ -98,7 +98,7 @@ abstract class CategoryCrumb extends CustomComponent {
             return new Label("Something went wrong :(");
         }
 
-        tree.addListener(new ItemClickEvent.ItemClickListener() {
+        tree.addItemClickListener(new ItemClickEvent.ItemClickListener() {
             @Override
             public void itemClick(final ItemClickEvent event) {
                 if (listener != null) {
