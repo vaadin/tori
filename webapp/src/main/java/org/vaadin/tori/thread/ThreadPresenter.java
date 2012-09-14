@@ -3,7 +3,7 @@ package org.vaadin.tori.thread;
 import java.util.Date;
 import java.util.LinkedHashMap;
 
-import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -294,7 +294,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
 
     @NonNull
     public String getFormattingSyntax() {
-        return ToriApplication.getCurrent().getPostFormatter()
+        return ToriUI.getCurrent().getPostFormatter()
                 .getFormattingSyntaxXhtml();
     }
 
@@ -438,7 +438,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     }
 
     public void quotePost(final Post post) {
-        final String quote = ToriApplication.getCurrent().getPostFormatter()
+        final String quote = ToriUI.getCurrent().getPostFormatter()
                 .getQuote(post);
         getView().appendToReply(quote);
     }

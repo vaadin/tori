@@ -1,16 +1,20 @@
 package org.vaadin.tori;
 
 import javax.portlet.PortletMode;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriNavigator.ViewChangeListener;
 import org.vaadin.tori.component.DebugControlPanel;
 import org.vaadin.tori.component.GoogleAnalyticsTracker;
 import org.vaadin.tori.component.breadcrumbs.Breadcrumbs;
+import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.edit.EditViewImpl;
 import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
+import org.vaadin.tori.util.PostFormatter;
+import org.vaadin.tori.util.SignatureFormatter;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
@@ -27,7 +31,7 @@ public class ToriUI extends UI {
 
     private static final String PATH_ACTION_SEPARATOR = "$";
 
-    private final ToriNavigator navigator = new ToriNavigator(this);
+    private ToriNavigator navigator;
     private VerticalLayout windowLayout;
 
     @CheckForNull
@@ -38,12 +42,14 @@ public class ToriUI extends UI {
     @Override
     protected void init(final WrappedRequest request) {
         getPage().setTitle("Tori");
+        getSession().setAttribute(ToriApiLoader.class, new ToriApiLoader());
+        navigator = new ToriNavigator(this);
+
         windowLayout = new VerticalLayout();
         windowLayout.setMargin(false);
         setContent(windowLayout);
 
-        final String trackerId = ToriApplication.getCurrent().getDataSource()
-                .getGoogleAnalyticsTrackerId();
+        final String trackerId = getDataSource().getGoogleAnalyticsTrackerId();
         if (trackerId != null) {
             analytics = new GoogleAnalyticsTracker(trackerId);
             analytics.setAllowAnchor(true);
@@ -58,7 +64,7 @@ public class ToriUI extends UI {
         addComponent(breadcrumbs);
         addComponent(navigator);
 
-        navigator.init(request.getBrowserDetails().getUriFragment());
+        navigator.init(getPage().getFragment());
 
         navigator.addListener(new ViewChangeListener() {
             @Override
@@ -87,8 +93,7 @@ public class ToriUI extends UI {
     }
 
     private void addControlPanelIfInDevelopment() {
-        final AuthorizationService authorizationService = ToriApplication
-                .getCurrent().getAuthorizationService();
+        final AuthorizationService authorizationService = getAuthorizationService();
         if (authorizationService instanceof DebugAuthorizationService) {
             addComponent(new DebugControlPanel(
                     (DebugAuthorizationService) authorizationService, navigator));
@@ -136,4 +141,75 @@ public class ToriUI extends UI {
     private Logger logger() {
         return Logger.getLogger(getClass());
     }
+
+    public AuthorizationService getAuthorizationService() {
+        return getApiLoader().getAuthorizationService();
+    }
+
+    public PostFormatter getPostFormatter() {
+        return getApiLoader().getPostFormatter();
+    }
+
+    public SignatureFormatter getSignatureFormatter() {
+        return getApiLoader().getSignatureFormatter();
+    }
+
+    public DataSource getDataSource() {
+        return getApiLoader().getDs();
+    }
+
+    private ToriApiLoader getApiLoader() {
+        final ToriApiLoader apiLoader = getSession().getAttribute(
+                ToriApiLoader.class);
+        if (apiLoader != null) {
+            return apiLoader;
+        } else {
+            throw new IllegalStateException(ToriApiLoader.class.getName()
+                    + " was not found in the state. This is bad...");
+        }
+    }
+
+    void setRequest(final HttpServletRequest request) {
+        getApiLoader().setRequest(request);
+    }
+
+    /*-
+     * Not sure if we need this code anymore... it's quite hacky anyways.
+    private void addAttachmentDownloadHandler() {
+        addRequestHandler(new RequestHandler() {
+            @Override
+            public boolean handleRequest(final Application application,
+                    final WrappedRequest request, final WrappedResponse response)
+                    throws IOException {
+
+                final String requestPathInfo = request.getRequestPathInfo();
+                if (requestPathInfo
+                        .startsWith(DebugDataSource.ATTACHMENT_PREFIX)) {
+                    final String[] data = requestPathInfo.substring(
+                            DebugDataSource.ATTACHMENT_PREFIX.length()).split(
+                            "/");
+                    final long dataId = Long.parseLong(data[0]);
+                    final String fileName = data[1];
+
+                    final byte[] attachmentData = ((DebugDataSource) ToriApplication
+                            .getCurrent().getDataSource())
+                            .getAttachmentData(dataId);
+
+                    final ByteArrayInputStream is = new ByteArrayInputStream(
+                            attachmentData);
+                    final DownloadStream stream = new DownloadStream(is, null,
+                            fileName);
+                    stream.writeTo(response);
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+     */
+
+    public static ToriUI getCurrent() {
+        return (ToriUI) UI.getCurrent();
+    }
+
 }

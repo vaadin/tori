@@ -3,7 +3,6 @@ package org.vaadin.tori.component.post;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.ToriUtil;
@@ -268,7 +267,7 @@ public class PostComponent extends CustomComponent {
 
         final String rawSignature = post.getAuthor().getSignatureRaw();
         if (rawSignature != null && !rawSignature.isEmpty()) {
-            final String formattedSignature = ToriApplication.getCurrent()
+            final String formattedSignature = ToriUI.getCurrent()
                     .getSignatureFormatter().format(rawSignature);
             root.addComponent(new Label(formattedSignature, ContentMode.HTML),
                     "signature");
@@ -399,8 +398,7 @@ public class PostComponent extends CustomComponent {
     }
 
     private String getFormattedXhtmlBody(final Post post) {
-        return ToriApplication.getCurrent().getPostFormatter()
-                .format(post.getBodyRaw());
+        return ToriUI.getCurrent().getPostFormatter().format(post.getBodyRaw());
     }
 
     private static String getPermaLinkUrl(final Post post) {

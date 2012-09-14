@@ -3,7 +3,7 @@ package org.vaadin.tori.component;
 import java.util.Collections;
 
 import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRpc;
-import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRpc.LazyLayoutClientRpc;
+import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutClientRpc;
 
 import com.vaadin.ui.Component;
 

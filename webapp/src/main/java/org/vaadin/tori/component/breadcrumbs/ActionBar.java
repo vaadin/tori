@@ -1,7 +1,7 @@
 package org.vaadin.tori.component.breadcrumbs;
 
-import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.category.SpecialCategory;
 import org.vaadin.tori.data.DataSource;
 
@@ -27,7 +27,7 @@ public class ActionBar extends CustomComponent {
         setWidth(null);
 
         layout.addComponent(getLink(SpecialCategory.RECENT_POSTS));
-        final DataSource ds = ToriApplication.getCurrent().getDataSource();
+        final DataSource ds = ToriUI.getCurrent().getDataSource();
         if (ds.isLoggedInUser()) {
             layout.addComponent(getLink(SpecialCategory.MY_POSTS));
         }

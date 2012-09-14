@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRpc;
-import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRpc.GeneratedLazyLayoutClientRpc;
+import org.vaadin.tori.widgetset.client.ui.lazylayout.GeneratedLazyLayoutClientRpc;
 
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;

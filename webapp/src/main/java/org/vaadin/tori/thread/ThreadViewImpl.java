@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.FloatingBar;
 import org.vaadin.tori.component.FloatingBar.DisplayEvent;
 import org.vaadin.tori.component.FloatingBar.FloatingAlignment;
@@ -120,9 +120,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     protected ThreadPresenter createPresenter() {
-        final ToriApplication app = ToriApplication.getCurrent();
-        return new ThreadPresenter(app.getDataSource(),
-                app.getAuthorizationService());
+        final ToriUI ui = ToriUI.getCurrent();
+        return new ThreadPresenter(ui.getDataSource(),
+                ui.getAuthorizationService());
     }
 
     /**
@@ -549,8 +549,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             public void removeAttachment(final String fileName) {
                 getPresenter().removeAttachment(fileName);
             }
-        }, ToriApplication.getCurrent().getPostFormatter()
-                .getFormattingSyntaxXhtml());
+        }, ToriUI.getCurrent().getPostFormatter().getFormattingSyntaxXhtml());
         newThreadComponent.setUserMayAddFiles(getPresenter().userMayAddFiles());
         newThreadComponent.setMaxFileSize(getPresenter().getMaxFileSize());
         layout.addComponent(newThreadComponent);

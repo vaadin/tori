@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.util.PostFormatter;
@@ -71,7 +70,7 @@ public abstract class AuthoringComponent extends CustomComponent {
             layout.setSpacing(true);
             layout.setMargin(true);
 
-            final PostFormatter postFormatter = ToriApplication.getCurrent()
+            final PostFormatter postFormatter = ToriUI.getCurrent()
                     .getPostFormatter();
 
             final FormatInfo boldInfo = postFormatter.getBoldInfo();
@@ -196,8 +195,7 @@ public abstract class AuthoringComponent extends CustomComponent {
                 @NonNull final AuthoringComponent authoringComponent) {
 
             final Embedded button = new Embedded(null, new ClassResource(
-                    FormatInfo.ICON_PACKAGE + formatInfo.getFormatIcon(),
-                    ToriApplication.getCurrent()));
+                    FormatInfo.ICON_PACKAGE + formatInfo.getFormatIcon()));
             button.setWidth(TOOLBAR_ICON_WIDTH);
             button.setHeight(TOOLBAR_ICON_HEIGHT);
 
@@ -534,8 +532,8 @@ public abstract class AuthoringComponent extends CustomComponent {
     }
 
     private void updatePreview(final String unformattedText) {
-        final String formattedPreview = ToriApplication.getCurrent()
-                .getPostFormatter().format(unformattedText);
+        final String formattedPreview = ToriUI.getCurrent().getPostFormatter()
+                .format(unformattedText);
         preview.setValue(formattedPreview + "<br/>");
     }
 

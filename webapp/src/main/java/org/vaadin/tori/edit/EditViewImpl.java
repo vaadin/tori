@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.mvp.AbstractView;
 
 import com.vaadin.data.Container;
@@ -156,9 +156,9 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
 
     @Override
     protected EditPresenter createPresenter() {
-        final ToriApplication app = ToriApplication.getCurrent();
-        return new EditPresenter(app.getDataSource(),
-                app.getAuthorizationService());
+        final ToriUI ui = ToriUI.getCurrent();
+        return new EditPresenter(ui.getDataSource(),
+                ui.getAuthorizationService());
     }
 
     @Override
