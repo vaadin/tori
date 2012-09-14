@@ -1,3 +1,7 @@
+.v-lazylayout.wrapper-layout {
+	width: 100%;
+}
+
 .v-lazylayout-placeholder {
 	box-sizing: border-box;
 }
