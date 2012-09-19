@@ -93,7 +93,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
 
         try {
             super.addComponent(c);
-            getState().setTotalAmountOfComponents(getComponentCount());
+            getState().amountOfComponents = getComponentCount();
 
             markAsDirty();
         } catch (final IllegalArgumentException e) {
@@ -119,7 +119,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
         connectors.remove(c);
         loadedComponents.remove(c);
         super.removeComponent(c);
-        getState().setTotalAmountOfComponents(getComponentCount());
+        getState().amountOfComponents = getComponentCount();
         markAsDirty();
     }
 
@@ -216,18 +216,18 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
 
     public void setPlaceholderSize(final String placeholderHeight,
             final String placeholderWidth) {
-        getState().setPlaceholderHeight(placeholderHeight);
-        getState().setPlaceholderWidth(placeholderWidth);
+        getState().placeholderHeight = placeholderHeight;
+        getState().placeholderWidth = placeholderWidth;
     }
 
     /** How far the rendering should occur past the page length */
     public void setRenderDistanceMultiplier(
             final double renderDistanceMultiplier) {
-        getState().setRenderDistanceMultiplier(renderDistanceMultiplier);
+        getState().renderDistanceMultiplier = renderDistanceMultiplier;
     }
 
     public void setRenderDelay(final int renderDelayMillis) {
-        getState().setRenderDelay(renderDelayMillis);
+        getState().renderDelay = renderDelayMillis;
     }
 
     @Override

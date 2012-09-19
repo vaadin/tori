@@ -209,7 +209,7 @@ public class VLazyLayout extends SimplePanel {
         return margin;
     }
 
-    public void setComponentsAmount(final int newAmountOfComponents) {
+    public void setAmountOfComponents(final int newAmountOfComponents) {
         if (newAmountOfComponents != totalAmountOfComponents) {
             if (newAmountOfComponents < totalAmountOfComponents) {
                 // TODO

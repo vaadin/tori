@@ -91,13 +91,8 @@ public abstract class AbstractLazyLayoutConnector extends
 
         attachScrollHandlersIfNeeded();
 
-        getWidget().setPlaceholderSize(getState().getPlaceholderHeight(),
-                getState().getPlaceholderWidth());
-        getWidget()
-                .setComponentsAmount(getState().getTotalAmountOfComponents());
-        getWidget().setRenderDistanceMultiplier(
-                getState().getRenderDistanceMultiplier());
-        getWidget().setRenderDelay(getState().getRenderDelay());
+        getWidget().setPlaceholderSize(getState().placeholderHeight,
+                getState().placeholderWidth);
     }
 
     /** Called on the very first {@link #onStateChanged(StateChangeEvent)} call. */
