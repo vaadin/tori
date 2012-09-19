@@ -476,6 +476,19 @@ public class VLazyLayout extends SimplePanel {
     }
 
     public void replaceComponent(final Widget widget, final int i) {
+
+        if (widget == null) {
+            VConsole.error("LazyLayout: Widget for index " + i
+                    + " was null. Replacing with error indicator.");
+            panel.remove(i);
+            panel.insert(new HTML(
+                    "<div style='background-color:red; color:white; font-weight: "
+                            + "bold; border: 3px solid #f88; padding:5px'>"
+                            + "broken lazy layout component at index " + i
+                            + "</div>"), i);
+            return;
+        }
+
         try {
 
             final Widget panelWidget = panel.getWidget(i);
