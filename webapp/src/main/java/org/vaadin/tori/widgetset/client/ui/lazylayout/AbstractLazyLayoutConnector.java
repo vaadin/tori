@@ -1,6 +1,7 @@
 package org.vaadin.tori.widgetset.client.ui.lazylayout;
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -37,7 +38,16 @@ public abstract class AbstractLazyLayoutConnector extends
     @Override
     protected void init() {
         super.init();
-        registerRpcs();
+        registerRpc(AbstractLazyLayoutClientRpc.class,
+                new AbstractLazyLayoutClientRpc() {
+                    @Override
+                    public void sendComponents(
+                            final Map<Integer, Connector> components) {
+                        getWidget().updateScrollAdjustmentReference();
+                        swapLazyComponents(components);
+                    }
+                });
+
         getLayoutManager().addElementResizeListener(getWidget().getElement(),
                 elementResizeListener);
         resizeHandler = Window.addResizeHandler(new ResizeHandler() {
@@ -55,8 +65,6 @@ public abstract class AbstractLazyLayoutConnector extends
         resizeHandler.removeHandler();
         super.onUnregister();
     }
-
-    abstract protected void registerRpcs();
 
     @Override
     protected VLazyLayout createWidget() {
@@ -111,42 +119,23 @@ public abstract class AbstractLazyLayoutConnector extends
             final ConnectorHierarchyChangeEvent event) {
     }
 
-    protected void swapLazyComponents(final List<Integer> indicesToFetch) {
-        final List<? extends Connector> components = getState().getConnectors();
-
-        if (indicesToFetch == null || indicesToFetch.isEmpty()) {
-            VConsole.error("no indices to fetch");
+    protected void swapLazyComponents(final Map<Integer, Connector> components) {
+        if (components == null || components.isEmpty()) {
+            VConsole.error("No components to swap in (unnecessary method call)");
         } else {
-
-            final int[] indices = new int[indicesToFetch.size()];
-            final Widget[] widgets = new Widget[indicesToFetch.size()];
-
-            int ii = 0;
-            for (final int i : indicesToFetch) {
-                try {
-                    final Connector connector = components.get(i);
-                    if (connector == null) {
-                        VConsole.error("No component for index " + i
-                                + " in state, even if it should be there");
-                        continue;
-                    }
-
-                    if (connector instanceof ComponentConnector) {
-                        final ComponentConnector componentConnector = (ComponentConnector) connector;
-                        final Widget widget = componentConnector.getWidget();
-                        indices[ii] = i;
-                        widgets[ii] = widget;
-                    } else {
-                        VConsole.error("LazyLayout expected an ComponentConnector; "
-                                + connector.getClass().getName()
-                                + " is not one");
-                    }
-                } catch (final IndexOutOfBoundsException e) {
-                    VConsole.error(e.getMessage());
+            for (final Map.Entry<Integer, Connector> entry : components
+                    .entrySet()) {
+                final Integer index = entry.getKey();
+                final Connector connector = entry.getValue();
+                if (connector instanceof ComponentConnector) {
+                    final ComponentConnector cConnector = (ComponentConnector) connector;
+                    final Widget widget = cConnector.getWidget();
+                    getWidget().replaceComponent(widget, index);
+                } else {
+                    VConsole.error("Expected a ComponentConnector, got something else instead (at index "
+                            + index + ")");
                 }
-                ii++;
             }
-            getWidget().replaceComponents(indices, widgets);
         }
     }
 }

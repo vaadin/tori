@@ -1,13 +1,14 @@
 package org.vaadin.tori.component;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRpc;
-import org.vaadin.tori.widgetset.client.ui.lazylayout.GeneratedLazyLayoutClientRpc;
 
+import com.vaadin.shared.Connector;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 
@@ -57,7 +58,7 @@ public class GeneratedLazyLayout extends AbstractLazyLayout {
     public GeneratedLazyLayout(final ComponentGenerator generator) {
         this.generator = generator;
         final int amountOfComponents = generator.getAmountOfComponents();
-        getState().setTotalAmountOfComponents(amountOfComponents);
+        getState().amountOfComponents = amountOfComponents;
         populateServerSideWithPlaceholders(amountOfComponents);
     }
 
@@ -138,7 +139,7 @@ public class GeneratedLazyLayout extends AbstractLazyLayout {
 
     @Override
     protected AbstractLazyLayoutClientRpc getRpc() {
-        return getRpcProxy(GeneratedLazyLayoutClientRpc.class);
+        return getRpcProxy(AbstractLazyLayoutClientRpc.class);
     }
 
     @Override
@@ -160,13 +161,19 @@ public class GeneratedLazyLayout extends AbstractLazyLayout {
                 components.add(oldIndex, newComponent);
                 components.remove(newIndex);
                 components.add(newIndex, oldComponent);
-                getRpc().renderComponents(Arrays.asList(oldIndex, newIndex));
+
+                final Map<Integer, Connector> components = new HashMap<Integer, Connector>();
+                components.put(oldIndex, oldComponent);
+                components.put(newIndex, newComponent);
+                getRpc().sendComponents(components);
             } else {
                 loadedComponents.add(newComponent);
                 super.removeComponent(oldComponent);
                 super.addComponent(newComponent, oldIndex);
 
-                getRpc().renderComponents(Arrays.asList(oldIndex));
+                getRpc().sendComponents(
+                        Collections.singletonMap(oldIndex,
+                                (Connector) newComponent));
             }
 
         } else {
@@ -179,8 +186,5 @@ public class GeneratedLazyLayout extends AbstractLazyLayout {
             exception.printStackTrace();
             throw exception;
         }
-
-        markAsDirty();
     }
-
 }

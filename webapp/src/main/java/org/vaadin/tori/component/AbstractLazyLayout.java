@@ -15,6 +15,7 @@
  */
 package org.vaadin.tori.component;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -43,20 +44,41 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
     private final LazyLayoutServerRpc rpc = new LazyLayoutServerRpc() {
         @Override
         public void fetchComponentsForIndices(final List<Integer> indicesToFetch) {
+            System.out
+                    .println("AbstractLazyLayout.rpc.new LazyLayoutServerRpc() {...}.fetchComponentsForIndices()");
             loadingHook(indicesToFetch);
 
+            final HashMap<Integer, Connector> components = new HashMap<Integer, Connector>();
             for (final Integer index : indicesToFetch) {
-                loadedComponents.add(getComponent(index));
+                final Component component = getComponent(index);
+
+                System.out.println("[" + index + "] " + component);
+
+                loadedComponents.add(component);
+                components.put(index, component);
             }
 
             markAsDirty();
-            getRpc().renderComponents(indicesToFetch);
+            System.err.println("Sending " + components.size() + " components");
+            getRpc().sendComponents(components);
+
+            // debug:
+            final Set<Connector> cloneMap = new HashSet<Connector>(
+                    components.values());
+            final Iterator<Component> i = getComponentIterator();
+            while (i.hasNext()) {
+                final Component c = i.next();
+                cloneMap.remove(c);
+            }
+
+            if (!cloneMap.isEmpty()) {
+                System.err.println("not empty");
+            }
         }
     };
 
     public AbstractLazyLayout() {
         registerRpc(rpc);
-        getState().setConnectors(connectors);
     }
 
     abstract protected AbstractLazyLayoutClientRpc getRpc();
@@ -94,8 +116,6 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
         try {
             super.addComponent(c);
             getState().amountOfComponents = getComponentCount();
-
-            markAsDirty();
         } catch (final IllegalArgumentException e) {
             components.remove(c);
             connectors.remove(c);

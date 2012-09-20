@@ -3,15 +3,15 @@ package org.vaadin.tori.component;
 import java.util.Collections;
 
 import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRpc;
-import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutClientRpc;
 
+import com.vaadin.shared.Connector;
 import com.vaadin.ui.Component;
 
 @SuppressWarnings("serial")
 public class LazyLayout extends AbstractLazyLayout {
     @Override
     protected AbstractLazyLayoutClientRpc getRpc() {
-        return getRpcProxy(LazyLayoutClientRpc.class);
+        return getRpcProxy(AbstractLazyLayoutClientRpc.class);
     }
 
     public void addComponentEagerly(final Component c) {
@@ -21,11 +21,10 @@ public class LazyLayout extends AbstractLazyLayout {
         /*
          * TODO: this maybe needs to be optimized so that it's not individual
          * rpc calls, but a queue that gets built and sent over as a state
-         * change. PROBLEM: how do we know when one queue is sent, so that a
-         * new, empty, queue can be built?
+         * change.
          */
-        getRpcProxy(LazyLayoutClientRpc.class).renderComponents(
-                Collections.singletonList(components.indexOf(c)));
+        getRpcProxy(AbstractLazyLayoutClientRpc.class).sendComponents(
+                Collections.singletonMap(components.indexOf(c), (Connector) c));
     }
 
     @Override
