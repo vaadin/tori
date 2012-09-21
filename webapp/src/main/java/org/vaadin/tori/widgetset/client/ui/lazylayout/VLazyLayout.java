@@ -25,6 +25,8 @@ public class VLazyLayout extends SimplePanel {
     public static final String TAGNAME = "lazylayout";
     public static final String CLASSNAME = "v-" + TAGNAME;
 
+    private static final boolean DEBUG = false;
+
     public static final class WidgetInfo {
 
         private final Widget newWidget;
@@ -133,19 +135,18 @@ public class VLazyLayout extends SimplePanel {
             updateScrollAdjustmentReference();
             final int iterations = Math.min(indices.size(),
                     WIDGETS_TO_LOAD_AT_ONCE);
-            VConsole.error("Rendering a batch of " + iterations);
+            debug("Rendering a batch of " + iterations);
             final long currentTimeMillis = System.currentTimeMillis();
             for (int i = iterations; i > 0; i--) {
                 final int index = indices.removeFirst();
                 final Widget widget = widgets.removeFirst();
                 replaceComponent(widget, index);
             }
-            VConsole.error("Took "
-                    + (System.currentTimeMillis() - currentTimeMillis) + "ms");
+            debug("Took " + (System.currentTimeMillis() - currentTimeMillis)
+                    + "ms");
 
             if (!indices.isEmpty()) {
-                VConsole.error("Rescheduling in " + RENDER_INTERVAL_MILLIS
-                        + "ms");
+                debug("Rescheduling in " + RENDER_INTERVAL_MILLIS + "ms");
                 schedule(RENDER_INTERVAL_MILLIS);
             }
             fixScrollbar();
@@ -209,8 +210,14 @@ public class VLazyLayout extends SimplePanel {
         return margin;
     }
 
+    private static void debug(final String msg) {
+        if (DEBUG) {
+            VConsole.error(msg);
+        }
+    }
+
     public void setAmountOfComponents(final int newAmountOfComponents) {
-        VConsole.error("New amount of components: " + newAmountOfComponents);
+        debug("New amount of components: " + newAmountOfComponents);
         if (newAmountOfComponents != totalAmountOfComponents) {
             if (newAmountOfComponents < totalAmountOfComponents) {
                 // TODO
@@ -333,7 +340,7 @@ public class VLazyLayout extends SimplePanel {
             }
 
             if (fetcher != null) {
-                VConsole.error("Fetching " + idsToLoad.size() + " components.");
+                debug("Fetching " + idsToLoad.size() + " components.");
                 fetcher.fetchIndices(idsToLoad);
             } else {
                 VConsole.error("LazyLayout has no fetcher!");
