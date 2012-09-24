@@ -18,7 +18,7 @@ import org.vaadin.tori.util.SignatureFormatter;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
-import com.vaadin.server.WrappedRequest;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -40,7 +40,7 @@ public class ToriUI extends UI {
     private String lastPath = "";
 
     @Override
-    protected void init(final WrappedRequest request) {
+    protected void init(final VaadinRequest request) {
         getPage().setTitle("Tori");
         getSession().setAttribute(ToriApiLoader.class, new ToriApiLoader());
         navigator = new ToriNavigator(this);

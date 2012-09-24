@@ -17,7 +17,7 @@ import org.vaadin.tori.indexing.ToriIndexableApplication;
 
 import com.vaadin.server.Constants;
 import com.vaadin.server.VaadinPortlet;
-import com.vaadin.server.WrappedPortletRequest;
+import com.vaadin.server.VaadinPortletRequest;
 
 public class ToriPortlet extends VaadinPortlet {
 
@@ -76,14 +76,14 @@ public class ToriPortlet extends VaadinPortlet {
 
     @Override
     @SuppressWarnings("serial")
-    protected WrappedPortletRequest createWrappedRequest(
+    protected VaadinPortletRequest createVaadinRequest(
             final PortletRequest request) {
-        WrappedPortletRequest wrapped = super.createWrappedRequest(request);
+        VaadinPortletRequest wrapped = super.createVaadinRequest(request);
 
         final String portalInfo = request.getPortalContext().getPortalInfo()
                 .toLowerCase();
         if (portalInfo.contains("liferay")) {
-            wrapped = new WrappedLiferayRequest(request,
+            wrapped = new VaadinLiferayRequest(request,
                     wrapped.getVaadinService()) {
                 @Override
                 public String getPortalProperty(final String name) {

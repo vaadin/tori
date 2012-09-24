@@ -10,11 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.vaadin.server.AbstractUIProvider;
 import com.vaadin.server.CombinedRequest;
+import com.vaadin.server.ServiceException;
+import com.vaadin.server.VaadinPortletRequest;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.server.VaadinServletSession;
-import com.vaadin.server.WrappedHttpServletRequest;
-import com.vaadin.server.WrappedPortletRequest;
-import com.vaadin.server.WrappedRequest;
+import com.vaadin.server.VaadinSessionInitializationListener;
+import com.vaadin.server.VaadinSessionInitializeEvent;
 import com.vaadin.ui.UI;
 import com.vaadin.util.CurrentInstance;
 
@@ -23,7 +24,7 @@ public class ToriServlet extends VaadinServlet {
 
     public class ToriUiProvider extends AbstractUIProvider {
         @Override
-        public Class<? extends UI> getUIClass(final WrappedRequest request) {
+        public Class<? extends UI> getUIClass(final VaadinRequest request) {
             if (shouldRenderEditUI(request)) {
                 return ToriEditUI.class;
             } else {
@@ -31,20 +32,20 @@ public class ToriServlet extends VaadinServlet {
             }
         }
 
-        private boolean shouldRenderEditUI(final WrappedRequest request) {
+        private boolean shouldRenderEditUI(final VaadinRequest request) {
             final PortletRequest portletRequest = getPortletRequest(request);
             return portletRequest != null
                     && portletRequest.getPortletMode() == PortletMode.EDIT;
         }
 
-        private PortletRequest getPortletRequest(final WrappedRequest request) {
-            if (request instanceof WrappedPortletRequest) {
-                return ((WrappedPortletRequest) request).getPortletRequest();
+        private PortletRequest getPortletRequest(final VaadinRequest request) {
+            if (request instanceof VaadinPortletRequest) {
+                return ((VaadinPortletRequest) request).getPortletRequest();
             } else if (request instanceof CombinedRequest) {
-                final WrappedRequest wrappedRequest = ((CombinedRequest) request)
+                final VaadinRequest VaadinRequest = ((CombinedRequest) request)
                         .getSecondRequest();
-                if (wrappedRequest instanceof WrappedPortletRequest) {
-                    return ((WrappedPortletRequest) wrappedRequest)
+                if (VaadinRequest instanceof VaadinPortletRequest) {
+                    return ((VaadinPortletRequest) VaadinRequest)
                             .getPortletRequest();
                 }
             }
@@ -65,11 +66,16 @@ public class ToriServlet extends VaadinServlet {
     }
 
     @Override
-    protected void onVaadinSessionStarted(
-            final WrappedHttpServletRequest request,
-            final VaadinServletSession session) throws ServletException {
-        session.addUIProvider(new ToriUiProvider());
-        super.onVaadinSessionStarted(request, session);
+    protected void servletInitialized() {
+        getVaadinService().addVaadinSessionInitializationListener(
+                new VaadinSessionInitializationListener() {
+                    @Override
+                    public void vaadinSessionInitialized(
+                            final VaadinSessionInitializeEvent event)
+                            throws ServiceException {
+                        event.getVaadinSession().addUIProvider(
+                                new ToriUiProvider());
+                    }
+                });
     }
-
 }
