@@ -44,15 +44,11 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
     private final LazyLayoutServerRpc rpc = new LazyLayoutServerRpc() {
         @Override
         public void fetchComponentsForIndices(final List<Integer> indicesToFetch) {
-            System.out
-                    .println("AbstractLazyLayout.rpc.new LazyLayoutServerRpc() {...}.fetchComponentsForIndices()");
             loadingHook(indicesToFetch);
 
             final HashMap<Integer, Connector> components = new HashMap<Integer, Connector>();
             for (final Integer index : indicesToFetch) {
                 final Component component = getComponent(index);
-
-                System.out.println("[" + index + "] " + component);
 
                 loadedComponents.add(component);
                 component.markAsDirtyRecursive();
@@ -60,21 +56,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
             }
 
             markAsDirty();
-            System.err.println("Sending " + components.size() + " components");
             getRpc().sendComponents(components);
-
-            // debug:
-            final Set<Connector> cloneMap = new HashSet<Connector>(
-                    components.values());
-            final Iterator<Component> i = getComponentIterator();
-            while (i.hasNext()) {
-                final Component c = i.next();
-                cloneMap.remove(c);
-            }
-
-            if (!cloneMap.isEmpty()) {
-                System.err.println("not empty");
-            }
         }
     };
 
