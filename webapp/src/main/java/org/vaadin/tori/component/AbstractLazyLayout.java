@@ -55,6 +55,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
                 System.out.println("[" + index + "] " + component);
 
                 loadedComponents.add(component);
+                component.markAsDirtyRecursive();
                 components.put(index, component);
             }
 
