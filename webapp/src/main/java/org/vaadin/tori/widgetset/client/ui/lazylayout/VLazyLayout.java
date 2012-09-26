@@ -123,47 +123,6 @@ public class VLazyLayout extends SimplePanel {
         }
     }
 
-    private class RenderQueue extends Timer {
-        private final int RENDER_INTERVAL_MILLIS = 50;
-        private final int WIDGETS_TO_LOAD_AT_ONCE = 5;
-
-        private final LinkedList<Integer> indices = new LinkedList<Integer>();
-        private final LinkedList<Widget> widgets = new LinkedList<Widget>();
-
-        @Override
-        public void run() {
-            updateScrollAdjustmentReference();
-            final int iterations = Math.min(indices.size(),
-                    WIDGETS_TO_LOAD_AT_ONCE);
-            debug("Rendering a batch of " + iterations);
-            final long currentTimeMillis = System.currentTimeMillis();
-            for (int i = iterations; i > 0; i--) {
-                final int index = indices.removeFirst();
-                final Widget widget = widgets.removeFirst();
-                replaceComponent(widget, index);
-            }
-            debug("Took " + (System.currentTimeMillis() - currentTimeMillis)
-                    + "ms");
-
-            if (!indices.isEmpty()) {
-                debug("Rescheduling in " + RENDER_INTERVAL_MILLIS + "ms");
-                schedule(RENDER_INTERVAL_MILLIS);
-            }
-            fixScrollbar();
-        }
-
-        @SuppressWarnings("unused")
-        public void add(final int index, final Widget widget) {
-            _add(index, widget);
-            schedule(RENDER_INTERVAL_MILLIS);
-        }
-
-        private void _add(final int index, final Widget widget) {
-            indices.addLast(index);
-            widgets.addLast(widget);
-        }
-    }
-
     private final FlowPane panel = new FlowPane();
     private final Element margin = DOM.createDiv();
 
@@ -173,8 +132,6 @@ public class VLazyLayout extends SimplePanel {
 
     private HandlerRegistration scrollHandlerRegistration;
     private HandlerRegistration scrollHandlerRegistrationWin;
-
-    private final RenderQueue renderQueue = new RenderQueue();
 
     private final Timer scrollPoller = new Timer() {
         @Override
