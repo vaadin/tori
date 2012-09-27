@@ -2,7 +2,6 @@ package org.vaadin.tori.widgetset.client.ui.lazylayout;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -25,7 +24,7 @@ public class VLazyLayout extends SimplePanel {
     public static final String TAGNAME = "lazylayout";
     public static final String CLASSNAME = "v-" + TAGNAME;
 
-    private static final boolean DEBUG = false;
+    static final boolean DEBUG = true;
 
     public static final class WidgetInfo {
 
@@ -169,7 +168,7 @@ public class VLazyLayout extends SimplePanel {
 
     private static void debug(final String msg) {
         if (DEBUG) {
-            VConsole.error(msg);
+            VConsole.error("[LazyLayout] " + msg);
         }
     }
 
@@ -441,7 +440,41 @@ public class VLazyLayout extends SimplePanel {
         fetcher = componentFetcher;
     }
 
-    public void replaceComponent(final Widget widget, final int i) {
+    /**
+     * <p>
+     * Remembers sizes of old components.
+     * </p>
+     * <p>
+     * Used before {@link #_replaceComponent(Widget, int)}, and used because of
+     * {@link #fixScrollbar()}
+     * 
+     * @param newWidgets
+     * @param newIndices
+     */
+    private void _updateWidgetInfo(final Widget[] newWidgets,
+            final int[] newIndices) {
+        if (newWidgets.length != newIndices.length) {
+            VConsole.error("VLazyLayout: updateWidgetInfo() needs arguments of same length");
+            return;
+        }
+
+        for (int i = 0; i < newIndices.length; i++) {
+            final int index = newIndices[i];
+            final Widget panelWidget = panel.getWidget(index);
+            final double height = getPreciseHeight(panelWidget);
+            final int top = panelWidget.getElement().getOffsetTop();
+            widgetInfo.add(new WidgetInfo(newWidgets[i], height, top));
+        }
+    }
+
+    /**
+     * <b>Note!</b> Remember to call {@link #_updateWidgetInfo(Widget[], int[])}
+     * before calling this method.
+     * 
+     * @param widget
+     * @param i
+     */
+    private void _replaceComponent(final Widget widget, final int i) {
 
         if (widget == null) {
             VConsole.error("LazyLayout: Widget for index " + i
@@ -463,10 +496,6 @@ public class VLazyLayout extends SimplePanel {
                 VConsole.error("Unnecessary placement command at index " + i);
                 return;
             }
-
-            final double height = getPreciseHeight(panelWidget);
-            final int top = panelWidget.getElement().getOffsetTop();
-            widgetInfo.add(new WidgetInfo(widget, height, top));
 
             panel.remove(i);
             panel.insert(widget, i);
@@ -494,6 +523,7 @@ public class VLazyLayout extends SimplePanel {
     }
 
     private void adjustScrollBy(final int requiredScrollAdjustment) {
+        debug("Adjusting scrollbar by " + requiredScrollAdjustment + "px");
         if (requiredScrollAdjustment == 0) {
             return;
         }
@@ -558,7 +588,12 @@ public class VLazyLayout extends SimplePanel {
         return parent;
     }
 
-    public void fixScrollbar() {
+    /**
+     * Make sure to call {@link #updateScrollAdjustmentReference()}
+     * appropriately (i.e. before you start changing the DOM) before calling
+     * this method.
+     */
+    private void fixScrollbar() {
         double requiredScrollAdjustment = 0;
         if (scrollAdjustmentLimitPx >= 0) {
             for (final WidgetInfo info : widgetInfo) {
@@ -577,8 +612,10 @@ public class VLazyLayout extends SimplePanel {
     /**
      * This method re-evaluates the component the scroll adjustment should base
      * upon.
+     * 
+     * @see #fixScrollbar()
      */
-    public void updateScrollAdjustmentReference() {
+    private void updateScrollAdjustmentReference() {
         final int currentScrollPos = getCurrentScrollPos();
         final Widget referenceWidget = getFirstNonPlaceholderWidgetInOrAfter(currentScrollPos);
 
@@ -630,24 +667,25 @@ public class VLazyLayout extends SimplePanel {
                          * There's no non-placeholder widgets to adjust by.
                          * Screw it.
                          */
+                        debug("Screen shows no non-placeholder elements.");
                         return null;
                     }
                 }
             }
         }
+
+        // lazylayout is off the screen completely.
         return null;
     }
 
     private static native double getPreciseHeight(Element element)
     /*-{
-        var height;
-        if (element.getBoundingClientRect != null) {
+       if (typeof (element.getBoundingClientRect) == 'function') {
           var rect = element.getBoundingClientRect();
-          height = rect.bottom - rect.top;
-        } else {
-          height = element.offsetHeight;
-        }
-        return height;    
+          return rect.bottom - rect.top;
+       } else {
+          return element.offsetHeight;
+       }
     }-*/;
 
     private static double getPreciseHeight(final Widget widget) {
@@ -670,13 +708,16 @@ public class VLazyLayout extends SimplePanel {
 
     public void replaceComponents(final int[] indices, final Widget[] widgets) {
         try {
+            updateScrollAdjustmentReference();
+            _updateWidgetInfo(widgets, indices);
             for (int i = 0; i < indices.length; i++) {
-                replaceComponent(widgets[i], indices[i]);
+                _replaceComponent(widgets[i], indices[i]);
             }
             // renderQueue.add(indices, widgets);
         } catch (final IllegalArgumentException e) {
             VConsole.error(e);
         }
-    }
 
+        fixScrollbar();
+    }
 }

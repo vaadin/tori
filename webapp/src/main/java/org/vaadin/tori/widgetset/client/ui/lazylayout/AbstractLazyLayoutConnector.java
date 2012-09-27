@@ -3,6 +3,7 @@ package org.vaadin.tori.widgetset.client.ui.lazylayout;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gwt.core.client.Duration;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
@@ -43,7 +44,6 @@ public abstract class AbstractLazyLayoutConnector extends
                     @Override
                     public void sendComponents(
                             final Map<Integer, Connector> components) {
-                        getWidget().updateScrollAdjustmentReference();
                         swapLazyComponents(components);
                     }
                 });
@@ -121,22 +121,41 @@ public abstract class AbstractLazyLayoutConnector extends
             final ConnectorHierarchyChangeEvent event) {
     }
 
-    protected void swapLazyComponents(final Map<Integer, Connector> components) {
+    private void swapLazyComponents(final Map<Integer, Connector> components) {
         if (components == null || components.isEmpty()) {
             VConsole.error("No components to swap in (unnecessary method call)");
         } else {
+            final Duration duration = new Duration();
+
+            final int[] indices = new int[components.size()];
+            final Widget[] widgets = new Widget[components.size()];
+            int i = 0;
+
             for (final Map.Entry<Integer, Connector> entry : components
                     .entrySet()) {
-                final Integer index = entry.getKey();
+                final int index = entry.getKey();
                 final Connector connector = entry.getValue();
                 if (connector instanceof ComponentConnector) {
                     final ComponentConnector cConnector = (ComponentConnector) connector;
                     final Widget widget = cConnector.getWidget();
-                    getWidget().replaceComponent(widget, index);
+
+                    indices[i] = index;
+                    widgets[i] = widget;
+
+                    i++;
+
                 } else {
                     VConsole.error("Expected a ComponentConnector, got something else instead (at index "
                             + index + ")");
                 }
+            }
+
+            getWidget().replaceComponents(indices, widgets);
+
+            if (VLazyLayout.DEBUG) {
+                VConsole.error("[LazyLayout] Replace components took "
+                        + duration.elapsedMillis() + "ms (n="
+                        + components.size() + ")");
             }
         }
     }
