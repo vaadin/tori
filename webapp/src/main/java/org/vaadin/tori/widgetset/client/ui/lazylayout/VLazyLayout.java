@@ -24,33 +24,7 @@ public class VLazyLayout extends SimplePanel {
     public static final String TAGNAME = "lazylayout";
     public static final String CLASSNAME = "v-" + TAGNAME;
 
-    static final boolean DEBUG = true;
-
-    public static final class WidgetInfo {
-
-        private final Widget newWidget;
-        private final double oldHeight;
-        private final int oldTop;
-
-        public WidgetInfo(final Widget newWidget, final double oldHeight,
-                final int oldTop) {
-            this.newWidget = newWidget;
-            this.oldHeight = oldHeight;
-            this.oldTop = oldTop;
-        }
-
-        public Widget getNewWidget() {
-            return newWidget;
-        }
-
-        public double getOldHeight() {
-            return oldHeight;
-        }
-
-        public int getOldTop() {
-            return oldTop;
-        }
-    }
+    static final boolean DEBUG = false;
 
     public interface ComponentFetcher {
         void fetchIndices(List<Integer> indicesToFetch);
@@ -146,12 +120,12 @@ public class VLazyLayout extends SimplePanel {
     private boolean scrollingWasProgrammaticallyAdjusted = false;
 
     private ComponentFetcher fetcher = null;
-    private final List<WidgetInfo> widgetInfo = new ArrayList<WidgetInfo>();
 
     /**
      * @see VLazyLayout#updateScrollAdjustmentReference()
      */
-    private int scrollAdjustmentLimitPx = -1;
+    private int scrollOffsetToReferenceWidgetPx = -1;
+    private Widget referenceWidget;
 
     public VLazyLayout() {
         super();
@@ -440,40 +414,6 @@ public class VLazyLayout extends SimplePanel {
         fetcher = componentFetcher;
     }
 
-    /**
-     * <p>
-     * Remembers sizes of old components.
-     * </p>
-     * <p>
-     * Used before {@link #_replaceComponent(Widget, int)}, and used because of
-     * {@link #fixScrollbar()}
-     * 
-     * @param newWidgets
-     * @param newIndices
-     */
-    private void _updateWidgetInfo(final Widget[] newWidgets,
-            final int[] newIndices) {
-        if (newWidgets.length != newIndices.length) {
-            VConsole.error("VLazyLayout: updateWidgetInfo() needs arguments of same length");
-            return;
-        }
-
-        for (int i = 0; i < newIndices.length; i++) {
-            final int index = newIndices[i];
-            final Widget panelWidget = panel.getWidget(index);
-            final double height = getPreciseHeight(panelWidget);
-            final int top = panelWidget.getElement().getOffsetTop();
-            widgetInfo.add(new WidgetInfo(newWidgets[i], height, top));
-        }
-    }
-
-    /**
-     * <b>Note!</b> Remember to call {@link #_updateWidgetInfo(Widget[], int[])}
-     * before calling this method.
-     * 
-     * @param widget
-     * @param i
-     */
     private void _replaceComponent(final Widget widget, final int i) {
 
         if (widget == null) {
@@ -505,42 +445,18 @@ public class VLazyLayout extends SimplePanel {
         }
     }
 
-    public void adjustScrollIfNecessary(final Widget newWidget,
-            final int oldHeight, final int oldWidth) {
-
-        final int scrollPos = getCurrentScrollPos();
-        final int previousWidgetOffsetTop = getPreviousWidgetOffsetTop(scrollPos);
-
-        /*
-         * only check for elements that are above the current scroll position.
-         * Element size changes below don't bounce the screen around.
-         */
-        if (newWidget.getElement().getOffsetTop() < previousWidgetOffsetTop) {
-            final int newHeight = newWidget.getOffsetHeight();
-            final int requiredScrollAdjustment = newHeight - oldHeight;
-            adjustScrollBy(requiredScrollAdjustment);
-        }
-    }
-
-    private void adjustScrollBy(final int requiredScrollAdjustment) {
-        debug("Adjusting scrollbar by " + requiredScrollAdjustment + "px");
-        if (requiredScrollAdjustment == 0) {
-            return;
-        }
-
+    private void setScrollTop(final int topPx) {
         com.google.gwt.dom.client.Element parent = getElement();
         while (parent != null && parent.getScrollTop() <= 0) {
             parent = parent.getOffsetParent();
         }
-
         if (parent != null) {
-            final int currentScroll = parent.getScrollTop();
-            parent.setScrollTop(currentScroll + requiredScrollAdjustment);
+            parent.setScrollTop(topPx);
+            debug("setting scrolltop to " + topPx);
         } else {
-            final int currentScrollTop = Window.getScrollTop();
             final int currentScrollLeft = Window.getScrollLeft();
-            Window.scrollTo(currentScrollLeft, currentScrollTop
-                    + requiredScrollAdjustment);
+            Window.scrollTo(currentScrollLeft, topPx);
+            debug("setting scrolltop for window to " + topPx);
         }
         scrollingWasProgrammaticallyAdjusted = true;
     }
@@ -594,19 +510,19 @@ public class VLazyLayout extends SimplePanel {
      * this method.
      */
     private void fixScrollbar() {
-        double requiredScrollAdjustment = 0;
-        if (scrollAdjustmentLimitPx >= 0) {
-            for (final WidgetInfo info : widgetInfo) {
-                if (info.getOldTop() < scrollAdjustmentLimitPx) {
-                    final double newHeight = getPreciseHeight(info
-                            .getNewWidget());
-
-                    requiredScrollAdjustment += newHeight - info.getOldHeight();
-                }
+        if (referenceWidget != null) {
+            if (referenceWidget.getParent() != panel) {
+                VConsole.error("Scroll adjustment reference widget is no longer a child of me");
             }
-            adjustScrollBy((int) Math.round(requiredScrollAdjustment));
+
+            final int referenceOffsetTop = referenceWidget.getElement()
+                    .getOffsetTop();
+            debug("offset: " + referenceOffsetTop);
+            setScrollTop(referenceOffsetTop + scrollOffsetToReferenceWidgetPx);
+
+            referenceWidget = null;
+            scrollOffsetToReferenceWidgetPx = 0;
         }
-        widgetInfo.clear();
     }
 
     /**
@@ -620,10 +536,14 @@ public class VLazyLayout extends SimplePanel {
         final Widget referenceWidget = getFirstNonPlaceholderWidgetInOrAfter(currentScrollPos);
 
         if (referenceWidget != null) {
-            scrollAdjustmentLimitPx = referenceWidget.getElement()
-                    .getOffsetTop();
+            this.referenceWidget = referenceWidget;
+            debug("is parent: " + (referenceWidget.getParent() == panel));
+            scrollOffsetToReferenceWidgetPx = currentScrollPos
+                    - referenceWidget.getElement().getOffsetTop();
+            debug("scroll offset: " + scrollOffsetToReferenceWidgetPx);
         } else {
-            scrollAdjustmentLimitPx = -1;
+            this.referenceWidget = null;
+            scrollOffsetToReferenceWidgetPx = -1;
         }
     }
 
@@ -709,7 +629,6 @@ public class VLazyLayout extends SimplePanel {
     public void replaceComponents(final int[] indices, final Widget[] widgets) {
         try {
             updateScrollAdjustmentReference();
-            _updateWidgetInfo(widgets, indices);
             for (int i = 0; i < indices.length; i++) {
                 _replaceComponent(widgets[i], indices[i]);
             }
