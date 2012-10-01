@@ -176,13 +176,22 @@
 .post.summary .author div[location="authorname"] .v-label {
 	white-space: normal;	
 }
-.post.summary .author div[location="avatar"] .v-embedded,
-.post.summary .author div[location="avatar"] .v-embedded img {
+
+.post.summary .author div[location="avatar"] img {
 	width: 100% !important;
 	height: auto !important;
 }
 .post.summary td.body {
 	padding: 9px 0;	
+	color: #464440;
+}
+
+.post.summary div[location="signature"] {
+	display: none;
+}
+
+.post.summary div[location="attachments"] {
+	display: none;
 }
 
 .post.summary,
