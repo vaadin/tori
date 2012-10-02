@@ -16,8 +16,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.vaadin.tori.indexing.ToriIndexableApplication;
 
 import com.vaadin.server.Constants;
+import com.vaadin.server.ServiceException;
 import com.vaadin.server.VaadinPortlet;
 import com.vaadin.server.VaadinPortletRequest;
+import com.vaadin.server.VaadinSessionInitializationListener;
+import com.vaadin.server.VaadinSessionInitializeEvent;
 
 public class ToriPortlet extends VaadinPortlet {
 
@@ -98,4 +101,19 @@ public class ToriPortlet extends VaadinPortlet {
         return wrapped;
     }
 
+    @Override
+    protected void portletInitialized() {
+        getVaadinService().addVaadinSessionInitializationListener(
+                new VaadinSessionInitializationListener() {
+                    @Override
+                    public void vaadinSessionInitialized(
+                            final VaadinSessionInitializeEvent event)
+                            throws ServiceException {
+                        String theme = getInitParameter("theme");
+                        theme = (theme != null) ? theme : "tori-liferay";
+                        event.getVaadinSession().addUIProvider(
+                                new ToriUiProvider(theme));
+                    }
+                });
+    }
 }

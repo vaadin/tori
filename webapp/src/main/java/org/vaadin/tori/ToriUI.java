@@ -1,6 +1,7 @@
 package org.vaadin.tori;
 
 import javax.portlet.PortletMode;
+import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
@@ -18,6 +19,7 @@ import org.vaadin.tori.util.SignatureFormatter;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
+import com.vaadin.server.VaadinPortletRequest;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -42,7 +44,7 @@ public class ToriUI extends UI {
     @Override
     protected void init(final VaadinRequest request) {
         getPage().setTitle("Tori");
-        getSession().setAttribute(ToriApiLoader.class, new ToriApiLoader());
+        initApiLoader(request);
         navigator = new ToriNavigator(this);
 
         windowLayout = new VerticalLayout();
@@ -76,6 +78,22 @@ public class ToriUI extends UI {
                 }
             }
         });
+    }
+
+    private void initApiLoader(final VaadinRequest request) {
+        getSession().setAttribute(ToriApiLoader.class, new ToriApiLoader());
+
+        /*
+         * this hack is specially reserved for Liferay. Maybe the servlet
+         * request can be put in here too...
+         */
+        try {
+            final VaadinPortletRequest lrRequest = VaadinPortletRequest
+                    .cast(request);
+            setRequest(lrRequest.getPortletRequest());
+        } catch (final ClassCastException e) {
+            // ignore
+        }
     }
 
     public final void setPortletMode(final PortletMode portletMode) {
@@ -170,6 +188,10 @@ public class ToriUI extends UI {
     }
 
     void setRequest(final HttpServletRequest request) {
+        getApiLoader().setRequest(request);
+    }
+
+    void setRequest(final PortletRequest request) {
         getApiLoader().setRequest(request);
     }
 
