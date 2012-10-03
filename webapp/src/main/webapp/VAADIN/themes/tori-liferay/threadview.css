@@ -454,6 +454,7 @@
 	margin-left: -8px !important;
 	background: #888;	
 	border: 2px solid #888;
+	bottom: -99px;
 }
 
 .v-floatingbar.threadSummaryBar .v-verticallayout-slot {
