@@ -143,6 +143,15 @@
 	visibility: visible;
 }
 
+.post td.actions .v-popupbutton, 
+.post td.actions .v-popupbutton .v-button-wrap,
+.post td.actions .v-popupbutton .v-popup-indicator {
+	padding: 0;
+	margin: 0;
+	height: 0;
+	width: 0;
+}
+
 /* Summary post that is displayed in the floating bar */
 .post.summary {
 	padding: 0;

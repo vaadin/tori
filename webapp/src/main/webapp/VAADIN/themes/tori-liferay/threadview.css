@@ -182,6 +182,15 @@
 	vertical-align: middle;
 }
 
+.post td.actions .v-popupbutton, 
+.post td.actions .v-popupbutton .v-button-wrap,
+.post td.actions .v-popupbutton .v-popup-indicator {
+	padding: 0;
+	margin: 0;
+	height: 0;
+	width: 0;
+}
+
 .post .body .code,
 .authoring .code {
 	font-family: "courier new",monospace;
