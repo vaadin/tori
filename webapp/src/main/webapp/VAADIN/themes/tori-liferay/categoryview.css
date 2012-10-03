@@ -36,11 +36,11 @@
 	background: url(images/treetable-triangles-open.png) right top no-repeat;
 }
 
-.v-csslayout-category {
+.v-csslayout.category {
 	position: relative;
 }
 
-.v-csslayout-category .v-label-threadCount {
+.v-csslayout.category .v-label-threadCount {
 	float:right;
 	margin-right:20px;
 	text-align: right;
