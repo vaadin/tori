@@ -17,10 +17,10 @@ import org.vaadin.tori.indexing.ToriIndexableApplication;
 
 import com.vaadin.server.Constants;
 import com.vaadin.server.ServiceException;
+import com.vaadin.server.SessionInitEvent;
+import com.vaadin.server.SessionInitListener;
 import com.vaadin.server.VaadinPortlet;
 import com.vaadin.server.VaadinPortletRequest;
-import com.vaadin.server.VaadinSessionInitializationListener;
-import com.vaadin.server.VaadinSessionInitializeEvent;
 
 public class ToriPortlet extends VaadinPortlet {
 
@@ -86,8 +86,7 @@ public class ToriPortlet extends VaadinPortlet {
         final String portalInfo = request.getPortalContext().getPortalInfo()
                 .toLowerCase();
         if (portalInfo.contains("liferay")) {
-            wrapped = new VaadinLiferayRequest(request,
-                    wrapped.getVaadinService()) {
+            wrapped = new VaadinLiferayRequest(request, wrapped.getService()) {
                 @Override
                 public String getPortalProperty(final String name) {
                     if (Constants.PORTAL_PARAMETER_VAADIN_RESOURCE_PATH
@@ -103,17 +102,15 @@ public class ToriPortlet extends VaadinPortlet {
 
     @Override
     protected void portletInitialized() {
-        getVaadinService().addVaadinSessionInitializationListener(
-                new VaadinSessionInitializationListener() {
-                    @Override
-                    public void vaadinSessionInitialized(
-                            final VaadinSessionInitializeEvent event)
-                            throws ServiceException {
-                        String theme = getInitParameter("theme");
-                        theme = (theme != null) ? theme : "tori-liferay";
-                        event.getVaadinSession().addUIProvider(
-                                new ToriUiProvider(theme));
-                    }
-                });
+        getService().addSessionInitListener(new SessionInitListener() {
+
+            @Override
+            public void sessionInit(final SessionInitEvent event)
+                    throws ServiceException {
+                String theme = getInitParameter("theme");
+                theme = (theme != null) ? theme : "tori-liferay";
+                event.getSession().addUIProvider(new ToriUiProvider(theme));
+            }
+        });
     }
 }

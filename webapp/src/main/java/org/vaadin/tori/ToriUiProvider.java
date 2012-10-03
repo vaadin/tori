@@ -3,13 +3,15 @@ package org.vaadin.tori;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
 
-import com.vaadin.server.AbstractUIProvider;
 import com.vaadin.server.CombinedRequest;
+import com.vaadin.server.DefaultUIProvider;
+import com.vaadin.server.UIClassSelectionEvent;
+import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinPortletRequest;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 
-public class ToriUiProvider extends AbstractUIProvider {
+public class ToriUiProvider extends DefaultUIProvider {
 
     private final String themeName;
 
@@ -18,8 +20,8 @@ public class ToriUiProvider extends AbstractUIProvider {
     }
 
     @Override
-    public Class<? extends UI> getUIClass(final VaadinRequest request) {
-        if (shouldRenderEditUI(request)) {
+    public Class<? extends UI> getUIClass(final UIClassSelectionEvent event) {
+        if (shouldRenderEditUI(event.getRequest())) {
             return ToriEditUI.class;
         } else {
             return ToriUI.class;
@@ -47,8 +49,7 @@ public class ToriUiProvider extends AbstractUIProvider {
     }
 
     @Override
-    public String getTheme(final VaadinRequest request,
-            final Class<? extends UI> uiClass) {
+    public String getTheme(final UICreateEvent event) {
         return themeName;
     }
 }
