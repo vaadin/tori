@@ -68,6 +68,14 @@
 	background-color: transparent;
 }
 
+.breadcrumbs .s-button {
+	background: none;
+}
+
+.breadcrumbs .s-popup {
+	margin-left: -10px;
+}
+
 .breadcrumbs .splitbutton .v-horizontallayout-slot:first-child .v-button {
 	background-image: none;
 	padding-right: 0;
