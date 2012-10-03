@@ -466,6 +466,7 @@
 	margin-left: -8px !important;
 	background: #a09f91;	
 	border: 2px solid #a09f91;
+	bottom: -99px;
 }
 
 .authoring .v-panel-content,
