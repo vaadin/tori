@@ -487,7 +487,8 @@
 }
 .authoring .v-panel-deco,
 .authoring .v-panel-captionwrap {
-	display: none;
+	/*display: none; <-- doesn't work: http://dev.vaadin.com/ticket/9850 */
+	visibility: hidden;
 }
 
 .authoring.compact td {
