@@ -314,6 +314,11 @@
 	overflow: auto;
 }
 
+/* IE8 wants to scroll this otherwise. */
+.authoring .v-panel-content {
+	overflow: hidden;
+}
+
 .authoring .buttons {
 	text-align: left;
 	margin: 11px 0;

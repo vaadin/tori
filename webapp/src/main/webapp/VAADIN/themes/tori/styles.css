@@ -46,6 +46,7 @@ button.v-nativebutton {
 	border-right-color: #32981d;
 	border-bottom-color: #31961d;
 	border-left-color: #32981d;
+	background-color: #51c831;
 	background: -moz-linear-gradient(#51c831, #32a41e);
 	background: -webkit-linear-gradient(#51c831, #32a41e);
 	background: linear-gradient(#51c831, #32a41e);
