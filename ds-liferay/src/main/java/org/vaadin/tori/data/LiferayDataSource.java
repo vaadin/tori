@@ -1013,11 +1013,13 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         final long categoryId = thread.getCategory().getId();
         final long threadId = thread.getId();
 
-        String subject = post.getThread().getTopic();
+        // trim because liferay seems to bug out otherwise
+        String subject = post.getThread().getTopic().trim();
         if (parentMessageId != MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID) {
             subject = "RE: " + subject;
         }
-        final String body = post.getBodyRaw();
+        // trim because liferay seems to bug out otherwise
+        final String body = post.getBodyRaw().trim();
         final List<ObjectValuePair<String, InputStream>> attachments = new ArrayList<ObjectValuePair<String, InputStream>>();
 
         if (files != null) {
