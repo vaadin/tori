@@ -3,7 +3,7 @@ package org.vaadin.tori.component.breadcrumbs;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.SplitButton;
 import org.vaadin.tori.component.SplitButton.PopupVisibilityEvent;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -58,7 +58,7 @@ class ThreadCrumb extends CustomComponent {
 
         List<DiscussionThread> threads = null;
         try {
-            threads = ToriApplication.getCurrent().getDataSource()
+            threads = ToriUI.getCurrent().getDataSource()
                     .getThreads(thread.getCategory());
         } catch (final DataSourceException e) {
             log.error(e);
@@ -78,7 +78,7 @@ class ThreadCrumb extends CustomComponent {
         }
 
         root.setValue(thread);
-        root.addListener(new ValueChangeListener() {
+        root.addValueChangeListener(new ValueChangeListener() {
             @Override
             public void valueChange(final ValueChangeEvent event) {
                 if (listener != null) {

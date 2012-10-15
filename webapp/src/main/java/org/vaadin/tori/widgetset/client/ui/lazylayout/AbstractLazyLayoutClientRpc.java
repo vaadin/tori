@@ -1,16 +1,10 @@
 package org.vaadin.tori.widgetset.client.ui.lazylayout;
 
-import java.util.List;
+import java.util.Map;
 
+import com.vaadin.shared.Connector;
 import com.vaadin.shared.communication.ClientRpc;
 
 public interface AbstractLazyLayoutClientRpc extends ClientRpc {
-    public interface LazyLayoutClientRpc extends AbstractLazyLayoutClientRpc {
-    }
-
-    public interface GeneratedLazyLayoutClientRpc extends
-            AbstractLazyLayoutClientRpc {
-    }
-
-    void renderComponents(List<Integer> indicesToFetch);
+    void sendComponents(Map<Integer, Connector> components);
 }

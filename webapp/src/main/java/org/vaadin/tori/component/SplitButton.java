@@ -43,7 +43,7 @@ public class SplitButton extends CustomComponent {
     }
 
     public void addClickListener(final ClickListener listener) {
-        button.addListener(new Button.ClickListener() {
+        button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 listener.splitButtonClick();

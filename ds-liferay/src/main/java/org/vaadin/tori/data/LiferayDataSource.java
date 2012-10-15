@@ -20,6 +20,7 @@ import javax.portlet.PortletSession;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.vaadin.tori.Configuration;
 import org.vaadin.tori.PortletRequestAware;
 import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.data.entity.Attachment;
@@ -1007,12 +1008,13 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         final long categoryId = thread.getCategory().getId();
         final long threadId = thread.getId();
 
-        String subject = post.getThread().getTopic();
+        // trim because liferay seems to bug out otherwise
+        String subject = post.getThread().getTopic().trim();
         if (parentMessageId != MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID) {
             subject = "RE: " + subject;
         }
-        final String body = post.getBodyRaw();
-        final List<ObjectValuePair<String, byte[]>> attachments = new ArrayList<ObjectValuePair<String, byte[]>>();
+        final String body = post.getBodyRaw().trim();
+        final List<ObjectValuePair<String, byte[]>> attachments = new ArrayList<ObjectValuePair<String, InputStream>>();
 
         if (files != null) {
             for (final Entry<String, byte[]> file : files.entrySet()) {
@@ -1352,10 +1354,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public final void savePortletPreferences(
-            @NonNull final Map<String, String> postReplacements,
-            final boolean replaceMessageBoardsLinks,
-            final String googleAnalyticsTrackerId) throws DataSourceException {
+    public final void save(final Configuration config)
+            throws DataSourceException {
 
         if (portletPreferences == null) {
             @SuppressWarnings("deprecation")
@@ -1363,7 +1363,9 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                     "Portlet preferences not available.");
             throw e;
         } else {
-            this.postReplacements = postReplacements;
+
+            final Map<String, String> postReplacements = config
+                    .getReplacements();
             final String[] values = new String[postReplacements.size()];
             int index = 0;
             for (final Entry<String, String> entry : postReplacements
@@ -1375,11 +1377,17 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                 portletPreferences.setValues(PREFS_REPLACEMENTS_KEY, values);
 
                 portletPreferences.setValue(PREFS_REPLACE_MESSAGE_BOARDS_LINKS,
-                        String.valueOf(replaceMessageBoardsLinks ? Boolean.TRUE
-                                : Boolean.FALSE));
+                        Boolean.valueOf(config.replaceMessageBoardsLinks())
+                                .toString());
+
+                /*
+                 * this will make .getPostReplacements() fetch the replacements
+                 * again
+                 */
+                this.postReplacements = null;
 
                 portletPreferences.setValue(PREFS_ANALYTICS_ID,
-                        googleAnalyticsTrackerId);
+                        config.getGoogleAnalyticsTrackerId());
 
                 portletPreferences.store();
             } catch (final Exception e) {

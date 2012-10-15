@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.FloatingBar;
 import org.vaadin.tori.component.FloatingBar.DisplayEvent;
 import org.vaadin.tori.component.FloatingBar.FloatingAlignment;
@@ -34,12 +34,14 @@ import com.vaadin.event.FieldEvents;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
@@ -65,7 +67,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             if (!rawBody.trim().isEmpty()) {
                 try {
                     getPresenter().sendReply(rawBody);
-                    getRoot().trackAction(null, "reply");
+                    getUI().trackAction(null, "reply");
                 } catch (final DataSourceException e) {
                     Notification
                             .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
@@ -118,9 +120,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     protected ThreadPresenter createPresenter() {
-        final ToriApplication app = ToriApplication.getCurrent();
-        return new ThreadPresenter(app.getDataSource(),
-                app.getAuthorizationService());
+        final ToriUI ui = ToriUI.getCurrent();
+        return new ThreadPresenter(ui.getDataSource(),
+                ui.getAuthorizationService());
     }
 
     /**
@@ -171,7 +173,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
         if (getPresenter().userMayReply()) {
             final Label spacer = new Label("<span class=\"eof\">eof</span>",
-                    ContentMode.XHTML);
+                    ContentMode.HTML);
             spacer.setStyleName("spacer");
             layout.addComponent(spacer);
 
@@ -273,7 +275,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                         thread.getTopic(), firstPost.getAuthor()
                                 .getDisplayedName(), new PrettyTime()
                                 .format(firstPost.getTime()));
-        final Label topicLabel = new Label(topicXhtml, ContentMode.XHTML);
+        final Label topicLabel = new Label(topicXhtml, ContentMode.HTML);
         topicLabel.setWidth(null);
 
         final String showPostContentCaption = "Show post content";
@@ -283,7 +285,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         showOrHideLabel.setStyleName("show-or-hide");
         showOrHideLabel.addStyleName(collapsedStyle);
         showOrHideLabel.setWidth(null);
-        summaryLayout.addListener(new LayoutClickListener() {
+        summaryLayout.addLayoutClickListener(new LayoutClickListener() {
 
             @Override
             public void layoutClick(final LayoutClickEvent event) {
@@ -301,7 +303,6 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         final CssLayout topRow = new CssLayout();
         topRow.addStyleName("topRow");
         topRow.setWidth("100%");
-        topRow.setMargin(true);
         topRow.addComponent(topicLabel);
         topRow.addComponent(showOrHideLabel);
 
@@ -332,7 +333,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 mirroredReplyComponent.getInput());
         quickReply.setCompactMode(true);
         quickReply.setCollapsible(true);
-        quickReply.getInput().addListener(new FieldEvents.FocusListener() {
+        quickReply.getInput().addFocusListener(new FieldEvents.FocusListener() {
             @Override
             public void focus(final FocusEvent event) {
                 quickReply.setCompactMode(false);
@@ -364,8 +365,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public void displayThreadNotFoundError(final String threadIdString) {
         final Notification n = new Notification("No thread found for "
-                + threadIdString, Notification.TYPE_ERROR_MESSAGE);
-        n.show(getRoot().getPage());
+                + threadIdString, Notification.Type.ERROR_MESSAGE);
+        n.show(getUI().getPage());
     }
 
     @Override
@@ -480,11 +481,11 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         final HeadingLabel heading = new HeadingLabel("Start a New Thread",
                 HeadingLevel.H2);
         layout.addComponent(heading);
-        getRoot().scrollIntoView(heading);
+        getUI().scrollIntoView(heading);
 
         final HorizontalLayout topicLayout = new HorizontalLayout();
         topicLayout.setSpacing(true);
-        topicLayout.setMargin(true, false, false, false);
+        topicLayout.setMargin(new MarginInfo(true, false, false, false));
         topicLayout.setWidth("50em");
         topicLayout.setStyleName("newthread");
         layout.addComponent(topicLayout);
@@ -519,7 +520,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                     try {
                         final DiscussionThread createdThread = getPresenter()
                                 .createNewThread(category, topic, rawBody);
-                        getRoot().trackAction(null, "new-thread");
+                        getUI().trackAction(null, "new-thread");
                         getNavigator().navigateTo(
                                 ToriNavigator.ApplicationView.THREADS.getUrl()
                                         + "/" + createdThread.getId());
@@ -528,8 +529,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                     }
                 } else {
                     final Notification n = new Notification(errorMessages,
-                            Notification.TYPE_HUMANIZED_MESSAGE);
-                    n.show(getRoot().getPage());
+                            Type.HUMANIZED_MESSAGE);
+                    n.show(getUI().getPage());
                 }
             }
 
@@ -548,8 +549,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             public void removeAttachment(final String fileName) {
                 getPresenter().removeAttachment(fileName);
             }
-        }, ToriApplication.getCurrent().getPostFormatter()
-                .getFormattingSyntaxXhtml());
+        }, ToriUI.getCurrent().getPostFormatter().getFormattingSyntaxXhtml());
         newThreadComponent.setUserMayAddFiles(getPresenter().userMayAddFiles());
         newThreadComponent.setMaxFileSize(getPresenter().getMaxFileSize());
         layout.addComponent(newThreadComponent);

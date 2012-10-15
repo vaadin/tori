@@ -6,8 +6,8 @@ import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.terminal.gwt.client.ui.VOverlay;
-import com.vaadin.terminal.gwt.client.ui.popupview.VPopupView;
+import com.vaadin.client.ui.VOverlay;
+import com.vaadin.client.ui.popupview.VPopupView;
 
 /**
  * The actual VOverlay that displays the content for the floating bar.
@@ -20,6 +20,7 @@ class FloatingBarOverlay extends VOverlay {
     private final SimplePanel wrapper = new SimplePanel();
 
     private Element paddingAdditionBar;
+    private double prevVisibilityPercentage = -1;
 
     private static final String CLASSNAME = VPopupView.CLASSNAME + " "
             + VPopupView.CLASSNAME + "-popup";
@@ -99,20 +100,30 @@ class FloatingBarOverlay extends VOverlay {
      *            percentage of visibility ({@code >=1} means fully visible,
      *            {@code <= 0} means fully hidden).
      */
-    public void setVisible(final double percentage) {
+    public void setVisible(double percentage) {
+        // constrain between (incl.) 0..1
+        percentage = Math.max(0, Math.min(1, percentage));
+
+        // this might help slow JS engines a bit.
+        if (prevVisibilityPercentage == percentage) {
+            return;
+        }
+        prevVisibilityPercentage = percentage;
+
         super.setVisible(true);
         if (percentage >= 1) {
             setVisible(true);
         } else if (percentage <= 0) {
             setVisible(false);
+            // just to make sure that the element is truly off screen.
+            percentage = -1;
+        }
+
+        final double visiblePixels = (getWidget().getOffsetHeight() * (1 - percentage));
+        if (topAligned) {
+            getElement().getStyle().setTop(-visiblePixels, Unit.PX);
         } else {
-            // partially visible
-            final double visiblePixels = (getWidget().getOffsetHeight() * (1 - percentage));
-            if (topAligned) {
-                getElement().getStyle().setTop(-visiblePixels, Unit.PX);
-            } else {
-                getElement().getStyle().setBottom(-visiblePixels, Unit.PX);
-            }
+            getElement().getStyle().setBottom(-visiblePixels, Unit.PX);
         }
 
         if (paddingAdditionBar != null) {
@@ -128,12 +139,14 @@ class FloatingBarOverlay extends VOverlay {
                                 Unit.PX);
             }
         }
+
+        positionOrSizeUpdated();
     }
 
     // overridden for method visibility
     @Override
-    public void sizeOrPositionUpdated() {
-        super.sizeOrPositionUpdated();
+    public void positionOrSizeUpdated() {
+        super.positionOrSizeUpdated();
     }
 
     public void setTopAligned(final boolean topAligned) {

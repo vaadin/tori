@@ -143,6 +143,15 @@
 	visibility: visible;
 }
 
+.post td.actions .v-popupbutton, 
+.post td.actions .v-popupbutton .v-button-wrap,
+.post td.actions .v-popupbutton .v-popup-indicator {
+	padding: 0;
+	margin: 0;
+	height: 0;
+	width: 0;
+}
+
 /* Summary post that is displayed in the floating bar */
 .post.summary {
 	padding: 0;
@@ -176,13 +185,22 @@
 .post.summary .author div[location="authorname"] .v-label {
 	white-space: normal;	
 }
-.post.summary .author div[location="avatar"] .v-embedded,
-.post.summary .author div[location="avatar"] .v-embedded img {
+
+.post.summary .author div[location="avatar"] img {
 	width: 100% !important;
 	height: auto !important;
 }
 .post.summary td.body {
 	padding: 9px 0;	
+	color: #464440;
+}
+
+.post.summary div[location="signature"] {
+	display: none;
+}
+
+.post.summary div[location="attachments"] {
+	display: none;
 }
 
 .post.summary,
@@ -334,6 +352,11 @@
 	padding: 0;
 }
 
+/* IE8 wants to scroll this otherwise. */
+.authoring .v-panel-content {
+	overflow: hidden;
+}
+
 .authoring .buttons {
 	text-align: left;
 	margin: 11px 0;
@@ -457,6 +480,7 @@
 	margin-left: -8px !important;
 	background: #a09f91;	
 	border: 2px solid #a09f91;
+	bottom: -99px;
 }
 
 .authoring .v-panel-content,
@@ -468,7 +492,8 @@
 }
 .authoring .v-panel-deco,
 .authoring .v-panel-captionwrap {
-	display: none;
+	/*display: none; <-- doesn't work: http://dev.vaadin.com/ticket/9850 */
+	visibility: hidden;
 }
 
 .authoring.compact td {

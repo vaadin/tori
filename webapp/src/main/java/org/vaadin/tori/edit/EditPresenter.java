@@ -2,6 +2,7 @@ package org.vaadin.tori.edit;
 
 import java.util.Map;
 
+import org.vaadin.tori.Configuration;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.Presenter;
@@ -33,8 +34,11 @@ public class EditPresenter extends Presenter<EditView> {
             final boolean replaceMessageBoardsLinks,
             final @CheckForNull String googleAnalyticsTrackerId) {
         try {
-            dataSource.savePortletPreferences(replacements,
-                    replaceMessageBoardsLinks, googleAnalyticsTrackerId);
+            final Configuration config = new Configuration();
+            config.setReplaceMessageBoardsLinks(replaceMessageBoardsLinks);
+            config.setReplacements(replacements);
+            config.setGoogleAnalyticsTrackerId(googleAnalyticsTrackerId);
+            dataSource.save(config);
             getView().showNotification("Preferences saved");
         } catch (final DataSourceException e) {
             getView()

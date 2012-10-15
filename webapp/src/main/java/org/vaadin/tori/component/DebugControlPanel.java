@@ -26,7 +26,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -273,8 +273,8 @@ public class DebugControlPanel extends CustomComponent implements
                             final CheckBox checkbox = new CheckBox(authorName
                                     + " :: " + postBody);
                             checkbox.setValue(getterValue);
-                            checkbox.addListener(new PostCheckboxListener(post,
-                                    setter));
+                            checkbox.addValueChangeListener(new PostCheckboxListener(
+                                    post, setter));
                             checkbox.setImmediate(true);
                             checkbox.setWidth("100%");
                             root.addComponent(checkbox);
@@ -291,7 +291,7 @@ public class DebugControlPanel extends CustomComponent implements
         try {
             final boolean getterValue = callGetter(getGetterFrom(setter));
             checkbox.setValue(getterValue);
-            checkbox.addListener(new CheckboxListener(data, setter));
+            checkbox.addValueChangeListener(new CheckboxListener(data, setter));
             checkbox.setImmediate(true);
         } catch (final CheckBoxShouldBeDisabledException e) {
             /*

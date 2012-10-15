@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.PostFormatter.FontsInfo;
@@ -28,10 +28,10 @@ import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.MouseEvents;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutAction.ModifierKey;
+import com.vaadin.server.ClassResource;
+import com.vaadin.server.VaadinServiceSession;
+import com.vaadin.server.WebBrowser;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.terminal.ClassResource;
-import com.vaadin.terminal.gwt.server.AbstractWebApplicationContext;
-import com.vaadin.terminal.gwt.server.WebBrowser;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -71,7 +71,7 @@ public abstract class AuthoringComponent extends CustomComponent {
             layout.setSpacing(true);
             layout.setMargin(true);
 
-            final PostFormatter postFormatter = ToriApplication.getCurrent()
+            final PostFormatter postFormatter = ToriUI.getCurrent()
                     .getPostFormatter();
 
             final FormatInfo boldInfo = postFormatter.getBoldInfo();
@@ -130,7 +130,7 @@ public abstract class AuthoringComponent extends CustomComponent {
             select.setItemCaption(nullId, caption);
             select.setNullSelectionItemId(nullId);
 
-            select.addListener(new ValueChangeListener() {
+            select.addValueChangeListener(new ValueChangeListener() {
                 private boolean ignoreEvent = false;
 
                 @Override
@@ -196,13 +196,12 @@ public abstract class AuthoringComponent extends CustomComponent {
                 @NonNull final AuthoringComponent authoringComponent) {
 
             final Embedded button = new Embedded(null, new ClassResource(
-                    FormatInfo.ICON_PACKAGE + formatInfo.getFormatIcon(),
-                    ToriApplication.getCurrent()));
+                    FormatInfo.ICON_PACKAGE + formatInfo.getFormatIcon()));
             button.setWidth(TOOLBAR_ICON_WIDTH);
             button.setHeight(TOOLBAR_ICON_HEIGHT);
 
             button.setDescription(formatInfo.getFormatName());
-            button.addListener(new MouseEvents.ClickListener() {
+            button.addClickListener(new MouseEvents.ClickListener() {
                 @Override
                 public void click(final MouseEvents.ClickEvent event) {
                     authoringComponent.insertIntoMessage(formatInfo
@@ -257,8 +256,8 @@ public abstract class AuthoringComponent extends CustomComponent {
                 @NonNull final PostFormatter postFormatter,
                 @NonNull final AuthoringComponent authoringComponent) {
 
-            final WebBrowser browser = ((AbstractWebApplicationContext) ToriApplication
-                    .getCurrent().getContext()).getBrowser();
+            final WebBrowser browser = VaadinServiceSession.getCurrent()
+                    .getBrowser();
 
             final Component boldButton = createBoldButton(
                     postFormatter.getBoldInfo(), browser, authoringComponent);
@@ -369,8 +368,8 @@ public abstract class AuthoringComponent extends CustomComponent {
         private final ShortcutAction italicAction;
 
         public BoldAndItalicShortcutHandler() {
-            final WebBrowser browser = ((AbstractWebApplicationContext) ToriApplication
-                    .getCurrent().getContext()).getBrowser();
+            final WebBrowser browser = VaadinServiceSession.getCurrent()
+                    .getBrowser();
 
             if (browser.isMacOSX()) {
                 boldAction = new ShortcutAction("&Bold",
@@ -461,7 +460,7 @@ public abstract class AuthoringComponent extends CustomComponent {
         input.setImmediate(true);
         layout.addComponent(input, "input");
 
-        preview = new Label("<br/>", ContentMode.XHTML);
+        preview = new Label("<br/>", ContentMode.HTML);
         layout.addComponent(preview, "preview");
         layout.addComponent(new NativeButton("Post", POST_LISTENER),
                 "postbutton");
@@ -485,7 +484,7 @@ public abstract class AuthoringComponent extends CustomComponent {
         final Upload attach = new Upload(null, receiver);
         attach.setButtonCaption("Attach file");
         attach.setImmediate(true);
-        attach.addListener(new Upload.SucceededListener() {
+        attach.addSucceededListener(new Upload.SucceededListener() {
             @Override
             public void uploadSucceeded(final SucceededEvent event) {
                 listener.addAttachment(attachmentFileName,
@@ -495,7 +494,7 @@ public abstract class AuthoringComponent extends CustomComponent {
             }
         });
 
-        attach.addListener(new Upload.StartedListener() {
+        attach.addStartedListener(new Upload.StartedListener() {
             @Override
             public void uploadStarted(final StartedEvent event) {
                 if (event.getContentLength() > maxFileSize) {
@@ -513,8 +512,8 @@ public abstract class AuthoringComponent extends CustomComponent {
 
         layout.addComponent(ToolbarUtil.createToolbar(this), "toolbar");
 
-        input.addListener(INPUT_CHANGE_LISTENER);
-        input.addListener(VALUE_CHANGE_LISTENER);
+        input.addTextChangeListener(INPUT_CHANGE_LISTENER);
+        input.addValueChangeListener(VALUE_CHANGE_LISTENER);
         setCompactMode(false);
     }
 
@@ -523,7 +522,7 @@ public abstract class AuthoringComponent extends CustomComponent {
     }
 
     private static Label getSyntaxLabel(final String formattingSyntaxXhtml) {
-        final Label label = new Label(formattingSyntaxXhtml, ContentMode.XHTML);
+        final Label label = new Label(formattingSyntaxXhtml, ContentMode.HTML);
         label.setWidth("250px");
         return label;
     }
@@ -535,18 +534,18 @@ public abstract class AuthoringComponent extends CustomComponent {
     }
 
     private void updatePreview(final String unformattedText) {
-        final String formattedPreview = ToriApplication.getCurrent()
-                .getPostFormatter().format(unformattedText);
+        final String formattedPreview = ToriUI.getCurrent().getPostFormatter()
+                .format(unformattedText);
         preview.setValue(formattedPreview + "<br/>");
     }
 
     protected void setCollapsible(final boolean collapsible) {
         if (collapsible) {
             addStyleName("collapsible");
-            captionLayout.addListener(COLLAPSE_LISTENER);
+            captionLayout.addLayoutClickListener(COLLAPSE_LISTENER);
         } else {
             removeStyleName("collapsible");
-            captionLayout.removeListener(COLLAPSE_LISTENER);
+            captionLayout.removeLayoutClickListener(COLLAPSE_LISTENER);
         }
     }
 
@@ -611,7 +610,7 @@ public abstract class AuthoringComponent extends CustomComponent {
             final CssLayout wrapperLayout = new CssLayout();
             wrapperLayout.setWidth("300px");
             wrapperLayout.addStyleName("filerow");
-            wrapperLayout.addListener(new LayoutClickListener() {
+            wrapperLayout.addLayoutClickListener(new LayoutClickListener() {
                 @Override
                 public void layoutClick(final LayoutClickEvent event) {
                     if (event.getChildComponent() != nameComponent) {
@@ -619,7 +618,6 @@ public abstract class AuthoringComponent extends CustomComponent {
                     }
                 }
             });
-            wrapperLayout.setMargin(false, true, false, false);
             wrapperLayout.addComponent(nameComponent);
 
             attachmentsLayout.addComponent(wrapperLayout);

@@ -8,7 +8,7 @@ import java.util.Set;
 import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
-import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.category.EditCategoryForm.EditCategoryListener;
 import org.vaadin.tori.component.category.RearrangeControls.RearrangeListener;
 import org.vaadin.tori.data.entity.Category;
@@ -16,7 +16,7 @@ import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.util.StyleConstants;
 
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -62,7 +62,7 @@ public class CategoryListing extends
 
         // Must call init here as this View is not
         // instantiated by ToriNavigator.
-        init(null, ToriApplication.getCurrent());
+        init(null);
     }
 
     @Override
@@ -187,7 +187,7 @@ public class CategoryListing extends
         adminControls.addComponent(rearrangeControls);
         adminControls.setComponentAlignment(rearrangeControls,
                 Alignment.TOP_RIGHT);
-        adminControls.setMargin(true, false, true, false);
+        // adminControls.setMargin(true, false, true, false);
         return adminControls;
     }
 
@@ -256,9 +256,9 @@ public class CategoryListing extends
 
     @Override
     protected CategoryListingPresenter createPresenter() {
-        final ToriApplication app = ToriApplication.getCurrent();
+        final ToriUI ui = ToriUI.getCurrent();
         final CategoryListingPresenter presenter = new CategoryListingPresenter(
-                app.getDataSource(), app.getAuthorizationService());
+                ui.getDataSource(), ui.getAuthorizationService());
         categoryTree.setPresenter(presenter);
         return presenter;
     }

@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.Random;
 import java.util.UUID;
 
-import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -73,8 +73,7 @@ public class DatabaseFiller {
             @Override
             public void buttonClick(final ClickEvent event) {
                 try {
-                    final DataSource ds = ToriApplication.getCurrent()
-                            .getDataSource();
+                    final DataSource ds = ToriUI.getCurrent().getDataSource();
 
                     final long startTime = System.currentTimeMillis();
                     Category category = null;

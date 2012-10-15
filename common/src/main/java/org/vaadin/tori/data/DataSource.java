@@ -3,6 +3,7 @@ package org.vaadin.tori.data;
 import java.util.List;
 import java.util.Map;
 
+import org.vaadin.tori.Configuration;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
@@ -328,9 +329,7 @@ public interface DataSource {
 
     boolean getReplaceMessageBoardsLinks();
 
-    void savePortletPreferences(@NonNull Map<String, String> postReplacements,
-            boolean replaceMessageBoardsLinks,
-            @CheckForNull String googleAnalyticsTrackerId)
+    void save(@NonNull Configuration configuration)
             throws DataSourceException;
 
     /**

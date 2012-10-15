@@ -8,21 +8,16 @@
 		<param-name>productionMode</param-name>
 		<param-value>false</param-value>
 	</context-param>
-	<context-param>
-		<param-name>theme</param-name>
-		<param-value>tori</param-value>
-	</context-param>
 	<servlet>
 		<servlet-name>Tori</servlet-name>
-		<servlet-class>com.vaadin.terminal.gwt.server.ApplicationServlet</servlet-class>
+		<servlet-class>org.vaadin.tori.ToriServlet</servlet-class>
 		<init-param>
-			<description>Vaadin application class to start</description>
-			<param-name>application</param-name>
-			<param-value>org.vaadin.tori.ToriApplication</param-value>
+			<param-name>theme</param-name>
+			<param-value>tori</param-value>
 		</init-param>
 		<init-param>
-			<param-name>root</param-name>
-			<param-value>org.vaadin.tori.ToriRoot</param-value>
+			<param-name>widgetset</param-name>
+			<param-value>org.vaadin.tori.widgetset.ToriWidgetset</param-value>
 		</init-param>
 	</servlet>
 	<servlet-mapping>

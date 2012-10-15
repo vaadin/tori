@@ -53,6 +53,7 @@
 		<path refid="common-classpath"/>
 		<pathelement location="${file.common.jar}"/>
 		<fileset dir="${dir.web-inf.lib}" includes="**/*.jar"/>
+		<fileset dir="${dir.webapp}/lib" includes="**/*.jar"/>
 	</path>
 
 	<path id="ds-liferay-classpath">
@@ -303,6 +304,9 @@
 		    <fileset dir="${dir.web-inf.lib}">
 		    	<include name="*.jar"/>
 		     </fileset>
+			<fileset dir="${dir.webapp}/lib">
+				<include name="*.jar"/>
+			</fileset>
 		</path>
 		
 		<pathconvert pathsep="${line.separator} * "

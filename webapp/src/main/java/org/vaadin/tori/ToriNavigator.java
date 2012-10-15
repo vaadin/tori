@@ -18,8 +18,8 @@ import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.thread.ThreadViewImpl;
 
 import com.google.common.base.Joiner;
-import com.vaadin.terminal.Page.FragmentChangedEvent;
-import com.vaadin.terminal.Page.FragmentChangedListener;
+import com.vaadin.server.Page.FragmentChangedEvent;
+import com.vaadin.server.Page.FragmentChangedListener;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.VerticalLayout;
@@ -82,9 +82,9 @@ public class ToriNavigator extends CustomComponent {
     private String currentFragment = "";
     private View currentView = null;
     private final LinkedList<ViewChangeListener> listeners = new LinkedList<ViewChangeListener>();
-    private final ToriRoot root;
+    private final ToriUI root;
 
-    public ToriNavigator(final ToriRoot root) {
+    public ToriNavigator(final ToriUI root) {
         this.root = root;
 
         rootLayout.setSizeFull();
@@ -94,12 +94,14 @@ public class ToriNavigator extends CustomComponent {
         layout.setSizeFull();
         rootLayout.addComponent(layout);
 
-        root.getPage().addListener(new FragmentChangedListener() {
-            @Override
-            public void fragmentChanged(final FragmentChangedEvent source) {
-                loadPageFor(source.getFragment());
-            }
-        });
+        root.getPage().addFragmentChangedListener(
+                new FragmentChangedListener() {
+                    @Override
+                    public void fragmentChanged(
+                            final FragmentChangedEvent source) {
+                        loadPageFor(source.getFragment());
+                    }
+                });
 
         // Register all views of the application
         for (final ApplicationView appView : ApplicationView.values()) {
@@ -188,7 +190,7 @@ public class ToriNavigator extends CustomComponent {
     private <T extends AbstractView<?, ?>> T createView(final Class<T> viewClass) {
         try {
             final T view = viewClass.newInstance();
-            view.init(this, getApplication());
+            view.init(this);
             return view;
         } catch (final InstantiationException e) {
             throw new RuntimeException(e);

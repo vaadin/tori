@@ -2,12 +2,12 @@ package org.vaadin.tori.widgetset.client.ui.tracker;
 
 import org.vaadin.tori.component.GoogleAnalyticsTracker;
 
+import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.Paintable;
+import com.vaadin.client.UIDL;
+import com.vaadin.client.VConsole;
+import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.shared.ui.Connect;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.VConsole;
-import com.vaadin.terminal.gwt.client.ui.AbstractComponentConnector;
 
 @SuppressWarnings({ "serial", "deprecation" })
 @Connect(GoogleAnalyticsTracker.class)

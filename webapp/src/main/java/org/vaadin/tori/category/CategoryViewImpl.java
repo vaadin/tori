@@ -2,8 +2,8 @@ package org.vaadin.tori.category;
 
 import java.util.List;
 
-import org.vaadin.tori.ToriApplication;
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.component.PanicComponent;
@@ -15,7 +15,7 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.thread.ThreadPresenter;
 
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -87,7 +87,7 @@ public class CategoryViewImpl extends
     private Button createNewThreadButton() {
         final Button button = new Button("Start a new thread");
         button.setIcon(new ThemeResource("images/icon-newthread.png"));
-        button.addListener(new Button.ClickListener() {
+        button.addClickListener(new Button.ClickListener() {
             @Override
             @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "This method is never called if the category isn't set")
             public void buttonClick(final ClickEvent event) {
@@ -106,10 +106,9 @@ public class CategoryViewImpl extends
 
     @Override
     protected CategoryPresenter createPresenter() {
-        final ToriApplication app = ToriApplication.getCurrent();
+        final ToriUI ui = ToriUI.getCurrent();
         final CategoryPresenter categoryPresenter = new CategoryPresenter(
-                app.getDataSource(), app.getAuthorizationService());
-
+                ui.getDataSource(), ui.getAuthorizationService());
         return categoryPresenter;
     }
 
@@ -154,8 +153,8 @@ public class CategoryViewImpl extends
         log.error("No such category: " + requestedCategoryId);
 
         final Notification n = new Notification("No category found for "
-                + requestedCategoryId, Notification.TYPE_ERROR_MESSAGE);
-        n.show(getRoot().getPage());
+                + requestedCategoryId, Notification.Type.ERROR_MESSAGE);
+        n.show(getUI().getPage());
     }
 
     @Override

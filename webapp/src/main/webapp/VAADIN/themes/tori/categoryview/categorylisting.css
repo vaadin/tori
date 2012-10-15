@@ -3,6 +3,7 @@
 .v-link-categoryLink {
 	font-size: 110%;
 	font-weight: bold;
+	display: block;
 }
 
 .categoryTree .v-table-body {
@@ -100,22 +101,22 @@
 	display: none;
 }
 
-.v-csslayout-category {
+.v-csslayout.category {
 	position: relative;
 }
 
-.v-csslayout-category .contextmenu {
+.v-csslayout.category .contextmenu {
 	visibility: hidden;
 	position: absolute;
 	top: 0;
 	right: 0;
 }
 
-.v-csslayout-category:hover .contextmenu {
+.v-csslayout.category:hover .contextmenu {
 	visibility: visible;	
 }
 
-.v-csslayout-category .v-label-threadCount {
+.v-csslayout.category .v-label-threadCount {
 	float: right;
 	margin-right: 20px;
 	text-align: right;	

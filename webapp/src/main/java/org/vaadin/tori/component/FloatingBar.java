@@ -7,7 +7,7 @@ import java.util.Iterator;
 import org.vaadin.tori.widgetset.client.ui.floatingbar.FloatingBarRpc;
 import org.vaadin.tori.widgetset.client.ui.floatingbar.FloatingBarState;
 
-import com.vaadin.terminal.gwt.server.PortletApplicationContext2;
+import com.vaadin.server.VaadinPortletSession;
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
 
@@ -85,15 +85,13 @@ public class FloatingBar extends AbstractComponentContainer implements
     public void setContent(final Component component) {
         getState().setContent(component);
         addComponent(component);
-        requestRepaint();
+        markAsDirty();
     }
 
     @Override
-    public void updateState() {
-        getState()
-                .setPortlet(
-                        getApplication().getContext() instanceof PortletApplicationContext2);
-        super.updateState();
+    public void beforeClientResponse(final boolean initial) {
+        getState().setPortlet(getSession() instanceof VaadinPortletSession);
+        super.beforeClientResponse(initial);
     }
 
     /**
@@ -114,7 +112,7 @@ public class FloatingBar extends AbstractComponentContainer implements
      */
     public void setScrollComponent(final Component component) {
         getState().setScrollComponent(component);
-        requestRepaint();
+        markAsDirty();
     }
 
     /**
@@ -128,7 +126,7 @@ public class FloatingBar extends AbstractComponentContainer implements
      */
     public void setAlignment(final FloatingAlignment alignment) {
         getState().setTopAligned(alignment == FloatingAlignment.TOP);
-        requestRepaint();
+        markAsDirty();
     }
 
     public void addListener(final VisibilityListener listener) {

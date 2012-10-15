@@ -3,7 +3,7 @@ package org.vaadin.tori.component.breadcrumbs;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.SplitButton;
 import org.vaadin.tori.component.SplitButton.PopupVisibilityEvent;
 import org.vaadin.tori.data.entity.Category;
@@ -87,7 +87,7 @@ abstract class CategoryCrumb extends CustomComponent {
         tree.setImmediate(true);
 
         try {
-            final List<Category> rootCategories = ToriApplication.getCurrent()
+            final List<Category> rootCategories = ToriUI.getCurrent()
                     .getDataSource().getRootCategories();
             for (final Category category : rootCategories) {
                 addCategory(tree, category, null);
@@ -98,7 +98,7 @@ abstract class CategoryCrumb extends CustomComponent {
             return new Label("Something went wrong :(");
         }
 
-        tree.addListener(new ItemClickEvent.ItemClickListener() {
+        tree.addItemClickListener(new ItemClickEvent.ItemClickListener() {
             @Override
             public void itemClick(final ItemClickEvent event) {
                 if (listener != null) {
@@ -140,7 +140,7 @@ abstract class CategoryCrumb extends CustomComponent {
             tree.setParent(category, parent);
         }
 
-        final List<Category> subCategories = ToriApplication.getCurrent()
+        final List<Category> subCategories = ToriUI.getCurrent()
                 .getDataSource().getSubCategories(category);
         if (subCategories.isEmpty()) {
             tree.setChildrenAllowed(category, false);

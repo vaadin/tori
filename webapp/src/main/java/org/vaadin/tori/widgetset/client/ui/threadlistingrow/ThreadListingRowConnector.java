@@ -17,15 +17,15 @@ package org.vaadin.tori.widgetset.client.ui.threadlistingrow;
 
 import org.vaadin.tori.component.thread.ThreadListingRow;
 
+import com.vaadin.client.ApplicationConnection;
+import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.Paintable;
+import com.vaadin.client.UIDL;
+import com.vaadin.client.VCaption;
+import com.vaadin.client.VCaptionWrapper;
+import com.vaadin.client.ui.AbstractComponentContainerConnector;
+import com.vaadin.client.ui.PostLayoutListener;
 import com.vaadin.shared.ui.Connect;
-import com.vaadin.terminal.gwt.client.ApplicationConnection;
-import com.vaadin.terminal.gwt.client.ComponentConnector;
-import com.vaadin.terminal.gwt.client.Paintable;
-import com.vaadin.terminal.gwt.client.UIDL;
-import com.vaadin.terminal.gwt.client.VCaption;
-import com.vaadin.terminal.gwt.client.VCaptionWrapper;
-import com.vaadin.terminal.gwt.client.ui.AbstractComponentContainerConnector;
-import com.vaadin.terminal.gwt.client.ui.PostLayoutListener;
 
 @SuppressWarnings({ "serial", "deprecation" })
 @Connect(ThreadListingRow.class)
@@ -73,22 +73,8 @@ public class ThreadListingRowConnector extends
             // showPopupOnTop(popup, hostReference);
             getWidget().preparePopup(getWidget().popup);
             getWidget().popup.updateFromUIDL(popupUIDL, client);
-            if (getState().hasStyles()) {
-                final StringBuffer styleBuf = new StringBuffer();
-                final String primaryName = getWidget().popup
-                        .getStylePrimaryName();
-                styleBuf.append(primaryName);
-                for (final String style : getState().getStyles()) {
-                    styleBuf.append(" ");
-                    styleBuf.append(primaryName);
-                    styleBuf.append("-");
-                    styleBuf.append(style);
-                }
-                getWidget().popup.setStyleName(styleBuf.toString());
-            } else {
-                getWidget().popup.setStyleName(getWidget().popup
-                        .getStylePrimaryName());
-            }
+            getWidget().popup.setStyleName(getWidget().popup
+                    .getStylePrimaryName());
             getWidget().showPopup(getWidget().popup);
             centerAfterLayout = true;
 

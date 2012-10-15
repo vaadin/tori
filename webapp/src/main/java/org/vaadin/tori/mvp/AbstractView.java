@@ -6,9 +6,8 @@ import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.ToriRoot;
+import org.vaadin.tori.ToriUI;
 
-import com.vaadin.Application;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 
@@ -39,8 +38,7 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
     protected abstract P createPresenter();
 
     @Override
-    public void init(final ToriNavigator navigator,
-            final Application application) {
+    public void init(final ToriNavigator navigator) {
         this.navigator = navigator;
         if (log.isDebugEnabled()) {
             log.debug("Initializing view " + getClass().getName());
@@ -100,7 +98,7 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
     }
 
     @Override
-    public ToriRoot getRoot() {
-        return (ToriRoot) super.getRoot();
+    public ToriUI getUI() {
+        return (ToriUI) super.getUI();
     }
 }

@@ -8,7 +8,7 @@ import org.vaadin.tori.service.post.PostReport.Reason;
 import org.vaadin.tori.thread.ThreadPresenter;
 
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -94,7 +94,7 @@ public class ReportComponent extends CustomComponent {
                 "A moderator should take a look at it.");
 
         reason.setImmediate(true);
-        reason.addListener(new OptionGroup.ValueChangeListener() {
+        reason.addValueChangeListener(new OptionGroup.ValueChangeListener() {
             @Override
             public void valueChange(final ValueChangeEvent event) {
                 explanationLayout.setVisible(reason.getValue() == Reason.MODERATOR_ALERT);
@@ -118,7 +118,7 @@ public class ReportComponent extends CustomComponent {
         layout.addComponent(footer);
 
         reportButton = new NativeButton("Report Post");
-        reportButton.addListener(new NativeButton.ClickListener() {
+        reportButton.addClickListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 final PostReport report = new PostReport(post, (Reason) reason
@@ -139,7 +139,7 @@ public class ReportComponent extends CustomComponent {
         footer.addComponent(reportButton);
 
         final NativeButton cancel = new NativeButton("Cancel");
-        cancel.addListener(new NativeButton.ClickListener() {
+        cancel.addClickListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 reportPopup.setVisible(false);

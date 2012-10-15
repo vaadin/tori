@@ -13,6 +13,10 @@
 	visibility: visible;
 }
 
+.v-link-categoryLink {
+	display: block;
+}
+
 .v-treetable-treespacer {
 	display:inline-block;
 	background: transparent;
@@ -24,24 +28,19 @@
 	height:13px
 }
 
-.categoryTree .v-treetable-node-closed,
-.categoryTree .v-treetable-node-open {
-	background-image: url("images/treetable-triangles.png");
-}
-	
 .categoryTree .v-treetable-node-closed {
-	background-position: 0 0;
+	background: url(images/treetable-triangles-closed.png) right top no-repeat;
 }
 
 .categoryTree .v-treetable-node-open {
-	background-position: -18px 0;
+	background: url(images/treetable-triangles-open.png) right top no-repeat;
 }
 
-.v-csslayout-category {
+.v-csslayout.category {
 	position: relative;
 }
 
-.v-csslayout-category .v-label-threadCount {
+.v-csslayout.category .v-label-threadCount {
 	float:right;
 	margin-right:20px;
 	text-align: right;

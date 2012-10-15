@@ -15,6 +15,7 @@
  */
 package org.vaadin.tori.component;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -45,18 +46,22 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
         public void fetchComponentsForIndices(final List<Integer> indicesToFetch) {
             loadingHook(indicesToFetch);
 
+            final HashMap<Integer, Connector> components = new HashMap<Integer, Connector>();
             for (final Integer index : indicesToFetch) {
-                loadedComponents.add(getComponent(index));
+                final Component component = getComponent(index);
+
+                loadedComponents.add(component);
+                component.markAsDirtyRecursive();
+                components.put(index, component);
             }
 
-            requestRepaintAll();
-            getRpc().renderComponents(indicesToFetch);
+            markAsDirty();
+            getRpc().sendComponents(components);
         }
     };
 
     public AbstractLazyLayout() {
         registerRpc(rpc);
-        getState().setConnectors(connectors);
     }
 
     abstract protected AbstractLazyLayoutClientRpc getRpc();
@@ -93,9 +98,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
 
         try {
             super.addComponent(c);
-            getState().setTotalAmountOfComponents(getComponentCount());
-
-            requestRepaint();
+            getState().amountOfComponents = getComponentCount();
         } catch (final IllegalArgumentException e) {
             components.remove(c);
             connectors.remove(c);
@@ -119,8 +122,8 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
         connectors.remove(c);
         loadedComponents.remove(c);
         super.removeComponent(c);
-        getState().setTotalAmountOfComponents(getComponentCount());
-        requestRepaint();
+        getState().amountOfComponents = getComponentCount();
+        markAsDirty();
     }
 
     /**
@@ -186,7 +189,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
 
         super.removeComponent(oldComponent);
         super.addComponent(newComponent);
-        requestRepaint();
+        markAsDirty();
     }
 
     /**
@@ -216,18 +219,18 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
 
     public void setPlaceholderSize(final String placeholderHeight,
             final String placeholderWidth) {
-        getState().setPlaceholderHeight(placeholderHeight);
-        getState().setPlaceholderWidth(placeholderWidth);
+        getState().placeholderHeight = placeholderHeight;
+        getState().placeholderWidth = placeholderWidth;
     }
 
     /** How far the rendering should occur past the page length */
     public void setRenderDistanceMultiplier(
             final double renderDistanceMultiplier) {
-        getState().setRenderDistanceMultiplier(renderDistanceMultiplier);
+        getState().renderDistanceMultiplier = renderDistanceMultiplier;
     }
 
     public void setRenderDelay(final int renderDelayMillis) {
-        getState().setRenderDelay(renderDelayMillis);
+        getState().renderDelay = renderDelayMillis;
     }
 
     @Override

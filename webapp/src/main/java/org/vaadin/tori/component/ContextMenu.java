@@ -7,8 +7,8 @@ import org.vaadin.tori.component.MenuPopup.ContextAction;
 import org.vaadin.tori.component.MenuPopup.ContextComponentSwapper;
 import org.vaadin.tori.component.MenuPopup.MenuClickListener;
 
-import com.vaadin.terminal.Resource;
-import com.vaadin.terminal.ThemeResource;
+import com.vaadin.server.Resource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CssLayout;
@@ -102,7 +102,7 @@ public class ContextMenu extends CustomComponent {
         final Button button = new Button();
         button.setStyleName(Reindeer.BUTTON_LINK);
         button.setIcon(new ThemeResource("images/icon-settings.png"));
-        button.addListener(new Button.ClickListener() {
+        button.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 contextComponent.setPopupVisible(true);

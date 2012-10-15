@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.vaadin.tori.ToriApplication;
+import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.mvp.AbstractView;
 
 import com.vaadin.data.Container;
@@ -71,7 +71,7 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
                     final Component uiContext) {
                 final TextField textField = new TextField();
                 textField.setWidth(100.0f, Unit.PERCENTAGE);
-                textField.addListener(new FocusListener() {
+                textField.addFocusListener(new FocusListener() {
                     @Override
                     public void focus(final FocusEvent event) {
                         replacementsTable.setValue(itemId);
@@ -81,12 +81,14 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
             }
         });
 
-        replacementsTable.addListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(final ValueChangeEvent event) {
-                removeButton.setEnabled(event.getProperty().getValue() != null);
-            }
-        });
+        replacementsTable
+                .addValueChangeListener(new Property.ValueChangeListener() {
+                    @Override
+                    public void valueChange(final ValueChangeEvent event) {
+                        removeButton
+                                .setEnabled(event.getProperty().getValue() != null);
+                    }
+                });
 
         replacementsTable.addContainerProperty("regex", String.class, "",
                 "Regex", null, null);
@@ -154,9 +156,9 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
 
     @Override
     protected EditPresenter createPresenter() {
-        final ToriApplication app = ToriApplication.getCurrent();
-        return new EditPresenter(app.getDataSource(),
-                app.getAuthorizationService());
+        final ToriUI ui = ToriUI.getCurrent();
+        return new EditPresenter(ui.getDataSource(),
+                ui.getAuthorizationService());
     }
 
     @Override
