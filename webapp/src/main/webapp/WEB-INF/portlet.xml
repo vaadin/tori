@@ -9,13 +9,12 @@
 
 		<portlet-class>org.vaadin.tori.ToriPortlet</portlet-class>
 		<init-param>
-			<description>Vaadin application class to start</description>
-			<name>application</name>
-			<value>org.vaadin.tori.ToriApplication</value>
+			<name>UI</name>
+			<value>org.vaadin.tori.ToriUI</value>
 		</init-param>
 		<init-param>
-			<name>root</name>
-			<value>org.vaadin.tori.ToriRoot</value>
+			<name>theme</name>
+			<value>tori</value>
 		</init-param>
 
 		<!-- To enable displaying multiple Vaadin portlets on a page, they should 

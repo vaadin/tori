@@ -1014,7 +1014,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             subject = "RE: " + subject;
         }
         final String body = post.getBodyRaw().trim();
-        final List<ObjectValuePair<String, byte[]>> attachments = new ArrayList<ObjectValuePair<String, InputStream>>();
+        final List<ObjectValuePair<String, byte[]>> attachments = new ArrayList<ObjectValuePair<String, byte[]>>();
 
         if (files != null) {
             for (final Entry<String, byte[]> file : files.entrySet()) {
