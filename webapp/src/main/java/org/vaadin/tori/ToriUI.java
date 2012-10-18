@@ -10,6 +10,7 @@ import org.vaadin.tori.component.DebugControlPanel;
 import org.vaadin.tori.component.GoogleAnalyticsTracker;
 import org.vaadin.tori.component.breadcrumbs.Breadcrumbs;
 import org.vaadin.tori.data.DataSource;
+import org.vaadin.tori.edit.EditView;
 import org.vaadin.tori.edit.EditViewImpl;
 import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.service.AuthorizationService;
@@ -21,6 +22,7 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.VaadinPortletRequest;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinServiceSession;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -44,7 +46,6 @@ public class ToriUI extends UI {
     @Override
     protected void init(final VaadinRequest request) {
         getPage().setTitle("Tori");
-        initApiLoader(request);
         navigator = new ToriNavigator(this);
 
         windowLayout = new VerticalLayout();
@@ -80,7 +81,7 @@ public class ToriUI extends UI {
         });
     }
 
-    private void initApiLoader(final VaadinRequest request) {
+    void initApiLoader(final VaadinRequest request) {
         getSession().setAttribute(ToriApiLoader.class, new ToriApiLoader());
 
         /*
@@ -98,8 +99,9 @@ public class ToriUI extends UI {
 
     public final void setPortletMode(final PortletMode portletMode) {
         if (portletMode == PortletMode.EDIT) {
-            if (getContent() == windowLayout) {
-                final EditViewImpl editView = new EditViewImpl();
+            if (!(getContent() instanceof EditView)) {
+                final EditViewImpl editView = new EditViewImpl(getDataSource(),
+                        getAuthorizationService());
                 editView.init(null);
                 setContent(editView);
             }
@@ -108,6 +110,10 @@ public class ToriUI extends UI {
                 setContent(windowLayout);
             }
         }
+    }
+
+    private static Logger getLogger() {
+        return Logger.getLogger(ToriUI.class);
     }
 
     private void addControlPanelIfInDevelopment() {
@@ -177,8 +183,9 @@ public class ToriUI extends UI {
     }
 
     private ToriApiLoader getApiLoader() {
-        final ToriApiLoader apiLoader = getSession().getAttribute(
-                ToriApiLoader.class);
+        final VaadinServiceSession session = getSession();
+        final ToriApiLoader apiLoader = session
+                .getAttribute(ToriApiLoader.class);
         if (apiLoader != null) {
             return apiLoader;
         } else {
