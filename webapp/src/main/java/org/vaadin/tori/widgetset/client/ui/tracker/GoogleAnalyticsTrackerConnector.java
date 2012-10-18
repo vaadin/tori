@@ -2,6 +2,7 @@ package org.vaadin.tori.widgetset.client.ui.tracker;
 
 import org.vaadin.tori.component.GoogleAnalyticsTracker;
 
+import com.google.gwt.core.client.GWT;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.Paintable;
 import com.vaadin.client.UIDL;
@@ -20,7 +21,7 @@ public class GoogleAnalyticsTrackerConnector extends AbstractComponentConnector
 
     @Override
     protected VGoogleAnalyticsTracker createWidget() {
-        return (VGoogleAnalyticsTracker) super.createWidget();
+        return GWT.create(VGoogleAnalyticsTracker.class);
     }
 
     @Override
