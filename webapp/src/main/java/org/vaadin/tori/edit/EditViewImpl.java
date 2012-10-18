@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.vaadin.tori.ToriUI;
+import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.mvp.AbstractView;
+import org.vaadin.tori.service.AuthorizationService;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -39,6 +40,14 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
 
     private CheckBox convertMessageBoardsUrls;
     private TextField analyticsTrackerIdField;
+    private final DataSource dataSource;
+    private final AuthorizationService authorizationService;
+
+    public EditViewImpl(final DataSource dataSource,
+            final AuthorizationService authorizationService) {
+        this.dataSource = dataSource;
+        this.authorizationService = authorizationService;
+    }
 
     @Override
     protected Component createCompositionRoot() {
@@ -156,9 +165,7 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
 
     @Override
     protected EditPresenter createPresenter() {
-        final ToriUI ui = ToriUI.getCurrent();
-        return new EditPresenter(ui.getDataSource(),
-                ui.getAuthorizationService());
+        return new EditPresenter(dataSource, authorizationService);
     }
 
     @Override

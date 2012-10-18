@@ -3,12 +3,15 @@ package org.vaadin.tori;
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
 
+import org.apache.log4j.Logger;
+
 import com.vaadin.server.CombinedRequest;
 import com.vaadin.server.DefaultUIProvider;
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinPortletRequest;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinServiceSession;
 import com.vaadin.ui.UI;
 
 public class ToriUiProvider extends DefaultUIProvider {
@@ -21,11 +24,29 @@ public class ToriUiProvider extends DefaultUIProvider {
 
     @Override
     public Class<? extends UI> getUIClass(final UIClassSelectionEvent event) {
-        if (shouldRenderEditUI(event.getRequest())) {
-            return ToriEditUI.class;
+        return ToriUI.class;
+    }
+
+    @Override
+    public UI createInstance(final UICreateEvent event) {
+        final UI ui = super.createInstance(event);
+        ui.setSession(VaadinServiceSession.getCurrent());
+        if (ui instanceof ToriUI) {
+            final ToriUI toriUi = (ToriUI) ui;
+            toriUi.initApiLoader(event.getRequest());
+            if (shouldRenderEditUI(event.getRequest())) {
+                toriUi.setPortletMode(PortletMode.EDIT);
+            } else {
+                toriUi.setPortletMode(PortletMode.VIEW);
+            }
         } else {
-            return ToriUI.class;
+            Logger.getLogger(getClass()).warn(
+                    "Created UI is not an instance of "
+                            + ToriUI.class.getName() + " but "
+                            + ui.getClass().getName()
+                            + ". Might cause problems.");
         }
+        return ui;
     }
 
     private boolean shouldRenderEditUI(final VaadinRequest request) {
