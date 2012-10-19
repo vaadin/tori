@@ -10,7 +10,6 @@ import org.vaadin.tori.component.DebugControlPanel;
 import org.vaadin.tori.component.GoogleAnalyticsTracker;
 import org.vaadin.tori.component.breadcrumbs.Breadcrumbs;
 import org.vaadin.tori.data.DataSource;
-import org.vaadin.tori.edit.EditView;
 import org.vaadin.tori.edit.EditViewImpl;
 import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.service.AuthorizationService;
@@ -99,16 +98,12 @@ public class ToriUI extends UI {
 
     public final void setPortletMode(final PortletMode portletMode) {
         if (portletMode == PortletMode.EDIT) {
-            if (!(getContent() instanceof EditView)) {
-                final EditViewImpl editView = new EditViewImpl(getDataSource(),
-                        getAuthorizationService());
-                editView.init(null);
-                setContent(editView);
-            }
+            final EditViewImpl editView = new EditViewImpl(getDataSource(),
+                    getAuthorizationService());
+            editView.init(null);
+            setContent(editView);
         } else {
-            if (getContent() != windowLayout && windowLayout != null) {
-                setContent(windowLayout);
-            }
+            setContent(windowLayout);
         }
     }
 
