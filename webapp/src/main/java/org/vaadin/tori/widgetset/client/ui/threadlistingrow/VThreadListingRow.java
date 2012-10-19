@@ -29,7 +29,6 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -89,20 +88,6 @@ public class VThreadListingRow extends HTML {
                     // x = event.getClientX() + Window.getScrollLeft();
                     // y = event.getClientY() + Window.getScrollTop();
                     updateState(true);
-                } else {
-                    /*
-                     * not at all sure if this else-block is needed at all. It
-                     * might've been trying to solve the same problem as
-                     * fixIphoneClickBug() does.
-                     */
-                    final String threadURI = getThreadURI(getElement());
-                    if (threadURI != null) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        Window.Location.assign(threadURI);
-                    } else {
-                        VConsole.error("Thread was clicked, but no URI was found for the thread.");
-                    }
                 }
             }
         });
