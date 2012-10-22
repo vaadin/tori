@@ -3,11 +3,13 @@
 Tori is a forum project built upon Vaadin.
 
 
-## Authors
+## Credits
 
- * Henrik Paul
- * Teemu Pöntelin
- * Tomi Virkki
+ * *Henrik Paul*, lead designer and lead developer
+ * *Teemu Pöntelin*, developer
+ * *Tomi Virkki*, developer
+ * *Jouni Koivuviita*, graphical design
+ * *Joonas Lehtinen*, original idea, auxiliary design
 
 ## 3rd Party Libraries
 
