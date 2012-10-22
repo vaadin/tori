@@ -193,13 +193,10 @@ public class MenuPopup extends CustomComponent {
     private void _replaceComponents(final Component oldComponent,
             final Component newComponent) {
         if (oldComponent.getParent() == layout) {
-            System.out.println("MenuPopup._replaceComponents() 1");
             layout.replaceComponent(oldComponent, newComponent);
         } else {
-            System.out.println("MenuPopup._replaceComponents() 2");
             final int i = componentsBeforeSwapping.indexOf(oldComponent);
             if (i >= 0) {
-                System.out.println("MenuPopup._replaceComponents() 3");
                 componentsBeforeSwapping.remove(i);
                 componentsBeforeSwapping.add(i, newComponent);
             }
