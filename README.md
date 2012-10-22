@@ -1,7 +1,12 @@
-# Vaadin Tori
+# Tori
 
-Tori is a forum project built upon Vaadin.
+Tori is a modular forum UI that is designed for a pleasant user experience. 
 
+It is designed to be deployable onto various environments, being able to use pre-existing data provided by the back-end. Tori installed and uninstalled at will, without fears of vendor lock-in or data loss, since it uses the data source provided by the existing back-end. It can be deployed as a portlet or a servlet.
+
+Tori has currently a back-end implementation for Liferay and also a development implementation on top of JPA.
+
+It supports all modern browsers, including Internet Explorer 8 and newer.
 
 ## Credits
 
