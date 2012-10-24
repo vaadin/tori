@@ -84,3 +84,11 @@
 .breadcrumbs .action-bar a span {
 	color: #fff !important;
 }
+
+.breadcrumbs .unclickable .v-button  {
+	cursor: default;
+}
+
+.breadcrumbs .last .v-button {
+	background: transparent;
+}

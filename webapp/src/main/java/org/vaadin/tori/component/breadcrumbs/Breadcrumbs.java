@@ -119,14 +119,14 @@ public class Breadcrumbs extends CustomComponent implements
             final Component categoryCrumb = new CategoryCrumb.Clickable(
                     currentCategory, this);
             final Component threadCrumb = new ThreadCrumb(currentThread, this);
-            threadCrumb.setStyleName("last");
+            threadCrumb.addStyleName("last");
             layout.addComponent(categoryCrumb);
             layout.addComponent(threadCrumb);
             showViewCaption(currentThread.getTopic());
         } else if (currentCategory != null) {
             final Component categoryCrumb = new CategoryCrumb.Clickable(
                     currentCategory, this);
-            categoryCrumb.setStyleName("last");
+            categoryCrumb.addStyleName("last");
             layout.addComponent(categoryCrumb);
             showViewCaption(currentCategory.getName());
         } else {
