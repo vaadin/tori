@@ -3,7 +3,7 @@
 <module>
 	<stylesheet src="lazylayout.css"/>
 	
-	<inherits name="com.vaadin.terminal.gwt.DefaultWidgetSet" />
+	
 	
     <!--
      Uncomment the following to compile the widgetset for one browser only.
@@ -22,4 +22,6 @@
 
     <inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset" />
     <inherits name="org.vaadin.hene.expandingtextarea.widgetset.ExpandingtextareaWidgetset" />
+
+    <inherits name="com.vaadin.DefaultWidgetSet" />
 </module>
