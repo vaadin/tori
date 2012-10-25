@@ -1,20 +1,25 @@
+/*
+ * Copyright 2012 Vaadin Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package org.vaadin.tori.component.breadcrumbs;
 
-import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.vaadin.tori.ToriUI;
-import org.vaadin.tori.component.SplitButton;
-import org.vaadin.tori.component.SplitButton.PopupVisibilityEvent;
 import org.vaadin.tori.data.entity.DiscussionThread;
-import org.vaadin.tori.exception.DataSourceException;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.ui.Component;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.ListSelect;
 
 @SuppressWarnings("serial")
 class ThreadCrumb extends CustomComponent {
@@ -22,13 +27,14 @@ class ThreadCrumb extends CustomComponent {
         void selectThread(DiscussionThread selectedThread);
     }
 
-    private final ThreadSelectionListener listener;
-    private final SplitButton crumb;
-    private final Logger log = Logger.getLogger(getClass());
+    // private final ThreadSelectionListener listener;
+    private final Button crumb;
+
+    // private final Logger log = Logger.getLogger(getClass());
 
     public ThreadCrumb(final DiscussionThread thread,
             final ThreadSelectionListener listener) {
-        this.listener = listener;
+        // this.listener = listener;
 
         if (thread == null) {
             throw new RuntimeException("Trying to render the thread part of "
@@ -39,7 +45,8 @@ class ThreadCrumb extends CustomComponent {
         addStyleName(Breadcrumbs.STYLE_THREAD);
         addStyleName(Breadcrumbs.STYLE_UNCLICKABLE);
 
-        crumb = new SplitButton(thread.getTopic());
+        crumb = new Button(thread.getTopic());
+        /*-
         crumb.addPopupVisibilityListener(new SplitButton.PopupVisibilityListener() {
             @Override
             public void splitButtonPopupVisibilityChange(
@@ -47,10 +54,12 @@ class ThreadCrumb extends CustomComponent {
                 event.getSplitButton().setComponent(getThreadPopup(thread));
             }
         });
+         */
 
         setCompositionRoot(crumb);
     }
 
+    /*-
     private Component getThreadPopup(final DiscussionThread thread) {
         final ListSelect root = new ListSelect();
         root.setImmediate(true);
@@ -92,4 +101,5 @@ class ThreadCrumb extends CustomComponent {
 
         return root;
     }
+     */
 }

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2012 Vaadin Ltd.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package org.vaadin.tori;
 
 import java.util.ArrayList;
@@ -82,10 +98,10 @@ public class ToriNavigator extends CustomComponent {
     private String currentFragment = "";
     private View currentView = null;
     private final LinkedList<ViewChangeListener> listeners = new LinkedList<ViewChangeListener>();
-    private final ToriUI root;
+    private final ToriUI ui;
 
-    public ToriNavigator(final ToriUI root) {
-        this.root = root;
+    public ToriNavigator(final ToriUI ui) {
+        this.ui = ui;
 
         rootLayout.setSizeFull();
         setSizeFull();
@@ -94,7 +110,7 @@ public class ToriNavigator extends CustomComponent {
         layout.setSizeFull();
         rootLayout.addComponent(layout);
 
-        root.getPage().addFragmentChangedListener(
+        ui.getPage().addFragmentChangedListener(
                 new FragmentChangedListener() {
                     @Override
                     public void fragmentChanged(
@@ -112,7 +128,7 @@ public class ToriNavigator extends CustomComponent {
             @Override
             public void navigatorViewChange(final View previous,
                     final View current) {
-                root.trackAction("#" + currentFragment, null);
+                ui.trackAction("#" + currentFragment, null);
             }
         });
 
@@ -139,7 +155,7 @@ public class ToriNavigator extends CustomComponent {
             final AbstractView<?, ?> newView = getOrCreateView(uri);
             moveTo(newView, arguments, false);
         } else {
-            root.getPage().setFragment(currentFragment, false);
+            ui.getPage().setFragment(currentFragment, false);
         }
     }
 
@@ -206,8 +222,8 @@ public class ToriNavigator extends CustomComponent {
             currentFragment += "/" + Joiner.on('/').join(arguments);
         }
         if (!noFragmentSetting
-                && !currentFragment.equals(root.getPage().getFragment())) {
-            root.getPage().setFragment(currentFragment, false);
+                && !currentFragment.equals(ui.getPage().getFragment())) {
+            ui.getPage().setFragment(currentFragment, false);
         }
 
         layout.removeAllComponents();
@@ -363,7 +379,7 @@ public class ToriNavigator extends CustomComponent {
      *            Uri where to navigate.
      */
     public void navigateTo(final String uri) {
-        root.getPage().setFragment(uri);
+        ui.getPage().setFragment(uri);
     }
 
     /**
@@ -463,7 +479,7 @@ public class ToriNavigator extends CustomComponent {
      * <code>foo</code>. If no fragment is set, this returns <code>null</code>
      */
     public String getCurrentUri() {
-        final String fragment = root.getPage().getFragment();
+        final String fragment = ui.getPage().getFragment();
         if (fragment != null) {
             return getDataFromFragment(fragment)[0];
         } else {
@@ -476,7 +492,7 @@ public class ToriNavigator extends CustomComponent {
      * <code>bar</code>. If no fragment is set, this returns <code>null</code>
      */
     public String[] getCurrentArguments() {
-        final String fragment = root.getPage().getFragment();
+        final String fragment = ui.getPage().getFragment();
         if (fragment != null) {
             return tail(getDataFromFragment(fragment));
         } else {

@@ -83,7 +83,7 @@
 
 .breadcrumbs .last .splitbutton .v-button {
 	background-image: none;
-	cursor: normal;
+	cursor: default;
 }
 
 .breadcrumbs .last .splitbutton .v-button:hover .v-button-wrap{
