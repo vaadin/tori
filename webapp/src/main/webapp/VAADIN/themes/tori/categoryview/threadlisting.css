@@ -123,6 +123,18 @@
 	padding-top: 11px; /* center */
 }
 
+.v-thread-listing-row .startedBy {
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.v-thread-listing-row .namewrapfade {
+	right: 190px;
+	width: 10px;
+	height: 40px;
+	background-image: url("../images/thread_fade.png");
+}
+
 .v-thread-listing-row:hover .topic {
 	text-decoration: underline;
 }
