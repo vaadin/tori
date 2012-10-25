@@ -103,12 +103,9 @@ public class ToriUI extends UI {
          * this hack is specially reserved for Liferay. Maybe the servlet
          * request can be put in here too...
          */
-        try {
-            final VaadinPortletRequest lrRequest = VaadinPortletRequest
-                    .cast(request);
-            setRequest(lrRequest.getPortletRequest());
-        } catch (final ClassCastException e) {
-            // ignore
+        if (request instanceof VaadinPortletRequest) {
+            final VaadinPortletRequest vpRequest = (VaadinPortletRequest) request;
+            setRequest(vpRequest.getPortletRequest());
         }
     }
 

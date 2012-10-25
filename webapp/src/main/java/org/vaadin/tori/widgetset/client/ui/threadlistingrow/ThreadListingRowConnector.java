@@ -19,6 +19,7 @@ import org.vaadin.tori.component.thread.ThreadListingRow;
 
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.ConnectorHierarchyChangeEvent;
 import com.vaadin.client.Paintable;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.VCaption;
@@ -114,6 +115,12 @@ public class ThreadListingRowConnector extends
             centerAfterLayout = false;
             getWidget().reposition();
         }
+    }
+
+    @Override
+    public void onConnectorHierarchyChange(
+            final ConnectorHierarchyChangeEvent connectorHierarchyChangeEvent) {
+        // ignore?
     }
 
 }
