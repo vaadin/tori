@@ -152,6 +152,10 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
                 "Replace message boards link data with tori format");
         layout.addComponent(convertMessageBoardsUrls);
 
+        final TextField pathRoot = new TextField(
+                "What is the root path for Tori? (e.g. <code>http://example.com/community/tori/</code> would mean \"<code>/community/tori</code>\"");
+        layout.addComponent(pathRoot);
+
         saveButton = new Button("Save preferences", new Button.ClickListener() {
 
             @Override
@@ -171,8 +175,18 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
                 final String fixedTrackerId = "".equals(trackerId) ? null
                         : trackerId;
 
+                String fixedPathRoot = pathRoot.getValue();
+                if (!fixedPathRoot.startsWith("/")) {
+                    fixedPathRoot = "/" + fixedPathRoot;
+                }
+                while (fixedPathRoot.endsWith("/")) {
+                    fixedPathRoot = fixedPathRoot.substring(fixedPathRoot
+                            .length() - 1);
+                }
+
                 getPresenter().savePreferences(replacements,
-                        convertMessageBoardsUrls.getValue(), fixedTrackerId);
+                        convertMessageBoardsUrls.getValue(), fixedTrackerId,
+                        fixedPathRoot);
             }
         });
         layout.addComponent(saveButton);

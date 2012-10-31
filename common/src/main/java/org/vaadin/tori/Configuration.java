@@ -25,6 +25,7 @@ public class Configuration {
     private boolean replaceMessageBoardsLinks;
     private Map<String, String> replacements;
     private String googleAnalyticsTrackerId;
+    private String pathRoot;
 
     /**
      * Whether or not messages' links are replaced with what is in
@@ -79,4 +80,16 @@ public class Configuration {
         this.googleAnalyticsTrackerId = googleAnalyticsTrackerId;
     }
 
+    /**
+     * This is the root path for Tori. E.g.
+     * <code>http://localhost:8080/something/tori/</code> is represented by
+     * <code>/something/tori</code>
+     */
+    public void setPathRoot(final String pathRoot) {
+        this.pathRoot = pathRoot;
+    }
+
+    public String getPathRoot() {
+        return pathRoot;
+    }
 }

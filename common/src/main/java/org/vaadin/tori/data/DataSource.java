@@ -33,6 +33,16 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 
 public interface DataSource {
 
+    public interface UrlInfo {
+        public enum Destination {
+            CATEGORY, THREAD
+        }
+
+        public Destination getDestination();
+
+        public long getId();
+    }
+
     /**
      * Returns a list of all root {@link Category} instances.
      * 
@@ -354,4 +364,24 @@ public interface DataSource {
     @CheckForNull
     String getGoogleAnalyticsTrackerId();
 
+    /**
+     * @param queryUrl
+     *            The part of the URL that comes after the context path
+     *            (excludes fragment)
+     * @return The fragment that corresponds to the queried URL.
+     *         <code>null</code> if no changes are to be made. Empty string to
+     *         clear the fragment.
+     * @deprecated This method needs to be moved somewhere else. (see also
+     *             {@link #getPathRoot()})
+     */
+    @Deprecated
+    @CheckForNull
+    UrlInfo getToriFragment(@NonNull String queryUrl);
+
+    /**
+     * @deprecated This method needs to be moved somewhere else (see also
+     *             {@link #getToriFragment(String)})
+     */
+    @Deprecated
+    String getPathRoot();
 }

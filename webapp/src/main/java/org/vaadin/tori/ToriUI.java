@@ -16,6 +16,8 @@
 
 package org.vaadin.tori;
 
+import java.net.URI;
+
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +28,7 @@ import org.vaadin.tori.component.DebugControlPanel;
 import org.vaadin.tori.component.GoogleAnalyticsTracker;
 import org.vaadin.tori.component.breadcrumbs.Breadcrumbs;
 import org.vaadin.tori.data.DataSource;
+import org.vaadin.tori.data.DataSource.UrlInfo;
 import org.vaadin.tori.edit.EditViewImpl;
 import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.service.AuthorizationService;
@@ -38,6 +41,7 @@ import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.VaadinPortletRequest;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServiceSession;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -60,6 +64,9 @@ public class ToriUI extends UI {
 
     @Override
     protected void init(final VaadinRequest request) {
+
+        fixUrl(request.getContextPath());
+
         getPage().setTitle("Tori");
         navigator = new ToriNavigator(this);
 
@@ -249,4 +256,71 @@ public class ToriUI extends UI {
         return (ToriUI) UI.getCurrent();
     }
 
+    @SuppressWarnings("deprecation")
+    private void fixUrl(final String contextPath) {
+        final URI uri = getPage().getLocation();
+        final String path = uri.getPath();
+        final String pathRoot = getDataSource().getPathRoot();
+
+        if (pathRoot == null) {
+            getLogger().info(
+                    "Tori's path root is undefined. You probably "
+                            + "should set it. Skipping URL parsing.");
+            return;
+        }
+
+        if (hasInvalidPath(path, pathRoot)) {
+            getLogger().warn(
+                    "Path mismatch: Tori is configured for the path "
+                            + pathRoot + ", but current path is " + path
+                            + ". Skipping URL parsing.");
+            return;
+        }
+
+        if (path.length() > pathRoot.length() && !path.equals(pathRoot + "/")) {
+            getPage().setLocation(pathRoot);
+        }
+
+        final String argumentsInPath = path.substring(pathRoot.length());
+        final UrlInfo toriFragment = getDataSource().getToriFragment(
+                argumentsInPath);
+        if (toriFragment != null) {
+            String fragment = "";
+            switch (toriFragment.getDestination()) {
+            case CATEGORY:
+                fragment = ToriNavigator.ApplicationView.CATEGORIES.getUrl();
+                break;
+            case THREAD:
+                fragment = ToriNavigator.ApplicationView.THREADS.getUrl();
+                break;
+            default:
+                Notification.show("You found a URL the coders "
+                        + "didn't remember to handle correctly. "
+                        + "Terribly sorry about that.",
+                        Notification.Type.HUMANIZED_MESSAGE);
+                throw new UnsupportedOperationException("Support for "
+                        + toriFragment.getDestination() + " is not implemented");
+            }
+
+            fragment += "/" + toriFragment.getId();
+            logger().error("New fragment: " + fragment);
+            getPage().setFragment(fragment);
+        } else {
+            logger().error("No fragment needed");
+        }
+    }
+
+    private boolean hasInvalidPath(final String path, final String pathRoot) {
+        final boolean pathStartsWithRoot = path.startsWith(pathRoot);
+
+        // to avoid pathroot being "/foo" and path being "/foobar"
+        final boolean pathIsCorrectFormat;
+        if (path.length() > pathRoot.length()) {
+            pathIsCorrectFormat = path.startsWith(pathRoot + "/");
+        } else {
+            pathIsCorrectFormat = true;
+        }
+
+        return !(pathStartsWithRoot && pathIsCorrectFormat);
+    }
 }
