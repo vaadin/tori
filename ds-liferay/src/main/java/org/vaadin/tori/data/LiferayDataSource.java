@@ -132,9 +132,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     private static final String PREFS_REPLACEMENTS_KEY = "toriPostReplacements";
     private static final String REPLACEMENT_SEPARATOR = "<TORI-REPLACEMENT>";
 
-    private static final String LIFERAY_FORUM_URL_REGEXP = "/-/[^/]+/(message|category)/([0-9]+)";
-    private static final Pattern LIFERAY_FORUM_URL_PATTERN = Pattern
-            .compile(LIFERAY_FORUM_URL_REGEXP);
+    private static final String LIFERAY_FORUM_URL_CATEGORY_REGEXP = "/-/.+mbCategoryId=([0-9]+)";
+    private static final String LIFERAY_FORUM_URL_MESSAGE_REGEXP = "/-/[^/]+/view_message/([0-9]+)";
 
     @Override
     public List<Category> getRootCategories() throws DataSourceException {
@@ -1430,50 +1429,52 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     @Deprecated
     @CheckForNull
     public UrlInfo getToriFragment(@NonNull final String queryUrl) {
-        final Pattern p = Pattern.compile(LIFERAY_FORUM_URL_REGEXP);
         Logger.getLogger(getClass()).error("queryurl: " + queryUrl);
-        Logger.getLogger(getClass()).error(p);
 
-        final Matcher messageMatcher = p.matcher(queryUrl.trim());
+        final Pattern categoryPattern = Pattern
+                .compile(LIFERAY_FORUM_URL_CATEGORY_REGEXP);
+        final Matcher categoryMatcher = categoryPattern.matcher(queryUrl);
+        if (categoryMatcher.matches()) {
+            final long id = Long.parseLong(categoryMatcher.group(1));
+
+            return new UrlInfo() {
+                @Override
+                public Destination getDestination() {
+                    return Destination.CATEGORY;
+                }
+
+                @Override
+                public long getId() {
+                    return id;
+                }
+            };
+        }
+
+        final Pattern messagePattern = Pattern
+                .compile(LIFERAY_FORUM_URL_MESSAGE_REGEXP);
+        final Matcher messageMatcher = messagePattern.matcher(queryUrl);
         if (messageMatcher.matches()) {
-            final String messageOrCategory = messageMatcher.group(1);
-            final long id = Long.parseLong(messageMatcher.group(2));
+            final long id = Long.parseLong(messageMatcher.group(1));
 
-            if (messageOrCategory.equals("category")) {
+            try {
+                final MBMessage message = MBMessageServiceUtil.getMessage(id);
+                final long threadId = message.getThreadId();
+
                 return new UrlInfo() {
                     @Override
                     public Destination getDestination() {
-                        return Destination.CATEGORY;
+                        return Destination.THREAD;
                     }
 
                     @Override
                     public long getId() {
-                        return id;
+                        return threadId;
                     }
                 };
-            } else if (messageOrCategory.equals("message")) {
 
-                try {
-                    final MBMessage message = MBMessageServiceUtil
-                            .getMessage(id);
-                    final long threadId = message.getThreadId();
-
-                    return new UrlInfo() {
-                        @Override
-                        public Destination getDestination() {
-                            return Destination.THREAD;
-                        }
-
-                        @Override
-                        public long getId() {
-                            return threadId;
-                        }
-                    };
-                } catch (final Exception e) {
-                    Logger.getLogger(getClass()).warn(
-                            "Could not figure out a correct redirection", e);
-                }
-
+            } catch (final Exception e) {
+                Logger.getLogger(getClass()).warn(
+                        "Could not figure out a correct redirection", e);
             }
         }
 
