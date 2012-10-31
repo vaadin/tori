@@ -133,9 +133,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     private static final String PREFS_REPLACEMENTS_KEY = "toriPostReplacements";
     private static final String REPLACEMENT_SEPARATOR = "<TORI-REPLACEMENT>";
 
-    private static final String LIFERAY_FORUM_URL_REGEXP = "/-/[^/]+/(message|category)/([0-9]+)";
     private static final Pattern LIFERAY_FORUM_URL_PATTERN = Pattern
-            .compile(LIFERAY_FORUM_URL_REGEXP);
+            .compile("/-/[^/]+/(message|category)/([0-9]+)");
 
     @Override
     public List<Category> getRootCategories() throws DataSourceException {
@@ -1438,12 +1437,13 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     @Override
     @Deprecated
     @CheckForNull
-    public UrlInfo getToriFragment(@NonNull final String queryUrl) {
-        final Pattern p = Pattern.compile(LIFERAY_FORUM_URL_REGEXP);
+    public UrlInfo getToriFragment(@NonNull final String queryUrl,
+            final String queryPart) {
         Logger.getLogger(getClass()).error("queryurl: " + queryUrl);
-        Logger.getLogger(getClass()).error(p);
+        Logger.getLogger(getClass()).error(LIFERAY_FORUM_URL_PATTERN);
 
-        final Matcher messageMatcher = p.matcher(queryUrl.trim());
+        final Matcher messageMatcher = LIFERAY_FORUM_URL_PATTERN
+                .matcher(queryUrl.trim());
         if (messageMatcher.matches()) {
             final String messageOrCategory = messageMatcher.group(1);
             final long id = Long.parseLong(messageMatcher.group(2));

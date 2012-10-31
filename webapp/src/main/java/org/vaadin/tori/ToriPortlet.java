@@ -32,15 +32,32 @@ import javax.servlet.http.HttpServletRequest;
 import org.vaadin.tori.indexing.ToriIndexableApplication;
 
 import com.vaadin.server.Constants;
+import com.vaadin.server.DeploymentConfiguration;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.SessionInitEvent;
 import com.vaadin.server.SessionInitListener;
+import com.vaadin.server.UICreateEvent;
+import com.vaadin.server.UIProvider;
 import com.vaadin.server.VaadinPortlet;
 import com.vaadin.server.VaadinPortletRequest;
+import com.vaadin.server.VaadinPortletService;
 
 public class ToriPortlet extends VaadinPortlet {
 
     private static final String PORTAL_UTIL_CLASS = "com.liferay.portal.util.PortalUtil";
+
+    private class ToriPortletService extends VaadinPortletService {
+        public ToriPortletService(final VaadinPortlet portlet,
+                final DeploymentConfiguration config) {
+            super(portlet, config);
+        }
+
+        @Override
+        public boolean preserveUIOnRefresh(final UIProvider provider,
+                final UICreateEvent event) {
+            return false;
+        }
+    }
 
     @Override
     protected void handleRequest(final PortletRequest request,
@@ -65,6 +82,12 @@ public class ToriPortlet extends VaadinPortlet {
         } else {
             super.handleRequest(request, response);
         }
+    }
+
+    @Override
+    protected VaadinPortletService createPortletService(
+            final DeploymentConfiguration deploymentConfiguration) {
+        return new ToriPortletService(this, deploymentConfiguration);
     }
 
     private static HttpServletRequest getServletRequest(
