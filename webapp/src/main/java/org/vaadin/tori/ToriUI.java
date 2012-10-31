@@ -16,7 +16,9 @@
 
 package org.vaadin.tori;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
 
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
@@ -62,10 +64,13 @@ public class ToriUI extends UI {
 
     private String lastPath = "";
 
+    private String contextPath;
+
     @Override
     protected void init(final VaadinRequest request) {
 
-        fixUrl(request.getContextPath());
+        contextPath = request.getContextPath();
+        fixUrl(contextPath);
 
         getPage().setTitle("Tori");
         navigator = new ToriNavigator(this);
@@ -277,37 +282,72 @@ public class ToriUI extends UI {
             return;
         }
 
+        final String pathPart;
         if (path.length() > pathRoot.length() && !path.equals(pathRoot + "/")) {
-            getPage().setLocation(pathRoot);
-        }
-
-        final String argumentsInPath = path.substring(pathRoot.length());
-        final UrlInfo toriFragment = getDataSource().getToriFragment(
-                argumentsInPath);
-        if (toriFragment != null) {
-            String fragment = "";
-            switch (toriFragment.getDestination()) {
-            case CATEGORY:
-                fragment = ToriNavigator.ApplicationView.CATEGORIES.getUrl();
-                break;
-            case THREAD:
-                fragment = ToriNavigator.ApplicationView.THREADS.getUrl();
-                break;
-            default:
-                Notification.show("You found a URL the coders "
-                        + "didn't remember to handle correctly. "
-                        + "Terribly sorry about that.",
-                        Notification.Type.HUMANIZED_MESSAGE);
-                throw new UnsupportedOperationException("Support for "
-                        + toriFragment.getDestination() + " is not implemented");
-            }
-
-            fragment += "/" + toriFragment.getId();
-            logger().error("New fragment: " + fragment);
-            getPage().setFragment(fragment);
+            pathPart = pathRoot;
         } else {
-            logger().error("No fragment needed");
+            pathPart = null;
         }
+
+        String fragment = null;
+        final String relativePath = path.substring(pathRoot.length());
+        try {
+            final String query = getQueryString(uri);
+            final UrlInfo toriFragment = getDataSource().getToriFragment(
+                    relativePath, query);
+
+            if (toriFragment != null) {
+                fragment = "";
+                switch (toriFragment.getDestination()) {
+                case CATEGORY:
+                    fragment = ToriNavigator.ApplicationView.CATEGORIES
+                            .getUrl();
+                    break;
+                case THREAD:
+                    fragment = ToriNavigator.ApplicationView.THREADS.getUrl();
+                    break;
+                default:
+                    Notification.show("You found a URL the coders "
+                            + "didn't remember to handle correctly. "
+                            + "Terribly sorry about that.",
+                            Notification.Type.HUMANIZED_MESSAGE);
+                    throw new UnsupportedOperationException("Support for "
+                            + toriFragment.getDestination()
+                            + " is not implemented");
+                }
+
+                fragment += "/" + toriFragment.getId();
+                logger().error("New fragment: " + fragment);
+                getPage().setFragment(fragment);
+            } else {
+                logger().error("No fragment needed");
+            }
+        } catch (final UnsupportedEncodingException e) {
+            logger().error("URI is not in UTF-8 format");
+        }
+
+        if (pathPart != null && fragment != null) {
+            getPage().setLocation(pathPart + "#" + fragment);
+        } else if (pathPart != null) {
+            getPage().setLocation(uri);
+        } else if (fragment != null) {
+            getPage().setFragment(fragment);
+        }
+    }
+
+    /**
+     * Get the decoded query part ("GET parameters") of the URI. Returns empty
+     * string if <code>null</code>
+     */
+    private static String getQueryString(final URI uri)
+            throws UnsupportedEncodingException {
+        final String query;
+        if (uri.getQuery() != null) {
+            query = URLDecoder.decode(uri.getQuery(), "UTF-8");
+        } else {
+            query = "";
+        }
+        return query;
     }
 
     private boolean hasInvalidPath(final String path, final String pathRoot) {

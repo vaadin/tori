@@ -368,6 +368,8 @@ public interface DataSource {
      * @param queryUrl
      *            The part of the URL that comes after the context path
      *            (excludes fragment)
+     * @param string
+     * @param queryPart
      * @return The fragment that corresponds to the queried URL.
      *         <code>null</code> if no changes are to be made. Empty string to
      *         clear the fragment.
@@ -376,7 +378,7 @@ public interface DataSource {
      */
     @Deprecated
     @CheckForNull
-    UrlInfo getToriFragment(@NonNull String queryUrl);
+    UrlInfo getToriFragment(@NonNull String queryUrl, String queryPart);
 
     /**
      * @deprecated This method needs to be moved somewhere else (see also
