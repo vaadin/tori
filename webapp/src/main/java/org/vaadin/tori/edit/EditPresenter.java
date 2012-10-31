@@ -25,6 +25,7 @@ import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class EditPresenter extends Presenter<EditView> {
 
@@ -48,12 +49,14 @@ public class EditPresenter extends Presenter<EditView> {
 
     public final void savePreferences(final Map<String, String> replacements,
             final boolean replaceMessageBoardsLinks,
-            final @CheckForNull String googleAnalyticsTrackerId) {
+            final @CheckForNull String googleAnalyticsTrackerId,
+            @NonNull final String pathRoot) {
         try {
             final Configuration config = new Configuration();
             config.setReplaceMessageBoardsLinks(replaceMessageBoardsLinks);
             config.setReplacements(replacements);
             config.setGoogleAnalyticsTrackerId(googleAnalyticsTrackerId);
+            config.setPathRoot(pathRoot);
             dataSource.save(config);
             getView().showNotification("Preferences saved");
         } catch (final DataSourceException e) {

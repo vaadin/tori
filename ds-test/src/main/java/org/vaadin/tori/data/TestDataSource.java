@@ -45,6 +45,7 @@ import org.vaadin.tori.data.util.PersistenceUtil;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.post.PostReport;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class TestDataSource implements DataSource, DebugDataSource {
@@ -933,6 +934,19 @@ public class TestDataSource implements DataSource, DebugDataSource {
 
     @Override
     public String getGoogleAnalyticsTrackerId() {
+        return null;
+    }
+
+    @Override
+    @Deprecated
+    @CheckForNull
+    public UrlInfo getToriFragment(@NonNull final String queryUrl) {
+        return null;
+    }
+
+    @Override
+    @Deprecated
+    public String getPathRoot() {
         return null;
     }
 }
