@@ -1439,9 +1439,6 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     @CheckForNull
     public UrlInfo getToriFragment(@NonNull final String queryUrl,
             final String queryPart) {
-        Logger.getLogger(getClass()).error("queryurl: " + queryUrl);
-        Logger.getLogger(getClass()).error(LIFERAY_FORUM_URL_PATTERN);
-
         final Matcher messageMatcher = LIFERAY_FORUM_URL_PATTERN
                 .matcher(queryUrl.trim());
         if (messageMatcher.matches()) {

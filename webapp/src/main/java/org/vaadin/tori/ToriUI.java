@@ -317,10 +317,6 @@ public class ToriUI extends UI {
                 }
 
                 fragment += "/" + toriFragment.getId();
-                logger().error("New fragment: " + fragment);
-                getPage().setFragment(fragment);
-            } else {
-                logger().error("No fragment needed");
             }
         } catch (final UnsupportedEncodingException e) {
             logger().error("URI is not in UTF-8 format");
