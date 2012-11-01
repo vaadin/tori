@@ -16,6 +16,10 @@
 
 package org.vaadin.tori;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLDecoder;
+
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +30,7 @@ import org.vaadin.tori.component.DebugControlPanel;
 import org.vaadin.tori.component.GoogleAnalyticsTracker;
 import org.vaadin.tori.component.breadcrumbs.Breadcrumbs;
 import org.vaadin.tori.data.DataSource;
+import org.vaadin.tori.data.DataSource.UrlInfo;
 import org.vaadin.tori.edit.EditViewImpl;
 import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.service.AuthorizationService;
@@ -38,6 +43,7 @@ import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.VaadinPortletRequest;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServiceSession;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -58,8 +64,14 @@ public class ToriUI extends UI {
 
     private String lastPath = "";
 
+    private String contextPath;
+
     @Override
     protected void init(final VaadinRequest request) {
+
+        contextPath = request.getContextPath();
+        fixUrl(contextPath);
+
         getPage().setTitle("Tori");
         navigator = new ToriNavigator(this);
 
@@ -103,12 +115,9 @@ public class ToriUI extends UI {
          * this hack is specially reserved for Liferay. Maybe the servlet
          * request can be put in here too...
          */
-        try {
-            final VaadinPortletRequest lrRequest = VaadinPortletRequest
-                    .cast(request);
-            setRequest(lrRequest.getPortletRequest());
-        } catch (final ClassCastException e) {
-            // ignore
+        if (request instanceof VaadinPortletRequest) {
+            final VaadinPortletRequest vpRequest = (VaadinPortletRequest) request;
+            setRequest(vpRequest.getPortletRequest());
         }
     }
 
@@ -252,4 +261,102 @@ public class ToriUI extends UI {
         return (ToriUI) UI.getCurrent();
     }
 
+    @SuppressWarnings("deprecation")
+    private void fixUrl(final String contextPath) {
+        final URI uri = getPage().getLocation();
+        final String path = uri.getPath();
+        final String pathRoot = getDataSource().getPathRoot();
+
+        if (pathRoot == null) {
+            getLogger().info(
+                    "Tori's path root is undefined. You probably "
+                            + "should set it. Skipping URL parsing.");
+            return;
+        }
+
+        if (hasInvalidPath(path, pathRoot)) {
+            getLogger().warn(
+                    "Path mismatch: Tori is configured for the path "
+                            + pathRoot + ", but current path is " + path
+                            + ". Skipping URL parsing.");
+            return;
+        }
+
+        final String pathPart;
+        if (path.length() > pathRoot.length() && !path.equals(pathRoot + "/")) {
+            pathPart = pathRoot;
+        } else {
+            pathPart = null;
+        }
+
+        String fragment = null;
+        final String relativePath = path.substring(pathRoot.length());
+        try {
+            final String query = getQueryString(uri);
+            final UrlInfo toriFragment = getDataSource().getToriFragment(
+                    relativePath, query);
+
+            if (toriFragment != null) {
+                fragment = "";
+                switch (toriFragment.getDestination()) {
+                case CATEGORY:
+                    fragment = ToriNavigator.ApplicationView.CATEGORIES
+                            .getUrl();
+                    break;
+                case THREAD:
+                    fragment = ToriNavigator.ApplicationView.THREADS.getUrl();
+                    break;
+                default:
+                    Notification.show("You found a URL the coders "
+                            + "didn't remember to handle correctly. "
+                            + "Terribly sorry about that.",
+                            Notification.Type.HUMANIZED_MESSAGE);
+                    throw new UnsupportedOperationException("Support for "
+                            + toriFragment.getDestination()
+                            + " is not implemented");
+                }
+
+                fragment += "/" + toriFragment.getId();
+            }
+        } catch (final UnsupportedEncodingException e) {
+            logger().error("URI is not in UTF-8 format");
+        }
+
+        if (pathPart != null && fragment != null) {
+            getPage().setLocation(pathPart + "#" + fragment);
+        } else if (pathPart != null) {
+            getPage().setLocation(uri);
+        } else if (fragment != null) {
+            getPage().setFragment(fragment);
+        }
+    }
+
+    /**
+     * Get the decoded query part ("GET parameters") of the URI. Returns empty
+     * string if <code>null</code>
+     */
+    private static String getQueryString(final URI uri)
+            throws UnsupportedEncodingException {
+        final String query;
+        if (uri.getQuery() != null) {
+            query = URLDecoder.decode(uri.getQuery(), "UTF-8");
+        } else {
+            query = "";
+        }
+        return query;
+    }
+
+    private boolean hasInvalidPath(final String path, final String pathRoot) {
+        final boolean pathStartsWithRoot = path.startsWith(pathRoot);
+
+        // to avoid pathroot being "/foo" and path being "/foobar"
+        final boolean pathIsCorrectFormat;
+        if (path.length() > pathRoot.length()) {
+            pathIsCorrectFormat = path.startsWith(pathRoot + "/");
+        } else {
+            pathIsCorrectFormat = true;
+        }
+
+        return !(pathStartsWithRoot && pathIsCorrectFormat);
+    }
 }

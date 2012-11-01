@@ -21,6 +21,7 @@ import org.vaadin.tori.component.FloatingBar;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.ConnectorHierarchyChangeEvent;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractComponentContainerConnector;
@@ -66,5 +67,11 @@ public final class FloatingBarConnector extends
         widget.setscrollTreshold(state.getScrollThreshold());
         widget.setScrollWidget(((ComponentConnector) state.getScrollComponent())
                 .getWidget());
+    }
+
+    @Override
+    public void onConnectorHierarchyChange(
+            final ConnectorHierarchyChangeEvent connectorHierarchyChangeEvent) {
+        // ignore?
     }
 }

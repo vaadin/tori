@@ -101,7 +101,6 @@ public class ToriUiProvider extends DefaultUIProvider {
                 final VaadinPortletSession portletSession = (VaadinPortletSession) session;
                 portletSession.addPortletListener(new PortletModeListener(
                         toriUi));
-
             }
         } else {
             Logger.getLogger(getClass()).warn(
