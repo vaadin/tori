@@ -82,6 +82,19 @@
 	border-style: solid;
 }
 
+.v-thread-listing-row .fd {
+	height: 39px;
+	width: 15px;
+	background-image: url("images/thread_fade.png");
+	margin-top: -2px;
+}
+
+.v-thread-listing-row .fd.a { right: 340px; }
+.v-thread-listing-row .fd.b { right: 190px; }
+.v-thread-listing-row .fd.c { right: 0px; }
+}
+
+
 .thread-listing .author {
 	font-size: smaller;
 }
@@ -101,6 +114,8 @@
 	display: block;
 	position: absolute;
 	box-sizing: border-box;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .v-thread-listing-row.unread a > div.topic {
