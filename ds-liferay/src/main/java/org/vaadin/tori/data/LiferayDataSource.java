@@ -132,8 +132,12 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     private static final String PREFS_REPLACEMENTS_KEY = "toriPostReplacements";
     private static final String REPLACEMENT_SEPARATOR = "<TORI-REPLACEMENT>";
 
-    private static final Pattern LIFERAY_FORUM_URL_PATTERN = Pattern
-            .compile("/-/[^/]+/(message|category)/([0-9]+)");
+    private static final Pattern LIFERAY_FORUM_URL_MESSAGE_PATTERN = Pattern
+            .compile("/-/[^/]+/view_message/([0-9]+)");
+    private static final Pattern LIFERAY_FORUM_URL_CATEGORY_PATTERN = Pattern
+            .compile("/-/[^/]+");
+    private static final Pattern LIFERAY_FORUM_URL_CATEGORYQUERY_PATTERN = Pattern
+            .compile(".+mbCategoryId=([0-9]+)(&.*)?");
 
     @Override
     public List<Category> getRootCategories() throws DataSourceException {
@@ -1430,31 +1434,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     @CheckForNull
     public UrlInfo getToriFragment(@NonNull final String queryUrl,
             final String queryPart) {
-        Logger.getLogger(getClass()).error("queryurl: " + queryUrl);
-        Logger.getLogger(getClass()).error(LIFERAY_FORUM_URL_PATTERN);
-
-        final Matcher messageMatcher = LIFERAY_FORUM_URL_PATTERN
-                .matcher(queryUrl.trim());
-        if (messageMatcher.matches()) {
-            final String messageOrCategory = messageMatcher.group(1);
-            final long id = Long.parseLong(messageMatcher.group(2));
-
-            return new UrlInfo() {
-                @Override
-                public Destination getDestination() {
-                    return Destination.CATEGORY;
-                }
-
-                @Override
-                public long getId() {
-                    return id;
-                }
-            };
-        }
-
-        final Pattern messagePattern = Pattern
-                .compile(LIFERAY_FORUM_URL_MESSAGE_REGEXP);
-        final Matcher messageMatcher = messagePattern.matcher(queryUrl);
+        final Matcher messageMatcher = LIFERAY_FORUM_URL_MESSAGE_PATTERN
+                .matcher(queryUrl);
         if (messageMatcher.matches()) {
             final long id = Long.parseLong(messageMatcher.group(1));
 
@@ -1477,6 +1458,27 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             } catch (final Exception e) {
                 Logger.getLogger(getClass()).warn(
                         "Could not figure out a correct redirection", e);
+            }
+        }
+
+        final Matcher categoryMatcher = LIFERAY_FORUM_URL_CATEGORY_PATTERN
+                .matcher(queryUrl.trim());
+        if (categoryMatcher.matches()) {
+            final Matcher categoryIdMatcher = LIFERAY_FORUM_URL_CATEGORYQUERY_PATTERN
+                    .matcher(queryPart);
+            if (categoryIdMatcher.matches()) {
+                final Long id = Long.parseLong(categoryIdMatcher.group(1));
+                return new UrlInfo() {
+                    @Override
+                    public Destination getDestination() {
+                        return Destination.CATEGORY;
+                    }
+
+                    @Override
+                    public long getId() {
+                        return id;
+                    }
+                };
             }
         }
 
