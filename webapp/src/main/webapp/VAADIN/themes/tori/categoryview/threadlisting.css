@@ -85,6 +85,8 @@
 	display: block;
 	position: absolute;
 	color: #464440;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .v-thread-listing-row.unread a > div.topic {
@@ -128,11 +130,16 @@
 	white-space: nowrap;
 }
 
-.v-thread-listing-row .namewrapfade {
-	right: 190px;
-	width: 10px;
-	height: 40px;
+.v-thread-listing-row .fd {
+	height: 39px;
+	width: 15px;
 	background-image: url("../images/thread_fade.png");
+	margin-top: -2px;
+}
+
+.v-thread-listing-row .fd.a { right: 340px; }
+.v-thread-listing-row .fd.b { right: 190px; }
+.v-thread-listing-row .fd.c { right: 0px; }
 }
 
 .v-thread-listing-row:hover .topic {

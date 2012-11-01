@@ -17,6 +17,7 @@ package org.vaadin.tori.widgetset.client.ui.threadlistingrow;
 
 import org.vaadin.tori.component.thread.ThreadListingRow;
 
+import com.google.gwt.user.client.Element;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
@@ -115,7 +116,18 @@ public class ThreadListingRowConnector extends
             centerAfterLayout = false;
             getWidget().reposition();
         }
+        fixTopicWidth(getWidget().getElement());
     }
+
+    private native void fixTopicWidth(final Element e)
+    /*-{
+        var topic = e.querySelector('.topic');
+        
+        // maybe calculate the right side components instead of a precalculated number? 
+        // sounds like it'd affect the performance too much. 
+        var topicWidth = e.offsetWidth - 365;
+        topic.style.width = topicWidth+"px"; 
+    }-*/;
 
     @Override
     public void onConnectorHierarchyChange(

@@ -218,7 +218,8 @@ public class ThreadListingRow extends PopupView {
                     : "";
 
             return String
-                    .format("<a href='%s'>%s %s %s %s %s <div class='latestpost'>%s %s</div><div class='namewrapfade'></div></a>%s",
+                    .format("<a href='%s'>%s %s %s %s %s <div class='latestpost'>%s %s</div>"
+                            + "<div class='fd a'></div><div class='fd b'></div><div class='fd c'></div></a>%s",
                             url, locked, sticky, topic, startedBy, postCount,
                             time, latestAuthor, contextMenu);
         }
