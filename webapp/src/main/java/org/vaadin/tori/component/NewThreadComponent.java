@@ -24,6 +24,6 @@ public class NewThreadComponent extends AuthoringComponent {
 
     public NewThreadComponent(final NewThreadListener listener,
             final String formattingSyntaxXhtml) {
-        super(listener, formattingSyntaxXhtml, "Thread body");
+        super(listener, formattingSyntaxXhtml, "Post body");
     }
 }
