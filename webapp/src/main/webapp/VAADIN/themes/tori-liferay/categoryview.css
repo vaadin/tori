@@ -13,7 +13,7 @@
 	visibility: visible;
 }
 
-.v-ios .categoryTree .contextmenu {
+.v-touch .categoryTree .contextmenu {
 	display: none;
 }
 

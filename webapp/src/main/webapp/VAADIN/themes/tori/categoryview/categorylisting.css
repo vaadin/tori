@@ -116,7 +116,7 @@
 	visibility: visible;	
 }
 
-.v-ios .category .contextmenu {
+.v-touch .category .contextmenu {
 	display: none;
 }
 
