@@ -483,6 +483,10 @@
 	bottom: -99px;
 }
 
+.v-ios .quickReply {
+	display: none;
+}
+
 .authoring .v-panel-content,
 .authoring .v-panel-content > div {
 	background: transparent;
