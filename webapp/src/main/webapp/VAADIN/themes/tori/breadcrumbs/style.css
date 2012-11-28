@@ -1,3 +1,31 @@
+.breadcrumbs-layout table {
+	max-width: 100%;
+}
+
+.breadcrumbs-layout div[location="category"],
+.breadcrumbs-layout div[location="thread"] {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.breadcrumbs-layout .v-link a span,
+.breadcrumbs-layout .v-link a:link span,
+.breadcrumbs-layout .v-link a:visited span {
+	color: white;
+	padding: 8px;
+	padding-right: 18px;
+	height: 32px;
+	display: inline-block;
+	background: url(../images/separator-breadcrumbs.png) transparent top right no-repeat;
+}
+
+.breadcrumbs-layout .v-link.last a span,
+.breadcrumbs-layout .v-link.last a:link span,
+.breadcrumbs-layout .v-link.last a:visited span {
+	background-image: none;
+}
+
+
 .breadcrumbs {
 	background: url(../images/breadcrumbs-bg.png) top left repeat-x;
 	margin: 0;

@@ -26,12 +26,12 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.thread.ThreadView;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Component;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
@@ -43,7 +43,7 @@ public class Breadcrumbs extends CustomComponent implements
     static final String STYLE_CATEGORY = "category";
     static final String STYLE_UNCLICKABLE = "unclickable";
 
-    private final HorizontalLayout layout;
+    private final CustomLayout layout;
     private final Label viewCaption;
 
     private transient final ViewChangeListener viewListener = new ViewChangeListener() {
@@ -61,7 +61,7 @@ public class Breadcrumbs extends CustomComponent implements
         navigator.addListener(viewListener);
 
         viewCaption = new Label("");
-        layout = new HorizontalLayout();
+        layout = new CustomLayout("breadcrumbslayout");
         layout.setStyleName("breadcrumbs-layout");
 
         final HorizontalLayout wrapper = new HorizontalLayout();
@@ -80,14 +80,9 @@ public class Breadcrumbs extends CustomComponent implements
 
     private void renderBreadCrumb() {
         layout.removeAllComponents();
-        final Button dashboardButton = new Button("Dashboard");
-        dashboardButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                navigator.navigateTo(ToriNavigator.ApplicationView.DASHBOARD);
-            }
-        });
-        layout.addComponent(dashboardButton);
+        final Link dashboardLink = new Link("Dashboard", new ExternalResource(
+                "#" + ToriNavigator.ApplicationView.DASHBOARD.getUrl() + "/"));
+        layout.addComponent(dashboardLink, "dashboard");
 
         final View currentView = navigator.getCurrentView();
         if (currentView instanceof CategoryView) {
@@ -116,18 +111,26 @@ public class Breadcrumbs extends CustomComponent implements
         final Category currentCategory = threadView.getCurrentCategory();
 
         if (currentThread != null) {
-            final Component categoryCrumb = new CategoryCrumb.Clickable(
-                    currentCategory, this);
-            final Component threadCrumb = new ThreadCrumb(currentThread, this);
+            final Link categoryCrumb = new Link(currentCategory.getName(),
+                    new ExternalResource("#"
+                            + ToriNavigator.ApplicationView.CATEGORIES.getUrl()
+                            + "/" + currentCategory.getId()));
+            layout.addComponent(categoryCrumb, "category");
+
+            final Link threadCrumb = new Link(currentThread.getTopic(),
+                    new ExternalResource("#"
+                            + ToriNavigator.ApplicationView.THREADS.getUrl()
+                            + "/" + currentThread.getId()));
             threadCrumb.addStyleName("last");
-            layout.addComponent(categoryCrumb);
-            layout.addComponent(threadCrumb);
+            layout.addComponent(threadCrumb, "thread");
             showViewCaption(currentThread.getTopic());
         } else if (currentCategory != null) {
-            final Component categoryCrumb = new CategoryCrumb.Clickable(
-                    currentCategory, this);
-            categoryCrumb.addStyleName("last");
-            layout.addComponent(categoryCrumb);
+            final Link crumb = new Link(currentCategory.getName(),
+                    new ExternalResource("#"
+                            + ToriNavigator.ApplicationView.CATEGORIES.getUrl()
+                            + "/" + currentCategory.getId()));
+            crumb.addStyleName("last");
+            layout.addComponent(crumb, "category");
             showViewCaption(currentCategory.getName());
         } else {
             hideViewCaption();
@@ -137,10 +140,12 @@ public class Breadcrumbs extends CustomComponent implements
     private void paint(final CategoryView categoryView) {
         final Category currentCategory = categoryView.getCurrentCategory();
         if (currentCategory != null) {
-            final CategoryCrumb crumb = new CategoryCrumb.UnClickable(
-                    currentCategory, this);
-            crumb.setStyleName("last");
-            layout.addComponent(crumb);
+            final Link crumb = new Link(currentCategory.getName(),
+                    new ExternalResource("#"
+                            + ToriNavigator.ApplicationView.CATEGORIES.getUrl()
+                            + "/" + currentCategory.getId()));
+            crumb.addStyleName("last");
+            layout.addComponent(crumb, "category");
             showViewCaption(currentCategory.getName());
         } else {
             hideViewCaption();
