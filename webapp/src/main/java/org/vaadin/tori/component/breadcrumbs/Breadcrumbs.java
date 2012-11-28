@@ -29,7 +29,6 @@ import org.vaadin.tori.thread.ThreadView;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -65,9 +64,10 @@ public class Breadcrumbs extends CustomComponent implements
         layout = new HorizontalLayout();
         layout.setStyleName("breadcrumbs-layout");
 
-        final CssLayout wrapper = new CssLayout();
+        final HorizontalLayout wrapper = new HorizontalLayout();
         wrapper.setWidth("100%");
         wrapper.addComponent(layout);
+        wrapper.setExpandRatio(layout, 1.0f);
         wrapper.addComponent(new ActionBar());
 
         final VerticalLayout mainLayout = new VerticalLayout();
