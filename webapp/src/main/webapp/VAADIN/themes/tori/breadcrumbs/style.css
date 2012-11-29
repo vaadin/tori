@@ -6,10 +6,10 @@
 	height: 32px;
 } 
 
-.breadcrumbs-layout div[location="category"],
-.breadcrumbs-layout div[location="thread"] {
+.breadcrumbs-layout .v-link {
 	overflow: hidden;
 	text-overflow: ellipsis;
+	color: white;
 }
 
 .breadcrumbs-layout td > div,

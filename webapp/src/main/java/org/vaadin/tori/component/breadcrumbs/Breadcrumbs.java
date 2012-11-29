@@ -68,7 +68,7 @@ public class Breadcrumbs extends CustomComponent {
         navigator.addListener(viewListener);
 
         viewCaption = new Label("");
-        layout = new CustomLayout("breadcrumbslayout");
+        layout = new BreadcrumbsLayout();
         layout.setStyleName("breadcrumbs-layout");
 
         final HorizontalLayout wrapper = new HorizontalLayout();
