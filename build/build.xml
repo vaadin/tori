@@ -356,7 +356,7 @@
 	<target name="compile-widgetset" depends="-init, -configure-widgetset, -package-webapp-jar">
 		<echo >Compiling ${widgetset}...</echo>
 		<java classname="com.google.gwt.dev.Compiler"
-			  failonerror="yes" fork="yes" maxmemory="256m">
+			  failonerror="yes" fork="yes">
 			<arg value="-war" />
 			<arg value="${client-side-destination}" />
 			<arg value="${widgetset}" />
@@ -365,7 +365,8 @@
 			<arg value="-logLevel"/>
 			<arg value="TRACE"/>
 			<arg value="-strict"/>
-            <jvmarg value="-Xss1024k"/>
+            <jvmarg value="-Xmx2048M"/>
+            <jvmarg value="-Xss1024M"/>
             <jvmarg value="-Djava.awt.headless=true"/>
 			<classpath>
 				<path refid="compile.classpath"/>
