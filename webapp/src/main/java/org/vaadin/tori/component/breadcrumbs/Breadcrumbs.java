@@ -72,6 +72,7 @@ public class Breadcrumbs extends CustomComponent {
         layout.setStyleName("breadcrumbs-layout");
 
         final HorizontalLayout wrapper = new HorizontalLayout();
+        wrapper.setStyleName("breadcrumbs-wrapper");
         wrapper.setWidth("100%");
         wrapper.addComponent(layout);
         wrapper.setExpandRatio(layout, 1.0f);

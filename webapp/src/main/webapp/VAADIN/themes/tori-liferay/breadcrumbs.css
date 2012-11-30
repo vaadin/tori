@@ -1,10 +1,39 @@
-.breadcrumbs .breadcrumbs-layout {
-	float: left;
+.breadcrumbs .action-bar {
+	padding: 6px 14px 0 0;
 }
 
-.breadcrumbs .action-bar {
-	float: right;
-	padding: 3px 14px 0 0;
+.breadcrumbs div[location='dashboard'],
+.breadcrumbs div[location='category'], 
+.breadcrumbs div[location='categorypopup'] {
+	padding: 0 15px;
+}
+
+.breadcrumbs .v-popupbutton.last {
+	background: transparent;
+}
+
+.breadcrumbs #breadcrumbsrow > td {
+	height: 32px;
+}
+
+.breadcrumbs div[location='category'] {
+	padding-right: 0;
+} 
+.breadcrumbs div[location='categorypopup'] {
+	padding-left: 0;
+} 
+
+.breadcrumbs div[location='dashboard'] {
+	background: url(images/separator-breadcrumbs.png) transparent no-repeat right center;
+}
+
+.breadcrumbs {
+	background-color: #e0e0e0;
+	border-radius: 4px;
+}
+
+.breadcrumbs .breadcrumbs-wrapper {
+	background-color: #c0c0c0;
 }
 
 .breadcrumbs .action-bar .v-link .v-icon {
