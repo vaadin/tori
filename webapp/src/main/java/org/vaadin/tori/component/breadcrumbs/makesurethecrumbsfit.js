@@ -16,10 +16,9 @@ window.org_vaadin_tori_breadcrumbslayout_makesurethecrumbsfit = function() {
 	}
 	
 	// how much space do we have to work with
-	var row = document.querySelector("#breadcrumbsrow");
-	var freeWidth = row.offsetWidth;
+	var freeWidth = document.querySelector(".breadcrumbs-layout").offsetWidth;
 
-	var cells = row.children;
+	var cells = document.querySelector("#breadcrumbsrow").children;
 	for (var i = 0; i < cells.length; i++) {
 		// check if we actually need to do any adjustments?
 		freeWidth -= cells[i].offsetWidth;
