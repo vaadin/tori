@@ -100,6 +100,12 @@
          	debug="on"
 			includeantruntime="false"
 		/>
+    	<copy todir="${dir.build-artifacts.webapp}">
+    		<fileset
+    			dir="${dir.webapp}/src/main/java"
+    			includes="**/*.js"
+    		/>
+    	</copy>
 		<jar destfile="${file.webapp.jar}"
 			basedir="${dir.build-artifacts.webapp}"
 		/>
