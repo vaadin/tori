@@ -18,7 +18,7 @@ public class BreadcrumbsLayoutConnector extends CustomLayoutConnector implements
     private final ElementResizeListener resizeListener = new ElementResizeListener() {
         @Override
         public void onElementResize(final ElementResizeEvent e) {
-            makeSuretheCrumbsFit();
+            _makeSuretheCrumbsFit();
         }
     };
 
@@ -26,10 +26,14 @@ public class BreadcrumbsLayoutConnector extends CustomLayoutConnector implements
     public void onConnectorHierarchyChange(
             final ConnectorHierarchyChangeEvent event) {
         super.onConnectorHierarchyChange(event);
+        scheduleCrumbFitting();
+    }
+
+    private void scheduleCrumbFitting() {
         Scheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
-                BreadcrumbsLayoutConnector.makeSuretheCrumbsFit();
+                BreadcrumbsLayoutConnector._makeSuretheCrumbsFit();
             }
         });
     }
@@ -39,6 +43,7 @@ public class BreadcrumbsLayoutConnector extends CustomLayoutConnector implements
         super.init();
         getLayoutManager().addElementResizeListener(getWidget().getElement(),
                 resizeListener);
+        scheduleCrumbFitting();
     }
 
     @Override
@@ -48,7 +53,7 @@ public class BreadcrumbsLayoutConnector extends CustomLayoutConnector implements
                 getWidget().getElement(), resizeListener);
     }
 
-    private static native void makeSuretheCrumbsFit()
+    private static native void _makeSuretheCrumbsFit()
     /*-{
         $wnd.org_vaadin_tori_breadcrumbslayout_makesurethecrumbsfit();
     }-*/;

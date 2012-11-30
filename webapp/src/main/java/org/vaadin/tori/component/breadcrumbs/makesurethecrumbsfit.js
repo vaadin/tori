@@ -1,5 +1,5 @@
 window.org_vaadin_tori_breadcrumbslayout_makesurethecrumbsfit = function() {
-	// undo any style changes made by our script
+	var table = document.querySelector(".breadcrumbs .breadcrumbs-wrapper");
 	var category = document.querySelector("div[location='category'] .v-link");
 	var thread = document.querySelector("div[location='thread'] .v-link");
 	
@@ -7,12 +7,23 @@ window.org_vaadin_tori_breadcrumbslayout_makesurethecrumbsfit = function() {
 		return;
 	}
 	
+	// undo any style changes made by our script
 	if (category != null) {
 		category.style.width = "";
 	}
 	
 	if (thread != null) {
 		thread.style.width = "";
+	}
+	
+	var tableWidth = table.offsetWidth;
+	var tableParent = table.parentNode;
+	while (tableParent != null) {
+		if (tableParent.offsetWidth < tableWidth) {
+			table.style.width = tableParent.offsetWidth+"px";
+			break;
+		}
+		tableParent = tableParent.parentNode;
 	}
 	
 	// how much space do we have to work with
@@ -49,4 +60,6 @@ window.org_vaadin_tori_breadcrumbslayout_makesurethecrumbsfit = function() {
 			thread.style.width = freeWidth + "px";
 		}
 	}
+	
+	table.style.width = "";
 };
