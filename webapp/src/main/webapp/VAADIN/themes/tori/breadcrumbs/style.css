@@ -1,57 +1,70 @@
+.breadcrumbs-layout table {
+	max-width: 100%;
+}
+
+.breadcrumbs-layout td {
+	height: 32px;
+} 
+
+.breadcrumbs-layout .v-link {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: white;
+}
+
+.breadcrumbs-layout td > div,
+.breadcrumbs-layout .v-link {
+	height: 100%;
+}
+
+.breadcrumbs-layout .v-link {
+	padding-top: 6px;
+	padding-left: 8px;
+}
+
+.breadcrumbs-layout .v-link a span,
+.breadcrumbs-layout .v-link a:link span,
+.breadcrumbs-layout .v-link a:visited span {
+	color: white;
+}
+
+.breadcrumbs-layout div[location='dashboard'] .v-link {
+	padding-right: 18px;
+	display: inline-block;
+	background: url(../images/separator-breadcrumbs.png) transparent top right no-repeat;
+}
+
+.breadcrumbs-layout .v-popupbutton,
+.breadcrumbs-layout .v-popupbutton .v-button-wrap {
+	background: transparent;
+}
+
+.breadcrumbs-layout div[location='categorypopup'] .v-popupbutton {
+	height: 100%;
+	background: url(../images/separator-breadcrumbs.png) transparent top right no-repeat;
+}
+
+.breadcrumbs-layout div[location='categorypopup'] .v-popupbutton.last {
+	background: transparent;
+}
+
+.breadcrumbs-layout div[location='categorypopup'] .v-popupbutton .v-button-wrap {
+	padding: 6px 15px 0 0;
+}
+
+.breadcrumbs-layout .v-link.last a span,
+.breadcrumbs-layout .v-link.last a:link span,
+.breadcrumbs-layout .v-link.last a:visited span {
+	background-image: none;
+}
+
+
 .breadcrumbs {
 	background: url(../images/breadcrumbs-bg.png) top left repeat-x;
 	margin: 0;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
-}
-
-.breadcrumbs .v-button-wrap {
-	background: #a09f91 !important;
-	padding-top: 7px;
-}
-
-.breadcrumbs .v-button-caption {
-	font-size: 14px;
-	font-weight: normal;
-	color: #fff;
-	text-shadow: none;	
-}
-
-.breadcrumbs .v-button,
-.breadcrumbs .v-button:active {
-	background: url(../images/separator-breadcrumbs.png) transparent top right no-repeat;
-	padding-right: 10px;
-	cursor: pointer;
-}
-
-.breadcrumbs .v-button.s-button {
-	background: none;
-	padding-right: 0;
-}
-
-.breadcrumbs .v-button.s-button .v-button-wrap {
-	padding-right: 0;
-}
-
-.breadcrumbs .v-splitbutton .v-button:first-child,
-.breadcrumbs .last .v-splitbutton .v-button {
-	background-image: none;	
-	padding-right: 0;
-}
-
-.breadcrumbs .v-splitbutton .v-button:first-child .v-button-wrap {
-	padding-right: 0;
-}
-
-.breadcrumbs .v-splitbutton,
-.breadcrumbs .v-button {
-	height: 32px !important;
-}
-
-.breadcrumbs .v-splitbutton .v-popupbutton {
-	border-left: none;
-	padding-left: 6px;
 }
 
 .breadcrumbs .v-popupbutton .v-popup-indicator {
@@ -83,12 +96,4 @@
 }
 .breadcrumbs .action-bar a span {
 	color: #fff !important;
-}
-
-.breadcrumbs .unclickable .v-button  {
-	cursor: default;
-}
-
-.breadcrumbs .last .v-button {
-	background: transparent;
 }

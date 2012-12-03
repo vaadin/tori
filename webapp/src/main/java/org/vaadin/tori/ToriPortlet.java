@@ -44,6 +44,7 @@ import com.vaadin.server.VaadinPortletService;
 
 public class ToriPortlet extends VaadinPortlet {
 
+    private static final String DEFAULT_THEME = "tori-liferay";
     private static final String PORTAL_UTIL_CLASS = "com.liferay.portal.util.PortalUtil";
 
     private class ToriPortletService extends VaadinPortletService {
@@ -147,7 +148,7 @@ public class ToriPortlet extends VaadinPortlet {
             public void sessionInit(final SessionInitEvent event)
                     throws ServiceException {
                 String theme = getInitParameter("theme");
-                theme = (theme != null) ? theme : "tori-liferay";
+                theme = (theme != null) ? theme : DEFAULT_THEME;
                 event.getSession().addUIProvider(new ToriUiProvider(theme));
             }
         });

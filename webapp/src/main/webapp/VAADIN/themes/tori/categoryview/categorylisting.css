@@ -116,6 +116,10 @@
 	visibility: visible;	
 }
 
+.v-touch .category .contextmenu {
+	display: none;
+}
+
 .v-csslayout.category .v-label-threadCount {
 	float: right;
 	margin-right: 20px;

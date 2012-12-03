@@ -33,6 +33,8 @@ import com.vaadin.util.CurrentInstance;
 @SuppressWarnings("serial")
 public class ToriServlet extends VaadinServlet {
 
+    private static final String DEFAULT_THEME = "tori";
+
     @Override
     protected void service(final HttpServletRequest request,
             final HttpServletResponse response) throws ServletException,
@@ -56,7 +58,7 @@ public class ToriServlet extends VaadinServlet {
             public void sessionInit(final SessionInitEvent event)
                     throws ServiceException {
                 String theme = getInitParameter("theme");
-                theme = (theme != null) ? theme : "tori";
+                theme = (theme != null) ? theme : DEFAULT_THEME;
 
                 event.getSession().addUIProvider(new ToriUiProvider(theme));
             }

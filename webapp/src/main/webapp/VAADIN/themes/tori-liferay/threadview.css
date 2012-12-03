@@ -277,10 +277,19 @@
 	border-spacing: 0;
 }
 
+.authoring td {
+	vertical-align: top;
+	padding: 0;
+}
+
 .newthread .topiclabel,
 .authoring div[location="captionlabel"] {
 	font-size: 18px;
 	font-weight: bold;
+}
+
+.authoring div[location="captionlabel"] {
+	padding-top: 45px;
 }
 
 .authoring .previewcaption {
@@ -462,6 +471,11 @@
 	-webkit-box-shadow: 0 0 10px rgba(200, 199, 181, 0.3);
 	box-shadow: 0 0 10px rgba(200, 199, 181, 0.3);
 }
+
+.v-ios .quickReply {
+	display: none;
+}
+
 .v-floatingbar.quickReply,
 .v-floatingbar.quickReply:hover {
 	padding: 0 8px;
