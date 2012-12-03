@@ -121,6 +121,17 @@ public class ToriPortlet extends VaadinPortlet {
     @SuppressWarnings("serial")
     protected VaadinPortletRequest createVaadinRequest(
             final PortletRequest request) {
+
+        /*
+         * This method seems to be responsible for redirecting widgetset and
+         * theme fetching from the deployed servlet instead of the portlet
+         * environment.
+         * 
+         * This allows us to package the widgetset and theme inside the war,
+         * without requiring the end-user to modify the portal environment at
+         * all.
+         */
+
         VaadinPortletRequest wrapped = super.createVaadinRequest(request);
 
         final String portalInfo = request.getPortalContext().getPortalInfo()

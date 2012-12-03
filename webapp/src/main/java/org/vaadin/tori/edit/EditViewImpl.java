@@ -153,7 +153,7 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
         layout.addComponent(convertMessageBoardsUrls);
 
         final TextField pathRoot = new TextField(
-                "What is the root path for Tori? (e.g. <code>http://example.com/community/tori/</code> would mean \"<code>/community/tori</code>\"");
+                "What is the root path for Tori? (e.g. http://example.com/community/tori/ would mean \"/community/tori\"");
         layout.addComponent(pathRoot);
 
         saveButton = new Button("Save preferences", new Button.ClickListener() {

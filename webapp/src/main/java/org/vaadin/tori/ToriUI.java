@@ -106,6 +106,14 @@ public class ToriUI extends UI {
                 }
             }
         });
+
+        if (request instanceof VaadinPortletRequest) {
+            final VaadinPortletRequest r = (VaadinPortletRequest) request;
+            setPortletMode(r.getPortletRequest().getPortletMode());
+        } else if (request instanceof PortletRequest) {
+            final PortletRequest pRequest = (PortletRequest) request;
+            setPortletMode(pRequest.getPortletMode());
+        }
     }
 
     void initApiLoader(final VaadinRequest request) {
