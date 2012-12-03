@@ -39,12 +39,14 @@ public class EditPresenter extends Presenter<EditView> {
         refreshView();
     }
 
+    @SuppressWarnings("deprecation")
     private void refreshView() {
         getView().setReplacements(dataSource.getPostReplacements());
         getView().setConvertMessageBoardsUrls(
                 dataSource.getReplaceMessageBoardsLinks());
         getView().setGoogleAnalyticsTrackerId(
                 dataSource.getGoogleAnalyticsTrackerId());
+        getView().setPathRoot(dataSource.getPathRoot());
     }
 
     public final void savePreferences(final Map<String, String> replacements,

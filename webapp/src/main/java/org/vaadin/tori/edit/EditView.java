@@ -33,4 +33,6 @@ public interface EditView extends View {
     void setGoogleAnalyticsTrackerId(
             @CheckForNull String googleAnalyticsTrackerId);
 
+    void setPathRoot(String pathRoot);
+
 }

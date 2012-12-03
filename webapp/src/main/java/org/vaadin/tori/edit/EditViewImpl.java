@@ -58,6 +58,7 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     private TextField analyticsTrackerIdField;
     private final DataSource dataSource;
     private final AuthorizationService authorizationService;
+    private TextField pathRoot;
 
     public EditViewImpl(final DataSource dataSource,
             final AuthorizationService authorizationService) {
@@ -152,7 +153,7 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
                 "Replace message boards link data with tori format");
         layout.addComponent(convertMessageBoardsUrls);
 
-        final TextField pathRoot = new TextField(
+        pathRoot = new TextField(
                 "What is the root path for Tori? (e.g. http://example.com/community/tori/ would mean \"/community/tori\"");
         layout.addComponent(pathRoot);
 
@@ -231,5 +232,10 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
         final String value = (googleAnalyticsTrackerId == null) ? ""
                 : googleAnalyticsTrackerId;
         analyticsTrackerIdField.setValue(value);
+    }
+
+    @Override
+    public void setPathRoot(final String pathRoot) {
+        this.pathRoot.setValue(pathRoot);
     }
 }
