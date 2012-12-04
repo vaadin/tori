@@ -17,7 +17,9 @@ package org.vaadin.tori.widgetset.client.ui.threadlistingrow;
 
 import org.vaadin.tori.component.thread.ThreadListingRow;
 
+import com.google.gwt.core.client.JsArray;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.vaadin.client.ApplicationConnection;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
@@ -25,6 +27,7 @@ import com.vaadin.client.Paintable;
 import com.vaadin.client.UIDL;
 import com.vaadin.client.VCaption;
 import com.vaadin.client.VCaptionWrapper;
+import com.vaadin.client.VConsole;
 import com.vaadin.client.ui.AbstractComponentContainerConnector;
 import com.vaadin.client.ui.PostLayoutListener;
 import com.vaadin.shared.ui.Connect;
@@ -35,11 +38,74 @@ public class ThreadListingRowConnector extends
         AbstractComponentContainerConnector implements Paintable,
         PostLayoutListener {
 
+    public static class RowLayoutTimer extends Timer {
+        private static final int DELAY = 200;
+        private int rows = 0;
+        private JsArray<Element> elementsToResize = Element.createArray()
+                .cast();
+        private boolean isStarted;
+
+        public void addRow(final ThreadListingRowConnector row) {
+            rows++;
+            VConsole.log("adding row. Now total of " + rows);
+            elementsToResize.push(row.getWidget().getElement());
+        }
+
+        public void start() {
+            if (!isStarted) {
+                run();
+                isStarted = true;
+                scheduleRepeating(DELAY);
+            }
+        }
+
+        @Override
+        public void run() {
+            if (elementsToResize.length() > 0) {
+                fixTopicWidth(elementsToResize);
+                elementsToResize = Element.createArray().cast();
+            }
+        }
+
+        private native void fixTopicWidth(JsArray<Element> elementsToResize)
+        /*-{
+            // 365 is a precalculated amount if pixels that the other columns occupy
+            var topicWidth = (elementsToResize[0].offsetWidth - 365)+"px";
+            
+            for (var i=0; i<elementsToResize.length; i++) {
+                var topicElement = elementsToResize[i].children[0].children[0];
+                topicElement.style.width = topicWidth;
+            } 
+        }-*/;
+
+        public void removeRow() {
+            rows--;
+            if (rows <= 0) {
+                rows = 0;
+                cancel();
+            }
+            VConsole.log("removing row. Now total of " + rows);
+        }
+    }
+
+    private static final RowLayoutTimer ROW_TIMER = new RowLayoutTimer();
+
     private boolean centerAfterLayout = false;
 
     @Override
     public boolean delegateCaptionHandling() {
         return false;
+    }
+
+    @Override
+    protected void init() {
+        ROW_TIMER.addRow(this);
+    }
+
+    @Override
+    public void onUnregister() {
+        ROW_TIMER.removeRow();
+        super.onUnregister();
     }
 
     /**
@@ -116,18 +182,13 @@ public class ThreadListingRowConnector extends
             centerAfterLayout = false;
             getWidget().reposition();
         }
-        fixTopicWidth(getWidget().getElement());
-    }
 
-    private native void fixTopicWidth(final Element e)
-    /*-{
-        var topic = e.querySelector('.topic');
-        
-        // maybe calculate the right side components instead of a precalculated number? 
-        // sounds like it'd affect the performance too much. 
-        var topicWidth = e.offsetWidth - 365;
-        topic.style.width = topicWidth+"px"; 
-    }-*/;
+        ROW_TIMER.start();
+        /*
+         * this doesn't support resizing of the topic part on window resizes.
+         * Maybe in the future again.
+         */
+    }
 
     @Override
     public void onConnectorHierarchyChange(
