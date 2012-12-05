@@ -73,8 +73,19 @@ public class ThreadListingRowConnector extends
             var topicWidth = (elementsToResize[0].offsetWidth - 365)+"px";
             
             for (var i=0; i<elementsToResize.length; i++) {
-                var topicElement = elementsToResize[i].children[0].children[0];
-                topicElement.style.width = topicWidth;
+                
+                var topicElement = null;
+                var children = elementsToResize[i].children[0].children;
+                for (var j=0; j<children.length; j++) {
+                    if (children[j].className == "topic") {
+                        topicElement = children[j];
+                        break;
+                    }
+                }
+                
+                if (topicElement != null) {
+                    topicElement.style.width = topicWidth;
+                }
             } 
         }-*/;
 
