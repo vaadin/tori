@@ -151,6 +151,11 @@
 	height: 40px;
 }
 
+.v-thread-lsiting-row .topic {
+	left: 0;
+	right: 356px;
+}
+
 .v-thread-listing-row .startedBy {
 	right: 190px;
 	width: 150px;
