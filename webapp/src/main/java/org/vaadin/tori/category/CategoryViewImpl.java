@@ -25,7 +25,7 @@ import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.component.category.CategoryListing;
 import org.vaadin.tori.component.category.CategoryListing.Mode;
-import org.vaadin.tori.component.thread.ThreadListing;
+import org.vaadin.tori.component.thread.ThreadListing2;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.mvp.AbstractView;
@@ -56,7 +56,7 @@ public class CategoryViewImpl extends
 
     private VerticalLayout layout;
     private Component threadListingPlaceHolder;
-    private ThreadListing threadListing;
+    private ThreadListing2 threadListing;
     private CategoryListing categoryListing;
     private VerticalLayout categoryLayout;
     private HeadingLabel threadsLabel;
@@ -181,12 +181,14 @@ public class CategoryViewImpl extends
 
     @Override
     public void confirmFollowing(final DiscussionThread thread) {
-        threadListing.refreshStyles(thread);
+        // TODO:
+        // threadListing.refreshStyles(thread);
     }
 
     @Override
     public void confirmUnfollowing(final DiscussionThread thread) {
-        threadListing.refreshStyles(thread);
+        // TODO:
+        // threadListing.refreshStyles(thread);
     }
 
     @Override
@@ -217,7 +219,8 @@ public class CategoryViewImpl extends
     }
 
     private void refreshVisually(final DiscussionThread thread) {
-        threadListing.refresh(thread);
+        // TODO:
+        // threadListing.refresh(thread);
     }
 
     @Override
@@ -233,7 +236,7 @@ public class CategoryViewImpl extends
 
     @Override
     public void displayThreads(@NonNull final ThreadProvider threadProvider) {
-        threadListing = new ThreadListing(getPresenter(), threadProvider);
+        threadListing = new ThreadListing2(getPresenter(), threadProvider);
         replacePlaceholder();
         setThreadLabel(THREADS);
     }
