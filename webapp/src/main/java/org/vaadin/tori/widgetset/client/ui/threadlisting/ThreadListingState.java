@@ -18,6 +18,8 @@ public class ThreadListingState extends ComponentState {
         public String latestPostDate;
         public String latestPostAuthor;
         public String url;
+        public boolean showTools;
+        public boolean isRead;
 
         @Override
         public String toString() {

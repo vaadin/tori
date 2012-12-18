@@ -64,6 +64,7 @@ public class ThreadListing2 extends AbstractComponent {
         row.isSticky = thread.isSticky();
         row.isFollowed = presenter.userIsFollowing(thread);
         row.topic = thread.getTopic();
+        row.postCount = thread.getPostCount();
         row.url = "#" + ToriNavigator.ApplicationView.THREADS.getUrl() + "/"
                 + thread.getId();
         row.latestPostAuthor = thread.getLatestPost().getAuthor()
@@ -72,6 +73,10 @@ public class ThreadListing2 extends AbstractComponent {
                 .getLatestPost().getTime());
         row.latestPostPretty = new PrettyTime().format(thread.getLatestPost()
                 .getTime());
+
+        row.showTools = presenter.mayShowToolsFor(thread);
+        row.isRead = presenter.userHasRead(thread);
+
         return row;
     }
 

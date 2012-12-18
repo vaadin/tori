@@ -10,6 +10,10 @@
 	height: 20px;
 }
 
+.threadlistingrow.following {
+	background: url(../images/following-badge.png) #fff top left no-repeat;
+}
+
 .threadlisting .header-topic, 
 .threadlisting .header-startedby, 
 .threadlisting .header-posts, 
@@ -36,22 +40,41 @@
 	background: url("../images/loadingthread-bg.png") left center no-repeat transparent;
 }
 
+.threadlistingrow.unread .topic {
+	color: #0A85B4 !important;
+	font-weight: bold;	
+}
 
-.threadlisting .topic .contextmenu {
+.threadlistingrow .contextmenu {
 	width: 16px;
 	margin-right: 16px;
 	float: right;
 }
+
+.threadlistingrow .contextmenu {
+	visibility: hidden;	
+}
+
+.threadlistingrow:hover .contextmenu {
+	visibility: visible;	
+}
+
+.threadlistingrow .contextmenu {
+	height: 16px;
+	width: 16px;
+	background-image: url("../images/icon-settings.png");
+	position: absolute;
+	right: 350px;
+	top: 0;
+}
+
 .threadlisting .startedby,
 .threadlisting .latestpost,
 .threadlisting .fixed-column-headers .startedby, 
 .threadlisting .fixed-column-headers .latestpost {
 	width: 140px;
 }
-.threadlisting .startedby {	
-	overflow: hidden;
-	margin-right: 10px;
-}
+
 .threadlisting .posts {
 	width: 50px;
 }
@@ -86,13 +109,8 @@
 	overflow: hidden;
 }
 
-.threadlistingrow.unread > div.topic {
-	color: #0A85B4 !important;
-	font-weight: bold;	
-}
-
-.threadlistingrow div.locked,
-.threadlistingrow div.sticky {
+.threadlistingrow .locked,
+.threadlistingrow .sticky {
 	height: 8px;
 	width: 8px;
 	margin:0;
@@ -133,7 +151,7 @@
 }
 
 .threadlistingrow .a.fd { right: 356px; }
-.threadlistingrow .b.fd { right: 200px; }
+.threadlistingrow .b.fd { right: 190px; }
 .threadlistingrow .c.fd { right: 0px; }
 
 .threadlistingrow:hover .topic {
@@ -201,7 +219,6 @@
 }
 
 
-
 /******/
 
 .thread-listing .topic .modifiers,
@@ -234,11 +251,6 @@
 	height: 16px !important;
 	margin: 0 4px 0 12px;
 }
-.thread-listing .topic .contextmenu {
-	width: 16px;
-	margin-right: 16px;
-	float: right;
-}
 .thread-listing .started-by,
 .thread-listing .latest-post,
 .thread-listing .fixed-column-headers .started-by, 
@@ -253,12 +265,6 @@
 	width: 50px;
 }
 
-.v-thread-listing-row .contextmenu {
-	visibility: hidden;	
-}
-.v-thread-listing-row:hover .contextmenu {
-	visibility: visible;	
-}
 
 .thread-listing,
 .v-thread-listing-row,
@@ -279,9 +285,6 @@
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
-}
-.thread-listing .following {
-	background: url(../images/following-badge.png) #fff top left no-repeat;
 }
 
 .v-thread-listing-row a > div {
@@ -399,16 +402,6 @@
 
 .v-thread-listing-row .latestauthor {
 	font-size: smaller;
-}
-
-.v-thread-listing-row .menutrigger {
-	height: 16px;
-	width: 16px;
-	background-image: url("../images/icon-settings.png");
-	visibility: hidden;
-	position: absolute;
-	right: 350px;
-	top: 0;
 }
 
 .v-thread-listing-row:hover .menutrigger,

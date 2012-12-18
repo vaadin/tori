@@ -391,4 +391,14 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     public boolean userCanCreateSubcategory() {
         return authorizationService.mayEditCategories();
     }
+
+    public boolean mayShowToolsFor(final DiscussionThread thread) {
+        try {
+            return userCanFollow(thread) || userCanLock(thread)
+                    || userCanSticky(thread) || userCanUnFollow(thread)
+                    || userCanUnLock(thread) || userCanUnSticky(thread);
+        } catch (final DataSourceException e) {
+            return false;
+        }
+    }
 }

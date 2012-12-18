@@ -13,6 +13,7 @@ import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
@@ -157,8 +158,24 @@ public class ThreadListingWidget extends Widget {
         anchor.setPropertyString("href", rowInfo.url);
         anchor.setClassName(ROW_CLASS_NAME);
 
-        // TODO: Locked
-        // TODO: Sticky
+        if (rowInfo.isLocked) {
+            final Element locked = DOM.createDiv();
+            locked.setClassName("locked");
+            anchor.appendChild(locked);
+        }
+        if (rowInfo.isSticky) {
+            final Element sticky = DOM.createDiv();
+            sticky.setClassName("sticky");
+            anchor.appendChild(sticky);
+        }
+
+        if (rowInfo.isFollowed) {
+            anchor.addClassName("following");
+        }
+
+        if (!rowInfo.isRead) {
+            anchor.addClassName("unread");
+        }
 
         final Element topic = DOM.createDiv();
         topic.setInnerText(rowInfo.topic);
@@ -212,7 +229,28 @@ public class ThreadListingWidget extends Widget {
         fadeC.setClassName("fd c");
         anchor.appendChild(fadeC);
 
+        if (rowInfo.showTools) {
+            final Element tools = DOM.createDiv();
+            tools.setClassName("contextmenu");
+            anchor.appendChild(tools);
+            DOM.sinkEvents(tools, Event.ONCLICK);
+        }
+
         return anchor;
+    }
+
+    @Override
+    public void onBrowserEvent(final Event event) {
+        if (event.getTypeInt() == Event.ONCLICK) {
+            final Element target = (Element) Element.as(event.getEventTarget());
+            if (target.getClassName().equals("contextmenu")) {
+                // TODO
+                Window.alert("ding");
+                event.stopPropagation();
+                event.preventDefault();
+            }
+        }
+        super.onBrowserEvent(event);
     }
 
     private void addPlaceholder() {
