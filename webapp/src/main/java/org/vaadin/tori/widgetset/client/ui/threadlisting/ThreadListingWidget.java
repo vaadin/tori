@@ -8,18 +8,33 @@ import java.util.Map.Entry;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.RowInfo;
 
 import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.Style.Position;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.VConsole;
 
 public class ThreadListingWidget extends Widget {
+
+    private static final String CONTEXTMENU_CLASS = "contextmenu";
+
+    private class Point {
+        public final int top;
+        public final int left;
+
+        public Point(final int top, final int left) {
+            this.top = top;
+            this.left = left;
+        }
+    }
 
     private static final boolean DEBUG = true;
 
@@ -89,6 +104,10 @@ public class ThreadListingWidget extends Widget {
     private final double distanceMultiplier = 1.0;
 
     private ComponentFetcher fetcher;
+
+    private Element popup;
+
+    private HandlerRegistration popupCloseHandlerRegistration;
 
     public ThreadListingWidget() {
         setElement(DOM.createDiv());
@@ -231,7 +250,7 @@ public class ThreadListingWidget extends Widget {
 
         if (rowInfo.showTools) {
             final Element tools = DOM.createDiv();
-            tools.setClassName("contextmenu");
+            tools.setClassName(CONTEXTMENU_CLASS);
             anchor.appendChild(tools);
             DOM.sinkEvents(tools, Event.ONCLICK);
         }
@@ -243,14 +262,81 @@ public class ThreadListingWidget extends Widget {
     public void onBrowserEvent(final Event event) {
         if (event.getTypeInt() == Event.ONCLICK) {
             final Element target = (Element) Element.as(event.getEventTarget());
-            if (target.getClassName().equals("contextmenu")) {
-                // TODO
-                Window.alert("ding");
+            final boolean targetIsContextMenu = target.getClassName().equals(
+                    CONTEXTMENU_CLASS);
+            if (targetIsContextMenu) {
+                openPopupAt(getLowerRightCornerOf(target),
+                        (Element) target.getParentElement());
                 event.stopPropagation();
                 event.preventDefault();
             }
+
+            if (popupIsOpen() && !targetIsContextMenu) {
+                closePopup();
+            }
         }
         super.onBrowserEvent(event);
+    }
+
+    private Point getLowerRightCornerOf(final Element e) {
+        if (e.getParentNode() == null) {
+            return null;
+        }
+
+        final int bottom = e.getOffsetTop() + e.getOffsetHeight();
+        final int right = e.getOffsetLeft() + e.getOffsetWidth();
+        return new Point(bottom, right);
+    }
+
+    public void openPopupAt(final Point point, final Element popupRow) {
+        if (popup == null) {
+            popup = DOM.createDiv();
+            popup.addClassName("threadlistingrow-popup");
+
+            popup.getStyle().setPosition(Position.ABSOLUTE);
+            popup.getStyle().setBackgroundColor("green");
+            popup.setInnerText("i am a popup");
+        }
+
+        popup.getStyle().setTop(point.top, Unit.PX);
+        popup.getStyle().setLeft(point.left, Unit.PX);
+        popupRow.appendChild(popup);
+
+        if (popupCloseHandlerRegistration == null) {
+            popupCloseHandlerRegistration = Event
+                    .addNativePreviewHandler(new Event.NativePreviewHandler() {
+                        @Override
+                        public void onPreviewNativeEvent(
+                                final NativePreviewEvent event) {
+                            if (event.getTypeInt() != Event.ONCLICK) {
+                                return;
+                            }
+
+                            Element e = event.getNativeEvent().getEventTarget()
+                                    .cast();
+                            while (e != null) {
+                                if (e.getClassName().equals(CONTEXTMENU_CLASS)) {
+                                    return;
+                                }
+                                e = (Element) e.getParentElement();
+                            }
+
+                            closePopup();
+                        }
+                    });
+        }
+    }
+
+    public void closePopup() {
+        if (popup != null && popupIsOpen()) {
+            popup.removeFromParent();
+            popupCloseHandlerRegistration.removeHandler();
+            popupCloseHandlerRegistration = null;
+        }
+    }
+
+    private boolean popupIsOpen() {
+        return popup.getParentElement() != null;
     }
 
     private void addPlaceholder() {
