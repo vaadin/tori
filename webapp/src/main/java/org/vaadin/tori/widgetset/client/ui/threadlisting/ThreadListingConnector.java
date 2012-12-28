@@ -3,8 +3,9 @@ package org.vaadin.tori.widgetset.client.ui.threadlisting;
 import java.util.List;
 import java.util.Map;
 
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.ControlInfo;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.RowInfo;
-import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingWidget.ComponentFetcher;
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingWidget.Fetcher;
 
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.core.client.GWT;
@@ -22,10 +23,15 @@ public class ThreadListingConnector extends AbstractComponentConnector {
     private final ThreadListingServerRpc rpc = RpcProxy.create(
             ThreadListingServerRpc.class, this);
 
-    ComponentFetcher fetcher = new ComponentFetcher() {
+    private final Fetcher fetcher = new Fetcher() {
         @Override
         public void fetchIndices(final List<Integer> indicesToFetch) {
             rpc.fetchComponentsForIndices(indicesToFetch);
+        }
+
+        @Override
+        public void fetchControlsFor(final int rowIndex) {
+            rpc.fetchControlsForIndex(rowIndex);
         }
     };
 
@@ -37,6 +43,11 @@ public class ThreadListingConnector extends AbstractComponentConnector {
             @Override
             public void sendComponents(final Map<Integer, RowInfo> rows) {
                 swapLazyComponents(rows);
+            }
+
+            @Override
+            public void sendControls(final ControlInfo controlInfo) {
+                getWidget().setPopupControls(controlInfo);
             }
         });
     }

@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.ControlInfo;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.RowInfo;
 
 import com.google.gwt.dom.client.Node;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ScrollEvent;
@@ -26,7 +28,7 @@ public class ThreadListingWidget extends Widget {
 
     private static final String CONTEXTMENU_CLASS = "contextmenu";
 
-    private class Point {
+    private static class Point {
         public final int top;
         public final int left;
 
@@ -94,8 +96,10 @@ public class ThreadListingWidget extends Widget {
         }
     }
 
-    public interface ComponentFetcher {
+    public interface Fetcher {
         void fetchIndices(List<Integer> indicesToFetch);
+
+        void fetchControlsFor(int rowIndexOf);
     }
 
     private final SecondaryFetchTimer secondaryLoader = new SecondaryFetchTimer();
@@ -103,7 +107,7 @@ public class ThreadListingWidget extends Widget {
     private int pageHeight;
     private final double distanceMultiplier = 1.0;
 
-    private ComponentFetcher fetcher;
+    private Fetcher fetcher;
 
     private Element popup;
 
@@ -151,7 +155,7 @@ public class ThreadListingWidget extends Widget {
     }
 
     public void init(final int rows, final List<RowInfo> preloadedRows,
-            final ComponentFetcher fetcher) {
+            final Fetcher fetcher) {
         if (rows < 0) {
             throw new IllegalArgumentException("Row amount can't be negative");
         }
@@ -265,7 +269,7 @@ public class ThreadListingWidget extends Widget {
             final boolean targetIsContextMenu = target.getClassName().equals(
                     CONTEXTMENU_CLASS);
             if (targetIsContextMenu) {
-                openPopupAt(getLowerRightCornerOf(target),
+                openPopupAt(getBottomLeftCornerOf(target),
                         (Element) target.getParentElement());
                 event.stopPropagation();
                 event.preventDefault();
@@ -278,24 +282,22 @@ public class ThreadListingWidget extends Widget {
         super.onBrowserEvent(event);
     }
 
-    private Point getLowerRightCornerOf(final Element e) {
+    private Point getBottomLeftCornerOf(final Element e) {
         if (e.getParentNode() == null) {
             return null;
         }
 
         final int bottom = e.getOffsetTop() + e.getOffsetHeight();
-        final int right = e.getOffsetLeft() + e.getOffsetWidth();
-        return new Point(bottom, right);
+        return new Point(bottom, e.getOffsetLeft());
     }
 
     public void openPopupAt(final Point point, final Element popupRow) {
         if (popup == null) {
             popup = DOM.createDiv();
-            popup.addClassName("threadlistingrow-popup");
+            popup.addClassName(ROW_CLASS_NAME + "-popup");
 
             popup.getStyle().setPosition(Position.ABSOLUTE);
-            popup.getStyle().setBackgroundColor("green");
-            popup.setInnerText("i am a popup");
+            popup.setInnerText("Loading controls...");
         }
 
         popup.getStyle().setTop(point.top, Unit.PX);
@@ -322,14 +324,31 @@ public class ThreadListingWidget extends Widget {
                             }
 
                             closePopup();
+                            event.cancel();
                         }
                     });
         }
+
+        fetcher.fetchControlsFor(getRowIndexOf(popupRow));
+    }
+
+    private int getRowIndexOf(final Element popupRow) {
+        final NodeList<Node> childNodes = getElement().getChildNodes();
+
+        // we skip the first, due to header element.
+        for (int i = 1; i < childNodes.getLength(); i++) {
+            final Node node = childNodes.getItem(i);
+            if (node.equals(popupRow)) {
+                return i - 1;
+            }
+        }
+        return -1;
     }
 
     public void closePopup() {
         if (popup != null && popupIsOpen()) {
             popup.removeFromParent();
+            popup.setInnerText("Loading controls...");
             popupCloseHandlerRegistration.removeHandler();
             popupCloseHandlerRegistration = null;
         }
@@ -609,5 +628,31 @@ public class ThreadListingWidget extends Widget {
                 getElement().insertBefore(rowElement, referenceNode);
             }
         }
+    }
+
+    public void setPopupControls(final ControlInfo controlInfo) {
+        popup.setInnerHTML("");
+        addPopupControlButton(controlInfo.follow, "follow", "Follow thread");
+        addPopupControlButton(controlInfo.unfollow, "unfollow",
+                "Unfollow thread");
+        addPopupControlButton(controlInfo.move, "move", "Move thread...");
+        addPopupControlButton(controlInfo.sticky, "sticky", "Sticky thread");
+        addPopupControlButton(controlInfo.unsticky, "unsticky",
+                "Unsticky thread");
+        addPopupControlButton(controlInfo.lock, "lock", "Lock thread");
+        addPopupControlButton(controlInfo.unlock, "unlock", "Unlock thread");
+        addPopupControlButton(controlInfo.delete, "delete", "Delete thread");
+    }
+
+    private void addPopupControlButton(final boolean actuallyAddIt,
+            final String cssClass, final String caption) {
+        if (!actuallyAddIt) {
+            return;
+        }
+        final Element controlButton = DOM.createDiv();
+        controlButton.setClassName("control control-" + cssClass);
+        controlButton.setInnerHTML("<div class='" + cssClass
+                + " icon'></div><div>" + caption + "</div>");
+        popup.appendChild(controlButton);
     }
 }

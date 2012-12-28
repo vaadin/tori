@@ -7,6 +7,26 @@ import com.vaadin.shared.ComponentState;
 public class ThreadListingState extends ComponentState {
     private static final long serialVersionUID = -4869218779372629528L;
 
+    public static final class ControlInfo {
+        public boolean follow;
+        public boolean unfollow;
+        public boolean lock;
+        public boolean unlock;
+        public boolean sticky;
+        public boolean unsticky;
+        public boolean delete;
+        public boolean move;
+
+        @Override
+        public String toString() {
+            return "ControlInfo [follow=" + follow + ", unfollow=" + unfollow
+                    + ", lock=" + lock + ", unlock=" + unlock + ", sticky="
+                    + sticky + ", unsticky=" + unsticky + ", delete=" + delete
+                    + ", move=" + move + "]";
+        }
+
+    }
+
     public static class RowInfo {
         public boolean isSticky;
         public boolean isLocked;

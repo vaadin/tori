@@ -15,6 +15,7 @@ import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingClientRpc;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingServerRpc;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState;
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.ControlInfo;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.RowInfo;
 
 import com.ocpsoft.pretty.time.PrettyTime;
@@ -28,7 +29,6 @@ public class ThreadListing2 extends AbstractComponent {
     ThreadListingServerRpc rpc = new ThreadListingServerRpc() {
         @Override
         public void fetchComponentsForIndices(final List<Integer> indicesToFetch) {
-            System.out.println("fetchCompoenntsForIndices: " + indicesToFetch);
             try {
                 final Map<Integer, RowInfo> map = new HashMap<Integer, RowInfo>();
 
@@ -41,6 +41,12 @@ public class ThreadListing2 extends AbstractComponent {
                     for (final DiscussionThread thread : threadProvider
                             .getThreadsBetween(from, to)) {
                         map.put(i, getRowInfo(thread));
+
+                        final ControlInfo controlInfo = getControlInfo(thread);
+                        if (controlInfo != null) {
+                            controlInfoMap.put(i, controlInfo);
+                        }
+
                         i++;
                     }
                 }
@@ -52,10 +58,33 @@ public class ThreadListing2 extends AbstractComponent {
                 showError(e);
             }
         }
+
+        @Override
+        public void fetchControlsForIndex(final int rowIndex) {
+            getRpcProxy(ThreadListingClientRpc.class).sendControls(
+                    controlInfoMap.get(rowIndex));
+        }
     };
+
     private final ThreadProvider threadProvider;
 
     private final CategoryPresenter presenter;
+
+    private final Map<Integer, ControlInfo> controlInfoMap = new HashMap<Integer, ControlInfo>();
+
+    private ControlInfo getControlInfo(final DiscussionThread thread)
+            throws DataSourceException {
+        final ControlInfo i = new ControlInfo();
+        i.follow = presenter.userCanFollow(thread);
+        i.unfollow = presenter.userCanUnFollow(thread);
+        i.lock = presenter.userCanLock(thread);
+        i.unlock = presenter.userCanUnLock(thread);
+        i.sticky = presenter.userCanSticky(thread);
+        i.unsticky = presenter.userCanUnSticky(thread);
+        i.delete = presenter.userMayDelete(thread);
+        i.move = presenter.userMayMove(thread);
+        return i;
+    }
 
     private RowInfo getRowInfo(final DiscussionThread thread) {
         final RowInfo row = new RowInfo();
@@ -101,8 +130,10 @@ public class ThreadListing2 extends AbstractComponent {
                     .getThreadsBetween(0, PRELOAD_AMOUNT);
             final ArrayList<RowInfo> rows = new ArrayList<RowInfo>();
 
+            int i = 0;
             for (final DiscussionThread thread : threads) {
                 rows.add(getRowInfo(thread));
+                controlInfoMap.put(i++, getControlInfo(thread));
             }
             getState().preloadedRows = rows;
         } catch (final DataSourceException e) {
