@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.ControlInfo;
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.ControlInfo.Action;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.RowInfo;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingWidget.Fetcher;
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingWidget.RowActionHandler;
 
 import com.google.gwt.core.client.Duration;
 import com.google.gwt.core.client.GWT;
@@ -32,6 +34,13 @@ public class ThreadListingConnector extends AbstractComponentConnector {
         @Override
         public void fetchControlsFor(final int rowIndex) {
             rpc.fetchControlsForIndex(rowIndex);
+        }
+    };
+
+    private final RowActionHandler handler = new RowActionHandler() {
+        @Override
+        public void handle(final Action action, final long threadId) {
+            rpc.handle(action, threadId);
         }
     };
 
@@ -63,7 +72,7 @@ public class ThreadListingConnector extends AbstractComponentConnector {
         if (rows == ThreadListingState.UNINITIALIZED_ROWS) {
             throw new IllegalStateException("Row amount not set on init");
         }
-        getWidget().init(rows, getState().preloadedRows, fetcher);
+        getWidget().init(rows, getState().preloadedRows, fetcher, handler);
     }
 
     @Override

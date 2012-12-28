@@ -401,4 +401,9 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             return false;
         }
     }
+
+    public DiscussionThread getThread(final long threadId)
+            throws DataSourceException {
+        return dataSource.getThread(threadId);
+    }
 }

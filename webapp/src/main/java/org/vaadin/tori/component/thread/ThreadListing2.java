@@ -16,6 +16,7 @@ import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingClientRpc;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingServerRpc;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.ControlInfo;
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.ControlInfo.Action;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.RowInfo;
 
 import com.ocpsoft.pretty.time.PrettyTime;
@@ -64,6 +65,46 @@ public class ThreadListing2 extends AbstractComponent {
             getRpcProxy(ThreadListingClientRpc.class).sendControls(
                     controlInfoMap.get(rowIndex));
         }
+
+        @Override
+        public void handle(final Action action, final long threadId) {
+            try {
+                final DiscussionThread thread = presenter.getThread(threadId);
+
+                switch (action) {
+                case FOLLOW:
+                    presenter.follow(thread);
+                    break;
+                case UNFOLLOW:
+                    presenter.unfollow(thread);
+                    break;
+                case STICKY:
+                    presenter.sticky(thread);
+                    break;
+                case UNSTICKY:
+                    presenter.unsticky(thread);
+                    break;
+                case DELETE:
+                    presenter.delete(thread);
+                    break;
+                case LOCK:
+                    presenter.lock(thread);
+                    break;
+                case UNLOCK:
+                    presenter.unlock(thread);
+                    break;
+                default:
+                    break;
+                }
+
+                // TODO: refresh row
+
+            } catch (final DataSourceException e) {
+                Notification.show(
+                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
+                        Notification.Type.ERROR_MESSAGE);
+            }
+        }
     };
 
     private final ThreadProvider threadProvider;
@@ -75,15 +116,23 @@ public class ThreadListing2 extends AbstractComponent {
     private ControlInfo getControlInfo(final DiscussionThread thread)
             throws DataSourceException {
         final ControlInfo i = new ControlInfo();
-        i.follow = presenter.userCanFollow(thread);
-        i.unfollow = presenter.userCanUnFollow(thread);
-        i.lock = presenter.userCanLock(thread);
-        i.unlock = presenter.userCanUnLock(thread);
-        i.sticky = presenter.userCanSticky(thread);
-        i.unsticky = presenter.userCanUnSticky(thread);
-        i.delete = presenter.userMayDelete(thread);
-        i.move = presenter.userMayMove(thread);
+        i.threadId = thread.getId();
+        addIfNecessary(i, presenter.userCanFollow(thread), Action.FOLLOW);
+        addIfNecessary(i, presenter.userCanUnFollow(thread), Action.UNFOLLOW);
+        addIfNecessary(i, presenter.userCanLock(thread), Action.LOCK);
+        addIfNecessary(i, presenter.userCanUnLock(thread), Action.UNLOCK);
+        addIfNecessary(i, presenter.userCanSticky(thread), Action.STICKY);
+        addIfNecessary(i, presenter.userCanUnSticky(thread), Action.UNSTICKY);
+        addIfNecessary(i, presenter.userMayDelete(thread), Action.DELETE);
+        addIfNecessary(i, presenter.userMayMove(thread), Action.MOVE);
         return i;
+    }
+
+    private static void addIfNecessary(final ControlInfo info,
+            final boolean mayAdd, final Action action) {
+        if (mayAdd) {
+            info.actions.add(action);
+        }
     }
 
     private RowInfo getRowInfo(final DiscussionThread thread) {

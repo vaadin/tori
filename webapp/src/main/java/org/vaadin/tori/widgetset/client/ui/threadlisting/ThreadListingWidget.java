@@ -1,11 +1,13 @@
 package org.vaadin.tori.widgetset.client.ui.threadlisting;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.ControlInfo;
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.ControlInfo.Action;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.RowInfo;
 
 import com.google.gwt.dom.client.Node;
@@ -38,12 +40,153 @@ public class ThreadListingWidget extends Widget {
         }
     }
 
+    private static class VisibilityHelper {
+
+        private static boolean isBeingShown(final Element element,
+                final int proximity) {
+
+            /*
+             * track the original element's position as we iterate through the
+             * DOM tree
+             */
+            int originalTopAdjusted = 0;
+            final int originalHeight = element.getOffsetHeight();
+            int originalLeftAdjusted = 0;
+            final int originalWidth = element.getOffsetWidth();
+
+            com.google.gwt.dom.client.Element childElement = element;
+            com.google.gwt.dom.client.Element parentElement = element
+                    .getParentElement();
+
+            while (parentElement != null) {
+
+                // clientheight == the height as seen in browser
+                // offsetheight == the DOM element's native height
+
+                // What part of its canvas the parent shows, relative to its own
+                // coordinates (0,0 is the top left corner)
+                final int parentTop = parentElement.getScrollTop();
+                final int parentBottom = parentTop
+                        + parentElement.getClientHeight();
+                final int parentLeft = parentElement.getScrollLeft();
+                final int parentRight = parentLeft
+                        + parentElement.getClientWidth();
+
+                /*
+                 * renderbox is the target box that is checked for visibility.
+                 * If the renderbox and parent's viewport don't overlap, it
+                 * should not be rendered. The renderbox is the child's position
+                 * with an adjusted margin.
+                 */
+                final int renderBoxTop = childElement.getOffsetTop()
+                        - proximity;
+                final int renderBoxBottom = childElement.getOffsetTop()
+                        + childElement.getOffsetHeight() + proximity;
+                final int renderBoxLeft = childElement.getOffsetLeft()
+                        - proximity;
+                final int renderBoxRight = childElement.getOffsetLeft()
+                        + childElement.getOffsetWidth() + proximity;
+
+                if (!colliding2D(parentTop, parentRight, parentBottom,
+                        parentLeft, renderBoxTop, renderBoxRight,
+                        renderBoxBottom, renderBoxLeft)) {
+                    return false;
+                }
+
+                /*
+                 * see if the original component is visible from the parent.
+                 * Move the object around to correspond the relative changes in
+                 * position. The offset is always relative to the parent - not
+                 * the canvas.
+                 */
+                originalTopAdjusted += childElement.getOffsetTop()
+                        - childElement.getScrollTop();
+                originalLeftAdjusted += childElement.getOffsetLeft()
+                        - childElement.getScrollLeft();
+                if (!colliding2D(parentTop, parentRight, parentBottom,
+                        parentLeft, originalTopAdjusted - proximity,
+                        originalLeftAdjusted + originalWidth + proximity,
+                        originalTopAdjusted + originalHeight + proximity,
+                        originalLeftAdjusted - proximity)) {
+                    return false;
+                }
+
+                childElement = parentElement;
+                parentElement = childElement.getOffsetParent();
+            }
+
+            // lastly, check the browser itself.
+            final int parentTop = Window.getScrollTop();
+            final int parentBottom = parentTop + Window.getClientHeight();
+            final int parentLeft = Window.getScrollLeft();
+            final int parentRight = parentLeft + Window.getClientWidth();
+
+            final int renderBoxTop = childElement.getOffsetTop() - proximity;
+            final int renderBoxBottom = childElement.getOffsetTop()
+                    + childElement.getClientHeight() + proximity;
+
+            final int renderBoxLeft = childElement.getOffsetLeft() - proximity;
+            final int renderBoxRight = childElement.getOffsetLeft()
+                    + childElement.getClientWidth() + proximity;
+
+            if (!colliding2D(parentTop, parentRight, parentBottom, parentLeft,
+                    renderBoxTop, renderBoxRight, renderBoxBottom,
+                    renderBoxLeft)) {
+                return false;
+            }
+
+            originalTopAdjusted += childElement.getOffsetTop();
+            originalLeftAdjusted += childElement.getOffsetLeft();
+            if (!colliding2D(parentTop, parentRight, parentBottom, parentLeft,
+                    originalTopAdjusted - proximity, originalLeftAdjusted
+                            + originalWidth + proximity, originalTopAdjusted
+                            + originalHeight + proximity, originalLeftAdjusted
+                            - proximity)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        /**
+         * Check whether a box overlaps (partially or completely) another.
+         */
+        private static boolean colliding2D(final int topA, final int rightA,
+                final int bottomA, final int leftA, final int topB,
+                final int rightB, final int bottomB, final int leftB) {
+
+            final boolean verticalCollide = colliding1D(topA, bottomA, topB,
+                    bottomB);
+            final boolean horizontalCollide = colliding1D(leftA, rightA, leftB,
+                    rightB);
+            return verticalCollide && horizontalCollide;
+        }
+
+        /**
+         * Check whether a line overlaps (partially or completely) another.
+         */
+        private static boolean colliding1D(final int startA, final int endA,
+                final int startB, final int endB) {
+            if (endA < startB) {
+                return false;
+            } else if (startA > endB) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+    }
+
     private static final boolean DEBUG = true;
 
     private static final String CLASS_NAME = "threadlisting";
     private static final String ROW_CLASS_NAME = "threadlistingrow";
+    private static final String POPUP_CLASS_NAME = ROW_CLASS_NAME + "-popup";
 
     private static final String PLACEHOLDER_ELEMENT = "DIV";
+
+    private static final long POPUPTHREADID_CLEARED_VALUE = -1;
 
     private HandlerRegistration scrollHandlerRegistration;
     private HandlerRegistration scrollHandlerRegistrationWin;
@@ -102,16 +245,25 @@ public class ThreadListingWidget extends Widget {
         void fetchControlsFor(int rowIndexOf);
     }
 
+    public interface RowActionHandler {
+        void handle(Action action, long threadId);
+    }
+
     private final SecondaryFetchTimer secondaryLoader = new SecondaryFetchTimer();
     private final int renderDelay = 500;
     private int pageHeight;
     private final double distanceMultiplier = 1.0;
 
     private Fetcher fetcher;
+    private RowActionHandler rowActionHandler;
 
     private Element popup;
 
     private HandlerRegistration popupCloseHandlerRegistration;
+
+    private final Map<Element, Action> popupControls = new HashMap<Element, Action>();
+
+    private long popupThreadId = POPUPTHREADID_CLEARED_VALUE;
 
     public ThreadListingWidget() {
         setElement(DOM.createDiv());
@@ -155,7 +307,7 @@ public class ThreadListingWidget extends Widget {
     }
 
     public void init(final int rows, final List<RowInfo> preloadedRows,
-            final Fetcher fetcher) {
+            final Fetcher fetcher, final RowActionHandler handler) {
         if (rows < 0) {
             throw new IllegalArgumentException("Row amount can't be negative");
         }
@@ -168,6 +320,7 @@ public class ThreadListingWidget extends Widget {
 
         refreshPageHeight();
         this.fetcher = fetcher;
+        this.rowActionHandler = handler;
     }
 
     private void preloadRows(final List<RowInfo> preloadedRows) {
@@ -294,7 +447,7 @@ public class ThreadListingWidget extends Widget {
     public void openPopupAt(final Point point, final Element popupRow) {
         if (popup == null) {
             popup = DOM.createDiv();
-            popup.addClassName(ROW_CLASS_NAME + "-popup");
+            popup.addClassName(POPUP_CLASS_NAME);
 
             popup.getStyle().setPosition(Position.ABSOLUTE);
             popup.setInnerText("Loading controls...");
@@ -314,22 +467,43 @@ public class ThreadListingWidget extends Widget {
                                 return;
                             }
 
-                            Element e = event.getNativeEvent().getEventTarget()
-                                    .cast();
-                            while (e != null) {
-                                if (e.getClassName().equals(CONTEXTMENU_CLASS)) {
-                                    return;
-                                }
-                                e = (Element) e.getParentElement();
-                            }
+                            try {
+                                Element controlElement = null;
+                                Element e = event.getNativeEvent()
+                                        .getEventTarget().cast();
+                                while (e != null) {
+                                    if (e.getClassName().contains("control")) {
+                                        controlElement = e;
+                                    }
 
-                            closePopup();
-                            event.cancel();
+                                    else if (e.getClassName().equals(
+                                            POPUP_CLASS_NAME)) {
+                                        handlePopupClick(controlElement);
+                                        return;
+                                    }
+                                    e = (Element) e.getParentElement();
+                                }
+
+                                closePopup();
+                            } finally {
+                                event.cancel();
+                            }
                         }
                     });
         }
 
         fetcher.fetchControlsFor(getRowIndexOf(popupRow));
+    }
+
+    private void handlePopupClick(final Element e) {
+        final Action action = popupControls.get(e);
+        if (action != null) {
+            if (popupThreadId != POPUPTHREADID_CLEARED_VALUE) {
+                rowActionHandler.handle(action, popupThreadId);
+            } else {
+                VConsole.error("ThreadListingWidget tries to make an action, but popupThreadId is uninitialized");
+            }
+        }
     }
 
     private int getRowIndexOf(final Element popupRow) {
@@ -351,6 +525,7 @@ public class ThreadListingWidget extends Widget {
             popup.setInnerText("Loading controls...");
             popupCloseHandlerRegistration.removeHandler();
             popupCloseHandlerRegistration = null;
+            popupThreadId = POPUPTHREADID_CLEARED_VALUE;
         }
     }
 
@@ -441,7 +616,8 @@ public class ThreadListingWidget extends Widget {
                 final Element childElem = (Element) child;
                 final boolean isAPlaceholderWidget = childElem.getTagName()
                         .equals(PLACEHOLDER_ELEMENT);
-                if (isAPlaceholderWidget && isBeingShown(childElem, distance)) {
+                if (isAPlaceholderWidget
+                        && VisibilityHelper.isBeingShown(childElem, distance)) {
                     // again, substracting the position of the header element.
                     componentsToLoad.add(i - 1);
                 }
@@ -463,135 +639,6 @@ public class ThreadListingWidget extends Widget {
     static void debug(final String msg) {
         if (DEBUG) {
             VConsole.error("[ThreadListingWidget] " + msg);
-        }
-    }
-
-    private static boolean isBeingShown(final Element element,
-            final int proximity) {
-
-        /*
-         * track the original element's position as we iterate through the DOM
-         * tree
-         */
-        int originalTopAdjusted = 0;
-        final int originalHeight = element.getOffsetHeight();
-        int originalLeftAdjusted = 0;
-        final int originalWidth = element.getOffsetWidth();
-
-        com.google.gwt.dom.client.Element childElement = element;
-        com.google.gwt.dom.client.Element parentElement = element
-                .getParentElement();
-
-        while (parentElement != null) {
-
-            // clientheight == the height as seen in browser
-            // offsetheight == the DOM element's native height
-
-            // What part of its canvas the parent shows, relative to its own
-            // coordinates (0,0 is the top left corner)
-            final int parentTop = parentElement.getScrollTop();
-            final int parentBottom = parentTop
-                    + parentElement.getClientHeight();
-            final int parentLeft = parentElement.getScrollLeft();
-            final int parentRight = parentLeft + parentElement.getClientWidth();
-
-            /*
-             * renderbox is the target box that is checked for visibility. If
-             * the renderbox and parent's viewport don't overlap, it should not
-             * be rendered. The renderbox is the child's position with an
-             * adjusted margin.
-             */
-            final int renderBoxTop = childElement.getOffsetTop() - proximity;
-            final int renderBoxBottom = childElement.getOffsetTop()
-                    + childElement.getOffsetHeight() + proximity;
-            final int renderBoxLeft = childElement.getOffsetLeft() - proximity;
-            final int renderBoxRight = childElement.getOffsetLeft()
-                    + childElement.getOffsetWidth() + proximity;
-
-            if (!colliding2D(parentTop, parentRight, parentBottom, parentLeft,
-                    renderBoxTop, renderBoxRight, renderBoxBottom,
-                    renderBoxLeft)) {
-                return false;
-            }
-
-            /*
-             * see if the original component is visible from the parent. Move
-             * the object around to correspond the relative changes in position.
-             * The offset is always relative to the parent - not the canvas.
-             */
-            originalTopAdjusted += childElement.getOffsetTop()
-                    - childElement.getScrollTop();
-            originalLeftAdjusted += childElement.getOffsetLeft()
-                    - childElement.getScrollLeft();
-            if (!colliding2D(parentTop, parentRight, parentBottom, parentLeft,
-                    originalTopAdjusted - proximity, originalLeftAdjusted
-                            + originalWidth + proximity, originalTopAdjusted
-                            + originalHeight + proximity, originalLeftAdjusted
-                            - proximity)) {
-                return false;
-            }
-
-            childElement = parentElement;
-            parentElement = childElement.getOffsetParent();
-        }
-
-        // lastly, check the browser itself.
-        final int parentTop = Window.getScrollTop();
-        final int parentBottom = parentTop + Window.getClientHeight();
-        final int parentLeft = Window.getScrollLeft();
-        final int parentRight = parentLeft + Window.getClientWidth();
-
-        final int renderBoxTop = childElement.getOffsetTop() - proximity;
-        final int renderBoxBottom = childElement.getOffsetTop()
-                + childElement.getClientHeight() + proximity;
-
-        final int renderBoxLeft = childElement.getOffsetLeft() - proximity;
-        final int renderBoxRight = childElement.getOffsetLeft()
-                + childElement.getClientWidth() + proximity;
-
-        if (!colliding2D(parentTop, parentRight, parentBottom, parentLeft,
-                renderBoxTop, renderBoxRight, renderBoxBottom, renderBoxLeft)) {
-            return false;
-        }
-
-        originalTopAdjusted += childElement.getOffsetTop();
-        originalLeftAdjusted += childElement.getOffsetLeft();
-        if (!colliding2D(parentTop, parentRight, parentBottom, parentLeft,
-                originalTopAdjusted - proximity, originalLeftAdjusted
-                        + originalWidth + proximity, originalTopAdjusted
-                        + originalHeight + proximity, originalLeftAdjusted
-                        - proximity)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Check whether a box overlaps (partially or completely) another.
-     */
-    private static boolean colliding2D(final int topA, final int rightA,
-            final int bottomA, final int leftA, final int topB,
-            final int rightB, final int bottomB, final int leftB) {
-
-        final boolean verticalCollide = colliding1D(topA, bottomA, topB,
-                bottomB);
-        final boolean horizontalCollide = colliding1D(leftA, rightA, leftB,
-                rightB);
-        return verticalCollide && horizontalCollide;
-    }
-
-    /**
-     * Check whether a line overlaps (partially or completely) another.
-     */
-    private static boolean colliding1D(final int startA, final int endA,
-            final int startB, final int endB) {
-        if (endA < startB) {
-            return false;
-        } else if (startA > endB) {
-            return false;
-        } else {
-            return true;
         }
     }
 
@@ -632,27 +679,20 @@ public class ThreadListingWidget extends Widget {
 
     public void setPopupControls(final ControlInfo controlInfo) {
         popup.setInnerHTML("");
-        addPopupControlButton(controlInfo.follow, "follow", "Follow thread");
-        addPopupControlButton(controlInfo.unfollow, "unfollow",
-                "Unfollow thread");
-        addPopupControlButton(controlInfo.move, "move", "Move thread...");
-        addPopupControlButton(controlInfo.sticky, "sticky", "Sticky thread");
-        addPopupControlButton(controlInfo.unsticky, "unsticky",
-                "Unsticky thread");
-        addPopupControlButton(controlInfo.lock, "lock", "Lock thread");
-        addPopupControlButton(controlInfo.unlock, "unlock", "Unlock thread");
-        addPopupControlButton(controlInfo.delete, "delete", "Delete thread");
+        popupControls.clear();
+        for (final Action action : controlInfo.actions) {
+            final Element e = getActionElement(action);
+            popup.appendChild(e);
+            popupThreadId = controlInfo.threadId;
+            popupControls.put(e, action);
+        }
     }
 
-    private void addPopupControlButton(final boolean actuallyAddIt,
-            final String cssClass, final String caption) {
-        if (!actuallyAddIt) {
-            return;
-        }
+    private Element getActionElement(final Action action) {
         final Element controlButton = DOM.createDiv();
-        controlButton.setClassName("control control-" + cssClass);
-        controlButton.setInnerHTML("<div class='" + cssClass
-                + " icon'></div><div>" + caption + "</div>");
-        popup.appendChild(controlButton);
+        controlButton.setClassName("control control-" + action.toCssClass());
+        controlButton.setInnerHTML("<div class='" + action.toCssClass()
+                + " icon'></div><div>" + action.toCaption() + "</div>");
+        return controlButton;
     }
 }
