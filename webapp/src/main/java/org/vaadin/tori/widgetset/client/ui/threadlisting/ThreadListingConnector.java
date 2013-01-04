@@ -58,6 +58,16 @@ public class ThreadListingConnector extends AbstractComponentConnector {
             public void sendControls(final ControlInfo controlInfo) {
                 getWidget().setPopupControls(controlInfo);
             }
+
+            @Override
+            public void refreshSelectedRowAs(final RowInfo rowInfo) {
+                getWidget().replaceOpenedThreadListingRowWith(rowInfo);
+            }
+
+            @Override
+            public void removeSelectedRow() {
+                getWidget().removeSelectedRow();
+            }
         });
     }
 

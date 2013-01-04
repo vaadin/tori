@@ -94,10 +94,30 @@ public class ThreadListing2 extends AbstractComponent {
                     presenter.unlock(thread);
                     break;
                 default:
-                    break;
+                    throw new IllegalArgumentException(
+                            "Unrecognized/unsupported action " + action
+                                    + " for thread.");
                 }
 
-                // TODO: refresh row
+                if (action != Action.DELETE) {
+                    // replace the row with new metadata
+
+                    final Integer rowIndex = threadIdToRowIndex.get(thread
+                            .getId());
+                    controlInfoMap.put(rowIndex, getControlInfo(thread));
+                    getRpcProxy(ThreadListingClientRpc.class)
+                            .refreshSelectedRowAs(getRowInfo(thread));
+                }
+
+                else {
+                    // remove all information about the row
+
+                    final Integer rowIndex = threadIdToRowIndex.remove(thread
+                            .getId());
+                    controlInfoMap.remove(rowIndex);
+                    getRpcProxy(ThreadListingClientRpc.class)
+                            .removeSelectedRow();
+                }
 
             } catch (final DataSourceException e) {
                 Notification.show(
@@ -111,6 +131,9 @@ public class ThreadListing2 extends AbstractComponent {
 
     private final CategoryPresenter presenter;
 
+    private final Map<Long, Integer> threadIdToRowIndex = new HashMap<Long, Integer>();
+
+    /** Row placement index number &rarr; control info */
     private final Map<Integer, ControlInfo> controlInfoMap = new HashMap<Integer, ControlInfo>();
 
     private ControlInfo getControlInfo(final DiscussionThread thread)
@@ -182,7 +205,9 @@ public class ThreadListing2 extends AbstractComponent {
             int i = 0;
             for (final DiscussionThread thread : threads) {
                 rows.add(getRowInfo(thread));
-                controlInfoMap.put(i++, getControlInfo(thread));
+                controlInfoMap.put(i, getControlInfo(thread));
+                threadIdToRowIndex.put(thread.getId(), i);
+                i++;
             }
             getState().preloadedRows = rows;
         } catch (final DataSourceException e) {

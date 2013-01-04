@@ -116,6 +116,11 @@
 	top: 0;
 }
 
+.v-touch .threadlistingrow .contextmenu {
+	display: none;
+	visibility: hidden;
+}
+
 .threadlisting .startedby,
 .threadlisting .latestpost,
 .threadlisting .fixed-column-headers .startedby, 

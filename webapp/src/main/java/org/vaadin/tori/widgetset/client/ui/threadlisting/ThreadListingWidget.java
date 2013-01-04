@@ -265,6 +265,8 @@ public class ThreadListingWidget extends Widget {
 
     private long popupThreadId = POPUPTHREADID_CLEARED_VALUE;
 
+    private Element openedThreadListingRow = null;
+
     public ThreadListingWidget() {
         setElement(DOM.createDiv());
         getElement().appendChild(createHeaders());
@@ -422,15 +424,15 @@ public class ThreadListingWidget extends Widget {
             final boolean targetIsContextMenu = target.getClassName().equals(
                     CONTEXTMENU_CLASS);
             if (targetIsContextMenu) {
-                openPopupAt(getBottomLeftCornerOf(target),
-                        (Element) target.getParentElement());
+                final Element threadListingRow = (Element) target
+                        .getParentElement();
+                openedThreadListingRow = threadListingRow;
+                openPopupAt(getBottomLeftCornerOf(target), threadListingRow);
                 event.stopPropagation();
                 event.preventDefault();
             }
 
-            if (popupIsOpen() && !targetIsContextMenu) {
-                closePopup();
-            }
+            // closing will be handled by the native preview handler
         }
         super.onBrowserEvent(event);
     }
@@ -479,7 +481,7 @@ public class ThreadListingWidget extends Widget {
                                     else if (e.getClassName().equals(
                                             POPUP_CLASS_NAME)) {
                                         handlePopupClick(controlElement);
-                                        return;
+                                        break;
                                     }
                                     e = (Element) e.getParentElement();
                                 }
@@ -499,6 +501,18 @@ public class ThreadListingWidget extends Widget {
         final Action action = popupControls.get(e);
         if (action != null) {
             if (popupThreadId != POPUPTHREADID_CLEARED_VALUE) {
+                if (action == Action.DELETE
+                        && !Window
+                                .confirm("Are you sure you want to delete the thread?")) {
+                    return;
+                }
+
+                else if (action == Action.MOVE) {
+                    // TODO
+                    VConsole.error("not implemented yet");
+                    return;
+                }
+
                 rowActionHandler.handle(action, popupThreadId);
             } else {
                 VConsole.error("ThreadListingWidget tries to make an action, but popupThreadId is uninitialized");
@@ -537,6 +551,31 @@ public class ThreadListingWidget extends Widget {
         final Element placeholderDiv = DOM.createDiv();
         placeholderDiv.setClassName(CLASS_NAME + "-placeholder");
         getElement().appendChild(placeholderDiv);
+    }
+
+    @Override
+    protected void onUnload() {
+        if (scrollHandlerRegistration != null) {
+            scrollHandlerRegistration.removeHandler();
+        }
+
+        if (scrollHandlerRegistrationWin != null) {
+            scrollHandlerRegistrationWin.removeHandler();
+        }
+
+        if (popupCloseHandlerRegistration != null) {
+            popupCloseHandlerRegistration.removeHandler();
+        }
+
+        if (scrollPoller != null) {
+            scrollPoller.cancel();
+        }
+
+        if (secondaryLoader != null) {
+            secondaryLoader.cancel();
+        }
+
+        super.onUnload();
     }
 
     public void attachScrollHandlersIfNeeded(final Widget rootWidget) {
@@ -694,5 +733,25 @@ public class ThreadListingWidget extends Widget {
         controlButton.setInnerHTML("<div class='" + action.toCssClass()
                 + " icon'></div><div>" + action.toCaption() + "</div>");
         return controlButton;
+    }
+
+    public void replaceOpenedThreadListingRowWith(final RowInfo rowInfo) {
+        if (openedThreadListingRow != null) {
+            final Element newRow = createRow(rowInfo);
+            openedThreadListingRow.getParentNode().replaceChild(newRow,
+                    openedThreadListingRow);
+            openedThreadListingRow = null;
+        } else {
+            VConsole.error("Illegally trying to replace a thread listing row.");
+        }
+    }
+
+    public void removeSelectedRow() {
+        if (openedThreadListingRow != null) {
+            openedThreadListingRow.removeFromParent();
+            openedThreadListingRow = null;
+        } else {
+            VConsole.error("Illegally trying to remove a thread listing row.");
+        }
     }
 }

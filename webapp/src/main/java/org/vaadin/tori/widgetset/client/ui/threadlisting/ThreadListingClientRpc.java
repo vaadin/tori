@@ -11,4 +11,8 @@ public interface ThreadListingClientRpc extends ClientRpc {
     void sendComponents(Map<Integer, RowInfo> rows);
 
     void sendControls(ControlInfo controlInfo);
+
+    void refreshSelectedRowAs(RowInfo rowInfo);
+
+    void removeSelectedRow();
 }
