@@ -159,7 +159,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
                 final TypedQuery<DiscussionThread> threadQuery = em
                         .createQuery(
                                 "select t from DiscussionThread t "
-                                        + "where t.category = :category order by t.sticky desc",
+                                        + "where t.category = :category order by t.sticky desc, t.id desc",
                                 DiscussionThread.class);
                 if (startIndex >= 0 && endIndex >= 0) {
                     threadQuery.setFirstResult(startIndex);

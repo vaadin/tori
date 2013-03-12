@@ -50,6 +50,9 @@ public class DashboardViewImpl extends
 
         categoryListing = new CategoryListing(Mode.NORMAL);
         layout.addComponent(categoryListing);
+
+        // this is a hack for Vaadin theme bug.
+        setWidth("966px");
     }
 
     @Override
