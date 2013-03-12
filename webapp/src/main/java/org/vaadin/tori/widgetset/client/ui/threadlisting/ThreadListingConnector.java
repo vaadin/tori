@@ -108,7 +108,7 @@ public class ThreadListingConnector extends AbstractComponentConnector {
 
             getWidget().replaceRows(rows);
 
-            ThreadListingWidget.debug("[LazyLayout] Replace components took "
+            ThreadListingWidget.debug("Replace components took "
                     + duration.elapsedMillis() + "ms (n=" + rows.size() + ")");
         }
     }

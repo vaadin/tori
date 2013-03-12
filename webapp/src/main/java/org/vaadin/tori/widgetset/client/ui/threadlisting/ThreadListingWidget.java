@@ -209,6 +209,7 @@ public class ThreadListingWidget extends Widget {
 
         @Override
         public void run() {
+            debug("running secondary timer");
             boolean foundSomething = false;
             while (visitsLeftToTheServer > 0 && !foundSomething) {
                 final int totalExtraHeight = (int) (getFetchDistancePx() * SECONDARY_MULTIPLIER);
@@ -220,12 +221,22 @@ public class ThreadListingWidget extends Widget {
 
                 visitsLeftToTheServer--;
                 if (foundSomething) {
+                    debug("found something, fetching...");
                     schedule(SECONDARY_TIMER);
                     return;
+                } else {
+                    debug("found nothing.");
                 }
             }
+            debug("done running.");
 
             resetCounter();
+        }
+
+        @Override
+        public void cancel() {
+            debug("cancelling secondary timer");
+            super.cancel();
         }
 
         private void resetCounter() {
@@ -233,7 +244,7 @@ public class ThreadListingWidget extends Widget {
         }
 
         public void scheduleNew() {
-            cancel();
+            debug("scheduling secondary timer");
             schedule(SECONDARY_TIMER);
             resetCounter();
         }
@@ -323,6 +334,7 @@ public class ThreadListingWidget extends Widget {
         refreshPageHeight();
         this.fetcher = fetcher;
         this.rowActionHandler = handler;
+        startScrollLoad();
     }
 
     private void preloadRows(final List<RowInfo> preloadedRows) {
@@ -639,6 +651,8 @@ public class ThreadListingWidget extends Widget {
     private boolean findAllThingsToFetchAndFetchThem(final int distance) {
         final List<Integer> componentsToLoad = new ArrayList<Integer>();
 
+        final long startTime = System.currentTimeMillis();
+
         /*
          * TODO: optimize (give up something is first being shown, and then
          * suddenly stops being shown
@@ -672,12 +686,17 @@ public class ThreadListingWidget extends Widget {
             }
         }
 
+        if (DEBUG) {
+            debug("seeked stuff for "
+                    + (System.currentTimeMillis() - startTime) + "ms");
+        }
+
         return !componentsToLoad.isEmpty();
     }
 
     static void debug(final String msg) {
         if (DEBUG) {
-            VConsole.error("[ThreadListingWidget] " + msg);
+            VConsole.log("[ThreadListingWidget] " + msg);
         }
     }
 
