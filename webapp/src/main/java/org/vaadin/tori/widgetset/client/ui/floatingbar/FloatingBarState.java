@@ -16,11 +16,11 @@
 
 package org.vaadin.tori.widgetset.client.ui.floatingbar;
 
-import com.vaadin.shared.ComponentState;
+import com.vaadin.shared.AbstractComponentState;
 import com.vaadin.shared.Connector;
 
 @SuppressWarnings("serial")
-public class FloatingBarState extends ComponentState {
+public class FloatingBarState extends AbstractComponentState {
     private static final int DEFAULT_SCROLL_THRESHOLD = 200;
     private int scrollThreshold = DEFAULT_SCROLL_THRESHOLD;
     private Connector scrollComponent;

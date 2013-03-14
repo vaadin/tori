@@ -1,4 +1,4 @@
-@import url(../reindeer/styles.css);
+@import url(../reindeer/legacy-styles.css);
 
 /* views */
 @import url(categoryview/style.css);
@@ -11,6 +11,9 @@
 
 .v-app {
 	background: #fff;
+}
+
+.v-app .v-widget {
 	font-size: 14px;
 	color: #464440;
 	text-decoration: none;
@@ -22,6 +25,11 @@
 
 .v-popupview {
 	cursor: default;
+}
+
+.v-app .v-view {
+	/* fixes retina ipad pixel-cut-off */
+	overflow: visible;
 }
 
 a:link, 
@@ -58,6 +66,8 @@ button.v-nativebutton {
 	border-radius: 10px;
 }
 
+/*
+TODO: vaadin has a font-size: 0 fix for IE10, which somehow interferes with these percentages. these need to be rewritten into pixels at some point.
 .v-label-h1 {
 	font-size: 140%;
 }
@@ -70,6 +80,8 @@ button.v-nativebutton {
 .v-label-h4 {
 	font-size: 110%;
 }
+*/
+
 .v-label-h1,
 .v-label-h2,
 .v-label-h3,

@@ -37,7 +37,6 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
@@ -70,7 +69,7 @@ public class CategoryListing extends
     private Component adminControls;
     private PopupButton createCategoryButton;
     private Button rearrangeCategoriesButton;
-    private ComponentContainer rearrangeControls;
+    private RearrangeControls rearrangeControls;
     private HorizontalLayout buttonWrapper;
 
     public CategoryListing(final Mode listingMode) {

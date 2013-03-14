@@ -138,6 +138,12 @@
 	visibility: hidden;
 }
 
+.v-touch .post td.actions div[location="report"],
+.v-touch .post td.actions div[location="settings"] {
+	/* fix for ios bug */
+	visibility: visible;
+}
+
 .post td.actions:hover div[location="report"],
 .post td.actions:hover div[location="settings"] {
 	visibility: visible;

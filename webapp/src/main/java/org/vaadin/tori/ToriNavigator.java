@@ -34,8 +34,8 @@ import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.thread.ThreadViewImpl;
 
 import com.google.common.base.Joiner;
-import com.vaadin.server.Page.FragmentChangedEvent;
-import com.vaadin.server.Page.FragmentChangedListener;
+import com.vaadin.server.Page.UriFragmentChangedEvent;
+import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.VerticalLayout;
@@ -110,12 +110,12 @@ public class ToriNavigator extends CustomComponent {
         layout.setSizeFull();
         rootLayout.addComponent(layout);
 
-        ui.getPage().addFragmentChangedListener(
-                new FragmentChangedListener() {
+        ui.getPage().addUriFragmentChangedListener(
+                new UriFragmentChangedListener() {
                     @Override
-                    public void fragmentChanged(
-                            final FragmentChangedEvent source) {
-                        loadPageFor(source.getFragment());
+                    public void uriFragmentChanged(
+                            final UriFragmentChangedEvent source) {
+                        loadPageFor(source.getUriFragment());
                     }
                 });
 
@@ -155,7 +155,7 @@ public class ToriNavigator extends CustomComponent {
             final AbstractView<?, ?> newView = getOrCreateView(uri);
             moveTo(newView, arguments, false);
         } else {
-            ui.getPage().setFragment(currentFragment, false);
+            ui.getPage().setUriFragment(currentFragment, false);
         }
     }
 
@@ -222,8 +222,8 @@ public class ToriNavigator extends CustomComponent {
             currentFragment += "/" + Joiner.on('/').join(arguments);
         }
         if (!noFragmentSetting
-                && !currentFragment.equals(ui.getPage().getFragment())) {
-            ui.getPage().setFragment(currentFragment, false);
+                && !currentFragment.equals(ui.getPage().getUriFragment())) {
+            ui.getPage().setUriFragment(currentFragment, false);
         }
 
         layout.removeAllComponents();
@@ -379,7 +379,7 @@ public class ToriNavigator extends CustomComponent {
      *            Uri where to navigate.
      */
     public void navigateTo(final String uri) {
-        ui.getPage().setFragment(uri);
+        ui.getPage().setUriFragment(uri);
     }
 
     /**
@@ -479,7 +479,7 @@ public class ToriNavigator extends CustomComponent {
      * <code>foo</code>. If no fragment is set, this returns <code>null</code>
      */
     public String getCurrentUri() {
-        final String fragment = ui.getPage().getFragment();
+        final String fragment = ui.getPage().getUriFragment();
         if (fragment != null) {
             return getDataFromFragment(fragment)[0];
         } else {
@@ -492,7 +492,7 @@ public class ToriNavigator extends CustomComponent {
      * <code>bar</code>. If no fragment is set, this returns <code>null</code>
      */
     public String[] getCurrentArguments() {
-        final String fragment = ui.getPage().getFragment();
+        final String fragment = ui.getPage().getUriFragment();
         if (fragment != null) {
             return tail(getDataFromFragment(fragment));
         } else {

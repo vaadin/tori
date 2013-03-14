@@ -76,7 +76,7 @@ public class ThreadListingConnector extends AbstractComponentConnector {
         super.onStateChanged(stateChangeEvent);
 
         getWidget().attachScrollHandlersIfNeeded(
-                getConnection().getRootConnector().getWidget());
+                getConnection().getUIConnector().getWidget());
 
         final int rows = getState().rows;
         if (rows == ThreadListingState.UNINITIALIZED_ROWS) {

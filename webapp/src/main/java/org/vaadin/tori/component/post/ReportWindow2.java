@@ -61,11 +61,11 @@ class ReportWindow2 extends Window {
             setPositionY(y);
         }
 
-        addComponent(new Label("What's wrong with this post?"));
+        layout.addComponent(new Label("What's wrong with this post?"));
 
         final CssLayout reasonLayout = new CssLayout();
         reasonLayout.setWidth("100%");
-        addComponent(reasonLayout);
+        layout.addComponent(reasonLayout);
 
         final OptionGroup reason = new OptionGroup();
 
@@ -102,7 +102,7 @@ class ReportWindow2 extends Window {
 
         final HorizontalLayout footer = new HorizontalLayout();
         footer.setSpacing(true);
-        addComponent(footer);
+        layout.addComponent(footer);
 
         reportButton = new NativeButton("Report Post");
         reportButton.addClickListener(new NativeButton.ClickListener() {

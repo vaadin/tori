@@ -45,7 +45,7 @@ import com.vaadin.event.MouseEvents;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutAction.ModifierKey;
 import com.vaadin.server.ClassResource;
-import com.vaadin.server.VaadinServiceSession;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.server.WebBrowser;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbstractSelect;
@@ -272,8 +272,7 @@ public abstract class AuthoringComponent extends CustomComponent {
                 @NonNull final PostFormatter postFormatter,
                 @NonNull final AuthoringComponent authoringComponent) {
 
-            final WebBrowser browser = VaadinServiceSession.getCurrent()
-                    .getBrowser();
+            final WebBrowser browser = VaadinSession.getCurrent().getBrowser();
 
             final Component boldButton = createBoldButton(
                     postFormatter.getBoldInfo(), browser, authoringComponent);
@@ -384,8 +383,7 @@ public abstract class AuthoringComponent extends CustomComponent {
         private final ShortcutAction italicAction;
 
         public BoldAndItalicShortcutHandler() {
-            final WebBrowser browser = VaadinServiceSession.getCurrent()
-                    .getBrowser();
+            final WebBrowser browser = VaadinSession.getCurrent().getBrowser();
 
             if (browser.isMacOSX()) {
                 boldAction = new ShortcutAction("&Bold",

@@ -42,7 +42,7 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.VaadinPortletRequest;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServiceSession;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -84,17 +84,17 @@ public class ToriUI extends UI {
             analytics = new GoogleAnalyticsTracker(trackerId);
             analytics.setAllowAnchor(true);
             analytics.setIgnoreGetParameters(true);
-            addComponent(analytics);
+            windowLayout.addComponent(analytics);
         } else {
             analytics = null;
         }
 
         final Breadcrumbs breadcrumbs = new Breadcrumbs(navigator);
         addControlPanelIfInDevelopment();
-        addComponent(breadcrumbs);
-        addComponent(navigator);
+        windowLayout.addComponent(breadcrumbs);
+        windowLayout.addComponent(navigator);
 
-        navigator.init(getPage().getFragment());
+        navigator.init(getPage().getUriFragment());
 
         navigator.addListener(new ViewChangeListener() {
             @Override
@@ -144,8 +144,10 @@ public class ToriUI extends UI {
     private void addControlPanelIfInDevelopment() {
         final AuthorizationService authorizationService = getAuthorizationService();
         if (authorizationService instanceof DebugAuthorizationService) {
-            addComponent(new DebugControlPanel(
-                    (DebugAuthorizationService) authorizationService, navigator));
+            windowLayout
+                    .addComponent(new DebugControlPanel(
+                            (DebugAuthorizationService) authorizationService,
+                            navigator));
         }
     }
 
@@ -208,7 +210,7 @@ public class ToriUI extends UI {
     }
 
     private ToriApiLoader getApiLoader() {
-        final VaadinServiceSession session = getSession();
+        final VaadinSession session = getSession();
         final ToriApiLoader apiLoader = session
                 .getAttribute(ToriApiLoader.class);
         if (apiLoader != null) {
@@ -332,7 +334,7 @@ public class ToriUI extends UI {
         } else if (pathPart != null) {
             getPage().setLocation(uri);
         } else if (fragment != null) {
-            getPage().setFragment(fragment);
+            getPage().setUriFragment(fragment);
         }
     }
 

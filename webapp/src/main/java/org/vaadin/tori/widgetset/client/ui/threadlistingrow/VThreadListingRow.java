@@ -42,7 +42,7 @@ import com.vaadin.client.UIDL;
 import com.vaadin.client.VCaptionWrapper;
 import com.vaadin.client.VConsole;
 import com.vaadin.client.ui.VOverlay;
-import com.vaadin.client.ui.richtextarea.VRichTextArea;
+import com.vaadin.client.ui.VRichTextArea;
 
 public class VThreadListingRow extends HTML {
 

@@ -208,4 +208,9 @@ public class FloatingBar extends AbstractComponentContainer implements
     public Iterator<Component> getComponentIterator() {
         return Arrays.asList((Component) getState().getContent()).iterator();
     }
+
+    @Override
+    public Iterator<Component> iterator() {
+        return getComponentIterator();
+    }
 }

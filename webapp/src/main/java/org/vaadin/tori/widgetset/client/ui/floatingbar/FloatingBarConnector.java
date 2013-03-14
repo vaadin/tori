@@ -59,7 +59,7 @@ public final class FloatingBarConnector extends
         final FloatingBarState state = getState();
         final FloatingBarWidget widget = (FloatingBarWidget) getWidget();
 
-        widget.setRootWidget(getConnection().getRootConnector().getWidget());
+        widget.setRootWidget(getConnection().getUIConnector().getWidget());
         widget.setPortlet(state.isPortlet());
         widget.setTopAligned(state.isTopAligned());
         widget.setContentWidget(((ComponentConnector) state.getContent())

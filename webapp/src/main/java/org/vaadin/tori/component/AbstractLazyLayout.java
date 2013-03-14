@@ -27,13 +27,15 @@ import org.vaadin.tori.widgetset.client.ui.lazylayout.AbstractLazyLayoutClientRp
 import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutServerRpc;
 import org.vaadin.tori.widgetset.client.ui.lazylayout.LazyLayoutState;
 
-import com.vaadin.shared.ComponentState;
 import com.vaadin.shared.Connector;
+import com.vaadin.shared.communication.SharedState;
 import com.vaadin.ui.AbstractLayout;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.SelectiveRenderer;
 
 @SuppressWarnings("serial")
-public abstract class AbstractLazyLayout extends AbstractLayout {
+public abstract class AbstractLazyLayout extends AbstractLayout implements
+        SelectiveRenderer {
 
     /**
      * Custom layout slots containing the components.
@@ -72,7 +74,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
     }
 
     @Override
-    public boolean isComponentVisible(final Component childComponent) {
+    public boolean isRendered(final Component childComponent) {
         return loadedComponents.contains(childComponent);
     }
 
@@ -136,6 +138,11 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
     @Override
     public Iterator<Component> getComponentIterator() {
         return components.iterator();
+    }
+
+    @Override
+    public Iterator<Component> iterator() {
+        return getComponentIterator();
     }
 
     /**
@@ -235,7 +242,7 @@ public abstract class AbstractLazyLayout extends AbstractLayout {
     }
 
     @Override
-    public Class<? extends ComponentState> getStateType() {
+    public Class<? extends SharedState> getStateType() {
         return LazyLayoutState.class;
     }
 }

@@ -3,9 +3,9 @@ package org.vaadin.tori.widgetset.client.ui.threadlisting;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.shared.ComponentState;
+import com.vaadin.shared.AbstractComponentState;
 
-public class ThreadListingState extends ComponentState {
+public class ThreadListingState extends AbstractComponentState {
     private static final long serialVersionUID = -4869218779372629528L;
 
     public static final class ControlInfo {

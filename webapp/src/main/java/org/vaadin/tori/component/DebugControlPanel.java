@@ -244,15 +244,14 @@ public class DebugControlPanel extends CustomComponent implements
         try {
             for (final Method setter : orderedSetters) {
                 if (isForPosts(setter)) {
-                    panel.addComponent(createPostControl(setter,
-                            data.getPosts()));
+                    panel.setContent(createPostControl(setter, data.getPosts()));
                 } else {
-                    panel.addComponent(createRegularControl(setter));
+                    panel.setContent(createRegularControl(setter));
                 }
             }
         } catch (final Exception e) {
             e.printStackTrace();
-            panel.addComponent(new Label(e.toString()));
+            panel.setContent(new Label(e.toString()));
         }
 
         return panel;

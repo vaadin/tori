@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 import com.vaadin.server.DefaultUIProvider;
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
-import com.vaadin.server.VaadinServiceSession;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 
 public class ToriUiProvider extends DefaultUIProvider {
@@ -42,7 +42,7 @@ public class ToriUiProvider extends DefaultUIProvider {
 
         final UI ui = super.createInstance(event);
 
-        ui.setSession(VaadinServiceSession.getCurrent());
+        ui.setSession(VaadinSession.getCurrent());
         if (ui instanceof ToriUI) {
             final ToriUI toriUi = (ToriUI) ui;
             toriUi.initApiLoader(event.getRequest());

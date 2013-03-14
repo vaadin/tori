@@ -127,8 +127,7 @@ public abstract class AbstractLazyLayoutConnector extends
     }
 
     private void attachScrollHandlersIfNeeded() {
-        final Widget rootWidget = getConnection().getRootConnector()
-                .getWidget();
+        final Widget rootWidget = getConnection().getUIConnector().getWidget();
         getWidget().attachScrollHandlersIfNeeded(rootWidget);
     }
 

@@ -66,7 +66,7 @@ public class ThreadMoveComponent extends CustomComponent {
             panel.setHeight("250px");
 
             categories = createCategories(presenter);
-            panel.addComponent(categories);
+            panel.setContent(categories);
 
             layout.addComponent(panel);
             layout.addComponent(new NativeButton("Move Thread",
