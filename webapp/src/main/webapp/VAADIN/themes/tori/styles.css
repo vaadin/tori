@@ -19,6 +19,48 @@
 	text-decoration: none;
 }
 
+.v-ui.loading,
+.v-ui.loading a,
+.v-ui.loading a:active,
+.v-ui.loading a:visited,
+.v-ui.loading .v-label,
+.v-ui.loading .v-link,
+.v-ui.loading .v-table-row-odd, 
+.v-ui.loading .v-button, 
+.v-ui.loading .v-popup-indicator,
+.v-ui.loading .v-icon,
+.v-ui.loading .v-table-row { 
+	cursor: wait;
+}
+
+.v-ff.v-mac .v-ui.loading,
+.v-ff.v-mac .v-ui.loading a,
+.v-ff.v-mac .v-ui.loading a:active,
+.v-ff.v-mac .v-ui.loading a:visited,
+.v-ff.v-mac .v-ui.loading .v-label,
+.v-ff.v-mac .v-ui.loading .v-link,
+.v-ff.v-mac .v-ui.loading .v-table-row-odd, 
+.v-ff.v-mac .v-ui.loading .v-button, 
+.v-ff.v-mac .v-ui.loading .v-popup-indicator,
+.v-ff.v-mac .v-ui.loading .v-icon,
+.v-ff.v-mac .v-ui.loading .v-table-row { 
+	cursor: url("images/cursor-ff-osx-wait.png"), default;
+}
+
+.v-ff.v-win .v-ui.loading,
+.v-ff.v-win .v-ui.loading a,
+.v-ff.v-win .v-ui.loading a:active,
+.v-ff.v-win .v-ui.loading a:visited,
+.v-ff.v-win .v-ui.loading .v-label,
+.v-ff.v-win .v-ui.loading .v-link,
+.v-ff.v-win .v-ui.loading .v-table-row-odd, 
+.v-ff.v-win .v-ui.loading .v-button, 
+.v-ff.v-win .v-ui.loading .v-popup-indicator,
+.v-ff.v-win .v-ui.loading .v-icon,
+.v-ff.v-win .v-ui.loading .v-table-row { 
+	cursor: url("images/cursor-ff-win-wait.png"), default;
+}
+
 .v-floatingbar .v-popupview {
 	background: transparent;
 }
