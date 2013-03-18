@@ -61,6 +61,10 @@
 	cursor: url("images/cursor-ff-win-wait.png"), default;
 }
 
+.ie .v-scrollable {
+	overflow: visible;
+}
+
 .v-floatingbar .v-popupview {
 	background: transparent;
 }
