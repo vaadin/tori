@@ -652,11 +652,7 @@ public class ThreadListingWidget extends Widget {
         final List<Integer> componentsToLoad = new ArrayList<Integer>();
 
         final long startTime = System.currentTimeMillis();
-
-        /*
-         * TODO: optimize (give up something is first being shown, and then
-         * suddenly stops being shown
-         */
+        boolean shownItemsHaveBeenFound = false;
 
         /*
          * starting index is 1, since the first element is the header - so we
@@ -669,8 +665,22 @@ public class ThreadListingWidget extends Widget {
                 final Element childElem = (Element) child;
                 final boolean isAPlaceholderWidget = childElem.getTagName()
                         .equals(PLACEHOLDER_ELEMENT);
-                if (isAPlaceholderWidget
-                        && VisibilityHelper.isBeingShown(childElem, distance)) {
+
+                final boolean beingShown = VisibilityHelper.isBeingShown(
+                        childElem, distance);
+                if (shownItemsHaveBeenFound && !beingShown) {
+                    /*
+                     * we previously have seen items, but now they're
+                     * disappearing. This needs to mean that we're checking for
+                     * elements below the screen.
+                     */
+                    debug("started for element looking past screen: hopping out of loop");
+                    break;
+                }
+
+                shownItemsHaveBeenFound = beingShown;
+
+                if (isAPlaceholderWidget && beingShown) {
                     // again, substracting the position of the header element.
                     componentsToLoad.add(i - 1);
                 }

@@ -269,11 +269,25 @@ public class VLazyLayout extends SimplePanel {
 
     private boolean findAllThingsToFetchAndFetchThem(final int distance) {
 
+        boolean shownItemsHaveBeenFound = false;
+
         final Set<Widget> componentsToLoad = new HashSet<Widget>();
         for (int i = 0; i < panel.getWidgetCount(); i++) {
             final Widget child = panel.getWidget(i);
             final boolean isAPlaceholderWidget = child.getClass() == PlaceholderWidget.class;
-            if (isAPlaceholderWidget && isBeingShown(child, distance)) {
+            final boolean beingShown = isBeingShown(child, distance);
+
+            if (shownItemsHaveBeenFound && !beingShown) {
+                /*
+                 * suddenly the items aren't showing anymore - we're probably
+                 * below the screen.
+                 */
+                break;
+            }
+            
+            shownItemsHaveBeenFound = beingShown;
+
+            if (isAPlaceholderWidget && beingShown) {
                 componentsToLoad.add(child);
             }
         }
