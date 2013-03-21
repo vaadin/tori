@@ -18,7 +18,6 @@ package org.vaadin.tori.component.post;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
-import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -59,7 +58,6 @@ public class EditComponent extends CssLayout {
 
         final Button editButton = new Button("Edit Post", listener);
         editButton.setStyleName(BaseTheme.BUTTON_LINK);
-        editButton.setIcon(new ThemeResource("images/icon-link-edit.png"));
         addComponent(editButton);
 
         editPopup = new PopupButton();

@@ -250,7 +250,6 @@ public class PostComponent extends CustomComponent {
         quoteButton = new Button("Quote for Reply", replyListener);
         quoteButton.setData(post);
         quoteButton.setStyleName(BaseTheme.BUTTON_LINK);
-        quoteButton.setIcon(new ThemeResource("images/icon-link-reply.png"));
         quoteButton.setVisible(false);
 
         contextMenu = new ContextMenu();
@@ -371,28 +370,6 @@ public class PostComponent extends CustomComponent {
         removeStyleName(STYLE_BANNED);
         root.setDescription(null);
     }
-
-    /*-
-    private Component buildReportPostComponent(final Post post,
-            final ThreadPresenter presenter) {
-        final Button button = new Button("Report Post");
-        button.setStyleName(Reindeer.BUTTON_LINK);
-        button.setIcon(new ThemeResource("images/icon-link-report.png"));
-        button.addListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                final int x = event.getClientX();
-                final int y = event.getClientY();
-                getRoot()
-                        .addWindow(
-                                new ReportWindow(post, presenter,
-                                        getPermaLinkUrl(post)));
-            }
-        });
-        button.setVisible(false);
-        return button;
-    }
-     */
 
     @CheckForNull
     private Component getAttachments(final Post post) {

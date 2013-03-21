@@ -24,7 +24,6 @@ import org.vaadin.tori.service.post.PostReport.Reason;
 import org.vaadin.tori.thread.ThreadPresenter;
 
 import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -78,9 +77,8 @@ public class ReportComponent extends CustomComponent {
         this.presenter = presenter;
         this.postPermalink = postPermalink;
 
-        final Button reportButton = new Button("Report Post", listener);
+        final Button reportButton = new Button(null, listener);
         reportButton.setStyleName(BaseTheme.BUTTON_LINK);
-        reportButton.setIcon(new ThemeResource("images/icon-link-report.png"));
         root.addComponent(reportButton);
 
         reportPopup = new PopupButton();

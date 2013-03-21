@@ -127,28 +127,42 @@
 .post td.actions > div {
 	display: inline-block;
 	vertical-align: middle;
+	padding: 0 5px;
 }
 
 .post td.actions div[location="report"] {
 	color: #AAA;
 }
 
-.post td.actions div[location="report"],
-.post td.actions div[location="settings"] {
-	visibility: hidden;
+.post td.actions .v-button-caption {
+	color: #c9c9b5;
 }
 
-.v-touch .post td.actions div[location="report"],
-.v-touch .post td.actions div[location="settings"] {
-	/* fix for ios bug */
-	visibility: visible;
+.post td.actions .v-button-link:hover .v-button-caption {
+	color: #00b4f0;
 }
 
-.post td.actions:hover div[location="report"],
-.post td.actions:hover div[location="settings"] {
-	visibility: visible;
+.post td.actions .v-button-caption { 
+	outline: 0;
 }
 
+.post td.actions [location="settings"] .v-icon { display: none; }
+
+.post td.actions [location="settings"] .v-button-caption:before,
+.post td.actions [location="edit"] .v-button-caption:before,
+.post td.actions [location="report"] .v-button-caption:before,
+.post td.actions [location="quote"] .v-button-caption:before {
+	font-family: "Tori-Icons";
+	font-size: 14px;
+	padding-right: 2px;
+	vertical-align: middle;
+}
+
+.post td.actions [location="settings"] .v-button-caption:before { content: "\e005"; }
+.post td.actions [location="edit"] .v-button-caption:before { content: "\e00e"; }
+.post td.actions [location="report"] .v-button-caption:before { content: "\e014"; }
+.post td.actions [location="quote"] .v-button-caption:before { content: "\e007"; }
+	
 .post td.actions .v-popupbutton, 
 .post td.actions .v-popupbutton .v-button-wrap,
 .post td.actions .v-popupbutton .v-popup-indicator {

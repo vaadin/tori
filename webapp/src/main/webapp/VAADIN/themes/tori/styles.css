@@ -9,6 +9,8 @@
 @import url(contextmenu/style.css);
 @import url(floatingbar/style.css);
 
+@import url(iconfont.css);
+
 .v-app {
 	background: #fff;
 }
