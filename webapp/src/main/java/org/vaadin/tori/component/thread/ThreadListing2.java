@@ -93,6 +93,9 @@ public class ThreadListing2 extends AbstractComponent {
                 case UNLOCK:
                     presenter.unlock(thread);
                     break;
+                case MOVE:
+                    showThreadMovePopup(thread);
+                    return;
                 default:
                     throw new IllegalArgumentException(
                             "Unrecognized/unsupported action " + action
@@ -124,6 +127,13 @@ public class ThreadListing2 extends AbstractComponent {
                         DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
                         Notification.Type.ERROR_MESSAGE);
             }
+        }
+
+        private void showThreadMovePopup(final DiscussionThread thread) {
+            final ThreadMoveComponent2 window = new ThreadMoveComponent2(
+                    thread, presenter);
+            window.center();
+            getUI().addWindow(window);
         }
     };
 

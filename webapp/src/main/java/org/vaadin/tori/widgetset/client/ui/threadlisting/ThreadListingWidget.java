@@ -518,13 +518,6 @@ public class ThreadListingWidget extends Widget {
                                 .confirm("Are you sure you want to delete the thread?")) {
                     return;
                 }
-
-                else if (action == Action.MOVE) {
-                    // TODO
-                    VConsole.error("not implemented yet");
-                    return;
-                }
-
                 rowActionHandler.handle(action, popupThreadId);
             } else {
                 VConsole.error("ThreadListingWidget tries to make an action, but popupThreadId is uninitialized");
