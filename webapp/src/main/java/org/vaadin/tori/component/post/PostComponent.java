@@ -59,20 +59,22 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't bother us with serialization.")
 public class PostComponent extends CustomComponent {
 
+    private static final String DELETE_CAPTION = "Delete Post";
+    private static final String DELETE_ICON = "icon-delete";
+
     private static final String BAN_CAPTION = "Ban Author";
-    private static final ThemeResource BAN_ICON = new ThemeResource(
-            "images/icon-ban.png");
+    private static final String BAN_ICON = "icon-ban";
+
     private static final String UNFOLLOW_CAPTION = "Unfollow Thread";
-    private static final ThemeResource UNFOLLOW_ICON = new ThemeResource(
-            "images/icon-unfollow.png");
+    private static final String UNFOLLOW_ICON = "icon-unfollow";
 
     private static final String FOLLOW_CAPTION = "Follow Thread";
-    private static final ThemeResource FOLLOW_ICON = new ThemeResource(
-            "images/icon-follow.png");
-    private static final String STYLE_BANNED = "banned-author";
-    private static final Resource UNBAN_ICON = new ThemeResource(
-            "images/icon-unban.png");
+    private static final String FOLLOW_ICON = "icon-follow";
+
     private static final String UNBAN_CAPTION = "Unban Author";
+    private static final String UNBAN_ICON = "icon-unban";
+
+    private static final String STYLE_BANNED = "banned-author";
 
     private final PrettyTime prettyTime = new PrettyTime();
     private final DateFormat dateFormat = new SimpleDateFormat(
@@ -347,8 +349,8 @@ public class PostComponent extends CustomComponent {
     }
 
     public void enableDeleting() {
-        contextMenu.add(new ThemeResource("images/icon-delete.png"),
-                "Delete Post", new ContextComponentSwapper() {
+        contextMenu.add(DELETE_ICON, DELETE_CAPTION,
+                new ContextComponentSwapper() {
                     @Override
                     public Component swapContextComponent() {
                         return Util.newConfirmDeleteComponent(presenter, post,

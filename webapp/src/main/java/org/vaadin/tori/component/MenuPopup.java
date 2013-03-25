@@ -24,8 +24,6 @@ import java.util.Map;
 
 import org.vaadin.tori.ToriUtil;
 
-import com.vaadin.server.Resource;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
@@ -68,15 +66,15 @@ public class MenuPopup extends CustomComponent {
         setStyleName("menupopup");
     }
 
-    public void add(final Resource icon, final String caption,
+    public void add(final String iconName, final String caption,
             final ContextAction action) {
         ToriUtil.checkForNull(action, "action may not be null");
-        final Button button = createButton(icon, caption, action);
+        final Button button = createButton(iconName, caption, action);
         actions.put(action, button);
         layout.addComponent(button);
     }
 
-    private Button createButton(final Resource icon, final String caption,
+    private Button createButton(final String iconName, final String caption,
             final ContextAction action) {
         final Button button = new Button(caption, new Button.ClickListener() {
             @Override
@@ -84,8 +82,8 @@ public class MenuPopup extends CustomComponent {
                 action.contextClicked();
             }
         });
-        button.setIcon(icon);
         button.setStyleName(Reindeer.BUTTON_LINK);
+        button.addStyleName(iconName);
         return button;
     }
 
@@ -101,15 +99,15 @@ public class MenuPopup extends CustomComponent {
         menuClickListeners.remove(listener);
     }
 
-    public void add(final Resource icon, final String caption,
+    public void add(final String iconName, final String caption,
             final ContextComponentSwapper swapper) {
         ToriUtil.checkForNull(swapper, "swapper may not be null");
-        final Button button = createButton(icon, caption, swapper);
+        final Button button = createButton(iconName, caption, swapper);
         swappers.put(swapper, button);
         layout.addComponent(button);
     }
 
-    private Button createButton(final Resource icon, final String caption,
+    private Button createButton(final String iconName, final String caption,
             final ContextComponentSwapper swapper) {
         final Button button = new Button(caption + '\u2026',
                 new Button.ClickListener() {
@@ -133,8 +131,8 @@ public class MenuPopup extends CustomComponent {
                         }
                     }
                 });
-        button.setIcon(icon);
         button.setStyleName(Reindeer.BUTTON_LINK);
+        button.addStyleName(iconName);
         return button;
     }
 
@@ -147,44 +145,43 @@ public class MenuPopup extends CustomComponent {
         return components;
     }
 
-    public void swap(final ContextAction oldToSwapOut, final Resource icon,
+    public void swap(final ContextAction oldToSwapOut, final String iconName,
             final String caption, final ContextAction newAction) {
         final Component oldComponent = actions.remove(oldToSwapOut);
         if (oldComponent != null) {
-            final Button newButton = createButton(icon, caption, newAction);
+            final Button newButton = createButton(iconName, caption, newAction);
             _replaceComponents(oldComponent, newButton);
             actions.put(newAction, newButton);
         }
     }
 
     public void swap(final ContextComponentSwapper oldToSwapOut,
-            final Resource icon, final String caption,
+            final String iconName, final String caption,
             final ContextAction newAction) {
         final Component oldComponent = swappers.remove(oldToSwapOut);
         if (oldComponent != null) {
-            final Button newButton = createButton(icon, caption, newAction);
+            final Button newButton = createButton(iconName, caption, newAction);
             _replaceComponents(oldComponent, newButton);
             actions.put(newAction, newButton);
         }
     }
 
-    public void swap(final ContextAction oldToSwapOut,
-            final ThemeResource icon, final String caption,
-            final ContextComponentSwapper newSwapper) {
+    public void swap(final ContextAction oldToSwapOut, final String iconName,
+            final String caption, final ContextComponentSwapper newSwapper) {
         final Component oldComponent = actions.remove(oldToSwapOut);
         if (oldComponent != null) {
-            final Button newButton = createButton(icon, caption, newSwapper);
+            final Button newButton = createButton(iconName, caption, newSwapper);
             _replaceComponents(oldComponent, newButton);
             swappers.put(newSwapper, newButton);
         }
     }
 
     public void swap(final ContextComponentSwapper oldToSwapOut,
-            final ThemeResource icon, final String caption,
+            final String iconName, final String caption,
             final ContextComponentSwapper newSwapper) {
         final Component oldComponent = swappers.remove(oldToSwapOut);
         if (oldComponent != null) {
-            final Button newButton = createButton(icon, caption, newSwapper);
+            final Button newButton = createButton(iconName, caption, newSwapper);
             _replaceComponents(oldComponent, newButton);
             swappers.put(newSwapper, newButton);
         }

@@ -23,7 +23,6 @@ import org.vaadin.tori.component.MenuPopup.ContextAction;
 import org.vaadin.tori.component.MenuPopup.ContextComponentSwapper;
 import org.vaadin.tori.component.MenuPopup.MenuClickListener;
 
-import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -102,15 +101,15 @@ public class ContextMenu extends CustomComponent {
         layout.addComponent(contextComponent);
     }
 
-    public void add(final Resource icon, final String caption,
+    public void add(final String iconName, final String caption,
             final ContextAction action) {
-        popupLayout.add(icon, caption, action);
+        popupLayout.add(iconName, caption, action);
         setVisible(true);
     }
 
-    public void add(final Resource icon, final String caption,
+    public void add(final String iconName, final String caption,
             final ContextComponentSwapper swapper) {
-        popupLayout.add(icon, caption, swapper);
+        popupLayout.add(iconName, caption, swapper);
         setVisible(true);
     }
 
@@ -142,20 +141,19 @@ public class ContextMenu extends CustomComponent {
         contextComponent.setPopupVisible(false);
     }
 
-    public void swap(final ContextAction oldToSwapOut, final Resource icon,
+    public void swap(final ContextAction oldToSwapOut, final String iconName,
             final String caption, final ContextAction newAction) {
-        popupLayout.swap(oldToSwapOut, icon, caption, newAction);
+        popupLayout.swap(oldToSwapOut, iconName, caption, newAction);
     }
 
     public void swap(final ContextComponentSwapper oldToSwapOut,
-            final Resource icon, final String caption,
+            final String iconName, final String caption,
             final ContextAction newAction) {
-        popupLayout.swap(oldToSwapOut, icon, caption, newAction);
+        popupLayout.swap(oldToSwapOut, iconName, caption, newAction);
     }
 
-    public void swap(final ContextAction oldToSwapOut,
-            final ThemeResource icon, final String caption,
-            final ContextComponentSwapper newSwapper) {
-        popupLayout.swap(oldToSwapOut, icon, caption, newSwapper);
+    public void swap(final ContextAction oldToSwapOut, final String iconName,
+            final String caption, final ContextComponentSwapper newSwapper) {
+        popupLayout.swap(oldToSwapOut, iconName, caption, newSwapper);
     }
 }

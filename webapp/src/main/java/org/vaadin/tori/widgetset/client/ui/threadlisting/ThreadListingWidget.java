@@ -752,8 +752,7 @@ public class ThreadListingWidget extends Widget {
     private Element getActionElement(final Action action) {
         final Element controlButton = DOM.createDiv();
         controlButton.setClassName("control control-" + action.toCssClass());
-        controlButton.setInnerHTML("<div class='" + action.toCssClass()
-                + " icon'></div><div>" + action.toCaption() + "</div>");
+        controlButton.setInnerText(action.toCaption());
         return controlButton;
     }
 

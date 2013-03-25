@@ -40,7 +40,6 @@ import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.dd.VerticalDropLocation;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
@@ -228,8 +227,8 @@ class CategoryTreeTable extends TreeTable {
             for (final ContextMenuOperation menuItem : contextMenuOperations) {
                 switch (menuItem) {
                 case EDIT:
-                    contextMenu.add(new ThemeResource("images/icon-edit.png"),
-                            "Edit category", new ContextComponentSwapper() {
+                    contextMenu.add("icon-edit", "Edit category",
+                            new ContextComponentSwapper() {
                                 @Override
                                 public Component swapContextComponent() {
                                     final EditCategoryListener listener = new EditCategoryListener() {
@@ -255,9 +254,8 @@ class CategoryTreeTable extends TreeTable {
                             });
                     break;
                 case DELETE:
-                    contextMenu.add(
-                            new ThemeResource("images/icon-delete.png"),
-                            "Delete category", new ContextComponentSwapper() {
+                    contextMenu.add("icon-delete", "Delete category",
+                            new ContextComponentSwapper() {
                                 @Override
                                 public Component swapContextComponent() {
                                     final String title = String.format(String
@@ -291,9 +289,8 @@ class CategoryTreeTable extends TreeTable {
                             });
                     break;
                 case FOLLOW:
-                    contextMenu.add(
-                            new ThemeResource("images/icon-follow.png"),
-                            "Follow category", new ContextAction() {
+                    contextMenu.add("icon-follow", "Follow category",
+                            new ContextAction() {
                                 @Override
                                 public void contextClicked() {
                                     presenter.follow(category);
