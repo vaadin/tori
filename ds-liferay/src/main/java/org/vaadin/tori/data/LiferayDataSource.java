@@ -1479,6 +1479,18 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                         return id;
                     }
                 };
+            } else {
+                return new UrlInfo() {
+                    @Override
+                    public Destination getDestination() {
+                        return Destination.DASHBOARD;
+                    }
+
+                    @Override
+                    public long getId() {
+                        return -1;
+                    }
+                };
             }
         }
 

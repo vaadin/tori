@@ -31,6 +31,7 @@ import org.vaadin.tori.component.GoogleAnalyticsTracker;
 import org.vaadin.tori.component.breadcrumbs.Breadcrumbs;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.DataSource.UrlInfo;
+import org.vaadin.tori.data.DataSource.UrlInfo.Destination;
 import org.vaadin.tori.edit.EditViewImpl;
 import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.service.AuthorizationService;
@@ -305,25 +306,32 @@ public class ToriUI extends UI {
 
             if (toriFragment != null) {
                 fragment = "";
-                switch (toriFragment.getDestination()) {
-                case CATEGORY:
-                    fragment = ToriNavigator.ApplicationView.CATEGORIES
-                            .getUrl();
-                    break;
-                case THREAD:
-                    fragment = ToriNavigator.ApplicationView.THREADS.getUrl();
-                    break;
-                default:
-                    Notification.show("You found a URL the coders "
-                            + "didn't remember to handle correctly. "
-                            + "Terribly sorry about that.",
-                            Notification.Type.HUMANIZED_MESSAGE);
-                    throw new UnsupportedOperationException("Support for "
-                            + toriFragment.getDestination()
-                            + " is not implemented");
-                }
 
-                fragment += "/" + toriFragment.getId();
+                if (toriFragment.getDestination() == Destination.DASHBOARD) {
+                    fragment = ToriNavigator.ApplicationView.DASHBOARD.getUrl()
+                            + "/";
+                } else {
+                    switch (toriFragment.getDestination()) {
+                    case CATEGORY:
+                        fragment = ToriNavigator.ApplicationView.CATEGORIES
+                                .getUrl();
+                        break;
+                    case THREAD:
+                        fragment = ToriNavigator.ApplicationView.THREADS
+                                .getUrl();
+                        break;
+                    default:
+                        Notification.show("You found a URL the coders "
+                                + "didn't remember to handle correctly. "
+                                + "Terribly sorry about that.",
+                                Notification.Type.HUMANIZED_MESSAGE);
+                        throw new UnsupportedOperationException("Support for "
+                                + toriFragment.getDestination()
+                                + " is not implemented");
+                    }
+
+                    fragment += "/" + toriFragment.getId();
+                }
             }
         } catch (final UnsupportedEncodingException e) {
             logger().error("URI is not in UTF-8 format");

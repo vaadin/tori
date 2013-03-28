@@ -35,7 +35,7 @@ public interface DataSource {
 
     public interface UrlInfo {
         public enum Destination {
-            CATEGORY, THREAD
+            CATEGORY, THREAD, DASHBOARD;
         }
 
         public Destination getDestination();
