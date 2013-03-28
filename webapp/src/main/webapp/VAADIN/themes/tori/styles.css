@@ -75,10 +75,9 @@
 	cursor: default;
 }
 
-.v-app .v-view {
-	/* fixes retina ipad pixel-cut-off */
-	overflow: visible;
-}
+/* fixes retina ipad pixel-cut-off */
+.v-app .v-view { overflow: visible; }
+.v-ios .v-ui { overflow: visible; }
 
 a:link, 
 .v-link a:link span,

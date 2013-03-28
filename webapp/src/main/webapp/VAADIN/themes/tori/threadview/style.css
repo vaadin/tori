@@ -249,10 +249,14 @@
 }
 .threadSummary .topRow {
 	background: #64635a;
+}
+
+.threadSummary .topRow .v-label {
 	color: #fff;
 	font-size: 13px;
 	white-space: nowrap;
 }
+
 .threadSummary .post [location="body"] {
 	max-height: 200px;
 	overflow-y: auto;
