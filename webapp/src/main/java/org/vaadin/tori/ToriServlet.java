@@ -63,6 +63,9 @@ public class ToriServlet extends VaadinServlet {
                 event.getSession().addUIProvider(new ToriUiProvider(theme));
             }
         });
+
+        getService()
+                .setSystemMessagesProvider(ToriSystemMessagesProvider.get());
     }
 
     private static Logger getLogger() {

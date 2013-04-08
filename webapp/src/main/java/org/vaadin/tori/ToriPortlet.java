@@ -163,5 +163,8 @@ public class ToriPortlet extends VaadinPortlet {
                 event.getSession().addUIProvider(new ToriUiProvider(theme));
             }
         });
+
+        getService()
+                .setSystemMessagesProvider(ToriSystemMessagesProvider.get());
     }
 }
