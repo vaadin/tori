@@ -19,6 +19,8 @@ package org.vaadin.tori;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
@@ -45,6 +47,7 @@ import com.vaadin.server.VaadinPortletRequest;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -272,7 +275,7 @@ public class ToriUI extends UI {
     @SuppressWarnings("deprecation")
     private void fixUrl(final String contextPath) {
         final URI uri = getPage().getLocation();
-        final String path = uri.getPath();
+        final String path = getLocaleAdjustedURI(uri.getPath());
         final String pathRoot = getDataSource().getPathRoot();
 
         if (pathRoot == null) {
@@ -301,8 +304,28 @@ public class ToriUI extends UI {
         final String relativePath = path.substring(pathRoot.length());
         try {
             final String query = getQueryString(uri);
-            final UrlInfo toriFragment = getDataSource().getToriFragment(
-                    relativePath, query);
+            UrlInfo toriFragment;
+
+            try {
+                toriFragment = getDataSource().getToriFragment(relativePath,
+                        query);
+            } catch (final Exception e) {
+                toriFragment = new UrlInfo() {
+                    @Override
+                    public Destination getDestination() {
+                        return Destination.DASHBOARD;
+                    }
+
+                    @Override
+                    public long getId() {
+                        return -1;
+                    }
+                };
+                Notification
+                        .show("The given URL doesn't match to any content on this forum",
+                                "The content probably has been taken down since.",
+                                Type.WARNING_MESSAGE);
+            }
 
             if (toriFragment != null) {
                 fragment = "";
@@ -373,5 +396,44 @@ public class ToriUI extends UI {
         }
 
         return !(pathStartsWithRoot && pathIsCorrectFormat);
+    }
+
+    /**
+     * <p>
+     * Remove the Locale setting parameter in the Liferay URI.
+     * <p>
+     * Take an URL <code>vaadin.com/foo</code>. Liferay accepts an url
+     * <code>vaadin.com/en_GB/foo</code>, and produces the same page. Some
+     * Liferay features are able to take use of the locale definition in the
+     * URL, and translate things. Since Tori doesn't support that currently, we
+     * need to ignore that bit in the URI.
+     */
+    private static String getLocaleAdjustedURI(final String path) {
+
+        // remove the prefixes locale string from the input -->
+        // /fi/foo/bar -> /foo/bar
+        // /en_GB/foo/bar -> /foo/bar
+
+        final Pattern pathShortener = Pattern
+                .compile("^/(?:[a-z]{2}(?:_[A-Z]{2})?/)?(.+)$");
+        /*-
+         * ^/              # the string needs to start with a forward slash
+         * (
+         *   ?:[a-z]{2}    # non-capturing group that matches two lower case letters
+         *   (
+         *     ?:_[A-Z]{2} # non-capturing group that, if the previous was matched, this matches the following underscore, and two upper case letters
+         *   )?            # the previous group is optional (so, it's fine to match the lower case letters only
+         *   /             # if the two lower case letters were found, no matter if the second group is found, a forward slash is required
+         * )?              # the entire group is optional
+         * (.+)$           # capture the string that comes after these groups.
+         */
+
+        final Matcher matcher = pathShortener.matcher(path);
+        if (matcher.matches()) {
+            return "/" + matcher.group(1);
+        } else {
+            getLogger().warn("Path appears weird: " + path);
+            return path;
+        }
     }
 }

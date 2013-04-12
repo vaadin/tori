@@ -941,7 +941,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
     @Deprecated
     @CheckForNull
     public UrlInfo getToriFragment(@NonNull final String queryUrl,
-            final String queryPart) {
+            final String queryPart) throws Exception {
         return null;
     }
 

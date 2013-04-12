@@ -1433,7 +1433,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     @Deprecated
     @CheckForNull
     public UrlInfo getToriFragment(@NonNull final String queryUrl,
-            final String queryPart) {
+            final String queryPart) throws Exception {
         final Matcher messageMatcher = LIFERAY_FORUM_URL_MESSAGE_PATTERN
                 .matcher(queryUrl);
         if (messageMatcher.matches()) {
@@ -1458,6 +1458,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             } catch (final Exception e) {
                 Logger.getLogger(getClass()).warn(
                         "Could not figure out a correct redirection", e);
+                throw e;
             }
         }
 

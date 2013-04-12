@@ -375,10 +375,13 @@ public interface DataSource {
      *         clear the fragment.
      * @deprecated This method needs to be moved somewhere else. (see also
      *             {@link #getPathRoot()})
+     * @throws Exception
+     *             if the translation to a Tori fragment was unsuccessful.
      */
     @Deprecated
     @CheckForNull
-    UrlInfo getToriFragment(@NonNull String queryUrl, String queryPart);
+    UrlInfo getToriFragment(@NonNull String queryUrl, String queryPart)
+            throws Exception;
 
     /**
      * @deprecated This method needs to be moved somewhere else (see also
