@@ -319,4 +319,9 @@ public class CategoryListing extends
             buttonWrapper.addComponent(createCategoryButton, 0);
         }
     }
+
+    @Override
+    public String getTitle() {
+        return getPresenter().getCategoryName();
+    }
 }

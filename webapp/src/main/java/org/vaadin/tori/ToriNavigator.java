@@ -34,6 +34,7 @@ import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.thread.ThreadViewImpl;
 
 import com.google.common.base.Joiner;
+import com.vaadin.server.Page;
 import com.vaadin.server.Page.UriFragmentChangedEvent;
 import com.vaadin.server.Page.UriFragmentChangedListener;
 import com.vaadin.ui.CssLayout;
@@ -232,6 +233,13 @@ public class ToriNavigator extends CustomComponent {
         v.navigateTo(arguments);
         final View previousView = currentView;
         currentView = v;
+
+        String pageTitle = "Tori";
+        if (v.getTitle() != null && !v.getTitle().isEmpty()) {
+            pageTitle += " - " + v.getTitle();
+        }
+
+        Page.getCurrent().setTitle(pageTitle);
 
         for (final ViewChangeListener l : listeners) {
             l.navigatorViewChange(previousView, currentView);

@@ -232,4 +232,8 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         }
     }
 
+    public String getCategoryName() {
+        return currentRoot.getName();
+    }
+
 }

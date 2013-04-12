@@ -238,4 +238,9 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     public void setPathRoot(final String pathRoot) {
         this.pathRoot.setValue(pathRoot);
     }
+
+    @Override
+    public String getTitle() {
+        return "Configuration View";
+    }
 }

@@ -46,4 +46,9 @@ public class NullViewImpl extends AbstractView<NullView, NullPresenter>
         // NOP
     }
 
+    @Override
+    public String getTitle() {
+        return null;
+    }
+
 }

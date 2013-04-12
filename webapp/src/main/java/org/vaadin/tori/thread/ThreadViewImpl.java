@@ -598,4 +598,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             newThreadComponent.updateAttachmentList(attachments);
         }
     }
+
+    @Override
+    public String getTitle() {
+        return getPresenter().getThreadTopic();
+    }
 }

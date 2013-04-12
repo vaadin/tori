@@ -259,4 +259,9 @@ public class CategoryViewImpl extends
         newThreadButton1.setVisible(userMayStartANewThread);
         newThreadButton2.setVisible(userMayStartANewThread);
     }
+
+    @Override
+    public String getTitle() {
+        return getPresenter().getCategoryName();
+    }
 }

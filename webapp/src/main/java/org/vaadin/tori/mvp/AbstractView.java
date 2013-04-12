@@ -117,4 +117,10 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
     public ToriUI getUI() {
         return (ToriUI) super.getUI();
     }
+
+    /**
+     * Get the title for the current view. <code>null</code> and empty Strings
+     * are valid return values.
+     */
+    public abstract String getTitle();
 }

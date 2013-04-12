@@ -406,4 +406,8 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             throws DataSourceException {
         return dataSource.getThread(threadId);
     }
+
+    public String getCategoryName() {
+        return currentCategory.getName();
+    }
 }

@@ -470,4 +470,8 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             getView().displayUserCanNotEdit();
         }
     }
+
+    public String getThreadTopic() {
+        return currentThread.getTopic();
+    }
 }

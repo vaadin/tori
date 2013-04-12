@@ -78,4 +78,9 @@ public class DashboardViewImpl extends
         layout.addComponent(new PanicComponent());
     }
 
+    @Override
+    public String getTitle() {
+        return null;
+    }
+
 }
