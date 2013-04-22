@@ -363,7 +363,7 @@ public class ToriUI extends UI {
         if (pathPart != null && fragment != null) {
             getPage().setLocation(pathPart + "#" + fragment);
         } else if (pathPart != null) {
-            getPage().setLocation(uri);
+            getPage().setLocation(pathPart);
         } else if (fragment != null) {
             getPage().setUriFragment(fragment);
         }

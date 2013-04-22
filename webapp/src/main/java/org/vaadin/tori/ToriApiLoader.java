@@ -94,7 +94,7 @@ public class ToriApiLoader {
 
     public DataSource createDataSource() {
         final DataSource ds = spi.createDataSource();
-        getLogger().info(
+        getLogger().debug(
                 String.format("Using %s implementation: %s", DataSource.class
                         .getSimpleName(), ds.getClass().getName()));
         return ds;
@@ -102,7 +102,7 @@ public class ToriApiLoader {
 
     public PostFormatter createPostFormatter() {
         final PostFormatter postFormatter = spi.createPostFormatter();
-        getLogger().info(
+        getLogger().debug(
                 String.format("Using %s implementation: %s",
                         PostFormatter.class.getSimpleName(), postFormatter
                                 .getClass().getName()));
@@ -112,7 +112,7 @@ public class ToriApiLoader {
     public SignatureFormatter createSignatureFormatter() {
         final SignatureFormatter signatureFormatter = spi
                 .createSignatureFormatter();
-        getLogger().info(
+        getLogger().debug(
                 String.format("Using %s implementation: %s",
                         SignatureFormatter.class.getSimpleName(),
                         signatureFormatter.getClass().getName()));
@@ -122,7 +122,7 @@ public class ToriApiLoader {
     public AuthorizationService createAuthorizationService() {
         final AuthorizationService authorizationService = spi
                 .createAuthorizationService();
-        getLogger().info(
+        getLogger().debug(
                 String.format("Using %s implementation: %s",
                         PostFormatter.class.getSimpleName(),
                         authorizationService.getClass().getName()));
