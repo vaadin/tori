@@ -6,6 +6,9 @@
 @import url("contextmenu.css");
 @import url("threadview.css");
 
+@import url(iconfont.css);
+
+
 .v-view .v-label-h1,
 .v-view .v-label-h2,
 .v-view .v-label-h3 {
