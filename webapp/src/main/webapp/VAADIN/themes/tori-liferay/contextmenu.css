@@ -31,3 +31,17 @@
 .contextmenu .v-button-opened {
 	visibility: visible;
 }
+
+.menupopup .v-button-caption:before { 
+	font-family: 'Tori-Icons';
+	padding-right: 5px; 
+	font-size: 16px;
+	vertical-align: middle;
+}
+
+.menupopup .icon-follow .v-button-caption:before { content: "\e00d"; }
+.menupopup .icon-unfollow .v-button-caption:before { content: "\e002"; }
+.menupopup .icon-ban .v-button-caption:before { content: "\e011"; }
+.menupopup .icon-unban .v-button-caption:before { content: "\e003"; }
+.menupopup .icon-delete .v-button-caption:before { content: "\e00f"; }
+.menupopup .icon-edit .v-button-caption:before { content: "\e00e"; }

@@ -3,11 +3,11 @@
 }
 
 .threadlisting .header {
-	background-color: #b4b3a3;
-	color: white;
-	font-size: smaller;
+	background-color: #c0c0c0;
+	color: black;
 	position: relative;
 	height: 20px;
+	font-weight: bold;
 }
 
 .threadlistingrow.following {
@@ -95,8 +95,7 @@
 }
 
 .threadlistingrow.unread .topic {
-	color: #0A85B4 !important;
-	font-weight: bold;	
+	font-weight: bold;
 }
 
 .threadlistingrow .contextmenu {
@@ -189,7 +188,10 @@
 .threadlistingrow .topic {
 	padding-left: 25px;
 	height: 100%;
-	color: #00B4F0;
+	-moz-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	-ie-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 .threadlistingrow .topic,

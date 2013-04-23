@@ -9,13 +9,17 @@
 @import url(iconfont.css);
 
 
-.v-view .v-label-h1,
-.v-view .v-label-h2,
-.v-view .v-label-h3 {
+.v-app .v-label-h1,
+.v-app .v-label-h2,
+.v-app .v-label-h3 {
 	color: #34404F;
 }
 
-.v-view {
+.v-app .v-label-h1 { font-size: 26px; }
+.v-app .v-label-h2 { font-size: 20px; }
+.v-app .v-label-h3 { font-size: 16px; }
+
+.v-app {
 	font-size: 14px;
 }
 
@@ -32,4 +36,8 @@
 .v-loading-indicator-delay {
 	position: fixed !important;
 	top: 70px !important;
+}
+
+.v-widget {
+	font-size: 14px;
 }
