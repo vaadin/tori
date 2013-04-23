@@ -1189,7 +1189,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             if (scopeGroupId < 0) {
                 // scope not defined yet -> get if from the theme display
                 scopeGroupId = themeDisplay.getScopeGroupId();
-                log.info("Using groupId " + scopeGroupId + " as the scope.");
+                log.debug("Using groupId " + scopeGroupId + " as the scope.");
             }
             long remoteUser = 0;
             if (request.getRemoteUser() != null) {
