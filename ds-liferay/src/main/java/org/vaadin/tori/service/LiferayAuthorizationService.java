@@ -262,7 +262,7 @@ public class LiferayAuthorizationService implements AuthorizationService,
 
             if (themeDisplay != null) {
                 scopeGroupId = themeDisplay.getScopeGroupId();
-                log.info("Using groupId " + scopeGroupId + " as the scope.");
+                log.debug("Using groupId " + scopeGroupId + " as the scope.");
             }
         }
 
