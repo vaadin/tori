@@ -41,6 +41,8 @@ public class ThreadPresenter extends Presenter<ThreadView> {
 
     public static final String NEW_THREAD_ARGUMENT = "new";
 
+    /** This can be null if the user is visiting a non-existing thread. */
+    @CheckForNull
     private DiscussionThread currentThread;
     private Category categoryWhileCreatingNewThread;
     private final LinkedHashMap<String, byte[]> attachments = new LinkedHashMap<String, byte[]>();
@@ -121,7 +123,8 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     }
 
     public boolean userMayQuote(final @NonNull Post post) {
-        return authorizationService.mayReplyIn(currentThread);
+        return currentThread != null
+                && authorizationService.mayReplyIn(currentThread);
     }
 
     public void ban(final @NonNull User user) throws DataSourceException {
@@ -151,6 +154,9 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     }
 
     public void followThread() throws DataSourceException {
+        if (currentThread == null) {
+            return;
+        }
         try {
             dataSource.follow(currentThread);
             getView().confirmFollowingThread();
@@ -163,6 +169,9 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     }
 
     public void unFollowThread() throws DataSourceException {
+        if (currentThread == null) {
+            return;
+        }
         try {
             dataSource.unFollow(currentThread);
             getView().confirmUnFollowingThread();
@@ -180,7 +189,8 @@ public class ThreadPresenter extends Presenter<ThreadView> {
      */
     public boolean userCanFollowThread() throws DataSourceException {
         try {
-            return authorizationService.mayFollow(currentThread)
+            return currentThread != null
+                    && authorizationService.mayFollow(currentThread)
                     && !dataSource.isFollowing(currentThread);
         } catch (final DataSourceException e) {
             log.error(e);
@@ -196,7 +206,8 @@ public class ThreadPresenter extends Presenter<ThreadView> {
      */
     public boolean userCanUnFollowThread() throws DataSourceException {
         try {
-            return authorizationService.mayFollow(currentThread)
+            return currentThread != null
+                    && authorizationService.mayFollow(currentThread)
                     && dataSource.isFollowing(currentThread);
         } catch (final DataSourceException e) {
             log.error(e);
@@ -293,7 +304,8 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     }
 
     public boolean userMayReply() {
-        return authorizationService.mayReplyIn(currentThread);
+        return currentThread != null
+                && authorizationService.mayReplyIn(currentThread);
     }
 
     public final boolean userMayAddFiles() {
