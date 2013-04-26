@@ -68,6 +68,7 @@ import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portlet.flags.service.FlagsEntryServiceUtil;
+import com.liferay.portlet.messageboards.NoSuchThreadException;
 import com.liferay.portlet.messageboards.model.MBBan;
 import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
@@ -445,6 +446,9 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                     .createCategory(MBCategoryLocalServiceUtil
                             .getCategory(thread.getCategoryId()));
             return wrapLiferayThread(thread, category);
+        } catch (final NoSuchThreadException e) {
+            throw new org.vaadin.tori.exception.NoSuchThreadException(threadId,
+                    e);
         } catch (final PortalException e) {
             log.error(
                     String.format("Couldn't get thread for id %d.", threadId),

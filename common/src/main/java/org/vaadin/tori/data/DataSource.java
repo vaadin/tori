@@ -26,6 +26,7 @@ import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.service.post.PostReport;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -147,7 +148,8 @@ public interface DataSource {
      * <code>null</code> if no such <code>DiscussionThread</code> exists.
      */
     @CheckForNull
-    DiscussionThread getThread(long threadId) throws DataSourceException;
+    DiscussionThread getThread(long threadId) throws NoSuchThreadException,
+            DataSourceException;
 
     /**
      * Returns all {@link Post Posts} in a {@link Thread} in ascending time

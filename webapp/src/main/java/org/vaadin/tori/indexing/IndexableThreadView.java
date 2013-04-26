@@ -23,6 +23,7 @@ import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.exception.NoSuchThreadException;
 
 public class IndexableThreadView extends IndexableView {
 
@@ -84,6 +85,9 @@ public class IndexableThreadView extends IndexableView {
         } catch (final NumberFormatException e) {
             e.printStackTrace();
             return "Invalid thread argument format";
+        } catch (final NoSuchThreadException e) {
+            e.printStackTrace();
+            return "No such thread";
         } catch (final DataSourceException e) {
             e.printStackTrace();
             return "There's a problem with the database";

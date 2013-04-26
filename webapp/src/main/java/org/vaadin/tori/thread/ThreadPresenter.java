@@ -27,6 +27,7 @@ import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.post.PostReport;
@@ -58,6 +59,9 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                 requestedThread = dataSource.getThread(threadId);
             } catch (final NumberFormatException e) {
                 log.error("Invalid thread id format: " + threadIdString);
+            } catch (final NoSuchThreadException e) {
+                getView().displayThreadNotFoundError(threadIdString);
+                return;
             }
 
             if (requestedThread != null) {
@@ -66,7 +70,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                 final ThreadView view = getView();
                 view.displayPosts(dataSource.getPosts(requestedThread));
             } else {
-                getView().displayThreadNotFoundError(threadIdString);
+                log.error("requestedthread was null, but no exception was thrown.");
             }
         } catch (final DataSourceException e) {
             log.error(e);
@@ -389,7 +393,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     }
 
     public void handleArguments(final @NonNull String[] arguments)
-            throws DataSourceException {
+            throws NoSuchThreadException, DataSourceException {
         if (arguments.length > 0) {
             if (!arguments[0].equals(NEW_THREAD_ARGUMENT)) {
                 setCurrentThreadById(arguments[0]);
@@ -472,6 +476,10 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     }
 
     public String getThreadTopic() {
-        return currentThread.getTopic();
+        if (currentThread != null) {
+            return currentThread.getTopic();
+        } else {
+            return "?";
+        }
     }
 }
