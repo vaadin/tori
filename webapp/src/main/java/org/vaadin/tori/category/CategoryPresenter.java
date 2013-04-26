@@ -24,6 +24,7 @@ import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.exception.NoSuchCategoryException;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 
@@ -32,6 +33,10 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class CategoryPresenter extends Presenter<CategoryView> {
 
+    /**
+     * This is <code>null</code> if the user is visiting a non-existing category
+     */
+    @CheckForNull
     private Category currentCategory;
 
     /* package protected due to testing */
@@ -73,12 +78,20 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         @NonNull
         public List<DiscussionThread> getThreadsBetween(final int from,
                 final int to) throws DataSourceException {
-            return dataSource.getThreads(currentCategory, from, to);
+            if (currentCategory != null) {
+                return dataSource.getThreads(currentCategory, from, to);
+            } else {
+                return Collections.emptyList();
+            }
         }
 
         @Override
         public int getThreadAmount() throws DataSourceException {
-            return (int) dataSource.getThreadCount(currentCategory);
+            if (currentCategory != null) {
+                return (int) dataSource.getThreadCount(currentCategory);
+            } else {
+                return 0;
+            }
         }
     };
 
@@ -110,6 +123,9 @@ public class CategoryPresenter extends Presenter<CategoryView> {
                     requestedCategory = dataSource.getCategory(categoryId);
                 } catch (final NumberFormatException e) {
                     log.error("Invalid category id format: " + categoryIdString);
+                } catch (final NoSuchCategoryException e) {
+                    getView().displayCategoryNotFoundError(
+                            String.valueOf(e.getCategoryId()));
                 }
 
                 if (requestedCategory != null) {
@@ -334,7 +350,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             // special "categories" like recent posts
             userMayStartANewThread = false;
         }
-        if (authorizationService != null) {
+        if (authorizationService != null && currentCategory != null) {
             userMayStartANewThread = authorizationService
                     .mayCreateThreadIn(currentCategory);
         }
@@ -368,6 +384,10 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     }
 
     public long countThreads() throws DataSourceException {
+        if (currentCategory == null) {
+            return -1;
+        }
+
         try {
             return dataSource.getThreadCount(currentCategory);
         } catch (final DataSourceException e) {
@@ -379,6 +399,10 @@ public class CategoryPresenter extends Presenter<CategoryView> {
 
     public List<DiscussionThread> getThreadsBetween(final int from, final int to)
             throws DataSourceException {
+        if (currentCategory == null) {
+            return Collections.emptyList();
+        }
+
         try {
             return dataSource.getThreads(currentCategory, from, to);
         } catch (final DataSourceException e) {
@@ -408,6 +432,10 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     }
 
     public String getCategoryName() {
-        return currentCategory.getName();
+        if (currentCategory != null) {
+            return currentCategory.getName();
+        } else {
+            return "?";
+        }
     }
 }

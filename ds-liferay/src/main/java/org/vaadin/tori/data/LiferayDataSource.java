@@ -68,6 +68,7 @@ import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portlet.flags.service.FlagsEntryServiceUtil;
+import com.liferay.portlet.messageboards.NoSuchCategoryException;
 import com.liferay.portlet.messageboards.NoSuchThreadException;
 import com.liferay.portlet.messageboards.model.MBBan;
 import com.liferay.portlet.messageboards.model.MBCategory;
@@ -386,6 +387,9 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         try {
             return EntityFactoryUtil.createCategory(MBCategoryLocalServiceUtil
                     .getCategory(categoryId));
+        } catch (final NoSuchCategoryException e) {
+            throw new org.vaadin.tori.exception.NoSuchCategoryException(
+                    categoryId, e);
         } catch (final PortalException e) {
             log.error(String.format("Couldn't get category for id %d.",
                     categoryId), e);

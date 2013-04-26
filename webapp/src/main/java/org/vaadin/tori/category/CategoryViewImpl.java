@@ -166,11 +166,10 @@ public class CategoryViewImpl extends
 
     @Override
     public void displayCategoryNotFoundError(final String requestedCategoryId) {
-        log.error("No such category: " + requestedCategoryId);
-
-        final Notification n = new Notification("No category found for "
-                + requestedCategoryId, Notification.Type.ERROR_MESSAGE);
-        n.show(getUI().getPage());
+        layout.removeAllComponents();
+        layout.addComponent(new HeadingLabel(
+                "No such category found. You probably followed a broken link...",
+                HeadingLevel.H1));
     }
 
     @Override
