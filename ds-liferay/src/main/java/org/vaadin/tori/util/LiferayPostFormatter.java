@@ -94,7 +94,7 @@ public class LiferayPostFormatter implements PostFormatter {
             }
             return body;
         } catch (final Exception e) {
-            log.warn("Couldn't parse the given post body: " + rawPostBody);
+            log.debug("Couldn't parse the given post body: " + rawPostBody);
         }
         return rawPostBody;
     }
