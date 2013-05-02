@@ -68,13 +68,10 @@ public class ToriUI extends UI {
 
     private String lastPath = "";
 
-    private String contextPath;
-
     @Override
     protected void init(final VaadinRequest request) {
 
-        contextPath = request.getContextPath();
-        fixUrl(contextPath);
+        fixUrl();
 
         getPage().setTitle("Tori");
         navigator = new ToriNavigator(this);
@@ -273,7 +270,7 @@ public class ToriUI extends UI {
     }
 
     @SuppressWarnings("deprecation")
-    private void fixUrl(final String contextPath) {
+    private void fixUrl() {
         final URI uri = getPage().getLocation();
         final String path = getLocaleAdjustedURI(uri.getPath());
         final String pathRoot = getDataSource().getPathRoot();
