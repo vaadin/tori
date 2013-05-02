@@ -386,6 +386,9 @@ public interface DataSource {
             throws Exception;
 
     /**
+     * Gets the path root configured for this application. Usable for
+     * redirection to the "root" of Tori.
+     * 
      * @deprecated This method needs to be moved somewhere else (see also
      *             {@link #getToriFragment(String)})
      */
