@@ -32,6 +32,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.servlet.http.HttpServletRequest;
 
 import org.vaadin.tori.Configuration;
 import org.vaadin.tori.data.entity.Attachment;
@@ -43,6 +44,7 @@ import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.data.util.PersistenceUtil;
 import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.service.post.PostReport;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -948,6 +950,14 @@ public class TestDataSource implements DataSource, DebugDataSource {
     @Override
     @Deprecated
     public String getPathRoot() {
+        return null;
+    }
+
+    @Override
+    @CheckForNull
+    public UrlInfo getUrlInfoFromBackendNativeRequest(
+            final HttpServletRequest servletRequest)
+            throws NoSuchThreadException, DataSourceException {
         return null;
     }
 }

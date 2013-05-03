@@ -69,6 +69,7 @@ import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portlet.flags.service.FlagsEntryServiceUtil;
 import com.liferay.portlet.messageboards.NoSuchCategoryException;
+import com.liferay.portlet.messageboards.NoSuchMessageException;
 import com.liferay.portlet.messageboards.NoSuchThreadException;
 import com.liferay.portlet.messageboards.model.MBBan;
 import com.liferay.portlet.messageboards.model.MBCategory;
@@ -1512,4 +1513,64 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         return portletPreferences.getValue(PREFS_PATHROOT, null);
     }
 
+    @Override
+    @CheckForNull
+    public UrlInfo getUrlInfoFromBackendNativeRequest(
+            final HttpServletRequest servletRequest)
+            throws org.vaadin.tori.exception.NoSuchThreadException,
+            DataSourceException {
+        final String portletId = servletRequest.getParameter("p_p_id");
+        final String messageId = servletRequest.getParameter("_" + portletId
+                + "_messageId");
+        final String categoryId = servletRequest.getParameter("_" + portletId
+                + "_mbCategoryId");
+
+        if (messageId != null) {
+            final long parsedMessageId = Long.parseLong(messageId);
+            try {
+                final MBMessage message = MBMessageServiceUtil
+                        .getMessage(parsedMessageId);
+                final long threadId = message.getThreadId();
+                return new UrlInfo() {
+                    @Override
+                    public long getId() {
+                        return threadId;
+                    }
+
+                    @Override
+                    public Destination getDestination() {
+                        return Destination.THREAD;
+                    }
+                };
+            } catch (final NoSuchThreadException e) {
+                throw new org.vaadin.tori.exception.NoSuchThreadException(
+                        parsedMessageId, e);
+            } catch (final NoSuchMessageException e) {
+                throw new org.vaadin.tori.exception.NoSuchThreadException(
+                        parsedMessageId, e);
+            } catch (final PortalException e) {
+                e.printStackTrace();
+                throw new DataSourceException(e);
+            } catch (final SystemException e) {
+                e.printStackTrace();
+                throw new DataSourceException(e);
+            }
+        }
+
+        else if (categoryId != null) {
+            return new UrlInfo() {
+                @Override
+                public long getId() {
+                    return Long.parseLong(categoryId);
+                }
+
+                @Override
+                public Destination getDestination() {
+                    return Destination.CATEGORY;
+                }
+            };
+        }
+
+        return null;
+    }
 }

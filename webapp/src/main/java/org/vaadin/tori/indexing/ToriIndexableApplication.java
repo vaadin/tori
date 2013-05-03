@@ -26,6 +26,9 @@ import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator.ApplicationView;
 import org.vaadin.tori.data.DataSource;
+import org.vaadin.tori.data.DataSource.UrlInfo;
+import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.util.PostFormatter;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -55,12 +58,53 @@ public class ToriIndexableApplication {
     public String getResultInHtml(
             @NonNull final HttpServletRequest servletRequest) {
 
+        try {
+            final UrlInfo urlInfo = getDataSource()
+                    .getUrlInfoFromBackendNativeRequest(servletRequest);
+            if (urlInfo != null) {
+                return getRedirectionTag(urlInfo);
+            }
+        } catch (final NoSuchThreadException e) {
+            return "Can't find that thread.";
+        } catch (final DataSourceException e) {
+            return "Something went wrong... I got an "
+                    + e.getClass().getSimpleName();
+        }
+
         final ArrayList<String> fragmentArguments = getFragmentArguments(servletRequest);
 
         final String viewString = getViewString(fragmentArguments);
         final List<String> arguments = getArguments(fragmentArguments);
         final IndexableView view = getIndexableView(viewString, arguments, this);
         return view.getHtml();
+    }
+
+    private String getRedirectionTag(@NonNull final UrlInfo urlInfo) {
+        @SuppressWarnings("deprecation")
+        String pathRoot = getDataSource().getPathRoot();
+        if (pathRoot == null) {
+            pathRoot = "";
+        }
+
+        final String destination;
+
+        switch (urlInfo.getDestination()) {
+        case THREAD:
+            destination = ApplicationView.THREADS.getUrl() + "/"
+                    + urlInfo.getId();
+            break;
+        case CATEGORY:
+            destination = ApplicationView.CATEGORIES.getUrl() + "/"
+                    + urlInfo.getId();
+            break;
+        default:
+            destination = ApplicationView.DASHBOARD.getUrl();
+        }
+
+        final String redirectUrl = pathRoot + "/#" + destination;
+
+        return "<meta http-equiv=\"refresh\" content=\"0;URL='" + redirectUrl
+                + "'\">";
     }
 
     @NonNull

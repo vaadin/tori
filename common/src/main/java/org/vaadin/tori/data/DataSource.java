@@ -19,6 +19,8 @@ package org.vaadin.tori.data;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.vaadin.tori.Configuration;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -26,6 +28,7 @@ import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.exception.NoSuchCategoryException;
 import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.service.post.PostReport;
 
@@ -394,4 +397,24 @@ public interface DataSource {
      */
     @Deprecated
     String getPathRoot();
+
+    /**
+     * Accepts a request from the native platform, checks whether that request
+     * contains any information that would link to forum content, and returns
+     * the pieces back in a Tori-understandable way.
+     * 
+     * @return {@link UrlInfo} parsed from the request, or <code>null</code> if
+     *         request didn't contain any native-specific things.
+     * @throws NoSuchThreadException
+     *             If the request seemed to contain thread information, but the
+     *             indicated category doesn't exist.
+     * @throws NoSuchCategoryException
+     *             If the request seemed to contain category information, but
+     *             the indicated category doesn't exist.
+     * @throws DataSourceException
+     *             pokemon
+     */
+    @CheckForNull
+    UrlInfo getUrlInfoFromBackendNativeRequest(HttpServletRequest servletRequest)
+            throws NoSuchThreadException, DataSourceException;
 }
