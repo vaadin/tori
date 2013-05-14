@@ -6,6 +6,7 @@
 	<property name="dir.webapp" value="${dir.project}/webapp" />
 	<property name="dir.ds.test" value="${dir.project}/ds-test" />
 	<property name="dir.ds.liferay" value="${dir.project}/ds-liferay" />
+	<property name="dir.bp.vaadin" value="${dir.project}/bp-vaadin" />
 	
 	<property name="dir.build-artifacts" value="artifacts" />
 	<property name="dir.build-artifacts.common" value="${dir.build-artifacts}/common" />
@@ -14,6 +15,7 @@
 	<property name="dir.build-artifacts.widgetsets" value="${dir.build-artifacts}/widgetsets" />
 	<property name="dir.build-artifacts.ds.liferay" value="${dir.build-artifacts}/ds-liferay" />
 	<property name="dir.build-artifacts.ds.test" value="${dir.build-artifacts}/ds-test" />
+	<property name="dir.build-artifacts.bp.vaadin" value="${dir.build-artifacts}/bp-vaadin" />
 	<property name="dir.build-artifacts.test-reports" value="${dir.build-artifacts}/test-reports" />
 	
 	<property name="dir.meta-inf" value="${dir.webapp}/src/main/webapp/META-INF" />
@@ -24,6 +26,7 @@
 	<property name="file.webapp.jar" value="${dir.build-artifacts}/webapp.jar" />
 	<property name="file.ds.liferay.jar" value="${dir.build-artifacts}/ds-liferay.jar" />
 	<property name="file.ds.test.jar" value="${dir.build-artifacts}/ds-test.jar" />
+	<property name="file.bp.vaadin.jar" value="${dir.build-artifacts}/bp-vaadin.jar" />
 	<property name="file.findbugs-ant.jar" value="build-libs/findbugs/findbugs-ant.jar" />
 	
 	<property name="file.junit.jar" value="build-libs/junit-4.10.jar" />
@@ -67,6 +70,14 @@
 	<path id="ds-test-classpath">
 		<path refid="common-classpath"/>
 		<pathelement location="${file.common.jar}"/>
+	</path>
+
+	<path id="bp-vaadin-classpath">
+		<path refid="common-classpath"/>
+		<pathelement location="${file.common.jar}"/>
+		<fileset dir="${dir.bp.vaadin}/lib">
+		    <include name="*.jar" />
+		</fileset>
 	</path>
 
 	<path id="test-classpath">
@@ -144,6 +155,23 @@
 			basedir="${dir.build-artifacts.ds.test}"
 		/>
     </target>
+	
+	<target name="-package-bp-vaadin-jar" depends="-package-common-jar">
+		<mkdir dir="${dir.build-artifacts.bp.vaadin}"/>
+		<javac srcdir="${dir.bp.vaadin}/src/main"
+			destdir="${dir.build-artifacts.bp.vaadin}"
+			classpathref="bp-vaadin-classpath"
+			debug="on"
+			includeantruntime="false"
+		/>
+		
+		<copy todir="${dir.build-artifacts.bp.vaadin}">
+			<fileset dir="${dir.bp.vaadin}/src/main/resources" />
+		</copy>
+		<jar destfile="${file.bp.vaadin.jar}"
+			basedir="${dir.build-artifacts.bp.vaadin}"
+		/>
+	</target>
 
 	<target name="package-liferay-war" depends="-check-widgetset-dependency, -package-webapp-jar, -package-ds-liferay-jar, test-all">
 		<war destfile="${file.tori.liferay.war}" webxml="${dir.web-inf}/web-liferay.xml" manifest="${dir.meta-inf}/MANIFEST.MF">
@@ -168,7 +196,32 @@
 			/>
 		</war>
 	</target>
-	
+
+	<target name="package-vaadincom-war" depends="-check-widgetset-dependency, -package-webapp-jar, -package-ds-liferay-jar, -package-bp-vaadin-jar, test-all">
+		<war destfile="${file.tori.liferay.war}" webxml="${dir.web-inf}/web-liferay.xml" manifest="${dir.meta-inf}/MANIFEST.MF">
+			<webinf dir="${dir.web-inf}">
+				<exclude name="**/portlet.jar"/>
+			</webinf>
+			<metainf dir="${dir.meta-inf}"/>
+			<lib file="${file.common.jar}" />
+			<lib file="${file.bp.vaadin.jar}" />
+			<lib file="${file.ds.liferay.jar}" />
+			<lib file="${file.webapp.jar}" />
+			<lib file="${dir.common}/lib/guava-10.0.1.jar"/>
+			<!-- liferay has its own config setup
+			<classes file="${dir.webapp}/src/main/resources/log4j.properties"/>
+			-->
+			<zipfileset dir="${dir.build-artifacts.widgetsets}"
+				includes="org.*/**"
+				prefix="VAADIN/widgetsets"
+			/>
+			<!-- see http://dev.vaadin.com/ticket/4191 before modifying this -->
+			<zipfileset dir="${dir.webapp}/src/main/webapp"
+				includes="VAADIN/themes/**"
+			/>
+		</war>
+	</target>
+
 	<target name="package-test-war" depends="-check-widgetset-dependency, -package-webapp-jar, -package-ds-test-jar, test-all">
 		<war destfile="${file.tori.test.war}" webxml="${dir.web-inf}/web.xml" manifest="${dir.meta-inf}/MANIFEST.MF">
 			<webinf 

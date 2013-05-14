@@ -59,6 +59,17 @@
 .post div[location="authorname"] {
 	color: #000;
 	font-weight: bold;
+	display: inline-block;
+}
+
+.post div[location="badge"] {
+	display: inline-block;
+}
+
+.post div[location="badge"] a {
+	font-family: "Tori-Icons";
+	font-size: 14px;
+	color: #ee7d09;
 }
 
 .post div[location="postedtime"] span {

@@ -40,6 +40,7 @@ import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.SignatureFormatter;
+import org.vaadin.tori.util.UserBadgeProvider;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
@@ -208,6 +209,11 @@ public class ToriUI extends UI {
 
     public DataSource getDataSource() {
         return getApiLoader().getDs();
+    }
+
+    @CheckForNull
+    public UserBadgeProvider getUserBadgeProvider() {
+        return getApiLoader().getUserBadgeProvider();
     }
 
     private ToriApiLoader getApiLoader() {
