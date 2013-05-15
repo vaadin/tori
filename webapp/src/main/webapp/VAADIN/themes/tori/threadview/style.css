@@ -64,6 +64,7 @@
 
 .post div[location="badge"] {
 	display: inline-block;
+	vertical-align: -1px;
 }
 
 .post div[location="badge"] a {
