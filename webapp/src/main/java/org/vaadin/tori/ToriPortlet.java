@@ -49,7 +49,7 @@ public class ToriPortlet extends VaadinPortlet {
 
     private class ToriPortletService extends VaadinPortletService {
         public ToriPortletService(final VaadinPortlet portlet,
-                final DeploymentConfiguration config) {
+                final DeploymentConfiguration config) throws ServiceException {
             super(portlet, config);
         }
 
@@ -87,7 +87,8 @@ public class ToriPortlet extends VaadinPortlet {
 
     @Override
     protected VaadinPortletService createPortletService(
-            final DeploymentConfiguration deploymentConfiguration) {
+            final DeploymentConfiguration deploymentConfiguration)
+            throws ServiceException {
         return new ToriPortletService(this, deploymentConfiguration);
     }
 
