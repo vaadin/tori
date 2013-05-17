@@ -20,7 +20,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 public class VaadinBadgeProvider implements UserBadgeProvider {
 
     private static final String BADGE_FONT_ICON_CHARACTER = "\ue015";
-    private static final String LINK_URL_FSTRING = "/certificate/-/%s";
+    private static final String LINK_URL_FSTRING = "/certificate/-/view/%s";
 
     private static final String BADGE_EXPANDO_COLUMN_NAME = "showCertificationBadge";
     private static final String BADGE_ROLE_NAME = "Vaadin 7 Certified Developer";
