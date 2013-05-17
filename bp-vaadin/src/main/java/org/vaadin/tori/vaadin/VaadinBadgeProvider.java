@@ -83,6 +83,8 @@ public class VaadinBadgeProvider implements UserBadgeProvider {
             getLogger().debug("Liferay said " + badgeShown);
         } catch (final NestableException e) {
             getLogger().error(e);
+        } catch (final Exception e) {
+            getLogger().error(e);
         }
         getLogger().debug("Showing badge: " + badgeShown);
         return badgeShown;
