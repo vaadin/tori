@@ -76,7 +76,8 @@ public class VaadinBadgeProvider implements UserBadgeProvider {
                     .debug("Looking up user Custom Field "
                             + BADGE_EXPANDO_COLUMN_NAME);
             badgeShown = ExpandoValueLocalServiceUtil.getData(
-                    liferayUser.getCompanyId(), User.class.getName(),
+                    liferayUser.getCompanyId(),
+                    com.liferay.portal.model.User.class.getName(),
                     "CUSTOM_FIELDS", BADGE_EXPANDO_COLUMN_NAME,
                     liferayUser.getUserId(), true);
             getLogger().debug("Liferay said " + badgeShown);
