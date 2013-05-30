@@ -34,6 +34,7 @@ import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.thread.ThreadPresenter;
+import org.vaadin.tori.util.UserBadgeProvider;
 
 import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.server.ExternalResource;
@@ -279,6 +280,7 @@ public class PostComponent extends CustomComponent {
         root.addComponent(getAvatarImage(post), "avatar");
         root.addComponent(new Label(post.getAuthor().getDisplayedName()),
                 "authorname");
+        addBadgePossibly(root, post.getAuthor());
         root.addComponent(getPostedAgoLabel(post), "postedtime");
         root.addComponent(getPermaLink(post), "permalink");
 
@@ -305,6 +307,26 @@ public class PostComponent extends CustomComponent {
         root.addComponent(contextMenu, "settings");
         root.addComponent(editComponent, "edit");
         root.addComponent(quoteButton, "quote");
+    }
+
+    /**
+     * Adds a badge to the customlayout if there is a {@link UserBadgeProvider}
+     * set up.
+     */
+    private void addBadgePossibly(final CustomLayout customLayout,
+            final User user) {
+        final UserBadgeProvider badgeProvider = ToriUI.getCurrent()
+                .getUserBadgeProvider();
+        if (badgeProvider == null) {
+            return;
+        }
+
+        final String badgeHtml = badgeProvider.getHtmlBadgeFor(user);
+        if (badgeHtml == null) {
+            return;
+        }
+        final Label badgeLabel = new Label(badgeHtml, ContentMode.HTML);
+        customLayout.addComponent(badgeLabel, "badge");
     }
 
     public void setScrollToComponent(final Component scrollTo) {

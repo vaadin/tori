@@ -104,6 +104,7 @@ public class EntityFactoryUtil {
         entity.setAvatarUrl(getAvatarUrl(liferayUser.getPortraitId(),
                 imagePath, isFemale));
         entity.setBanned(isBanned);
+        entity.setOriginalUserObject(liferayUser);
         return entity;
     }
 

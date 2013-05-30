@@ -16,15 +16,21 @@
 
 package org.vaadin.tori.data.entity;
 
-import javax.annotation.CheckForNull;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.util.SignatureFormatter;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+
 @Entity
 public class User extends AbstractEntity {
+
+    @Transient
+    @CheckForNull
+    private Object originalUserObject;
 
     @Column(nullable = false)
     private String displayedName;
@@ -102,5 +108,18 @@ public class User extends AbstractEntity {
     @Deprecated
     public void setBanned(final boolean banned) {
         this.banned = banned;
+    }
+
+    /**
+     * The original user object provided by your
+     * {@link org.vaadin.tori.data.DataSource DataSource}. May return
+     * <code>null</code>.
+     */
+    public Object getOriginalUserObject() {
+        return originalUserObject;
+    }
+
+    public void setOriginalUserObject(final Object originalUserObject) {
+        this.originalUserObject = originalUserObject;
     }
 }

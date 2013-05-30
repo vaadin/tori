@@ -28,6 +28,9 @@ import org.vaadin.tori.data.spi.ServiceProvider;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.SignatureFormatter;
+import org.vaadin.tori.util.UserBadgeProvider;
+
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 public class ToriApiLoader {
 
@@ -37,6 +40,9 @@ public class ToriApiLoader {
     private final SignatureFormatter signatureFormatter;
     private final AuthorizationService authorizationService;
 
+    @CheckForNull
+    private final UserBadgeProvider userBadgeProvider;
+
     public ToriApiLoader() {
         checkThatCommonIsLoaded();
         spi = newServiceProvider();
@@ -44,6 +50,26 @@ public class ToriApiLoader {
         postFormatter = createPostFormatter();
         signatureFormatter = createSignatureFormatter();
         authorizationService = createAuthorizationService();
+        userBadgeProvider = createUserBadgeProvider();
+    }
+
+    @CheckForNull
+    private UserBadgeProvider createUserBadgeProvider() {
+        final ServiceLoader<UserBadgeProvider> loader = ServiceLoader
+                .load(UserBadgeProvider.class);
+        if (loader.iterator().hasNext()) {
+            final UserBadgeProvider badgeProvider = loader.iterator().next();
+            getLogger().debug(
+                    String.format("Using %s implementation: %s",
+                            UserBadgeProvider.class.getSimpleName(),
+                            badgeProvider.getClass().getName()));
+            return badgeProvider;
+        } else {
+            getLogger().debug(
+                    String.format("No implementation for %s found",
+                            UserBadgeProvider.class.getSimpleName()));
+            return null;
+        }
     }
 
     public final void setRequest(final Object request) {
@@ -147,6 +173,11 @@ public class ToriApiLoader {
 
     public AuthorizationService getAuthorizationService() {
         return authorizationService;
+    }
+
+    @CheckForNull
+    public UserBadgeProvider getUserBadgeProvider() {
+        return userBadgeProvider;
     }
 
 }
