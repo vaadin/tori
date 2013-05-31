@@ -144,11 +144,13 @@ public class ToriPortlet extends VaadinPortlet {
             wrapped = new VaadinLiferayRequest(request, wrapped.getService()) {
                 @Override
                 public String getPortalProperty(final String name) {
+                    // catch the query of where vaadin resources are located at.
                     if (Constants.PORTAL_PARAMETER_VAADIN_RESOURCE_PATH
                             .equals(name)) {
                         return request.getContextPath();
+                    } else {
+                        return super.getPortalProperty(name);
                     }
-                    return super.getPortalProperty(name);
                 }
             };
         }
