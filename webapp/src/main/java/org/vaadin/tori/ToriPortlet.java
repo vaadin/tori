@@ -89,7 +89,10 @@ public class ToriPortlet extends VaadinPortlet {
     protected VaadinPortletService createPortletService(
             final DeploymentConfiguration deploymentConfiguration)
             throws ServiceException {
-        return new ToriPortletService(this, deploymentConfiguration);
+        final ToriPortletService toriPortletService = new ToriPortletService(
+                this, deploymentConfiguration);
+        toriPortletService.init();
+        return toriPortletService;
     }
 
     private static HttpServletRequest getServletRequest(
