@@ -17,6 +17,7 @@
 package org.vaadin.tori;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,14 +25,36 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
+import com.vaadin.server.DeploymentConfiguration;
+import com.vaadin.server.RequestHandler;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.SessionInitEvent;
 import com.vaadin.server.SessionInitListener;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.server.VaadinServletService;
 import com.vaadin.util.CurrentInstance;
 
-@SuppressWarnings("serial")
 public class ToriServlet extends VaadinServlet {
+    private static final long serialVersionUID = -8123218871730402047L;
+
+    public class ToriServletService extends VaadinServletService {
+        private static final long serialVersionUID = -3390522304961795849L;
+
+        public ToriServletService(final ToriServlet servlet,
+                final DeploymentConfiguration deploymentConfiguration)
+                throws ServiceException {
+            super(servlet, deploymentConfiguration);
+        }
+
+        @Override
+        protected List<RequestHandler> createRequestHandlers()
+                throws ServiceException {
+            final List<RequestHandler> requestHandlers = super
+                    .createRequestHandlers();
+            requestHandlers.add(new UnsupportedDeviceHandler());
+            return requestHandlers;
+        }
+    }
 
     private static final String DEFAULT_THEME = "tori";
 
@@ -52,8 +75,20 @@ public class ToriServlet extends VaadinServlet {
     }
 
     @Override
+    protected VaadinServletService createServletService(
+            final DeploymentConfiguration deploymentConfiguration)
+            throws ServiceException {
+        final ToriServletService servletService = new ToriServletService(this,
+                deploymentConfiguration);
+        servletService.init();
+        return servletService;
+    }
+
+    @Override
     protected void servletInitialized() {
         getService().addSessionInitListener(new SessionInitListener() {
+            private static final long serialVersionUID = -8477299310901347835L;
+
             @Override
             public void sessionInit(final SessionInitEvent event)
                     throws ServiceException {

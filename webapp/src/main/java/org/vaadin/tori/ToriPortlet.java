@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.List;
 
 import javax.portlet.PortletException;
 import javax.portlet.PortletRequest;
@@ -33,6 +34,7 @@ import org.vaadin.tori.indexing.ToriIndexableApplication;
 
 import com.vaadin.server.Constants;
 import com.vaadin.server.DeploymentConfiguration;
+import com.vaadin.server.RequestHandler;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.SessionInitEvent;
 import com.vaadin.server.SessionInitListener;
@@ -43,11 +45,14 @@ import com.vaadin.server.VaadinPortletRequest;
 import com.vaadin.server.VaadinPortletService;
 
 public class ToriPortlet extends VaadinPortlet {
+    private static final long serialVersionUID = 1394935675720995291L;
 
     private static final String DEFAULT_THEME = "tori-liferay";
     private static final String PORTAL_UTIL_CLASS = "com.liferay.portal.util.PortalUtil";
 
     private class ToriPortletService extends VaadinPortletService {
+        private static final long serialVersionUID = -2117466377821216962L;
+
         public ToriPortletService(final VaadinPortlet portlet,
                 final DeploymentConfiguration config) throws ServiceException {
             super(portlet, config);
@@ -57,6 +62,15 @@ public class ToriPortlet extends VaadinPortlet {
         public boolean preserveUIOnRefresh(final UIProvider provider,
                 final UICreateEvent event) {
             return false;
+        }
+
+        @Override
+        protected List<RequestHandler> createRequestHandlers()
+                throws ServiceException {
+            final List<RequestHandler> requestHandlers = super
+                    .createRequestHandlers();
+            requestHandlers.add(new UnsupportedDeviceHandler());
+            return requestHandlers;
         }
     }
 
