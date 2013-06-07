@@ -16,6 +16,8 @@
 
 package org.vaadin.tori.component.post;
 
+import java.net.URI;
+
 import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.exception.DataSourceException;
@@ -24,6 +26,7 @@ import org.vaadin.tori.service.post.PostReport.Reason;
 import org.vaadin.tori.thread.ThreadPresenter;
 
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -67,15 +70,22 @@ public class ReportComponent extends CustomComponent {
     private NativeButton reportButton;
     private final String postPermalink;
 
+    /**
+     * 
+     * @param post
+     * @param presenter
+     * @param postFragmentPermalink
+     *            The fragment part to the post component to be reported.
+     */
     public ReportComponent(final Post post, final ThreadPresenter presenter,
-            final String postPermalink) {
+            final String postFragmentPermalink) {
 
         final CssLayout root = new CssLayout();
         setCompositionRoot(root);
 
         this.post = post;
         this.presenter = presenter;
-        this.postPermalink = postPermalink;
+        this.postPermalink = postFragmentPermalink;
 
         final Button reportButton = new Button(null, listener);
         reportButton.setStyleName(BaseTheme.BUTTON_LINK);
@@ -135,8 +145,11 @@ public class ReportComponent extends CustomComponent {
         reportButton.addClickListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
+                final URI l = Page.getCurrent().getLocation();
+                final String link = l.getScheme() + "://" + l.getAuthority()
+                        + l.getPath() + postPermalink;
                 final PostReport report = new PostReport(post, (Reason) reason
-                        .getValue(), reasonText.getValue(), postPermalink);
+                        .getValue(), reasonText.getValue(), link);
 
                 try {
                     presenter.handlePostReport(report);
