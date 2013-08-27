@@ -131,7 +131,7 @@ public class ContextMenu extends CustomComponent {
         popupButton.setWidth("0");
         popupButton.setHeight("0");
         popupButton.addPopupVisibilityListener(popupListener);
-        popupButton.setShadowEnabled(false);
+//        popupButton.setShadowEnabled(false);
         popupLayout.setWidth(POPUP_WIDTH);
         return popupButton;
     }

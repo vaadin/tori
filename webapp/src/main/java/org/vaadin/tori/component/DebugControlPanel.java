@@ -43,6 +43,8 @@ import com.google.common.collect.Lists;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -183,7 +185,6 @@ public class DebugControlPanel extends CustomComponent implements
 
         final PopupButton popupButton = new PopupButton("Debug Control Panel");
         popupButton.setIcon(new ThemeResource("images/icon-settings.png"));
-        popupButton.addComponent(new Label());
         popupButton.addPopupVisibilityListener(this);
         setCompositionRoot(popupButton);
     }
@@ -193,8 +194,7 @@ public class DebugControlPanel extends CustomComponent implements
         final ContextData data = getContextData();
         if (event.isPopupVisible()) {
             final PopupButton popupButton = event.getPopupButton();
-            popupButton.removeAllComponents();
-            popupButton.setComponent(createControlPanel(data));
+            popupButton.setContent(createControlPanel(data));
         }
     }
 

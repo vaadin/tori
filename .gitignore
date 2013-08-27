@@ -16,3 +16,4 @@ gwt-unitCache
 .pmd
 .checkstyle
 rebel.xml
+target/
