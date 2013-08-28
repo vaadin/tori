@@ -27,7 +27,6 @@ import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
-import org.vaadin.tori.ToriNavigator.ViewChangeListener;
 import org.vaadin.tori.component.DebugControlPanel;
 import org.vaadin.tori.component.GoogleAnalyticsTracker;
 import org.vaadin.tori.component.breadcrumbs.Breadcrumbs;
@@ -35,7 +34,6 @@ import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.DataSource.UrlInfo;
 import org.vaadin.tori.data.DataSource.UrlInfo.Destination;
 import org.vaadin.tori.edit.EditViewImpl;
-import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
@@ -44,9 +42,12 @@ import org.vaadin.tori.util.UserBadgeProvider;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinPortletRequest;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
@@ -59,384 +60,387 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 @Widgetset("org.vaadin.tori.widgetset.ToriWidgetset")
 public class ToriUI extends UI {
 
-    private static final String PATH_ACTION_SEPARATOR = "$";
+	private static final String PATH_ACTION_SEPARATOR = "$";
 
-    private ToriNavigator navigator;
-    private VerticalLayout windowLayout;
+	private ToriNavigator navigator;
+	private VerticalLayout windowLayout;
 
-    @CheckForNull
-    private GoogleAnalyticsTracker analytics;
+	@CheckForNull
+	private GoogleAnalyticsTracker analytics;
 
-    private String lastPath = "";
+	private String lastPath = "";
 
-    @Override
-    protected void init(final VaadinRequest request) {
+	@Override
+	protected void init(final VaadinRequest request) {
 
-        fixUrl();
+		fixUrl();
 
-        getPage().setTitle("Tori");
-        navigator = new ToriNavigator(this);
+		getPage().setTitle("Tori");
 
-        windowLayout = new VerticalLayout();
-        windowLayout.setMargin(false);
-        setContent(windowLayout);
+		windowLayout = new VerticalLayout();
+		windowLayout.setMargin(false);
+		setContent(windowLayout);
 
-        final String trackerId = getDataSource().getGoogleAnalyticsTrackerId();
-        if (trackerId != null) {
-            analytics = new GoogleAnalyticsTracker(trackerId);
-            analytics.setAllowAnchor(true);
-            analytics.setIgnoreGetParameters(true);
-            windowLayout.addComponent(analytics);
-        } else {
-            analytics = null;
-        }
+		VerticalLayout navigatorContent = new VerticalLayout();
+		navigator = new ToriNavigator(this,navigatorContent);
+		
 
-        final Breadcrumbs breadcrumbs = new Breadcrumbs(navigator);
-        addControlPanelIfInDevelopment();
-        windowLayout.addComponent(breadcrumbs);
-        windowLayout.addComponent(navigator);
+		final String trackerId = getDataSource().getGoogleAnalyticsTrackerId();
+		if (trackerId != null) {
+			analytics = new GoogleAnalyticsTracker(trackerId);
+			analytics.setAllowAnchor(true);
+			analytics.setIgnoreGetParameters(true);
+			windowLayout.addComponent(analytics);
+		} else {
+			analytics = null;
+		}
 
-        navigator.init(getPage().getUriFragment());
+		final Breadcrumbs breadcrumbs = new Breadcrumbs(navigator);
+		addControlPanelIfInDevelopment();
+		windowLayout.addComponent(breadcrumbs);
 
-        navigator.addListener(new ViewChangeListener() {
-            @Override
-            public void navigatorViewChange(final View previous,
-                    final View current) {
-                // scroll to top when the view is changed
-                if (getContent() == windowLayout) {
-                    scrollIntoView(breadcrumbs);
-                }
-            }
-        });
+		navigator.addViewChangeListener(new ViewChangeListener() {
+			@Override
+			public boolean beforeViewChange(ViewChangeEvent event) {
+				return true;
+			}
 
-        if (request instanceof VaadinPortletRequest) {
-            final VaadinPortletRequest r = (VaadinPortletRequest) request;
-            setPortletMode(r.getPortletRequest().getPortletMode());
-        }
-    }
+			@Override
+			public void afterViewChange(ViewChangeEvent event) {
+				if (event.getNewView() == windowLayout) {
+					scrollIntoView(breadcrumbs);
+				}
+			}
+		});
+		windowLayout.addComponent(navigatorContent);
 
-    void initApiLoader(final VaadinRequest request) {
-        getSession().setAttribute(ToriApiLoader.class, new ToriApiLoader());
+		if (request instanceof VaadinPortletRequest) {
+			final VaadinPortletRequest r = (VaadinPortletRequest) request;
+			setPortletMode(r.getPortletRequest().getPortletMode());
+		}
+	}
 
-        /*
-         * this hack is specially reserved for Liferay. Maybe the servlet
-         * request can be put in here too...
-         */
-        if (request instanceof VaadinPortletRequest) {
-            final VaadinPortletRequest vpRequest = (VaadinPortletRequest) request;
-            setRequest(vpRequest.getPortletRequest());
-        }
-    }
+	void initApiLoader(final VaadinRequest request) {
+		getSession().setAttribute(ToriApiLoader.class, new ToriApiLoader());
 
-    public final void setPortletMode(final PortletMode portletMode) {
-        if (portletMode == PortletMode.EDIT) {
-            final EditViewImpl editView = new EditViewImpl(getDataSource(),
-                    getAuthorizationService());
-            editView.init(null);
-            setContent(editView);
-        } else {
-            setContent(windowLayout);
-        }
-    }
+		/*
+		 * this hack is specially reserved for Liferay. Maybe the servlet
+		 * request can be put in here too...
+		 */
+		if (request instanceof VaadinPortletRequest) {
+			final VaadinPortletRequest vpRequest = (VaadinPortletRequest) request;
+			setRequest(vpRequest.getPortletRequest());
+		}
+	}
 
-    private static Logger getLogger() {
-        return Logger.getLogger(ToriUI.class);
-    }
+	public final void setPortletMode(final PortletMode portletMode) {
+		if (portletMode == PortletMode.EDIT) {
+			final EditViewImpl editView = new EditViewImpl(getDataSource(),
+					getAuthorizationService());
+			setContent(editView);
+		} else {
+			setContent(windowLayout);
+		}
+	}
 
-    private void addControlPanelIfInDevelopment() {
-        final AuthorizationService authorizationService = getAuthorizationService();
-        if (authorizationService instanceof DebugAuthorizationService) {
-            windowLayout
-                    .addComponent(new DebugControlPanel(
-                            (DebugAuthorizationService) authorizationService,
-                            navigator));
-        }
-    }
+	private static Logger getLogger() {
+		return Logger.getLogger(ToriUI.class);
+	}
 
-    /**
-     * Send data to Google Analytics about what the user is doing.
-     * 
-     * @param path
-     *            the current logical path to the view. <code>null</code> to use
-     *            the last known path. E.g. "#/foo/bar"
-     * @param action
-     *            the action performed in the path. <code>null</code> to ignore.
-     *            E.g. "reply"
-     */
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH", justification = "false positive")
-    public void trackAction(final String path, final String action) {
-        if (analytics != null) {
+	private void addControlPanelIfInDevelopment() {
+		final AuthorizationService authorizationService = getAuthorizationService();
+		if (authorizationService instanceof DebugAuthorizationService) {
+			windowLayout
+					.addComponent(new DebugControlPanel(
+							(DebugAuthorizationService) authorizationService,
+							navigator));
+		}
+	}
 
-            final String pageString;
-            if (path != null && action != null) {
-                pageString = path + PATH_ACTION_SEPARATOR + action;
-            } else if (action != null) {
-                pageString = lastPath + PATH_ACTION_SEPARATOR + action;
-            } else if (path != null) {
-                pageString = path;
-            } else {
-                pageString = null;
-                logger().warn(
-                        "tracking an action with null path and "
-                                + "null action");
-            }
+	/**
+	 * Send data to Google Analytics about what the user is doing.
+	 * 
+	 * @param path
+	 *            the current logical path to the view. <code>null</code> to use
+	 *            the last known path. E.g. "#/foo/bar"
+	 * @param action
+	 *            the action performed in the path. <code>null</code> to ignore.
+	 *            E.g. "reply"
+	 */
+	@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH", justification = "false positive")
+	public void trackAction(final String path, final String action) {
+		if (analytics != null) {
 
-            if (path != null) {
-                lastPath = path;
-            }
+			final String pageString;
+			if (path != null && action != null) {
+				pageString = path + PATH_ACTION_SEPARATOR + action;
+			} else if (action != null) {
+				pageString = lastPath + PATH_ACTION_SEPARATOR + action;
+			} else if (path != null) {
+				pageString = path;
+			} else {
+				pageString = null;
+				logger().warn(
+						"tracking an action with null path and "
+								+ "null action");
+			}
 
-            analytics.trackPageview(pageString);
-        } else {
-            logger().debug("Can't track an action - no analytics configured");
-        }
-    }
+			if (path != null) {
+				lastPath = path;
+			}
 
-    private Logger logger() {
-        return Logger.getLogger(getClass());
-    }
+			analytics.trackPageview(pageString);
+		} else {
+			logger().debug("Can't track an action - no analytics configured");
+		}
+	}
 
-    public AuthorizationService getAuthorizationService() {
-        return getApiLoader().getAuthorizationService();
-    }
+	private Logger logger() {
+		return Logger.getLogger(getClass());
+	}
 
-    public PostFormatter getPostFormatter() {
-        return getApiLoader().getPostFormatter();
-    }
+	public AuthorizationService getAuthorizationService() {
+		return getApiLoader().getAuthorizationService();
+	}
 
-    public SignatureFormatter getSignatureFormatter() {
-        return getApiLoader().getSignatureFormatter();
-    }
+	public PostFormatter getPostFormatter() {
+		return getApiLoader().getPostFormatter();
+	}
 
-    public DataSource getDataSource() {
-        return getApiLoader().getDs();
-    }
+	public SignatureFormatter getSignatureFormatter() {
+		return getApiLoader().getSignatureFormatter();
+	}
 
-    @CheckForNull
-    public UserBadgeProvider getUserBadgeProvider() {
-        return getApiLoader().getUserBadgeProvider();
-    }
+	public DataSource getDataSource() {
+		return getApiLoader().getDs();
+	}
 
-    private ToriApiLoader getApiLoader() {
-        final VaadinSession session = getSession();
-        final ToriApiLoader apiLoader = session
-                .getAttribute(ToriApiLoader.class);
-        if (apiLoader != null) {
-            return apiLoader;
-        } else {
-            throw new IllegalStateException(ToriApiLoader.class.getName()
-                    + " was not found in the state. This is bad...");
-        }
-    }
+	@CheckForNull
+	public UserBadgeProvider getUserBadgeProvider() {
+		return getApiLoader().getUserBadgeProvider();
+	}
 
-    void setRequest(final HttpServletRequest request) {
-        getApiLoader().setRequest(request);
-    }
+	private ToriApiLoader getApiLoader() {
+		final VaadinSession session = getSession();
+		final ToriApiLoader apiLoader = session
+				.getAttribute(ToriApiLoader.class);
+		if (apiLoader != null) {
+			return apiLoader;
+		} else {
+			throw new IllegalStateException(ToriApiLoader.class.getName()
+					+ " was not found in the state. This is bad...");
+		}
+	}
 
-    void setRequest(final PortletRequest request) {
-        getApiLoader().setRequest(request);
-    }
+	void setRequest(final HttpServletRequest request) {
+		getApiLoader().setRequest(request);
+	}
 
-    /*-
-     * Not sure if we need this code anymore... it's quite hacky anyways.
-    private void addAttachmentDownloadHandler() {
-        addRequestHandler(new RequestHandler() {
-            @Override
-            public boolean handleRequest(final Application application,
-                    final WrappedRequest request, final WrappedResponse response)
-                    throws IOException {
+	void setRequest(final PortletRequest request) {
+		getApiLoader().setRequest(request);
+	}
 
-                final String requestPathInfo = request.getRequestPathInfo();
-                if (requestPathInfo
-                        .startsWith(DebugDataSource.ATTACHMENT_PREFIX)) {
-                    final String[] data = requestPathInfo.substring(
-                            DebugDataSource.ATTACHMENT_PREFIX.length()).split(
-                            "/");
-                    final long dataId = Long.parseLong(data[0]);
-                    final String fileName = data[1];
+	/*-
+	 * Not sure if we need this code anymore... it's quite hacky anyways.
+	private void addAttachmentDownloadHandler() {
+	    addRequestHandler(new RequestHandler() {
+	        @Override
+	        public boolean handleRequest(final Application application,
+	                final WrappedRequest request, final WrappedResponse response)
+	                throws IOException {
 
-                    final byte[] attachmentData = ((DebugDataSource) ToriApplication
-                            .getCurrent().getDataSource())
-                            .getAttachmentData(dataId);
+	            final String requestPathInfo = request.getRequestPathInfo();
+	            if (requestPathInfo
+	                    .startsWith(DebugDataSource.ATTACHMENT_PREFIX)) {
+	                final String[] data = requestPathInfo.substring(
+	                        DebugDataSource.ATTACHMENT_PREFIX.length()).split(
+	                        "/");
+	                final long dataId = Long.parseLong(data[0]);
+	                final String fileName = data[1];
 
-                    final ByteArrayInputStream is = new ByteArrayInputStream(
-                            attachmentData);
-                    final DownloadStream stream = new DownloadStream(is, null,
-                            fileName);
-                    stream.writeTo(response);
-                    return true;
-                }
-                return false;
-            }
-        });
-    }
-     */
+	                final byte[] attachmentData = ((DebugDataSource) ToriApplication
+	                        .getCurrent().getDataSource())
+	                        .getAttachmentData(dataId);
 
-    public static ToriUI getCurrent() {
-        return (ToriUI) UI.getCurrent();
-    }
+	                final ByteArrayInputStream is = new ByteArrayInputStream(
+	                        attachmentData);
+	                final DownloadStream stream = new DownloadStream(is, null,
+	                        fileName);
+	                stream.writeTo(response);
+	                return true;
+	            }
+	            return false;
+	        }
+	    });
+	}
+	 */
 
-    @SuppressWarnings("deprecation")
-    private void fixUrl() {
-        final URI uri = getPage().getLocation();
-        final String path = getLocaleAdjustedURI(uri.getPath());
-        final String pathRoot = getDataSource().getPathRoot();
+	public static ToriUI getCurrent() {
+		return (ToriUI) UI.getCurrent();
+	}
 
-        if (pathRoot == null) {
-            getLogger().info(
-                    "Tori's path root is undefined. You probably "
-                            + "should set it. Skipping URL parsing.");
-            return;
-        }
+	@SuppressWarnings("deprecation")
+	private void fixUrl() {
+		final URI uri = getPage().getLocation();
+		final String path = getLocaleAdjustedURI(uri.getPath());
+		final String pathRoot = getDataSource().getPathRoot();
 
-        if (hasInvalidPath(path, pathRoot)) {
-            getLogger().warn(
-                    "Path mismatch: Tori is configured for the path "
-                            + pathRoot + ", but current path is " + path
-                            + ". Skipping URL parsing.");
-            return;
-        }
+		if (pathRoot == null) {
+			getLogger().info(
+					"Tori's path root is undefined. You probably "
+							+ "should set it. Skipping URL parsing.");
+			return;
+		}
 
-        final String pathPart;
-        if (path.length() > pathRoot.length() && !path.equals(pathRoot + "/")) {
-            pathPart = pathRoot;
-        } else {
-            pathPart = null;
-        }
+		if (hasInvalidPath(path, pathRoot)) {
+			getLogger().warn(
+					"Path mismatch: Tori is configured for the path "
+							+ pathRoot + ", but current path is " + path
+							+ ". Skipping URL parsing.");
+			return;
+		}
 
-        String fragment = null;
-        final String relativePath = path.substring(pathRoot.length());
-        try {
-            final String query = getQueryString(uri);
-            UrlInfo toriFragment;
+		final String pathPart;
+		if (path.length() > pathRoot.length() && !path.equals(pathRoot + "/")) {
+			pathPart = pathRoot;
+		} else {
+			pathPart = null;
+		}
 
-            try {
-                toriFragment = getDataSource().getToriFragment(relativePath,
-                        query);
-            } catch (final Exception e) {
-                toriFragment = new UrlInfo() {
-                    @Override
-                    public Destination getDestination() {
-                        return Destination.DASHBOARD;
-                    }
+		String fragment = null;
+		final String relativePath = path.substring(pathRoot.length());
+		try {
+			final String query = getQueryString(uri);
+			UrlInfo toriFragment;
 
-                    @Override
-                    public long getId() {
-                        return -1;
-                    }
-                };
-                Notification
-                        .show("The given URL doesn't match to any content on this forum",
-                                "The content probably has been taken down since.",
-                                Type.WARNING_MESSAGE);
-            }
+			try {
+				toriFragment = getDataSource().getToriFragment(relativePath,
+						query);
+			} catch (final Exception e) {
+				toriFragment = new UrlInfo() {
+					@Override
+					public Destination getDestination() {
+						return Destination.DASHBOARD;
+					}
 
-            if (toriFragment != null) {
-                fragment = "";
+					@Override
+					public long getId() {
+						return -1;
+					}
+				};
+				Notification
+						.show("The given URL doesn't match to any content on this forum",
+								"The content probably has been taken down since.",
+								Type.WARNING_MESSAGE);
+			}
 
-                if (toriFragment.getDestination() == Destination.DASHBOARD) {
-                    fragment = ToriNavigator.ApplicationView.DASHBOARD.getUrl()
-                            + "/";
-                } else {
-                    switch (toriFragment.getDestination()) {
-                    case CATEGORY:
-                        fragment = ToriNavigator.ApplicationView.CATEGORIES
-                                .getUrl();
-                        break;
-                    case THREAD:
-                        fragment = ToriNavigator.ApplicationView.THREADS
-                                .getUrl();
-                        break;
-                    default:
-                        Notification.show("You found a URL the coders "
-                                + "didn't remember to handle correctly. "
-                                + "Terribly sorry about that.",
-                                Notification.Type.HUMANIZED_MESSAGE);
-                        throw new UnsupportedOperationException("Support for "
-                                + toriFragment.getDestination()
-                                + " is not implemented");
-                    }
+			if (toriFragment != null) {
+				fragment = "";
 
-                    fragment += "/" + toriFragment.getId();
-                }
-            }
-        } catch (final UnsupportedEncodingException e) {
-            logger().error("URI is not in UTF-8 format");
-        }
+				if (toriFragment.getDestination() == Destination.DASHBOARD) {
+					fragment = ToriNavigator.ApplicationView.DASHBOARD.getUrl()
+							+ "/";
+				} else {
+					switch (toriFragment.getDestination()) {
+					case CATEGORY:
+						fragment = ToriNavigator.ApplicationView.CATEGORIES
+								.getUrl();
+						break;
+					case THREAD:
+						fragment = ToriNavigator.ApplicationView.THREADS
+								.getUrl();
+						break;
+					default:
+						Notification.show("You found a URL the coders "
+								+ "didn't remember to handle correctly. "
+								+ "Terribly sorry about that.",
+								Notification.Type.HUMANIZED_MESSAGE);
+						throw new UnsupportedOperationException("Support for "
+								+ toriFragment.getDestination()
+								+ " is not implemented");
+					}
 
-        if (pathPart != null && fragment != null) {
-            getPage().setLocation(pathPart + "#" + fragment);
-        } else if (pathPart != null) {
-            getPage().setLocation(pathPart);
-        } else if (fragment != null) {
-            getPage().setUriFragment(fragment);
-        }
-    }
+					fragment += "/" + toriFragment.getId();
+				}
+			}
+		} catch (final UnsupportedEncodingException e) {
+			logger().error("URI is not in UTF-8 format");
+		}
 
-    /**
-     * Get the decoded query part ("GET parameters") of the URI. Returns empty
-     * string if <code>null</code>
-     */
-    private static String getQueryString(final URI uri)
-            throws UnsupportedEncodingException {
-        final String query;
-        if (uri.getQuery() != null) {
-            query = URLDecoder.decode(uri.getQuery(), "UTF-8");
-        } else {
-            query = "";
-        }
-        return query;
-    }
+		if (pathPart != null && fragment != null) {
+			getPage().setLocation(pathPart + "#" + fragment);
+		} else if (pathPart != null) {
+			getPage().setLocation(pathPart);
+		} else if (fragment != null) {
+			getPage().setUriFragment(fragment);
+		}
+	}
 
-    private boolean hasInvalidPath(final String path, final String pathRoot) {
-        final boolean pathStartsWithRoot = path.startsWith(pathRoot);
+	/**
+	 * Get the decoded query part ("GET parameters") of the URI. Returns empty
+	 * string if <code>null</code>
+	 */
+	private static String getQueryString(final URI uri)
+			throws UnsupportedEncodingException {
+		final String query;
+		if (uri.getQuery() != null) {
+			query = URLDecoder.decode(uri.getQuery(), "UTF-8");
+		} else {
+			query = "";
+		}
+		return query;
+	}
 
-        // to avoid pathroot being "/foo" and path being "/foobar"
-        final boolean pathIsCorrectFormat;
-        if (path.length() > pathRoot.length()) {
-            pathIsCorrectFormat = path.startsWith(pathRoot + "/");
-        } else {
-            pathIsCorrectFormat = true;
-        }
+	private boolean hasInvalidPath(final String path, final String pathRoot) {
+		final boolean pathStartsWithRoot = path.startsWith(pathRoot);
 
-        return !(pathStartsWithRoot && pathIsCorrectFormat);
-    }
+		// to avoid pathroot being "/foo" and path being "/foobar"
+		final boolean pathIsCorrectFormat;
+		if (path.length() > pathRoot.length()) {
+			pathIsCorrectFormat = path.startsWith(pathRoot + "/");
+		} else {
+			pathIsCorrectFormat = true;
+		}
 
-    /**
-     * <p>
-     * Remove the Locale setting parameter in the Liferay URI.
-     * <p>
-     * Take an URL <code>vaadin.com/foo</code>. Liferay accepts an url
-     * <code>vaadin.com/en_GB/foo</code>, and produces the same page. Some
-     * Liferay features are able to take use of the locale definition in the
-     * URL, and translate things. Since Tori doesn't support that currently, we
-     * need to ignore that bit in the URI.
-     */
-    private static String getLocaleAdjustedURI(final String path) {
+		return !(pathStartsWithRoot && pathIsCorrectFormat);
+	}
 
-        // remove the prefixes locale string from the input -->
-        // /fi/foo/bar -> /foo/bar
-        // /en_GB/foo/bar -> /foo/bar
+	/**
+	 * <p>
+	 * Remove the Locale setting parameter in the Liferay URI.
+	 * <p>
+	 * Take an URL <code>vaadin.com/foo</code>. Liferay accepts an url
+	 * <code>vaadin.com/en_GB/foo</code>, and produces the same page. Some
+	 * Liferay features are able to take use of the locale definition in the
+	 * URL, and translate things. Since Tori doesn't support that currently, we
+	 * need to ignore that bit in the URI.
+	 */
+	private static String getLocaleAdjustedURI(final String path) {
 
-        final Pattern pathShortener = Pattern
-                .compile("^/(?:[a-z]{2}(?:_[A-Z]{2})?/)?(.+)$");
-        /*-
-         * ^/              # the string needs to start with a forward slash
-         * (
-         *   ?:[a-z]{2}    # non-capturing group that matches two lower case letters
-         *   (
-         *     ?:_[A-Z]{2} # non-capturing group that, if the previous was matched, this matches the following underscore, and two upper case letters
-         *   )?            # the previous group is optional (so, it's fine to match the lower case letters only
-         *   /             # if the two lower case letters were found, no matter if the second group is found, a forward slash is required
-         * )?              # the entire group is optional
-         * (.+)$           # capture the string that comes after these groups.
-         */
+		// remove the prefixes locale string from the input -->
+		// /fi/foo/bar -> /foo/bar
+		// /en_GB/foo/bar -> /foo/bar
 
-        final Matcher matcher = pathShortener.matcher(path);
-        if (matcher.matches()) {
-            return "/" + matcher.group(1);
-        } else {
-            getLogger().warn("Path appears weird: " + path);
-            return path;
-        }
-    }
+		final Pattern pathShortener = Pattern
+				.compile("^/(?:[a-z]{2}(?:_[A-Z]{2})?/)?(.+)$");
+		/*-
+		 * ^/              # the string needs to start with a forward slash
+		 * (
+		 *   ?:[a-z]{2}    # non-capturing group that matches two lower case letters
+		 *   (
+		 *     ?:_[A-Z]{2} # non-capturing group that, if the previous was matched, this matches the following underscore, and two upper case letters
+		 *   )?            # the previous group is optional (so, it's fine to match the lower case letters only
+		 *   /             # if the two lower case letters were found, no matter if the second group is found, a forward slash is required
+		 * )?              # the entire group is optional
+		 * (.+)$           # capture the string that comes after these groups.
+		 */
+
+		final Matcher matcher = pathShortener.matcher(path);
+		if (matcher.matches()) {
+			return "/" + matcher.group(1);
+		} else {
+			getLogger().warn("Path appears weird: " + path);
+			return path;
+		}
+	}
 }

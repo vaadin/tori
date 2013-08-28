@@ -40,6 +40,7 @@ import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -107,9 +108,9 @@ public class CategoryViewImpl extends
             @Override
             @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "This method is never called if the category isn't set")
             public void buttonClick(final ClickEvent event) {
-                getNavigator().navigateTo(
+            	UI.getCurrent().getNavigator().navigateTo(
                         String.format("%s/%s/%s",
-                                ToriNavigator.ApplicationView.THREADS.getUrl(),
+                                ToriNavigator.ApplicationView.THREADS.getNavigatorUrl(),
                                 ThreadPresenter.NEW_THREAD_ARGUMENT,
                                 getPresenter().getCurrentCategory().getId()));
             }

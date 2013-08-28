@@ -22,16 +22,16 @@ import org.apache.log4j.Logger;
 import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.ToriNavigator.ViewChangeListener;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.category.CategoryView;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.exception.DataSourceException;
-import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.thread.ThreadView;
 
 import com.vaadin.event.ItemClickEvent;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
@@ -54,10 +54,15 @@ public class Breadcrumbs extends CustomComponent {
     private final Label viewCaption;
 
     private transient final ViewChangeListener viewListener = new ViewChangeListener() {
-        @Override
-        public void navigatorViewChange(final View previous, final View current) {
-            renderBreadCrumb();
-        }
+		@Override
+		public boolean beforeViewChange(ViewChangeEvent event) {
+			return true;
+		}
+
+		@Override
+		public void afterViewChange(ViewChangeEvent event) {
+			 renderBreadCrumb(event.getNewView());
+		}
     };
 
     private final ToriNavigator navigator;
@@ -65,7 +70,7 @@ public class Breadcrumbs extends CustomComponent {
     public Breadcrumbs(final ToriNavigator navigator) {
         setStyleName("breadcrumbs");
         this.navigator = navigator;
-        navigator.addListener(viewListener);
+        navigator.addViewChangeListener(viewListener);
 
         viewCaption = new Label("");
         layout = new BreadcrumbsLayout();
@@ -83,16 +88,15 @@ public class Breadcrumbs extends CustomComponent {
         mainLayout.addComponent(viewCaption);
         setCompositionRoot(mainLayout);
 
-        renderBreadCrumb();
+        renderBreadCrumb(null);
     }
 
-    private void renderBreadCrumb() {
+    private void renderBreadCrumb(View currentView ) {
         layout.removeAllComponents();
         final Link dashboardLink = new Link("Dashboard", new ExternalResource(
                 "#" + ToriNavigator.ApplicationView.DASHBOARD.getUrl() + "/"));
         layout.addComponent(dashboardLink, "dashboard");
 
-        final View currentView = navigator.getCurrentView();
         if (currentView instanceof CategoryView) {
             final CategoryView categoryView = (CategoryView) currentView;
             paint(categoryView);
@@ -176,8 +180,8 @@ public class Breadcrumbs extends CustomComponent {
 
     public void selectCategory(final Category selectedCategory) {
         final String catIdAsString = String.valueOf(selectedCategory.getId());
-        navigator.navigateTo(ToriNavigator.ApplicationView.CATEGORIES,
-                catIdAsString);
+        navigator.navigateTo(ToriNavigator.ApplicationView.CATEGORIES.getNavigatorUrl()+"/"
+                +catIdAsString);
     }
 
     private Component getCategoryPopup(final Category currentCategory,

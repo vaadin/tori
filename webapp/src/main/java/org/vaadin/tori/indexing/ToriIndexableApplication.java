@@ -122,7 +122,7 @@ public class ToriIndexableApplication {
 
     private static String getViewString(final List<String> fragmentArguments) {
         if (fragmentArguments.isEmpty()) {
-            return ApplicationView.DASHBOARD.getUrl().replace("/", "");
+            return ApplicationView.DASHBOARD.getViewName();
         } else {
             return fragmentArguments.get(0);
         }
@@ -158,11 +158,7 @@ public class ToriIndexableApplication {
 
         ApplicationView tempView = null;
         for (final ApplicationView appView : ApplicationView.values()) {
-            final String untrimmedAppUrl = appView.getUrl();
-            final String appUrl = untrimmedAppUrl.substring(ApplicationView
-                    .getUrlPrefix().length());
-
-            if (appUrl.equals(view)) {
+            if (appView.getViewName().equals(view)) {
                 tempView = appView;
                 break;
             }

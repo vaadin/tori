@@ -52,300 +52,299 @@ import com.vaadin.ui.TreeTable;
 @SuppressWarnings("serial")
 class CategoryTreeTable extends TreeTable {
 
-    private static final Logger log = Logger.getLogger(CategoryTreeTable.class);
+	private static final Logger log = Logger.getLogger(CategoryTreeTable.class);
 
-    private static final String PROPERTY_ID_THREADS = "Threads";
-    private static final String PROPERTY_ID_UNREAD = "Unread Threads";
-    private static final String PROPERTY_ID_CATEGORY = "Category";
+	private static final String PROPERTY_ID_THREADS = "Threads";
+	private static final String PROPERTY_ID_UNREAD = "Unread Threads";
+	private static final String PROPERTY_ID_CATEGORY = "Category";
 
-    private CategoryListingPresenter presenter;
-    private final Mode mode;
+	private CategoryListingPresenter presenter;
+	private final Mode mode;
 
-    public CategoryTreeTable(final Mode mode) {
-        this.mode = mode;
-        setStyleName("categoryTree");
-        addStyleName(mode.toString().toLowerCase());
+	public CategoryTreeTable(final Mode mode) {
+		this.mode = mode;
+		setStyleName("categoryTree");
+		addStyleName(mode.toString().toLowerCase());
 
-        // set container properties
-        addContainerProperty(PROPERTY_ID_CATEGORY, Component.class, null);
-        if (mode == Mode.NORMAL) {
-            addContainerProperty(PROPERTY_ID_UNREAD, Long.class, 0);
-            addContainerProperty(PROPERTY_ID_THREADS, Long.class, 0);
+		// set container properties
+		addContainerProperty(PROPERTY_ID_CATEGORY, Component.class, null);
+		if (mode == Mode.NORMAL) {
+			addContainerProperty(PROPERTY_ID_UNREAD, Long.class, 0);
+			addContainerProperty(PROPERTY_ID_THREADS, Long.class, 0);
 
-            setColumnWidth(PROPERTY_ID_UNREAD, 100);
-            setColumnWidth(PROPERTY_ID_THREADS, 100);
+			setColumnWidth(PROPERTY_ID_UNREAD, 100);
+			setColumnWidth(PROPERTY_ID_THREADS, 100);
 
-            setColumnAlignment(PROPERTY_ID_UNREAD, Align.RIGHT);
-            setColumnAlignment(PROPERTY_ID_THREADS, Align.RIGHT);
-        }
+			setColumnAlignment(PROPERTY_ID_UNREAD, Align.RIGHT);
+			setColumnAlignment(PROPERTY_ID_THREADS, Align.RIGHT);
+		}
 
-        // set visual properties
-        setWidth("100%");
-        setPageLength(0);
-        setSortEnabled(false);
-        setDropHandler(new CategoryTreeDropHandler());
-        if (mode == Mode.SINGLE_COLUMN) {
-            setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
-        }
-    }
+		// set visual properties
+		setWidth("100%");
+		setPageLength(0);
+		setSortEnabled(false);
+		setDropHandler(new CategoryTreeDropHandler());
+		if (mode == Mode.SINGLE_COLUMN) {
+			setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
+		}
+	}
 
-    public void setPresenter(final CategoryListingPresenter presenter) {
-        this.presenter = presenter;
-    }
+	public void setPresenter(final CategoryListingPresenter presenter) {
+		this.presenter = presenter;
+	}
 
-    public void addCategory(final Category category, final Category parent) {
-        if (presenter == null) {
-            throw new IllegalStateException(
-                    "Presenter must be set before adding any categories.");
-        }
+	public void addCategory(final Category category, final Category parent) {
+		if (presenter == null) {
+			throw new IllegalStateException(
+					"Presenter must be set before adding any categories.");
+		}
 
-        final CategoryLayout categoryLayout = new CategoryLayout(category);
+		final CategoryLayout categoryLayout = new CategoryLayout(category);
 
-        final Item item = addItem(category);
-        if (item == null) {
-            log.warn("Cannot add category " + category.getName() + ", id "
-                    + category.getId() + " to the "
-                    + CategoryTreeTable.class.getSimpleName() + ".");
-            return;
-        }
-        item.getItemProperty(PROPERTY_ID_CATEGORY).setValue(categoryLayout);
-        if (mode == Mode.NORMAL) {
-            try {
-                item.getItemProperty(PROPERTY_ID_UNREAD).setValue(
-                        presenter.getUnreadThreadCount(category));
-            } catch (final DataSourceException e) {
-                item.getItemProperty(PROPERTY_ID_UNREAD).setValue(0L);
-            }
+		final Item item = addItem(category);
+		if (item == null) {
+			log.warn("Cannot add category " + category.getName() + ", id "
+					+ category.getId() + " to the "
+					+ CategoryTreeTable.class.getSimpleName() + ".");
+			return;
+		}
+		item.getItemProperty(PROPERTY_ID_CATEGORY).setValue(categoryLayout);
+		if (mode == Mode.NORMAL) {
+			try {
+				item.getItemProperty(PROPERTY_ID_UNREAD).setValue(
+						presenter.getUnreadThreadCount(category));
+			} catch (final DataSourceException e) {
+				item.getItemProperty(PROPERTY_ID_UNREAD).setValue(0L);
+			}
 
-            try {
-                item.getItemProperty(PROPERTY_ID_THREADS).setValue(
-                        presenter.getThreadCount(category));
-            } catch (final DataSourceException e) {
-                item.getItemProperty(PROPERTY_ID_THREADS).setValue(0L);
-            }
+			try {
+				item.getItemProperty(PROPERTY_ID_THREADS).setValue(
+						presenter.getThreadCount(category));
+			} catch (final DataSourceException e) {
+				item.getItemProperty(PROPERTY_ID_THREADS).setValue(0L);
+			}
 
-        }
-        if (parent != null) {
-            setParent(category, parent);
-        }
+		}
+		if (parent != null) {
+			setParent(category, parent);
+		}
 
-        List<Category> subCategories = new ArrayList<Category>();
-        try {
-            subCategories = presenter.getSubCategories(category);
-        } catch (final DataSourceException e) {
-            // NOP - arraylist is already initialized as empty
-        }
+		List<Category> subCategories = new ArrayList<Category>();
+		try {
+			subCategories = presenter.getSubCategories(category);
+		} catch (final DataSourceException e) {
+			// NOP - arraylist is already initialized as empty
+		}
 
-        if (subCategories.isEmpty()) {
-            setChildrenAllowed(category, false);
-        } else {
-            // all categories are collapsed by default
-            setCollapsed(category, true);
+		if (subCategories.isEmpty()) {
+			setChildrenAllowed(category, false);
+		} else {
+			// all categories are collapsed by default
+			setCollapsed(category, true);
 
-            // recursively add all sub categories
-            for (final Category subCategory : subCategories) {
-                addCategory(subCategory, category);
-            }
-        }
-    }
+			// recursively add all sub categories
+			for (final Category subCategory : subCategories) {
+				addCategory(subCategory, category);
+			}
+		}
+	}
 
-    public void setDraggingEnabled(final boolean enabled) {
-        if (enabled) {
-            setDragMode(TableDragMode.ROW);
-            addStyleName("rearranging");
-        } else {
-            setDragMode(TableDragMode.NONE);
-            removeStyleName("rearranging");
-        }
-    }
+	public void setDraggingEnabled(final boolean enabled) {
+		if (enabled) {
+			setDragMode(TableDragMode.ROW);
+			addStyleName("rearranging");
+		} else {
+			setDragMode(TableDragMode.NONE);
+			removeStyleName("rearranging");
+		}
+	}
 
-    /**
-     * Simple layout displaying the category name as a link and the category
-     * description. If the {@code CategoryListing} mode is
-     * {@link Mode#SINGLE_COLUMN}, this layout also includes additional details.
-     */
-    private class CategoryLayout extends CssLayout {
+	/**
+	 * Simple layout displaying the category name as a link and the category
+	 * description. If the {@code CategoryListing} mode is
+	 * {@link Mode#SINGLE_COLUMN}, this layout also includes additional details.
+	 */
+	private class CategoryLayout extends CssLayout {
 
-        private final String CATEGORY_URL = ToriNavigator.ApplicationView.CATEGORIES
-                .getUrl();
+		private final String CATEGORY_URL = "#"
+				+ ToriNavigator.ApplicationView.CATEGORIES.getUrl()+ "/";
 
-        public CategoryLayout(final Category category) {
-            final long id = category.getId();
-            final String name = category.getName();
-            final String description = category.getDescription();
+		public CategoryLayout(final Category category) {
+			final long id = category.getId();
+			final String name = category.getName();
+			final String description = category.getDescription();
 
-            setData(category);
-            setStyleName("category");
-            if (mode == Mode.SINGLE_COLUMN) {
-                try {
-                    addComponent(createThreadCountLabel(
-                            presenter.getThreadCount(category),
-                            presenter.getUnreadThreadCount(category)));
-                } catch (final DataSourceException e) {
-                    addComponent(new Label(
-                            "Something went wrong with the database :("));
-                }
-            }
-            addComponent(createCategoryLink(id, name));
-            addComponent(createDescriptionLabel(description));
-            addComponent(createSettingsMenu(category));
-        }
+			setData(category);
+			setStyleName("category");
+			if (mode == Mode.SINGLE_COLUMN) {
+				try {
+					addComponent(createThreadCountLabel(
+							presenter.getThreadCount(category),
+							presenter.getUnreadThreadCount(category)));
+				} catch (final DataSourceException e) {
+					addComponent(new Label(
+							"Something went wrong with the database :("));
+				}
+			}
+			addComponent(createCategoryLink(id, name));
+			addComponent(createDescriptionLabel(description));
+			addComponent(createSettingsMenu(category));
+		}
 
-        private Component createThreadCountLabel(final long threadCount,
-                final long unreadPostCount) {
-            final Label threadCountLabel = new Label(String.format(
-                    "%d threads<br />%d new posts", threadCount,
-                    unreadPostCount), ContentMode.HTML);
-            threadCountLabel.setStyleName("threadCount");
-            threadCountLabel.setWidth(null);
-            return threadCountLabel;
-        }
+		private Component createThreadCountLabel(final long threadCount,
+				final long unreadPostCount) {
+			final Label threadCountLabel = new Label(String.format(
+					"%d threads<br />%d new posts", threadCount,
+					unreadPostCount), ContentMode.HTML);
+			threadCountLabel.setStyleName("threadCount");
+			threadCountLabel.setWidth(null);
+			return threadCountLabel;
+		}
 
-        private Component createDescriptionLabel(
-                final String categoryDescription) {
-            final Label description = new Label(categoryDescription);
-            description.setStyleName("description");
-            description.setWidth(null);
-            return description;
-        }
+		private Component createDescriptionLabel(
+				final String categoryDescription) {
+			final Label description = new Label(categoryDescription);
+			description.setStyleName("description");
+			description.setWidth(null);
+			return description;
+		}
 
-        private Component createCategoryLink(final long id, final String name) {
-            final Link categoryLink = new Link();
-            categoryLink.setCaption(name);
-            categoryLink.setResource(new ExternalResource("#" + CATEGORY_URL
-                    + "/" + id));
-            categoryLink.setStyleName("categoryLink");
-            categoryLink.setWidth(null);
-            return categoryLink;
-        }
+		private Component createCategoryLink(final long id, final String name) {
+			final Link categoryLink = new Link();
+			categoryLink.setCaption(name);
+			categoryLink.setResource(new ExternalResource(CATEGORY_URL + id));
+			categoryLink.setStyleName("categoryLink");
+			categoryLink.setWidth(null);
+			return categoryLink;
+		}
 
-        private Component createSettingsMenu(final Category category) {
-            final List<ContextMenuOperation> contextMenuOperations = presenter
-                    .getContextMenuOperations(category);
+		private Component createSettingsMenu(final Category category) {
+			final List<ContextMenuOperation> contextMenuOperations = presenter
+					.getContextMenuOperations(category);
 
-            final ContextMenu contextMenu = new ContextMenu();
-            for (final ContextMenuOperation menuItem : contextMenuOperations) {
-                switch (menuItem) {
-                case EDIT:
-                    contextMenu.add("icon-edit", "Edit category",
-                            new ContextComponentSwapper() {
-                                @Override
-                                public Component swapContextComponent() {
-                                    final EditCategoryListener listener = new EditCategoryListener() {
-                                        @Override
-                                        public void commit(final String name,
-                                                final String description) {
-                                            try {
-                                                presenter.edit(category, name,
-                                                        description);
-                                            } catch (final DataSourceException e) {
-                                                /*
-                                                 * FIXME: make sure that edits
-                                                 * are reverted.
-                                                 */
-                                                Notification
-                                                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
-                                            }
-                                        }
-                                    };
-                                    return new EditCategoryForm(listener,
-                                            category);
-                                }
-                            });
-                    break;
-                case DELETE:
-                    contextMenu.add("icon-delete", "Delete category",
-                            new ContextComponentSwapper() {
-                                @Override
-                                public Component swapContextComponent() {
-                                    final String title = String.format(String
-                                            .format("Really delete category \"%s\" and all of its contents?",
-                                                    category.getName()));
-                                    final String confirmCaption = "Yes, Delete";
-                                    final String cancelCaption = "No, Cancel!";
-                                    final ConfirmationListener listener = new ConfirmationListener() {
+			final ContextMenu contextMenu = new ContextMenu();
+			for (final ContextMenuOperation menuItem : contextMenuOperations) {
+				switch (menuItem) {
+				case EDIT:
+					contextMenu.add("icon-edit", "Edit category",
+							new ContextComponentSwapper() {
+								@Override
+								public Component swapContextComponent() {
+									final EditCategoryListener listener = new EditCategoryListener() {
+										@Override
+										public void commit(final String name,
+												final String description) {
+											try {
+												presenter.edit(category, name,
+														description);
+											} catch (final DataSourceException e) {
+												/*
+												 * FIXME: make sure that edits
+												 * are reverted.
+												 */
+												Notification
+														.show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+											}
+										}
+									};
+									return new EditCategoryForm(listener,
+											category);
+								}
+							});
+					break;
+				case DELETE:
+					contextMenu.add("icon-delete", "Delete category",
+							new ContextComponentSwapper() {
+								@Override
+								public Component swapContextComponent() {
+									final String title = String.format(String
+											.format("Really delete category \"%s\" and all of its contents?",
+													category.getName()));
+									final String confirmCaption = "Yes, Delete";
+									final String cancelCaption = "No, Cancel!";
+									final ConfirmationListener listener = new ConfirmationListener() {
 
-                                        @Override
-                                        public void onConfirmed() {
-                                            try {
-                                                presenter.delete(category);
-                                            } catch (final DataSourceException e) {
-                                                Notification
-                                                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
-                                            }
-                                            contextMenu.close();
-                                        }
+										@Override
+										public void onConfirmed() {
+											try {
+												presenter.delete(category);
+											} catch (final DataSourceException e) {
+												Notification
+														.show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+											}
+											contextMenu.close();
+										}
 
-                                        @Override
-                                        public void onCancel() {
-                                            contextMenu.close();
-                                        }
-                                    };
-                                    return new ConfirmationDialog(title,
-                                            confirmCaption, cancelCaption,
-                                            listener);
+										@Override
+										public void onCancel() {
+											contextMenu.close();
+										}
+									};
+									return new ConfirmationDialog(title,
+											confirmCaption, cancelCaption,
+											listener);
 
-                                }
-                            });
-                    break;
-                case FOLLOW:
-                    contextMenu.add("icon-follow", "Follow category",
-                            new ContextAction() {
-                                @Override
-                                public void contextClicked() {
-                                    presenter.follow(category);
-                                }
-                            });
-                    break;
-                }
-            }
-            return contextMenu;
-        }
-    }
+								}
+							});
+					break;
+				case FOLLOW:
+					contextMenu.add("icon-follow", "Follow category",
+							new ContextAction() {
+								@Override
+								public void contextClicked() {
+									presenter.follow(category);
+								}
+							});
+					break;
+				}
+			}
+			return contextMenu;
+		}
+	}
 
-    private class CategoryTreeDropHandler implements DropHandler {
+	private class CategoryTreeDropHandler implements DropHandler {
 
-        @Override
-        public void drop(final DragAndDropEvent event) {
-            final Transferable t = event.getTransferable();
+		@Override
+		public void drop(final DragAndDropEvent event) {
+			final Transferable t = event.getTransferable();
 
-            // check that we're dragging within the same CategoryTreeTable
-            if (t.getSourceComponent() != CategoryTreeTable.this) {
-                return;
-            }
+			// check that we're dragging within the same CategoryTreeTable
+			if (t.getSourceComponent() != CategoryTreeTable.this) {
+				return;
+			}
 
-            final AbstractSelectTargetDetails targetDetails = (AbstractSelectTargetDetails) event
-                    .getTargetDetails();
+			final AbstractSelectTargetDetails targetDetails = (AbstractSelectTargetDetails) event
+					.getTargetDetails();
 
-            // get source and target itemIds
-            final Object draggedItemId = t.getData("itemId");
-            final Object targetItemId = targetDetails.getItemIdOver();
+			// get source and target itemIds
+			final Object draggedItemId = t.getData("itemId");
+			final Object targetItemId = targetDetails.getItemIdOver();
 
-            final HierarchicalContainer container = (HierarchicalContainer) getContainerDataSource();
-            final Object parentItemId = container.getParent(targetItemId);
-            container.setParent(draggedItemId, parentItemId);
+			final HierarchicalContainer container = (HierarchicalContainer) getContainerDataSource();
+			final Object parentItemId = container.getParent(targetItemId);
+			container.setParent(draggedItemId, parentItemId);
 
-            // move the dragged item in the container according to the drop
-            // location
-            final VerticalDropLocation dropLocation = targetDetails
-                    .getDropLocation();
-            if (dropLocation == VerticalDropLocation.MIDDLE) {
-                // middle -> make it child
-                container.setChildrenAllowed(targetItemId, true);
-                container.setParent(draggedItemId, targetItemId);
-            } else if (dropLocation == VerticalDropLocation.TOP) {
-                // top -> make it previous
-                container.moveAfterSibling(targetItemId, draggedItemId);
-            } else if (dropLocation == VerticalDropLocation.BOTTOM) {
-                // bottom -> make it next
-                container.moveAfterSibling(draggedItemId, targetItemId);
-            }
-        }
+			// move the dragged item in the container according to the drop
+			// location
+			final VerticalDropLocation dropLocation = targetDetails
+					.getDropLocation();
+			if (dropLocation == VerticalDropLocation.MIDDLE) {
+				// middle -> make it child
+				container.setChildrenAllowed(targetItemId, true);
+				container.setParent(draggedItemId, targetItemId);
+			} else if (dropLocation == VerticalDropLocation.TOP) {
+				// top -> make it previous
+				container.moveAfterSibling(targetItemId, draggedItemId);
+			} else if (dropLocation == VerticalDropLocation.BOTTOM) {
+				// bottom -> make it next
+				container.moveAfterSibling(draggedItemId, targetItemId);
+			}
+		}
 
-        @Override
-        public AcceptCriterion getAcceptCriterion() {
-            return AcceptAll.get();
-        }
+		@Override
+		public AcceptCriterion getAcceptCriterion() {
+			return AcceptAll.get();
+		}
 
-    }
+	}
 }

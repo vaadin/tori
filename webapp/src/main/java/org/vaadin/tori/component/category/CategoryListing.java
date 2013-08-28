@@ -77,7 +77,7 @@ public class CategoryListing extends
 
         // Must call init here as this View is not
         // instantiated by ToriNavigator.
-        init(null);
+        init();
     }
 
     @Override

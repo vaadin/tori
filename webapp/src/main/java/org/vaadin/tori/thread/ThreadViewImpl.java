@@ -60,6 +60,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -84,7 +85,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             if (!rawBody.trim().isEmpty()) {
                 try {
                     getPresenter().sendReply(rawBody);
-                    getUI().trackAction(null, "reply");
+                    ToriUI.getCurrent().trackAction(null, "reply");
                 } catch (final DataSourceException e) {
                     Notification
                             .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
@@ -491,8 +492,11 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void redirectToDashboard() {
-        getNavigator().navigateTo(
-                ToriNavigator.ApplicationView.DASHBOARD.getUrl());
+        UI.getCurrent()
+                .getNavigator()
+                .navigateTo(
+                        ToriNavigator.ApplicationView.DASHBOARD
+                                .getNavigatorUrl());
     }
 
     @Override
@@ -540,10 +544,14 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                     try {
                         final DiscussionThread createdThread = getPresenter()
                                 .createNewThread(category, topic, rawBody);
-                        getUI().trackAction(null, "new-thread");
-                        getNavigator().navigateTo(
-                                ToriNavigator.ApplicationView.THREADS.getUrl()
-                                        + "/" + createdThread.getId());
+                        ToriUI.getCurrent().trackAction(null, "new-thread");
+                        UI.getCurrent()
+                                .getNavigator()
+                                .navigateTo(
+                                        ToriNavigator.ApplicationView.THREADS
+                                                .getNavigatorUrl()
+                                                + "/"
+                                                + createdThread.getId());
                     } catch (final DataSourceException e) {
                         Notification.show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                     }
