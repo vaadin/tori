@@ -29,7 +29,6 @@
 					<artifactId>ds-test</artifactId>
 					<version>2.0.0</version>
 				</dependency>
-
 			</dependencies>
 		</profile>
 		<profile>
@@ -44,6 +43,11 @@
 				<dependency>
 					<groupId>org.vaadin.tori</groupId>
 					<artifactId>ds-liferay</artifactId>
+					<version>2.0.0</version>
+				</dependency>
+				<dependency>
+					<groupId>org.vaadin.tori</groupId>
+					<artifactId>uc-liferay</artifactId>
 					<version>2.0.0</version>
 				</dependency>
 				<dependency>
@@ -65,6 +69,11 @@
 				<dependency>
 					<groupId>org.vaadin.tori</groupId>
 					<artifactId>ds-liferay</artifactId>
+					<version>2.0.0</version>
+				</dependency>
+				<dependency>
+					<groupId>org.vaadin.tori</groupId>
+					<artifactId>uc-liferay</artifactId>
 					<version>2.0.0</version>
 				</dependency>
 				<dependency>

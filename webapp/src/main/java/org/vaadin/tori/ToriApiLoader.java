@@ -28,6 +28,7 @@ import org.vaadin.tori.data.spi.ServiceProvider;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.SignatureFormatter;
+import org.vaadin.tori.util.UrlConverter;
 import org.vaadin.tori.util.UserBadgeProvider;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -42,6 +43,7 @@ public class ToriApiLoader {
 
     @CheckForNull
     private final UserBadgeProvider userBadgeProvider;
+    private final UrlConverter urlConverter;
 
     public ToriApiLoader() {
         checkThatCommonIsLoaded();
@@ -51,6 +53,25 @@ public class ToriApiLoader {
         signatureFormatter = createSignatureFormatter();
         authorizationService = createAuthorizationService();
         userBadgeProvider = createUserBadgeProvider();
+        urlConverter = createUrlConverter();
+    }
+
+    private UrlConverter createUrlConverter() {
+        final ServiceLoader<UrlConverter> loader = ServiceLoader
+                .load(UrlConverter.class);
+        if (loader.iterator().hasNext()) {
+            final UrlConverter urlConverter = loader.iterator().next();
+            getLogger().debug(
+                    String.format("Using %s implementation: %s",
+                            UrlConverter.class.getSimpleName(), urlConverter
+                                    .getClass().getName()));
+            return urlConverter;
+        } else {
+            getLogger().debug(
+                    String.format("No implementation for %s found",
+                            UrlConverter.class.getSimpleName()));
+            return null;
+        }
     }
 
     @CheckForNull
@@ -178,6 +199,10 @@ public class ToriApiLoader {
     @CheckForNull
     public UserBadgeProvider getUserBadgeProvider() {
         return userBadgeProvider;
+    }
+
+    public UrlConverter getUc() {
+        return urlConverter;
     }
 
 }

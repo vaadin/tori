@@ -13,6 +13,7 @@
 		<module>ds-test</module>
 		<module>ds-liferay</module>
 		<module>bp-vaadin</module>
+		<module>uc-liferay</module>
 	</modules>
 
 	<properties>

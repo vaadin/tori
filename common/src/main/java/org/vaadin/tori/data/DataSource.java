@@ -370,30 +370,10 @@ public interface DataSource {
     String getGoogleAnalyticsTrackerId();
 
     /**
-     * @param queryUrl
-     *            The part of the URL that comes after the context path
-     *            (excludes fragment)
-     * @param string
-     * @param queryPart
-     * @return The fragment that corresponds to the queried URL.
-     *         <code>null</code> if no changes are to be made. Empty string to
-     *         clear the fragment.
-     * @deprecated This method needs to be moved somewhere else. (see also
-     *             {@link #getPathRoot()})
-     * @throws Exception
-     *             if the translation to a Tori fragment was unsuccessful.
-     */
-    @Deprecated
-    @CheckForNull
-    UrlInfo getToriFragment(@NonNull String queryUrl, String queryPart)
-            throws Exception;
-
-    /**
      * Gets the path root configured for this application. Usable for
      * redirection to the "root" of Tori.
      * 
-     * @deprecated This method needs to be moved somewhere else (see also
-     *             {@link #getToriFragment(String)})
+     * @deprecated This method needs to be moved somewhere else
      */
     @Deprecated
     String getPathRoot();
