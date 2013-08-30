@@ -32,7 +32,7 @@ import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.post.PostReport;
 
-import com.google.common.collect.Lists;
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;

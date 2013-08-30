@@ -34,18 +34,15 @@ import org.vaadin.tori.data.entity.AbstractEntity;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
-import org.vaadin.tori.mvp.View;
 import org.vaadin.tori.service.DebugAuthorizationService;
 import org.vaadin.tori.thread.ThreadView;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
+import com.google.gwt.thirdparty.guava.common.base.Joiner;
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -177,23 +174,23 @@ public class DebugControlPanel extends CustomComponent implements
 
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "we don't care about serialization")
     private final Logger log = Logger.getLogger(getClass());
-	protected com.vaadin.navigator.View currentView;
+    protected com.vaadin.navigator.View currentView;
 
     public DebugControlPanel(
             final DebugAuthorizationService authorizationService,
             final ToriNavigator navigator) {
         this.authorizationService = authorizationService;
         this.navigator = navigator;
-        navigator.addViewChangeListener(new ViewChangeListener(){
-        	@Override
-        	public void afterViewChange(ViewChangeEvent event) {
-        		currentView = event.getNewView();        		
-        	}
-        	
-        	@Override
-        	public boolean beforeViewChange(ViewChangeEvent event) {
-        		return true;
-        	}
+        navigator.addViewChangeListener(new ViewChangeListener() {
+            @Override
+            public void afterViewChange(ViewChangeEvent event) {
+                currentView = event.getNewView();
+            }
+
+            @Override
+            public boolean beforeViewChange(ViewChangeEvent event) {
+                return true;
+            }
         });
 
         final PopupButton popupButton = new PopupButton("Debug Control Panel");
