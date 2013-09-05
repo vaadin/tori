@@ -107,14 +107,14 @@ public class CategoryPresenter extends Presenter<CategoryView> {
                 currentCategory = SpecialCategory.RECENT_POSTS.getInstance();
 
                 final List<Category> empty = Collections.emptyList();
-                view.displaySubCategories(empty);
+                view.displaySubCategories(empty, true);
                 view.displayThreads(recentPostsProvider);
             } else if (categoryIdString
                     .equals(SpecialCategory.MY_POSTS.getId())) {
                 currentCategory = SpecialCategory.MY_POSTS.getInstance();
 
                 final List<Category> empty = Collections.emptyList();
-                view.displaySubCategories(empty);
+                view.displaySubCategories(empty, true);
                 view.displayThreads(myPostsProvider);
             } else {
                 Category requestedCategory = null;
@@ -130,8 +130,8 @@ public class CategoryPresenter extends Presenter<CategoryView> {
 
                 if (requestedCategory != null) {
                     currentCategory = requestedCategory;
-                    view.displaySubCategories(dataSource
-                            .getSubCategories(currentCategory));
+                    view.displaySubCategories(
+                            dataSource.getSubCategories(currentCategory), false);
                 } else {
                     getView().displayCategoryNotFoundError(categoryIdString);
                 }
@@ -140,8 +140,8 @@ public class CategoryPresenter extends Presenter<CategoryView> {
                 } else {
                     view.hideThreads();
                 }
-                view.setUserMayStartANewThread(userMayStartANewThread());
             }
+            view.setUserMayStartANewThread(userMayStartANewThread());
         } catch (final DataSourceException e) {
             e.printStackTrace();
             getView().panic();
@@ -349,8 +349,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         if (SpecialCategory.isSpecialCategory(currentCategory)) {
             // special "categories" like recent posts
             userMayStartANewThread = false;
-        }
-        if (authorizationService != null && currentCategory != null) {
+        } else if (authorizationService != null && currentCategory != null) {
             userMayStartANewThread = authorizationService
                     .mayCreateThreadIn(currentCategory);
         }

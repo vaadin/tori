@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.vaadin.tori.category.SpecialCategory;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.exception.DataSourceException;
@@ -119,6 +120,9 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
         this.categories = categories;
         currentRoot = rootCategory;
         getView().displayCategories(categories);
+        getView().setCreateVisible(
+                authorizationService.mayEditCategories()
+                        && !SpecialCategory.isSpecialCategory(rootCategory));
     }
 
     List<Category> getSubCategories(final Category category)

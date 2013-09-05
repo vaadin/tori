@@ -108,11 +108,15 @@ public class CategoryViewImpl extends
             @Override
             @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "This method is never called if the category isn't set")
             public void buttonClick(final ClickEvent event) {
-            	UI.getCurrent().getNavigator().navigateTo(
-                        String.format("%s/%s/%s",
-                                ToriNavigator.ApplicationView.THREADS.getNavigatorUrl(),
-                                ThreadPresenter.NEW_THREAD_ARGUMENT,
-                                getPresenter().getCurrentCategory().getId()));
+                UI.getCurrent()
+                        .getNavigator()
+                        .navigateTo(
+                                String.format("%s/%s/%s",
+                                        ToriNavigator.ApplicationView.THREADS
+                                                .getNavigatorUrl(),
+                                        ThreadPresenter.NEW_THREAD_ARGUMENT,
+                                        getPresenter().getCurrentCategory()
+                                                .getId()));
             }
         });
         button.setWidth("163px"); // same as
@@ -130,12 +134,13 @@ public class CategoryViewImpl extends
     }
 
     @Override
-    public void displaySubCategories(final List<Category> subCategories) {
+    public void displaySubCategories(final List<Category> subCategories,
+            final boolean specialCategory) {
         if (!subCategories.isEmpty()) {
             categoryListing.replaceCreateCategoryButton();
             categoryListing.setCategories(subCategories, getCurrentCategory());
         } else {
-            if (getPresenter().userCanCreateSubcategory()) {
+            if (getPresenter().userCanCreateSubcategory() && !specialCategory) {
                 categoryLayout.setVisible(true);
                 final Component createCategoryButton = categoryListing
                         .removeAndGetCreateCategoryButton();

@@ -100,7 +100,7 @@ public class CategoryPresenterTest {
         assertEquals(category, presenter.getCurrentCategory());
 
         // verify that the category (and subcategories) is displayed)
-        verify(mockView).displaySubCategories(subCategories);
+        verify(mockView).displaySubCategories(subCategories, false);
         /*-verify(mockView).displayThreads(threads);*/
     }
 

@@ -46,7 +46,8 @@ public interface CategoryView extends View {
                 throws DataSourceException;
     }
 
-    void displaySubCategories(@NonNull List<Category> subCategories);
+    void displaySubCategories(@NonNull List<Category> subCategories,
+            boolean specialCategory);
 
     // void displayThreads(List<DiscussionThread> threadsInCategory);
 
