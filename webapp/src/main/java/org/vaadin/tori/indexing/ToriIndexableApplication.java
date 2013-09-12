@@ -141,7 +141,7 @@ public class ToriIndexableApplication {
         for (final String bit : fragment.split("/")) {
             args.add(bit);
         }
-        if (!args.isEmpty()) {
+        if (!args.isEmpty() && args.get(0).isEmpty()) {
             // because we start with a slash, the first index is always empty.
             // Or should be.
             args.remove(0);
