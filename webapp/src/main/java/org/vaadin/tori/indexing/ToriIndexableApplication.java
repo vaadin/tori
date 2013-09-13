@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class ToriIndexableApplication {
 
-    private static final String ESCAPED_FRAGMENT = "_escaped_fragment_";
+    public static final String ESCAPED_FRAGMENT = "_escaped_fragment_";
     private static final String USER_AGENT = "User-Agent";
     private static final String[] BOT_USER_AGENTS = { // "firefox", // for
                                                       // testing

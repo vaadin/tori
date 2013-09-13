@@ -110,12 +110,13 @@ public class IndexableCategoryView extends IndexableView {
                 .getOriginalPoster().getDisplayedName());
         final int postCount = thread.getPostCount();
         return String
-                .format("<tr><td><a href=\"#%s\">%s</a></td><td>%s</td><td>%s</td></tr>",
+                .format("<tr><td><a href=\"%s\">%s</a></td><td>%s</td><td>%s</td></tr>",
                         threadUrl, topic, authorName, postCount);
     }
 
     private String getThreadUrl(final DiscussionThread thread) {
-        return ApplicationView.THREADS.getUrl() + "/" + thread.getId();
+        return application.getDataSource().getPathRoot() + "#"
+                + ApplicationView.THREADS.getUrl() + "/" + thread.getId();
     }
 
 }
