@@ -145,6 +145,11 @@
 			<version>2.2.1</version>
 		</dependency>
 		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>ckeditor-wrapper-for-vaadin</artifactId>
+			<version>7.8.6</version>
+		</dependency>
+		<dependency>
 			<groupId>com.ocpsoft</groupId>
 			<artifactId>ocpsoft-pretty-time</artifactId>
 			<version>1.0.7</version>
@@ -175,49 +180,49 @@
 			</plugin>
 
 			<plugin>
-				<artifactId>maven-clean-plugin</artifactId>
-				<version>2.5</version>
-				<configuration>
-					<filesets>
-						<fileset>
-							<directory>src/main/webapp/VAADIN/widgetsets</directory>
-						</fileset>
-						<fileset>
-							<directory>src/main/webapp/VAADIN/gwt-unitCache</directory>
-						</fileset>
-					</filesets>
-				</configuration>
+			<artifactId>maven-clean-plugin</artifactId>
+			<version>2.5</version>
+			<configuration>
+			<filesets>
+			<fileset>
+			<directory>src/main/webapp/VAADIN/widgetsets</directory>
+			</fileset>
+			<fileset>
+			<directory>src/main/webapp/VAADIN/gwt-unitCache</directory>
+			</fileset>
+			</filesets>
+			</configuration>
 			</plugin>
 			<plugin>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-maven-plugin</artifactId>
-				<version>${vaadin.plugin.version}</version>
-				<configuration>
-					<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-					<runTarget>mobilemail</runTarget>
-					<webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets
-					</webappDirectory>
-					<hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets
-					</hostedWebapp>
-					<noServer>true</noServer>
-					<draftCompile>false</draftCompile>
-					<style>OBF</style>
-					<compileReport>true</compileReport>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-maven-plugin</artifactId>
+			<version>${vaadin.plugin.version}</version>
+			<configuration>
+			<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+			<runTarget>mobilemail</runTarget>
+			<webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets
+			</webappDirectory>
+			<hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets
+			</hostedWebapp>
+			<noServer>true</noServer>
+			<draftCompile>false</draftCompile>
+			<style>OBF</style>
+			<compileReport>true</compileReport>
 
 
-					<runTarget>http://localhost:8080/</runTarget>
-				</configuration>
-				<executions>
-					<execution>
-						<configuration>
-						</configuration>
-						<goals>
-							<goal>resources</goal>
-							<goal>update-widgetset</goal>
-							<goal>compile</goal>
-						</goals>
-					</execution>
-				</executions>
+			<runTarget>http://localhost:8080/</runTarget>
+			</configuration>
+			<executions>
+			<execution>
+			<configuration>
+			</configuration>
+			<goals>
+			<goal>resources</goal>
+			<goal>update-widgetset</goal>
+			<goal>compile</goal>
+			</goals>
+			</execution>
+			</executions>
 			</plugin>
 
 			<plugin>

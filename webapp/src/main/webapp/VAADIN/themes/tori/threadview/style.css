@@ -536,6 +536,17 @@
 	visibility: hidden;
 }
 
+.authoring .v-verticallayout {
+	padding-left: 158px;
+}
+
+.authoring .v-caption-wysiwyg-editor {
+	color: #64635a;
+	font-size: 18px;
+	font-weight: bold;
+	padding-bottom: 10px;
+}
+
 .authoring.compact td {
 	vertical-align: middle;
 }

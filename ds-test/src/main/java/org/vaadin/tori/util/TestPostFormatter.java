@@ -112,9 +112,9 @@ public class TestPostFormatter implements PostFormatter {
         @Override
         public Collection<FontSize> getFontSizes() {
             final List<FontSize> list = new ArrayList<FontSize>();
-            list.add(new TestFontSize("Small", "[size=small][/size]"));
-            list.add(new TestFontSize("Normal", "[size=normal][/size]"));
-            list.add(new TestFontSize("Large", "[size=large][/size]"));
+            list.add(new TestFontSize("Small", "[size=1]"));
+            list.add(new TestFontSize("Normal", "[size=4]"));
+            list.add(new TestFontSize("Large", "[size=7]"));
             return list;
         }
 

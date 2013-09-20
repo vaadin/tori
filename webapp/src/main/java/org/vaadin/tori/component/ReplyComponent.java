@@ -33,13 +33,4 @@ public class ReplyComponent extends AuthoringComponent {
         super(listener, formattingSyntaxXhtml, caption, inputPrompt);
     }
 
-    @Override
-    public void setCompactMode(final boolean compact) {
-        super.setCompactMode(compact);
-    }
-
-    @Override
-    public void setCollapsible(final boolean collapsible) {
-        super.setCollapsible(collapsible);
-    }
 }

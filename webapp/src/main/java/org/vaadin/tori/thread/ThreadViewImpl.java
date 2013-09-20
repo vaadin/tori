@@ -47,8 +47,6 @@ import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.mvp.AbstractView;
 
 import com.ocpsoft.pretty.time.PrettyTime;
-import com.vaadin.event.FieldEvents;
-import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.shared.ui.MarginInfo;
@@ -349,14 +347,6 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         quickReply.setUserMayAddFiles(false);
         quickReply.getInput().setPropertyDataSource(
                 mirroredReplyComponent.getInput());
-        quickReply.setCompactMode(true);
-        quickReply.setCollapsible(true);
-        quickReply.getInput().addFocusListener(new FieldEvents.FocusListener() {
-            @Override
-            public void focus(final FocusEvent event) {
-                quickReply.setCompactMode(false);
-            }
-        });
         quickReply.setWidth(100.0f, Unit.PERCENTAGE);
 
         final FloatingBar bar = new FloatingBar();
