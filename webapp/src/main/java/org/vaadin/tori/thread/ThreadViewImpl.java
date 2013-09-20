@@ -37,6 +37,7 @@ import org.vaadin.tori.component.NewThreadComponent.NewThreadListener;
 import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.component.ReplyComponent;
 import org.vaadin.tori.component.ReplyComponent.ReplyListener;
+import org.vaadin.tori.component.post.LazyVerticalLayout;
 import org.vaadin.tori.component.post.PostComponent;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -67,14 +68,6 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD_STORE", justification = "We're ignoring serialization")
 public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         implements ThreadView {
-
-    private static final int RENDER_DELAY_MILLIS = 500;
-    private static final double RENDER_DISTANCE_MULTIPLIER = 2.0d;
-    private static final String PLACEHOLDER_WIDTH = "100%";
-    private static final String PLACEHOLDER_HEIGHT = "300px";
-
-    /** The amount of posts to preload from the beginning and the end. */
-    private static final int PRELOAD_THRESHHOLD = 4;
 
     private CssLayout layout;
     private final ReplyListener replyListener = new ReplyListener() {
@@ -110,18 +103,14 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't care about serialization")
     private final Map<Post, PostComponent> postsToComponents = new HashMap<Post, PostComponent>();
-    private final LazyLayout postsLayout;
-    // private final CssLayout postsLayout;
+    private final LazyVerticalLayout postsLayout;
     private ReplyComponent reply;
     private NewThreadComponent newThreadComponent;
 
     public ThreadViewImpl() {
         setStyleName("threadview");
-        // postsLayout = new CssLayout();
-        postsLayout = new LazyLayout();
-        postsLayout.setRenderDistanceMultiplier(RENDER_DISTANCE_MULTIPLIER);
-        postsLayout.setPlaceholderSize(PLACEHOLDER_HEIGHT, PLACEHOLDER_WIDTH);
-        postsLayout.setRenderDelay(RENDER_DELAY_MILLIS);
+
+        postsLayout = new LazyVerticalLayout();
     }
 
     @Override
@@ -165,27 +154,19 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         layout.removeAllComponents();
 
         postsLayout.removeAllComponents();
+
+        for (Post post : posts) {
+            postsLayout.addComponent(newPostComponent(post));
+        }
+
         layout.addComponent(postsLayout);
 
-        for (int i = 0; i < posts.size(); i++) {
-            final Post post = posts.get(i);
-            final PostComponent c = newPostComponent(post);
-
-            if (i < PRELOAD_THRESHHOLD || i > posts.size() - PRELOAD_THRESHHOLD) {
-                postsLayout.addComponentEagerly(c);
-            } else {
-                postsLayout.addComponent(c);
-            }
-
-            if (i == 0) {
-                // create the floating summary bar for the first post
-                final FloatingBar summaryBar = getSummaryBar(post, c);
-                summaryBar.setScrollComponent(c);
-                summaryBar.setAlignment(FloatingAlignment.TOP);
-                layout.addComponent(summaryBar);
-            }
-
-        }
+        Post post = posts.get(0);
+        final PostComponent c = newPostComponent(post);
+        final FloatingBar summaryBar = getSummaryBar(post, c);
+        summaryBar.setScrollComponent(c);
+        summaryBar.setAlignment(FloatingAlignment.TOP);
+        layout.addComponent(summaryBar);
 
         if (getPresenter().userMayReply()) {
             final Label spacer = new Label("<span class=\"eof\">eof</span>",
@@ -202,7 +183,6 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             final FloatingBar quickReplyBar = getQuickReplyBar(reply);
             quickReplyBar.setScrollComponent(reply);
             quickReplyBar.setAlignment(FloatingAlignment.BOTTOM);
-
             layout.addComponent(quickReplyBar);
         }
 
@@ -465,7 +445,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void confirmReplyPostedAndShowIt(final Post newPost) {
-        postsLayout.addComponentEagerly(newPostComponent(newPost));
+        postsLayout.addComponent(newPostComponent(newPost));
     }
 
     @Override
