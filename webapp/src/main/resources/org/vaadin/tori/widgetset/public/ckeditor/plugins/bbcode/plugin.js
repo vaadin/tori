@@ -49,7 +49,7 @@
 	}
 
 	// Maintain the map of smiley-to-description.
-	var smileyMap = { smiley: ':)', sad: ':(', wink: ';)', laugh: ':D', cheeky: ':P', blush: ':*)', surprise: ':-o', indecision: ':|', angry: '>:(', angel: 'o:)', cool: '8-)', devil: '>:-)', crying: ';(', kiss: ':-*' },
+	var smileyMap = {},
 		smileyReverseMap = {},
 		smileyRegExp = [];
 
@@ -380,11 +380,11 @@
 						var lastIndex = 0;
 
 						// Create smiley from text emotion.
-						piece.replace( smileyRegExp, function( match, index ) {
-							addElement( new CKEDITOR.htmlParser.text( piece.substring( lastIndex, index ) ), currentNode );
-							addElement( new CKEDITOR.htmlParser.element( 'smiley', { desc: smileyReverseMap[ match ] } ), currentNode );
-							lastIndex = index + match.length;
-						});
+//						piece.replace( smileyRegExp, function( match, index ) {
+//							addElement( new CKEDITOR.htmlParser.text( piece.substring( lastIndex, index ) ), currentNode );
+//							addElement( new CKEDITOR.htmlParser.element( 'smiley', { desc: smileyReverseMap[ match ] } ), currentNode );
+//							lastIndex = index + match.length;
+//						});
 
 						if ( lastIndex != piece.length )
 							addElement( new CKEDITOR.htmlParser.text( piece.substring( lastIndex, piece.length ) ), currentNode );
@@ -620,21 +620,22 @@
 					a: function( element ) {
 						if ( !element.attributes.href )
 							element.attributes.href = element.children[ 0 ].value;
-					},
-					smiley: function( element ) {
-						element.name = 'img';
-
-						var description = element.attributes.desc,
-							image = config.smiley_images[ CKEDITOR.tools.indexOf( config.smiley_descriptions, description ) ],
-							src = CKEDITOR.tools.htmlEncode( config.smiley_path + image );
-
-						element.attributes = {
-							src: src,
-							'data-cke-saved-src': src,
-							title: description,
-							alt: description
-						};
 					}
+//					,
+//					smiley: function( element ) {
+//						element.name = 'img';
+//
+//						var description = element.attributes.desc,
+//							image = config.smiley_images[ CKEDITOR.tools.indexOf( config.smiley_descriptions, description ) ],
+//							src = CKEDITOR.tools.htmlEncode( config.smiley_path + image );
+//
+//						element.attributes = {
+//							src: src,
+//							'data-cke-saved-src': src,
+//							title: description,
+//							alt: description
+//						};
+//					}
 				}
 			});
 
@@ -722,9 +723,9 @@
 							var src = attributes[ 'data-cke-saved-src' ] || attributes.src,
 								alt = attributes.alt;
 
-							if ( src && src.indexOf( editor.config.smiley_path ) != -1 && alt )
-								return new CKEDITOR.htmlParser.text( smileyMap[ alt ] );
-							else
+//							if ( src && src.indexOf( editor.config.smiley_path ) != -1 && alt )
+//								return new CKEDITOR.htmlParser.text( smileyMap[ alt ] );
+//							else
 								element.children = [ new CKEDITOR.htmlParser.text( src ) ];
 						}
 
@@ -782,11 +783,12 @@
 								name = 'color';
 							else if ( element.getStyle( 'font-family' ) )
 								name = 'font';
-						} else if ( name == 'img' ) {
-							var src = element.data( 'cke-saved-src' ) || element.getAttribute( 'src' );
-							if ( src && src.indexOf( editor.config.smiley_path ) === 0 )
-								name = 'smiley';
 						}
+//						else if ( name == 'img' ) {
+//							var src = element.data( 'cke-saved-src' ) || element.getAttribute( 'src' );
+//							if ( src && src.indexOf( editor.config.smiley_path ) === 0 )
+//								name = 'smiley';
+//						}
 
 						return name;
 					});
