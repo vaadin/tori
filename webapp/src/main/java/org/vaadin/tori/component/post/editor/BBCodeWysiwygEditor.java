@@ -31,7 +31,7 @@ import com.vaadin.server.VaadinService;
 @SuppressWarnings("serial")
 public class BBCodeWysiwygEditor extends CKEditorTextField {
 
-    public BBCodeWysiwygEditor(final String captionText) {
+    public BBCodeWysiwygEditor(final String captionText, boolean autoGrow) {
         addStyleName("wysiwyg-editor");
         setCaption(captionText);
         setHeight(null);
@@ -46,10 +46,13 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
         String threadViewCss = themesPath + toriTheme + "threadview/style.css";
         String editorCss = themesPath + toriTheme + "editor/editor.css";
         config.setBodyClass("v-app v-widget authoring");
-
+        config.disableResizeEditor();
         config.setContentsCss(toriCss, threadViewCss, editorCss);
         config.addToExtraPlugins("custombbcode");
         config.addToExtraPlugins("codebutton");
+        if (autoGrow) {
+            config.addToExtraPlugins("autogrow");
+        }
         config.addCustomToolbarLine("{ items: ['Font','FontSize'] },"
                 + "{ items: ['Bold','Italic','Underline','Strike','TextColor','RemoveFormat'] },"
                 + "{ items: ['codebutton'] },"

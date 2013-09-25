@@ -323,8 +323,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     private FloatingBar getQuickReplyBar(
             final ReplyComponent mirroredReplyComponent) {
         final ReplyComponent quickReply = new ReplyComponent(replyListener,
-                getPresenter().getFormattingSyntax(), "Quick Reply",
-                "Your reply...");
+                getPresenter().getFormattingSyntax(), "Quick Reply", false);
 
         // Using the TextArea of the ReplyComponent as the property data source
         // to keep the two editors in sync.

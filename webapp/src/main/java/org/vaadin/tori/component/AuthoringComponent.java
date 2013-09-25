@@ -79,7 +79,7 @@ public abstract class AuthoringComponent extends CustomComponent {
 
     public AuthoringComponent(final AuthoringListener listener,
             final String formattingSyntaxXhtml, final String captionText) {
-        this(listener, formattingSyntaxXhtml, captionText, null);
+        this(listener, formattingSyntaxXhtml, captionText, true);
     }
 
     /**
@@ -90,7 +90,7 @@ public abstract class AuthoringComponent extends CustomComponent {
      */
     public AuthoringComponent(final AuthoringListener listener,
             final String formattingSyntaxXhtml, final String captionText,
-            final String inputPrompt) {
+            final boolean autoGrow) {
         this.listener = listener;
 
         setCompositionRoot(layout);
@@ -99,7 +99,7 @@ public abstract class AuthoringComponent extends CustomComponent {
         layout.setSpacing(true);
         setWidth("100%");
 
-        input = new BBCodeWysiwygEditor(captionText);
+        input = new BBCodeWysiwygEditor(captionText, autoGrow);
         layout.addComponent(input);
 
         HorizontalLayout buttonsLayout = new HorizontalLayout();

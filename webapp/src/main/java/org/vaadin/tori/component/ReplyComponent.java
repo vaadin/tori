@@ -29,8 +29,8 @@ public class ReplyComponent extends AuthoringComponent {
 
     public ReplyComponent(final ReplyListener listener,
             final String formattingSyntaxXhtml, final String caption,
-            final String inputPrompt) {
-        super(listener, formattingSyntaxXhtml, caption, inputPrompt);
+            final boolean autoGrow) {
+        super(listener, formattingSyntaxXhtml, caption, autoGrow);
     }
 
 }
