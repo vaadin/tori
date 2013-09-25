@@ -91,7 +91,7 @@
 	};
 
 	CKEDITOR.BBCodeParser.prototype = {
-		parse: function( bbcode ) {
+		parse: function( bbcode, editor ) {
 			var parts, part,
 				lastIndex = 0;
 
@@ -139,10 +139,15 @@
 							// Font size represents percentage.
 
 							if ( part == 'size' ){
-					            var sizeVal = parseInt(optionPart);
-					            var fixedSize = Math.max(Math.min(sizeVal, 7), 1);
-					            var valueArray = [0.7,0.8,0.9,1.0,1.1,1.3,1.5];
-								optionPart = valueArray[fixedSize - 1] + "em";
+								var sizeString = editor.config.fontSize_sizes + ";";
+                                var sizeMap = {};
+                                sizeString.replace(/(\d+)\/(.+?);/g, function ($0, param, val) {
+                                    sizeMap[param] = val;
+                                });
+                                optionPart = sizeMap[optionPart];
+                                if (!optionPart){
+                                	optionPart = "1.0em"
+                                }
 							} 
 							
 							styles[ stylesMap[ part ] ] = optionPart;
@@ -180,7 +185,7 @@
 	 * @param {String} source The HTML to be parsed, filling the fragment.
 	 * @returns {CKEDITOR.htmlParser.fragment} The fragment created.
 	 */
-	CKEDITOR.htmlParser.fragment.fromBBCode = function( source ) {
+	CKEDITOR.htmlParser.fragment.fromBBCode = function( source, editor ) {
 		var parser = new CKEDITOR.BBCodeParser(),
 			fragment = new CKEDITOR.htmlParser.fragment(),
 			pendingInline = [],
@@ -394,7 +399,7 @@
 		};
 
 		// Parse it.
-		parser.parse( CKEDITOR.tools.htmlEncode( source ) );
+		parser.parse( CKEDITOR.tools.htmlEncode( source ), editor);
 
 		// Close all hanging nodes.
 		while ( currentNode.type != CKEDITOR.NODE_DOCUMENT_FRAGMENT ) {
@@ -571,7 +576,7 @@
 			var config = editor.config;
 
 			function BBCodeToHtml( code ) {
-				var fragment = CKEDITOR.htmlParser.fragment.fromBBCode( code ),
+				var fragment = CKEDITOR.htmlParser.fragment.fromBBCode( code, editor ),
 					writer = new CKEDITOR.htmlParser.basicWriter();
 
 				fragment.writeHtml( writer, bbcodeFilter );
@@ -654,22 +659,19 @@
 								tagName = 'color';
 								value = CKEDITOR.tools.convertRgbToHex( value );
 							} else if ( ( value = style[ 'font-size' ] ) ) {
-								var emValue = value.match( /(\d+\.?\d*)em$/ );
-								if ( emValue ) {
-									var val = parseFloat(emValue[ 1 ]);
-						            var fixedVal = Math.max(Math.min(val, 1.5), 0.7);
-						           
-									if (fixedVal==1.2){
-										value = 5;
-									} else if (fixedVal==1.4){
-										value = 6;
-									} else {
-										var valueArray = [0.7,0.8,0.9,1.0,1.1,1.3,1.5];
-										value = valueArray.indexOf(fixedVal) + 1;
-									}
-									
-									tagName = 'size';
-								}
+                                var sizeString = editor.config.fontSize_sizes + ";";
+                                var sizeMap = {};
+                                sizeString.replace(/(\d+)\/(.+?);/g, function ($0, val, param) {
+                                    sizeMap[param] = val;
+                                });
+                                if (value=="1em"){
+                                    value="1.0em";
+                                }
+                                value = sizeMap[value];
+                                if (!value){
+                                    value = 4;
+                                }
+								tagName = 'size';
 							} else if ( value = style[ 'font-family' ] ) {
 								tagName = 'font';
 							}

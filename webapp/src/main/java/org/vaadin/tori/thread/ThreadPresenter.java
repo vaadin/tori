@@ -487,7 +487,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     public void quotePost(final Post post) {
         final String quote = ToriUI.getCurrent().getPostFormatter()
                 .getQuote(post);
-        getView().appendToReply(quote);
+        getView().appendToReply(quote + "\n\n ");
     }
 
     public void saveEdited(final Post post, final String newBody)

@@ -77,9 +77,6 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
         }
         sb.append("'").insert(0, "'");
 
-        // config.addExtraConfig("fontSize_sizes", sb.toString());
-        config.addExtraConfig("fontSize_sizes",
-                "'1/0.7em;2/0.8em;3/0.9em;4/1em;5/1.1em;6/1.3em;7/1.5em'");
-
+        config.addExtraConfig("fontSize_sizes", sb.toString());
     }
 }

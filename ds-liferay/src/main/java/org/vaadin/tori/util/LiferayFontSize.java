@@ -20,13 +20,13 @@ import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
 
 public enum LiferayFontSize implements FontSize {
     // @formatter:off
-    SIZE1("1", "1"),
-    SIZE2("2", "2"),
-    SIZE3("3", "3"),
-    SIZE4("4", "4"),
-    SIZE5("5", "5"),
-    SIZE6("6", "6"),
-    SIZE7("7", "7");
+    SIZE1("1", "0.7em"),
+    SIZE2("2", "0.8em"),
+    SIZE3("3", "0.9em"),
+    SIZE4("4", "1.0em"),
+    SIZE5("5", "1.1em"),
+    SIZE6("6", "1.3em"),
+    SIZE7("7", "1.5em");
     // @formatter:on
 
     private String name;
