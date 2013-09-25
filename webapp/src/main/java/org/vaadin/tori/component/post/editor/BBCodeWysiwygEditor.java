@@ -48,7 +48,7 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
         config.setBodyClass("v-app v-widget authoring");
 
         config.setContentsCss(toriCss, threadViewCss, editorCss);
-        config.addToExtraPlugins("bbcode");
+        config.addToExtraPlugins("custombbcode");
         config.addToExtraPlugins("codebutton");
         config.addCustomToolbarLine("{ items: ['Font','FontSize'] },"
                 + "{ items: ['Bold','Italic','Underline','Strike','TextColor','RemoveFormat'] },"

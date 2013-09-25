@@ -1,6 +1,11 @@
+html {
+	padding: 8px;
+}
+
 body {
 	width: 100%;
-	padding-right: 75px;
+ 	padding-right: 75px;
+ 	margin: 0 !important;
 }
 
 code {

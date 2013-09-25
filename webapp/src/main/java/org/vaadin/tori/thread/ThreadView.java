@@ -36,7 +36,7 @@ public interface ThreadView extends View {
     @CheckForNull
     DiscussionThread getCurrentThread();
 
-    void displayPosts(@NonNull List<Post> posts);
+    void displayPosts(@NonNull List<Post> posts, Long selectedPostId);
 
     void displayThreadNotFoundError(@NonNull String threadIdString);
 

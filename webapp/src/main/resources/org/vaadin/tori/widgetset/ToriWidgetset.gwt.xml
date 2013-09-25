@@ -8,15 +8,15 @@
 	</replace-with>
 
 	<inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset" />
-	<inherits
-		name="org.vaadin.hene.expandingtextarea.widgetset.ExpandingtextareaWidgetset" />
-	<inherits
-		name="org.vaadin.openesignforms.ckeditor.widgetset.VaadinCKEditorWidgetset" />
 	<inherits name="com.vaadin.DefaultWidgetSet" />
 
 
 
-	<!-- <set-property name="user.agent" value="safari"/> -->
+<!-- 	<set-property name="user.agent" value="safari"/> -->
 
 
+
+    <inherits name="org.vaadin.openesignforms.ckeditor.widgetset.VaadinCKEditorWidgetset" />
+
+    <inherits name="org.vaadin.hene.expandingtextarea.widgetset.ExpandingtextareaWidgetset" />
 </module>

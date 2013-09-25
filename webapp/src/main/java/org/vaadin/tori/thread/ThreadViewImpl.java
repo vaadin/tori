@@ -150,19 +150,23 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void displayPosts(final List<Post> posts) {
+    public void displayPosts(final List<Post> posts, Long selectedPostId) {
         layout.removeAllComponents();
 
         postsLayout.removeAllComponents();
 
         for (Post post : posts) {
-            postsLayout.addComponent(newPostComponent(post));
+            Component postComponent = newPostComponent(post);
+            postsLayout.addComponent(postComponent);
+            if (selectedPostId != null && selectedPostId.equals(post.getId())) {
+                postsLayout.setScrollToComponent(postComponent);
+            }
         }
 
         layout.addComponent(postsLayout);
 
         Post post = posts.get(0);
-        final PostComponent c = newPostComponent(post);
+        final PostComponent c = postsToComponents.get(post);
         final FloatingBar summaryBar = getSummaryBar(post, c);
         summaryBar.setScrollComponent(c);
         summaryBar.setAlignment(FloatingAlignment.TOP);

@@ -550,7 +550,7 @@
 
 	var writer = new BBCodeWriter();
 
-	CKEDITOR.plugins.add( 'bbcode', {
+	CKEDITOR.plugins.add( 'custombbcode', {
 		requires: 'entities',
 
 		beforeInit: function( editor ) {

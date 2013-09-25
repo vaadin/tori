@@ -52,8 +52,8 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         super(dataSource, authorizationService);
     }
 
-    public void setCurrentThreadById(final @NonNull String threadIdString)
-            throws DataSourceException {
+    public void setCurrentThreadById(final @NonNull String threadIdString,
+            String selectedPostIdString) throws DataSourceException {
         DiscussionThread requestedThread = null;
         try {
             try {
@@ -69,8 +69,19 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             if (requestedThread != null) {
                 currentThread = requestedThread;
 
+                Long selectedPostId = null;
+                if (selectedPostIdString != null) {
+                    try {
+                        selectedPostId = Long.parseLong(selectedPostIdString);
+                    } catch (final NumberFormatException e) {
+                        log.error("Invalid post id format: "
+                                + selectedPostIdString);
+                    }
+                }
+
                 final ThreadView view = getView();
-                view.displayPosts(dataSource.getPosts(requestedThread));
+                view.displayPosts(dataSource.getPosts(requestedThread),
+                        selectedPostId);
             } else {
                 log.error("requestedthread was null, but no exception was thrown.");
             }
@@ -387,7 +398,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             final DiscussionThread thread = currentThread;
 
             if (thread != null) {
-                getView().displayPosts(dataSource.getPosts(thread));
+                getView().displayPosts(dataSource.getPosts(thread), null);
             } else {
                 throw new IllegalStateException(
                         "This method may not be called while currentThread is null");
@@ -408,7 +419,11 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             throws NoSuchThreadException, DataSourceException {
         if (arguments.length > 0) {
             if (!arguments[0].equals(NEW_THREAD_ARGUMENT)) {
-                setCurrentThreadById(arguments[0]);
+                String postId = null;
+                if (arguments.length > 1) {
+                    postId = arguments[1];
+                }
+                setCurrentThreadById(arguments[0], postId);
                 return;
             } else if (arguments.length > 1) {
                 try {

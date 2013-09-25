@@ -22,12 +22,14 @@ import org.json.JSONException;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.JavaScriptFunction;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
 public class LazyVerticalLayout extends VerticalLayout {
 
     private static final int RENDER_BATCH_SIZE = 30;
+    private Component scrollToComponent;
 
     public LazyVerticalLayout() {
         JavaScript.getCurrent().addFunction(
@@ -39,7 +41,6 @@ public class LazyVerticalLayout extends VerticalLayout {
                         renderBatch();
                     }
                 });
-
     }
 
     private void renderBatch() {
@@ -49,6 +50,14 @@ public class LazyVerticalLayout extends VerticalLayout {
             if (!component.isVisible()) {
                 component.setVisible(true);
                 rendered++;
+            }
+            if (component == scrollToComponent) {
+                // The component should be scrolled to
+                component.setId("scrollpostid");
+                UI.getCurrent().scrollIntoView(component);
+                JavaScript
+                        .eval("document.getElementById('scrollpostid').scrollIntoView()");
+                scrollToComponent = null;
             }
             if (rendered > RENDER_BATCH_SIZE) {
                 break;
@@ -67,7 +76,16 @@ public class LazyVerticalLayout extends VerticalLayout {
     @Override
     public void beforeClientResponse(boolean initial) {
         JavaScript.eval("org.vaadin.tori.lazyverticallayout.rendered()");
+        if (initial && scrollToComponent == null) {
+            // First render & no scroll to component specified -> scroll to
+            // beginning
+            UI.getCurrent().setScrollTop(0);
+            JavaScript.eval("window.scrollTo(0,0)");
+        }
         super.beforeClientResponse(initial);
     }
 
+    public void setScrollToComponent(Component component) {
+        this.scrollToComponent = component;
+    }
 }
