@@ -20,18 +20,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.JavaScriptFunction;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-public class LazyVerticalLayout extends VerticalLayout {
+public class PostsLayout extends CssLayout {
 
     private static final int RENDER_BATCH_SIZE = 30;
     private Component scrollToComponent;
 
-    public LazyVerticalLayout() {
+    public PostsLayout() {
         JavaScript.getCurrent().addFunction(
                 "org.vaadin.tori.lazyverticallayout.rendered",
                 new JavaScriptFunction() {

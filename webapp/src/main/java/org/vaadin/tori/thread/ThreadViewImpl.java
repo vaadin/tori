@@ -37,7 +37,7 @@ import org.vaadin.tori.component.NewThreadComponent.NewThreadListener;
 import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.component.ReplyComponent;
 import org.vaadin.tori.component.ReplyComponent.ReplyListener;
-import org.vaadin.tori.component.post.LazyVerticalLayout;
+import org.vaadin.tori.component.post.PostsLayout;
 import org.vaadin.tori.component.post.PostComponent;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -103,14 +103,14 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't care about serialization")
     private final Map<Post, PostComponent> postsToComponents = new HashMap<Post, PostComponent>();
-    private final LazyVerticalLayout postsLayout;
+    private final PostsLayout postsLayout;
     private ReplyComponent reply;
     private NewThreadComponent newThreadComponent;
 
     public ThreadViewImpl() {
         setStyleName("threadview");
 
-        postsLayout = new LazyVerticalLayout();
+        postsLayout = new PostsLayout();
     }
 
     @Override
