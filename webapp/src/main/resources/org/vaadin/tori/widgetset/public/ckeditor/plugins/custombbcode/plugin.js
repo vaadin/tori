@@ -144,10 +144,7 @@
                                 sizeString.replace(/(\d+)\/(.+?);/g, function ($0, param, val) {
                                     sizeMap[param] = val;
                                 });
-                                optionPart = sizeMap[optionPart];
-                                if (!optionPart){
-                                	optionPart = "1.0em"
-                                }
+                                optionPart = sizeMap[optionPart] || "1.0em";
 							} 
 							
 							styles[ stylesMap[ part ] ] = optionPart;
@@ -667,10 +664,7 @@
                                 if (value=="1em"){
                                     value="1.0em";
                                 }
-                                value = sizeMap[value];
-                                if (!value){
-                                    value = 4;
-                                }
+                                value = sizeMap[value] || 4;
 								tagName = 'size';
 							} else if ( value = style[ 'font-family' ] ) {
 								tagName = 'font';

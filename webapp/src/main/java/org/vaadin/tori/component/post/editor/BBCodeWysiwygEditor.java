@@ -26,6 +26,7 @@ import org.vaadin.tori.util.PostFormatter.FontsInfo;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
 
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinService;
 
 @SuppressWarnings("serial")
@@ -46,13 +47,18 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
         String threadViewCss = themesPath + toriTheme + "threadview/style.css";
         String editorCss = themesPath + toriTheme + "editor/editor.css";
         config.setBodyClass("v-app v-widget authoring");
-        config.disableResizeEditor();
+
         config.setContentsCss(toriCss, threadViewCss, editorCss);
         config.addToExtraPlugins("custombbcode");
         config.addToExtraPlugins("codebutton");
-        if (autoGrow) {
+        if (autoGrow && !Page.getCurrent().getWebBrowser().isIE()) {
             config.addToExtraPlugins("autogrow");
         }
+
+        if (!Page.getCurrent().getWebBrowser().isIE() || !autoGrow) {
+            config.disableResizeEditor();
+        }
+
         config.addCustomToolbarLine("{ items: ['Font','FontSize'] },"
                 + "{ items: ['Bold','Italic','Underline','Strike','TextColor','RemoveFormat'] },"
                 + "{ items: ['codebutton'] },"
