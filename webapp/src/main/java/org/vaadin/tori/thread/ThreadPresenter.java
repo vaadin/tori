@@ -16,6 +16,7 @@
 
 package org.vaadin.tori.thread;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 
@@ -31,8 +32,6 @@ import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.post.PostReport;
-
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -463,7 +462,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             post.setBodyRaw(rawBody);
             post.setTime(new Date());
 
-            thread.setPosts(Lists.newArrayList(post));
+            thread.setPosts(Arrays.asList(post));
             post.setThread(thread);
 
             return dataSource.saveNewThread(thread, attachments, post);

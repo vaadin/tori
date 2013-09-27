@@ -40,8 +40,4 @@ public final class StyleConstants {
      */
     public static final String POPUP_INDICATOR_HIDDEN = "popupIndicatorHidden";
 
-    /**
-     * Use when you want to hide a component only in CSS, not from the whole DOM
-     */
-    public static final String HIDDEN = "hidden";
 }

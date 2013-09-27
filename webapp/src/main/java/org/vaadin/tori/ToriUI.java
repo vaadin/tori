@@ -238,41 +238,6 @@ public class ToriUI extends UI {
         getApiLoader().setRequest(request);
     }
 
-    /*-
-     * Not sure if we need this code anymore... it's quite hacky anyways.
-    private void addAttachmentDownloadHandler() {
-        addRequestHandler(new RequestHandler() {
-            @Override
-            public boolean handleRequest(final Application application,
-                    final WrappedRequest request, final WrappedResponse response)
-                    throws IOException {
-
-                final String requestPathInfo = request.getRequestPathInfo();
-                if (requestPathInfo
-                        .startsWith(DebugDataSource.ATTACHMENT_PREFIX)) {
-                    final String[] data = requestPathInfo.substring(
-                            DebugDataSource.ATTACHMENT_PREFIX.length()).split(
-                            "/");
-                    final long dataId = Long.parseLong(data[0]);
-                    final String fileName = data[1];
-
-                    final byte[] attachmentData = ((DebugDataSource) ToriApplication
-                            .getCurrent().getDataSource())
-                            .getAttachmentData(dataId);
-
-                    final ByteArrayInputStream is = new ByteArrayInputStream(
-                            attachmentData);
-                    final DownloadStream stream = new DownloadStream(is, null,
-                            fileName);
-                    stream.writeTo(response);
-                    return true;
-                }
-                return false;
-            }
-        });
-    }
-     */
-
     public static ToriUI getCurrent() {
         return (ToriUI) UI.getCurrent();
     }

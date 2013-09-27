@@ -24,6 +24,8 @@ import java.util.Map.Entry;
 
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUI;
+import org.vaadin.tori.component.AuthoringComponent;
+import org.vaadin.tori.component.AuthoringComponent.AuthoringListener;
 import org.vaadin.tori.component.FloatingBar;
 import org.vaadin.tori.component.FloatingBar.DisplayEvent;
 import org.vaadin.tori.component.FloatingBar.FloatingAlignment;
@@ -31,14 +33,11 @@ import org.vaadin.tori.component.FloatingBar.HideEvent;
 import org.vaadin.tori.component.FloatingBar.VisibilityListener;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
-import org.vaadin.tori.component.LazyLayout;
 import org.vaadin.tori.component.NewThreadComponent;
 import org.vaadin.tori.component.NewThreadComponent.NewThreadListener;
 import org.vaadin.tori.component.PanicComponent;
-import org.vaadin.tori.component.ReplyComponent;
-import org.vaadin.tori.component.ReplyComponent.ReplyListener;
-import org.vaadin.tori.component.post.PostsLayout;
 import org.vaadin.tori.component.post.PostComponent;
+import org.vaadin.tori.component.post.PostsLayout;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
@@ -70,7 +69,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         implements ThreadView {
 
     private CssLayout layout;
-    private final ReplyListener replyListener = new ReplyListener() {
+    private final AuthoringListener replyListener = new AuthoringListener() {
         @Override
         public void submit(final String rawBody) {
             if (!rawBody.trim().isEmpty()) {
@@ -104,7 +103,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't care about serialization")
     private final Map<Post, PostComponent> postsToComponents = new HashMap<Post, PostComponent>();
     private final PostsLayout postsLayout;
-    private ReplyComponent reply;
+    private AuthoringComponent reply;
     private NewThreadComponent newThreadComponent;
 
     public ThreadViewImpl() {
@@ -178,7 +177,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             spacer.setStyleName("spacer");
             layout.addComponent(spacer);
 
-            reply = new ReplyComponent(replyListener, getPresenter()
+            reply = new AuthoringComponent(replyListener, getPresenter()
                     .getFormattingSyntax(), "Post Reply");
             reply.setUserMayAddFiles(getPresenter().userMayAddFiles());
             reply.setMaxFileSize(getPresenter().getMaxFileSize());
@@ -321,15 +320,17 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     private FloatingBar getQuickReplyBar(
-            final ReplyComponent mirroredReplyComponent) {
-        final ReplyComponent quickReply = new ReplyComponent(replyListener,
-                getPresenter().getFormattingSyntax(), "Quick Reply", false);
+            final AuthoringComponent mirroredAuthoringComponent) {
+        final AuthoringComponent quickReply = new AuthoringComponent(
+                replyListener, getPresenter().getFormattingSyntax(),
+                "Quick Reply", false);
 
-        // Using the TextArea of the ReplyComponent as the property data source
+        // Using the TextArea of the AuthoringComponent as the property data
+        // source
         // to keep the two editors in sync.
         quickReply.setUserMayAddFiles(false);
         quickReply.getInput().setPropertyDataSource(
-                mirroredReplyComponent.getInput());
+                mirroredAuthoringComponent.getInput());
         quickReply.setWidth(100.0f, Unit.PERCENTAGE);
 
         final FloatingBar bar = new FloatingBar();
@@ -347,7 +348,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             @Override
             public void onDisplay(final DisplayEvent event) {
                 // FIXME re-implement
-                // mirroredReplyComponent.getInput().blur();
+                // mirroredAuthoringComponent.getInput().blur();
             }
         });
         return bar;

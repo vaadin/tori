@@ -21,8 +21,6 @@ import java.io.OutputStream;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
-import org.vaadin.tori.component.post.editor.BBCodeWysiwygEditor;
-
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Button.ClickEvent;
@@ -43,7 +41,7 @@ import com.vaadin.ui.VerticalLayout;
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 @SuppressWarnings("serial")
-public abstract class AuthoringComponent extends CustomComponent {
+public class AuthoringComponent extends CustomComponent {
     public interface AuthoringListener {
         void submit(String rawBody);
 

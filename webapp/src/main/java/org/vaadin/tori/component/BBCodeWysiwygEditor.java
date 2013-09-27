@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.vaadin.tori.component.post.editor;
+package org.vaadin.tori.component;
 
 import java.util.ArrayList;
 import java.util.List;
