@@ -33,11 +33,11 @@ code {
 }
 
 code:BEFORE {
-	content: "1 2 3 4 5 6 7 8 9 10 11 12 13 14 ..";
+	content: "1 2 3 4 5 6 7 8 9 . .";
 	position: absolute;
 	top: 0;
-	left: 14px;
-	width: 20px;
+	left: 23px;
+	width: 10px;
 	height: 100%;
 	white-space: normal;
 	text-align: right;

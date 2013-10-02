@@ -7,20 +7,24 @@
 }
 
 .post {
-	padding-top: 50px;
+	margin-top: 50px;
 	border-bottom: 2px solid #eee;
+	display: table;
+	table-layout: fixed;
 }
 
-.post div[location="avatar"] {
+.post .author .avatar {
 	margin-bottom: 0.5em;
+	width: 90px;
+	margin-right: 63px;
 }
 
-.post div[location="authorname"] {
+.post .authorname {
 	color: black;
 	font-weight: bold;
 }
 
-.post div[location="postedtime"] {
+.post .postedtime {
 	position: relative;
 	height: 1.2em;
 	overflow: hidden;
@@ -31,14 +35,21 @@
 	min-width: 153px;
 	padding: 5px 5px 5px 0;
 	vertical-align: top;
+	float: left;
 }
 
-.post div[location="postedtime"] .prettytime { top: 0; }
-.post div[location="postedtime"] .timestamp { top: 1.5em; }
-.post .author:hover div[location="postedtime"] .prettytime { top: -1.5em; }
-.post .author:hover div[location="postedtime"] .timestamp { top: 0; }	
+.post .footer {
+	float: left;
+	width: 100%;
+	clear: both;
+}
 
-.post div[location="postedtime"] span {
+.post .postedtime .prettytime { top: 0; }
+.post .postedtime .timestamp { top: 1.5em; }
+.post .author:hover .postedtime .prettytime { top: -1.5em; }
+.post .author:hover .postedtime .timestamp { top: 0; }	
+
+.post .postedtime span {
 	white-space: nowrap;
 	color: #A09F91;
 	font-size: 13px;
@@ -49,18 +60,9 @@
 	transition: all 0.2s ease-in-out;
 }
 
-.post td.body {
-	width: 100%;
-	vertical-align: top;
-}
-
-.post div[location="body"] {
+.post .body {
 	padding: 5px;
-}
-
-.post div[location="signature"] {
-	font-size: smaller;
-	margin: 0.5em 1em;
+	margin-left: 153px;
 }
 
 .post .toolbar {
@@ -68,11 +70,8 @@
 	-moz-border-radius: 4px 4px 0 0;
 	-webkit-border-radius: 4px 4px 0 0;
 	border-radius: 4px 4px 0 0;
-}
-
-.post .toolbar td {
 	padding: 7px 0;
-	vertical-align: middle;
+	margin-left: 153px;
 }
 
 .post.summary {
@@ -83,9 +82,9 @@
 .post.summary table.container {
 	margin: 0;	
 }
-.post.summary div[location="permalink"],
-.post.summary div[location="postedtime"],
-.post.summary div[location="score"],
+.post.summary .permalink,
+.post.summary .postedtime,
+.post.summary .score,
 .post.summary .toolbar {
 	display: none;
 }
@@ -94,24 +93,20 @@
 	min-width: 151px;
 	padding: 11px 0 0 5px;
 }
-.post.summary .author div[location="avatar"] {
+.post.summary .author .avatar {
 	width: 23px;
 	float: left;
+	height: auto !important;
+	margin-right: 0;
 }
-.post.summary .author div[location="authorname"] {
-	margin-top: 0.2em;
+.post.summary .author .authorname {
 	margin-left: 10px;
 	width: 100px;
 	float: left;
-}
-.post.summary .author div[location="authorname"] .v-label {
 	white-space: normal;	
 }
-.post.summary .author div[location="avatar"] img {
-	width: 100% !important;
-	height: auto !important;
-}
-.post.summary td.body {
+
+.post.summary .body {
 	padding: 9px 0;	
 }
 
@@ -142,6 +137,7 @@
 	-moz-box-shadow: none;
 	-webkit-box-shadow: none;
 	box-shadow: none;
+	cursor: pointer;
 }
 
 .scorecomponent .upvote { background-position: 0px 0px; }
@@ -161,34 +157,25 @@
 	table-layout: fixed;
 }
 
-.post td.actions {
+.post .actions {
 	padding-right: 16px;
 	text-align: right;
 	width: 100%;
 }
 
-.post td.actions div[location="report"], 
-.post td.actions div[location="settings"] {
+.post .actions .report, 
+.post .actions .settings {
 	visibility: hidden;
 }
 
-.post td.actions:hover div[location="report"], 
-.post td.actions:hover div[location="settings"] {
+.post .actions:hover .report, 
+.post .actions:hover .settings {
 	visibility: visible;
 }
 
-.post td.actions > div {
+.post .actions > div {
 	display: inline-block;
 	vertical-align: middle;
-}
-
-.post td.actions .v-popupbutton, 
-.post td.actions .v-popupbutton .v-button-wrap,
-.post td.actions .v-popupbutton .v-popup-indicator {
-	padding: 0;
-	margin: 0;
-	height: 0;
-	width: 0;
 }
 
 .post .body .code,
@@ -282,45 +269,9 @@
 	padding: 0;
 }
 
-.newthread .topiclabel,
-.authoring div[location="captionlabel"] {
+.newthread .topiclabel {
 	font-size: 18px;
 	font-weight: bold;
-}
-
-.authoring div[location="captionlabel"] {
-	padding-top: 45px;
-}
-
-.authoring .previewcaption {
-	font-size: 18px;
-}
-
-.authoring div[location="formattingsyntax"] {
-	float: right;
-}
-
-.authoring div[location="input"] textarea {
-	width: 100%;
-	font-size: 14px;
-	color: #464440;
-	border: none;
-	border: 2px solid #CCC;
-	padding: 12px;
-	margin-bottom: 8px;
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	border-radius: 4px;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
-}
-
-.authoring div[location="preview"] {
-	background: url(images/preview-bg.png) white top left repeat;
-	padding: 18px 14px;
-	max-height: 180px;
-	overflow: auto;
 }
 
 /* IE8 wants to scroll this otherwise. */
@@ -337,14 +288,6 @@
 	display: inline-block;
 }
 
-.authoring .buttons div[location="clearbutton"] {
-	display: none !important;
-}
-
-.authoring .buttons div[location="uploadbutton"] {
-	float: right;
-}
-
 .authoring .v-panel-deco, 
 .authoring .v-panel-captionwrap {
 	display: none;
@@ -358,31 +301,6 @@
 
 .authoring .v-panel {
 	background: transparent;
-}
-
-.authoring.compact div[location="formattingsyntax"],
-.authoring.compact div[location="preview"],
-.authoring.compact div[location="toolbar"],
-.authoring.compact .toolbar,
-.authoring.compact .buttons,
-.authoring.compact .previewcaption {
-	display: none;	
-}
-
-.authoring.compact div[location="input"] textarea {
-	height: 1.8em;
-	padding: 4px 12px;
-	margin-top: 8px;
-	margin-bottom: 8px;
-	border: none;
-	color: #999992;
-	-moz-border-radius: 2px;
-	-webkit-border-radius: 2px;
-	border-radius: 2px;
-}
-
-.authoring.compact td {
-	vertical-align: middle;
 }
 
 .threadSummary .topRow, 
@@ -403,6 +321,10 @@
 
 .threadSummary .topRow .collapsed {
 	background-image: url(images/icon-expand.png);
+}
+
+.threadSummary .topRow .topiclabel {
+	float: left;
 }
 
 .threadSummary .topRow .show-or-hide {
@@ -428,23 +350,15 @@
 	-o-transition: height 0.2s ease-in-out;
 	-ms-transition: height 0.2s ease-in-out;
 	transition: height 0.2s ease-in-out;
-}
-.v-floatingbar .authoring div[location="toolbar"] {
-	display: none;
+	position: relative;
 }
 
-.v-floatingbar .authoring div[location="captionlabel"] .v-label,
 .v-floatingbar .authoring .previewcaption {
 	color: #fff;
 	font-size: 13px;
 	font-weight: bold;
 	float: left;
 	margin-left: 9px;
-}
-
-.v-floatingbar .authoring div[location="captionlabel"] .v-label {
-	padding-right: 18px;
-	background: url(images/icon-expand.png) right center no-repeat;
 }
 
 .v-floatingbar .threadSummary {
@@ -505,7 +419,7 @@
 	color: #222;
 }
 
-.v-floatingbar.threadSummaryBar .post [location="body"] {
+.v-floatingbar.threadSummaryBar .post .body {
 	max-height: 200px;
 	overflow-y: auto;
 }

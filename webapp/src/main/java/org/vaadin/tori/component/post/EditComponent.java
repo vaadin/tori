@@ -24,7 +24,6 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.TextArea;
-import com.vaadin.ui.themes.BaseTheme;
 
 @SuppressWarnings("serial")
 public class EditComponent extends CssLayout {
@@ -32,17 +31,6 @@ public class EditComponent extends CssLayout {
     public interface EditListener {
         void postEdited(String newPostBody);
     }
-
-    private final ClickListener listener = new ClickListener() {
-        @Override
-        public void buttonClick(final ClickEvent event) {
-            if (editLayout == null) {
-                editLayout = newEditLayout(body);
-                editPopup.setComponent(editLayout);
-            }
-            editPopup.setPopupVisible(true);
-        }
-    };
 
     private final String body;
     private Component editLayout;
@@ -55,10 +43,6 @@ public class EditComponent extends CssLayout {
             final EditListener editListener) {
         this.body = originalBody;
         this.editListener = editListener;
-
-        final Button editButton = new Button("Edit Post", listener);
-        editButton.setStyleName(BaseTheme.BUTTON_LINK);
-        addComponent(editButton);
 
         editPopup = new PopupButton();
         editPopup.setWidth("0");
@@ -93,5 +77,13 @@ public class EditComponent extends CssLayout {
 
         return layout;
 
+    }
+
+    public void open() {
+        if (editLayout == null) {
+            editLayout = newEditLayout(body);
+            editPopup.setComponent(editLayout);
+        }
+        editPopup.setPopupVisible(true);
     }
 }

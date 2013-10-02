@@ -18,6 +18,13 @@ package org.vaadin.tori.component.post;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUI;
@@ -35,30 +42,22 @@ import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.thread.ThreadPresenter;
 import org.vaadin.tori.util.UserBadgeProvider;
+import org.vaadin.tori.widgetset.client.ui.post.PostComponentRpc;
+import org.vaadin.tori.widgetset.client.ui.post.PostComponentState;
 
 import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.themes.BaseTheme;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 @SuppressWarnings("serial")
-@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't bother us with serialization.")
-public class PostComponent extends CustomComponent {
+public class PostComponent extends AbstractComponentContainer implements
+        PostComponentRpc {
 
     private static final String DELETE_CAPTION = "Delete Post";
     private static final String DELETE_ICON = "icon-delete";
@@ -80,6 +79,24 @@ public class PostComponent extends CustomComponent {
     private final PrettyTime prettyTime = new PrettyTime();
     private final DateFormat dateFormat = new SimpleDateFormat(
             "MM/dd/yyyy kk:mm");
+
+    private final Post post;
+
+    private ReportComponent reportComponent;
+    private final ContextMenu contextMenu = new ContextMenu();
+    private final ThreadPresenter presenter;
+
+    private boolean followingEnabled = false;
+    private boolean unfollowingEnabled = false;
+    private EditComponent editComponent;
+    private final boolean allowHtml;
+    private boolean banEnabled;
+    private boolean unbanEnabled;
+
+    @Override
+    protected PostComponentState getState() {
+        return (PostComponentState) super.getState();
+    }
 
     // trying a new pattern here by grouping auxiliary methods in an inner class
     private static class Util {
@@ -131,15 +148,12 @@ public class PostComponent extends CustomComponent {
         }
     }
 
-    private final CustomLayout root;
-    private final Post post;
-
     private final EditListener editListener = new EditListener() {
         @Override
         public void postEdited(final String newPostBody) {
             try {
                 presenter.saveEdited(post, newPostBody);
-                getUI().trackAction(null, "edit-post");
+                ToriUI.getCurrent().trackAction(null, "edit-post");
                 // this component will be replaced with a new one. So no need to
                 // change the state.
             } catch (final DataSourceException e) {
@@ -150,24 +164,6 @@ public class PostComponent extends CustomComponent {
             }
         }
     };
-
-    private final ClickListener replyListener = new ClickListener() {
-        @Override
-        public void buttonClick(final ClickEvent event) {
-            if (event.getButton().getData() instanceof Post) {
-                final Post postToQuote = (Post) event.getButton().getData();
-                presenter.quotePost(postToQuote);
-            }
-        }
-    };
-
-    private final Component reportComponent;
-    private final Button quoteButton;
-    private final Button scrollToButton;
-    private final ContextMenu contextMenu;
-    private final ThreadPresenter presenter;
-    private final PostScoreComponent score;
-    private Component scrollToComponent;
 
     private final ContextAction followAction = new ContextAction() {
         @Override
@@ -214,27 +210,13 @@ public class PostComponent extends CustomComponent {
         }
     };
 
-    private boolean followingEnabled = false;
-    private boolean unfollowingEnabled = false;
-    private final EditComponent editComponent;
-    private final boolean allowHtml;
-    private boolean banEnabled;
-    private boolean unbanEnabled;
-
-    /**
-     * @throws IllegalArgumentException
-     *             if any argument is <code>null</code>.
-     */
-    public PostComponent(final Post post, final ThreadPresenter presenter) {
-        this(post, presenter, true);
-    }
-
     /**
      * @throws IllegalArgumentException
      *             if any argument is <code>null</code>.
      */
     public PostComponent(final Post post, final ThreadPresenter presenter,
             final boolean allowHtml) {
+        registerRpc(this);
 
         ToriUtil.checkForNull(post, "post may not be null");
         ToriUtil.checkForNull(presenter, "presenter may not be null");
@@ -243,78 +225,41 @@ public class PostComponent extends CustomComponent {
         this.post = post;
         this.allowHtml = allowHtml;
 
-        root = new CustomLayout("postlayout");
-        setCompositionRoot(root);
         setStyleName("post");
 
-        editComponent = new EditComponent(post.getBodyRaw(), editListener);
-        editComponent.setVisible(false);
+        getState().setAuthorName(post.getAuthor().getDisplayedName());
+        getState().setAllowHTML(allowHtml);
+        getState().setPrettyTime(prettyTime.format(post.getTime()));
+        getState().setTimeStamp(dateFormat.format(post.getTime()));
+        getState().setPermaLink(getPermaLinkUrl(post));
+        setAvatarImageResource(post);
 
-        quoteButton = new Button("Quote for Reply", replyListener);
-        quoteButton.setData(post);
-        quoteButton.setStyleName(BaseTheme.BUTTON_LINK);
-        quoteButton.setVisible(false);
-
-        contextMenu = new ContextMenu();
-        score = new PostScoreComponent(post, presenter);
         try {
-            score.setScore(presenter.getScore(post));
+            refreshScores(presenter.getScore(post));
         } catch (final DataSourceException e) {
             // NOP - logged, just showing a score of OVER 9000!!!!
-            score.setScore(9001);
+            refreshScores(9001);
         }
 
-        scrollToButton = new Button("Scroll to Post");
-        scrollToButton.setStyleName(BaseTheme.BUTTON_LINK);
-        scrollToButton.setVisible(false);
-        scrollToButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                if (scrollToComponent != null) {
-                    getUI().scrollIntoView(scrollToComponent);
-                }
-            }
-        });
-        root.addComponent(scrollToButton, "scrollto");
-
-        root.addComponent(getAvatarImage(post), "avatar");
-        root.addComponent(new Label(post.getAuthor().getDisplayedName()),
-                "authorname");
-        addBadgePossibly(root, post.getAuthor());
-        root.addComponent(getPostedAgoLabel(post), "postedtime");
-        root.addComponent(getPermaLink(post), "permalink");
+        addBadgePossibly(post.getAuthor());
 
         final String rawSignature = post.getAuthor().getSignatureRaw();
         if (rawSignature != null && !rawSignature.isEmpty()) {
             final String formattedSignature = ToriUI.getCurrent()
                     .getSignatureFormatter().format(rawSignature);
-            root.addComponent(new Label(formattedSignature, ContentMode.HTML),
-                    "signature");
+            getState().setSignature(formattedSignature);
         }
 
         refreshBody(post);
 
-        reportComponent = new ReportComponent(post, presenter,
-                getPermaLinkUrl(post));
-        reportComponent.setVisible(false);
-
-        final Component attachments = getAttachments(post);
-        if (attachments != null) {
-            root.addComponent(attachments, "attachments");
-        }
-        root.addComponent(score, "score");
-        root.addComponent(reportComponent, "report");
-        root.addComponent(contextMenu, "settings");
-        root.addComponent(editComponent, "edit");
-        root.addComponent(quoteButton, "quote");
+        getState().setAttachments(getAttachments(post));
     }
 
     /**
      * Adds a badge to the customlayout if there is a {@link UserBadgeProvider}
      * set up.
      */
-    private void addBadgePossibly(final CustomLayout customLayout,
-            final User user) {
+    private void addBadgePossibly(final User user) {
         final UserBadgeProvider badgeProvider = ToriUI.getCurrent()
                 .getUserBadgeProvider();
         if (badgeProvider == null) {
@@ -322,52 +267,47 @@ public class PostComponent extends CustomComponent {
         }
 
         final String badgeHtml = badgeProvider.getHtmlBadgeFor(user);
-        if (badgeHtml == null) {
-            return;
-        }
-        final Label badgeLabel = new Label(badgeHtml, ContentMode.HTML);
-        customLayout.addComponent(badgeLabel, "badge");
-    }
-
-    public void setScrollToComponent(final Component scrollTo) {
-        scrollToComponent = scrollTo;
-        scrollToButton.setVisible(scrollTo != null);
+        getState().setBadgeHTML(badgeHtml);
     }
 
     public void enableReporting() {
-        reportComponent.setVisible(true);
+        getState().setReportingEnabled(true);
     }
 
     public void enableEditing() {
-        editComponent.setVisible(true);
+        getState().setEditingEnabled(true);
     }
 
     public void enableQuoting() {
-        quoteButton.setVisible(true);
+        getState().setQuotingEnabled(true);
     }
 
     public void enableThreadFollowing() {
         contextMenu.add(FOLLOW_ICON, FOLLOW_CAPTION, followAction);
         followingEnabled = true;
         unfollowingEnabled = false;
+        getState().setSettingsEnabled(true);
     }
 
     public void enableThreadUnFollowing() {
         contextMenu.add(UNFOLLOW_ICON, UNFOLLOW_CAPTION, unfollowAction);
         followingEnabled = false;
         unfollowingEnabled = true;
+        getState().setSettingsEnabled(true);
     }
 
     public void enableBanning() {
         contextMenu.add(BAN_ICON, BAN_CAPTION, banActionSwapper);
         banEnabled = true;
         unbanEnabled = false;
+        getState().setSettingsEnabled(true);
     }
 
     public void enableUnbanning() {
         contextMenu.add(UNBAN_ICON, UNBAN_CAPTION, unbanAction);
         banEnabled = false;
         unbanEnabled = true;
+        getState().setSettingsEnabled(true);
     }
 
     public void enableDeleting() {
@@ -379,43 +319,36 @@ public class PostComponent extends CustomComponent {
                                 contextMenu);
                     }
                 });
+        getState().setSettingsEnabled(true);
     }
 
     public void enableUpDownVoting(final PostVote postVote) {
-        score.enableUpDownVoting(postVote);
+        getState().setVotingEnabled(true);
     }
 
     public void setUserIsBanned() {
         addStyleName(STYLE_BANNED);
-        root.setDescription(post.getAuthor().getDisplayedName() + " is banned.");
+        setDescription(post.getAuthor().getDisplayedName() + " is banned.");
     }
 
     public void setUserIsUnbanned() {
         removeStyleName(STYLE_BANNED);
-        root.setDescription(null);
+        setDescription(null);
     }
 
     @CheckForNull
-    private Component getAttachments(final Post post) {
+    private Map<String, String> getAttachments(final Post post) {
+        Map<String, String> attachments = new HashMap<String, String>();
         if (post.hasAttachments()) {
-            final CssLayout attachmentLinks = new CssLayout();
-            attachmentLinks.setCaption("Attachments");
-
             // create a Link for each attachment
             for (final Attachment attachment : post.getAttachments()) {
                 final String linkCaption = String.format("%s (%s KB)",
                         attachment.getFilename(),
                         attachment.getFileSize() / 1024);
-                attachmentLinks.addComponent(new Link(linkCaption,
-                        new ExternalResource(attachment.getDownloadUrl())));
+                attachments.put(attachment.getDownloadUrl(), linkCaption);
             }
-            return attachmentLinks;
         }
-        return null;
-    }
-
-    private String getFormattedXhtmlBody(final Post post) {
-        return ToriUI.getCurrent().getPostFormatter().format(post.getBodyRaw());
+        return attachments;
     }
 
     private static String getPermaLinkUrl(final Post post) {
@@ -431,30 +364,8 @@ public class PostComponent extends CustomComponent {
         return linkUrl;
     }
 
-    private static Component getPermaLink(final Post post) {
-        // @formatter:off
-        final String linkString = String.format(
-                "<a href=\"%s\">Permalink</a>",
-                getPermaLinkUrl(post)
-                );
-        // @formatter:on
-
-        final Label label = new Label(linkString, ContentMode.HTML);
-        return label;
-    }
-
-    private Label getPostedAgoLabel(final Post post) {
-        final StringBuilder xhtml = new StringBuilder();
-        xhtml.append("<span class=\"prettytime\">");
-        xhtml.append(prettyTime.format(post.getTime()));
-        xhtml.append("</span><span class=\"timestamp\">");
-        xhtml.append(dateFormat.format(post.getTime()));
-        xhtml.append("</span>");
-        return new Label(xhtml.toString(), ContentMode.HTML);
-    }
-
-    private Image getAvatarImage(final Post post) {
-        final String avatarUrl = post.getAuthor().getAvatarUrl();
+    private void setAvatarImageResource(final Post post) {
+        String avatarUrl = post.getAuthor().getAvatarUrl();
 
         final Resource imageResource;
         if (avatarUrl != null) {
@@ -463,18 +374,21 @@ public class PostComponent extends CustomComponent {
             imageResource = new ThemeResource(
                     "images/icon-placeholder-avatar.gif");
         }
-
-        final Image image = new Image(null, imageResource);
-        image.setWidth("90px");
-        return image;
+        setResource("avatar", imageResource);
     }
 
     public void refreshScores(final long newScore) {
-        score.setScore(newScore);
-
+        getState().setScore(newScore);
         try {
-            // just to refresh the up/down icon visuals. bad method name here.
-            score.enableUpDownVoting(presenter.getPostVote(post));
+            PostVote postVote = presenter.getPostVote(post);
+            Boolean upVoted = null;
+            if (postVote.isUpvote()) {
+                upVoted = true;
+            } else if (postVote.isDownvote()) {
+                upVoted = false;
+            }
+            getState().setUpVoted(upVoted);
+
         } catch (final DataSourceException e) {
             Notification.show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
         }
@@ -512,19 +426,95 @@ public class PostComponent extends CustomComponent {
     }
 
     public final void refreshBody(final Post post) {
-        root.removeComponent("body");
-        final String formattedPost = getFormattedXhtmlBody(post);
-        if (allowHtml) {
-            root.addComponent(new Label(formattedPost, ContentMode.HTML),
-                    "body");
-        } else {
-            root.addComponent(new Label(presenter.stripTags(formattedPost),
-                    ContentMode.HTML), "body");
+        String formattedPost = ToriUI.getCurrent().getPostFormatter()
+                .format(post.getBodyRaw());
+        if (!allowHtml) {
+            formattedPost = presenter.stripTags(formattedPost);
+        }
+        getState().setPostBody(formattedPost);
+    }
+
+    @Override
+    public void replaceComponent(Component oldComponent, Component newComponent) {
+
+    }
+
+    @Override
+    public int getComponentCount() {
+        int count = 0;
+        Iterator<Component> i = iterator();
+        while (i.hasNext()) {
+            i.next();
+            count++;
+        }
+        return count;
+    }
+
+    @Override
+    public Iterator<Component> iterator() {
+        List<Component> components = new ArrayList<Component>(Arrays.asList(
+                editComponent, contextMenu, reportComponent));
+        components.removeAll(Collections.singleton(null));
+        if (contextMenu.getParent() == null) {
+            components.remove(contextMenu);
+        }
+        return components.iterator();
+    }
+
+    @Override
+    public void postVoted(boolean up) {
+        if (getState().isVotingEnabled()) {
+            try {
+                if (up) {
+                    presenter.upvote(post);
+                } else {
+                    presenter.downvote(post);
+                }
+            } catch (final DataSourceException e) {
+                Notification
+                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            }
         }
     }
 
     @Override
-    public ToriUI getUI() {
-        return (ToriUI) super.getUI();
+    public void quoteForReply() {
+        presenter.quotePost(post);
     }
+
+    @Override
+    public void settingsClicked() {
+        if (contextMenu.getParent() == null) {
+            addComponent(contextMenu);
+            getState().setSettings(contextMenu);
+        }
+        contextMenu.open();
+    }
+
+    @Override
+    public void editClicked() {
+        if (getState().isEditingEnabled()) {
+            if (editComponent == null) {
+                editComponent = new EditComponent(post.getBodyRaw(),
+                        editListener);
+                addComponent(editComponent);
+                getState().setEdit(editComponent);
+            }
+            editComponent.open();
+        }
+    }
+
+    @Override
+    public void reportClicked() {
+        if (getState().isReportingEnabled()) {
+            if (reportComponent == null) {
+                reportComponent = new ReportComponent(post, presenter,
+                        getPermaLinkUrl(post));
+                addComponent(reportComponent);
+                getState().setReport(reportComponent);
+            }
+            reportComponent.open();
+        }
+    }
+
 }

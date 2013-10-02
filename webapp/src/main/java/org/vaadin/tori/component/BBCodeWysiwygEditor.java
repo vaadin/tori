@@ -28,6 +28,7 @@ import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinService;
+import com.vaadin.server.WebBrowser;
 
 @SuppressWarnings("serial")
 public class BBCodeWysiwygEditor extends CKEditorTextField {
@@ -51,11 +52,19 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
         config.setContentsCss(toriCss, threadViewCss, editorCss);
         config.addToExtraPlugins("custombbcode");
         config.addToExtraPlugins("codebutton");
-        if (autoGrow && !Page.getCurrent().getWebBrowser().isIE()) {
-            config.addToExtraPlugins("autogrow");
+
+        WebBrowser browser = Page.getCurrent().getWebBrowser();
+
+        boolean disableResizer = true;
+        if (autoGrow) {
+            if (browser.isChrome() || browser.isSafari() || browser.isOpera()) {
+                config.addToExtraPlugins("autogrow");
+            } else {
+                disableResizer = false;
+            }
         }
 
-        if (!Page.getCurrent().getWebBrowser().isIE() || !autoGrow) {
+        if (disableResizer) {
             config.disableResizeEditor();
         }
 
@@ -73,6 +82,7 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
         config.setFontNames(fontNames);
         config.setForcePasteAsPlainText(true);
         config.disableElementsPath();
+        config.addToRemovePlugins("magicline");
 
         config.setEnterMode(1);
 

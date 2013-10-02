@@ -7,13 +7,12 @@
 }
 
 .post {
-	padding-top: 50px;
+	width: 100%;
+	margin-top: 50px;
 	border-bottom: 2px solid #e9e9e1;
 	background: #fff;
-}
-
-.post table {
-	width: 100%;
+	display: table;
+	table-layout: fixed;
 }
 
 .post table.container {
@@ -25,55 +24,65 @@
 	min-width: 153px; /* 158px - padding */ 
 	padding: 5px 5px 5px 0;
 	vertical-align: top;
-}
-
-.post td.body {
-	width: 100%;
-	vertical-align: top;
-}
-
-.post div[location="attachments"] .v-captionwrapper {
-	border-top: 1px solid #e9e9e1;
-	margin-top: 15px;
-	margin-bottom: 10px;
-	padding-top: 3px;
-	padding-left: 6px;
-}
-
-.post div[location="attachments"] .v-caption {
 	float: left;
-	font-weight: bold;
-	padding-right: 15px;
-	color: #5f5f5f;
 }
 
-.post div[location="avatar"] {
-	margin-bottom: 0.5em;
+.post .footer {
+	float: left;
+	width: 100%;
+	clear: both;
 }
-.post div[location="avatar"] img {
+
+.post .attachments {
+	border-top: 1px solid #e9e9e1;
+	margin-top: 50px;
+	float: left;
+	padding-left: 105px;
+	position: relative;
+	padding-top: 5px;
+	width: 100%;
+}
+
+.post .attachments:before {
+	font-weight: bold;
+	color: #5f5f5f;
+	content: "Attachments";
+	position: absolute;
+	left: 0;
+}
+
+.post .attachments a {
+	float: left;
+	clear: both;
+}
+
+.post .author .avatar {
+	margin-bottom: 0.5em;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
+	width: 90px;
+	margin-right: 63px;
 }
 
-.post div[location="authorname"] {
+.post .authorname {
 	color: #000;
 	font-weight: bold;
 	display: inline-block;
 }
 
-.post div[location="badge"] {
+.post .badge {
 	display: inline-block;
 	vertical-align: -1px;
 }
 
-.post div[location="badge"] a {
+.post .badge a {
 	font-family: "Tori-Icons";
 	font-size: 14px;
 	color: #ee7d09;
 }
 
-.post div[location="postedtime"] span {
+.post .postedtime span {
 	white-space: nowrap;	
 	color: #a09f91;
 	font-size: 13px;
@@ -84,105 +93,116 @@
 	transition: all 0.2s ease-in-out;	
 
 }
-.post div[location="postedtime"] {
+.post .postedtime {
 	position: relative;
 	height: 1.2em;
 	overflow: hidden;
 }
-.post div[location="postedtime"] .timestamp {
+.post .postedtime .timestamp {
 	top: 1.5em;
 }
-.post .author:hover div[location="postedtime"] .timestamp {
+.post .author:hover .postedtime .timestamp {
 	top: 0;	
 }
-.post div[location="postedtime"] .prettytime {
+.post .postedtime .prettytime {
 	top: 0;
 }
-.post .author:hover div[location="postedtime"] .prettytime {
+.post .author:hover .postedtime .prettytime {
 	top: -1.5em;
 }
 
-.post div[location="permalink"] a {
+.post .permalink {
 	font-size: 12px;
+	float: left;
+	padding-top: 10px;
 }
 
-.post div[location="permalink"] a:hover {
+.post .permalink:hover {
 	color: black;
 }
 
-.post div[location="body"] {
+.post .body {
 	padding: 5px;
-}
-
-.post div[location="scrollto"] .v-button {
-	padding-right: 18px;
-	background: url(../images/icon-scroll-to-top.png) center right no-repeat;
+	margin-left: 153px;
 }
 
 .post .toolbar {
 	background: #f4f4f0;
 	-moz-border-radius: 4px 4px 0 0;
 	-webkit-border-radius: 4px 4px 0 0;
-	border-radius: 4px 4px 0 0;	
-}
-.post .toolbar td {
+	border-radius: 4px 4px 0 0;
 	padding: 7px 0;
-	vertical-align: middle;	
+	margin-left: 153px;
+	height: 18px;
 }
 
-.post td.actions {
+.post .actions {
 	padding-right: 16px;
-	text-align: right;
-	width: 100%;
+	float: right;
 }
 
-.post td.actions > div {
+.post .actions > div {
 	display: inline-block;
 	vertical-align: middle;
 	padding: 0 5px;
 }
 
-.post td.actions div[location="report"] {
+.post .actions .report {
 	color: #AAA;
+	padding-right: 25px;
 }
 
-.post td.actions .v-button-caption {
-	color: #c9c9b5;
+.post .actions div *{
+	visibility: hidden;
+	position: absolute;
 }
 
-.post td.actions .v-button-link:hover .v-button-caption {
+.post .actions div {
+	cursor: pointer;
+	outline: none;
+}
+
+.post .actions .quote:HOVER,
+.post .actions .quote:HOVER:BEFORE,
+.post .actions div:HOVER:BEFORE,
+.post .actions div:HOVER:AFTER {
 	color: #00b4f0;
 }
 
-.post td.actions .v-button-caption { 
-	outline: 0;
+.post .actions .edit:AFTER {
+	vertical-align: middle;
+	color: #c9c9b5;
+	line-height: inherit;
+	font-weight: normal;
+	font-size: 12px;
+	text-shadow: none;
 }
 
-.post td.actions [location="settings"] .v-icon { display: none; }
-
-.post td.actions [location="settings"] .v-button-caption:before,
-.post td.actions [location="edit"] .v-button-caption:before,
-.post td.actions [location="report"] .v-button-caption:before,
-.post td.actions [location="quote"] .v-button-caption:before {
+.post .actions .settings:before,
+.post .actions .edit:before,
+.post .actions .report:before,
+.post .actions .quote:before {
 	font-family: "Tori-Icons";
 	font-size: 14px;
 	padding-right: 2px;
 	vertical-align: middle;
+	color: #c9c9b5;
 }
 
-.post td.actions [location="settings"] .v-button-caption:before { content: "\e005"; }
-.post td.actions [location="edit"] .v-button-caption:before { content: "\e00e"; }
-.post td.actions [location="report"] .v-button-caption:before { content: "\e014"; }
-.post td.actions [location="quote"] .v-button-caption:before { content: "\e007"; }
-	
-.post td.actions .v-popupbutton, 
-.post td.actions .v-popupbutton .v-button-wrap,
-.post td.actions .v-popupbutton .v-popup-indicator {
-	padding: 0;
-	margin: 0;
-	height: 0;
-	width: 0;
+.post .actions .settings:before { content: "\e005"; }
+.post .actions .edit:before { content: "\e00e"; }
+.post .actions .edit:after { content: "Edit Post"; }
+.post .actions .report:before { content: "\e014"; }
+.post .actions .quote:before { content: "\e007"; }
+
+.post .actions .quote {
+	cursor: pointer;
+	background: none !important;
+	color: #c9c9b5;
+	border: none;
+	padding: 0 !important;
 }
+
 
 /* Summary post that is displayed in the floating bar */
 .post.summary {
@@ -190,12 +210,9 @@
 	margin-top: 0;
 	border: none;
 }
-.post.summary table.container {
-	margin: 0;	
-}
-.post.summary div[location="permalink"],
-.post.summary div[location="postedtime"],
-.post.summary div[location="score"],
+.post.summary .permalink,
+.post.summary .postedtime,
+.post.summary .score,
 .post.summary .toolbar {
 	display: none;
 }
@@ -203,35 +220,31 @@
 	width: 151px;
 	min-width: 151px;
 	padding: 11px 0 0 5px;
+	
 }
-.post.summary .author div[location="avatar"] {
+.post.summary .author .avatar {
 	width: 23px;
 	float: left;
+	height: auto !important;
+	margin-right: 0;
 }
-.post.summary .author div[location="authorname"] {
-	margin-top: 0.2em;
+.post.summary .author .authorname {
 	margin-left: 10px;
 	width: 100px;
 	float: left;
-}
-.post.summary .author div[location="authorname"] .v-label {
-	white-space: normal;	
+	white-space: normal;
 }
 
-.post.summary .author div[location="avatar"] img {
-	width: 100% !important;
-	height: auto !important;
-}
-.post.summary td.body {
+.post.summary .body {
 	padding: 9px 0;	
 	color: #464440;
 }
 
-.post.summary div[location="signature"] {
+.post.summary .signature {
 	display: none;
 }
 
-.post.summary div[location="attachments"] {
+.post.summary .attachments {
 	display: none;
 }
 
@@ -269,7 +282,7 @@
 	white-space: nowrap;
 }
 
-.threadSummary .post [location="body"] {
+.threadSummary .post .body {
 	max-height: 200px;
 	overflow-y: auto;
 }
@@ -281,13 +294,30 @@
 .threadSummary .topRow .v-csslayout-margin {
 	padding: 9px;
 }
+.threadSummary .topRow .topiclabel {
+	float: left;
+}
+.quickreplylayout .show-or-hide,
 .threadSummary .topRow .show-or-hide {
 	float: right;
 	padding-left: 16px;
 	background: url(../images/icon-collapse.png) left center no-repeat;
+	color: #fff;
+	cursor: pointer;
 }
+
+.quickreplylayout .show-or-hide{
+	background-image: url(../images/icon-expand.png);
+}
+.showorhidelayout {
+	cursor: pointer;
+}
+
 .threadSummary .topRow .collapsed {
 	background-image: url(../images/icon-expand.png);
+}
+.quickreplylayout.collapsed .show-or-hide {
+	background-image: url(../images/icon-collapse.png);
 }
 
 .reportwindow .v-window-outerheader {
@@ -316,6 +346,7 @@
 	margin-left: 15px;
 	position: relative;
 	top: 1px;
+	float: left;
 }
 .scorecomponent .vote {
 	margin-right: 11px;
@@ -328,6 +359,7 @@
 	-moz-box-shadow: none;
 	-webkit-box-shadow: none;
 	box-shadow: none;
+	cursor: pointer;
 }
 .scorecomponent .v-nativebutton-caption {
 	display: none;
@@ -401,65 +433,23 @@
 .authoring .buttons > div {
 	display: inline-block;
 }
-.authoring .buttons div[location="clearbutton"] {
-	display: none !important;
-}
 
-.authoring .buttons div[location="uploadbutton"] {
-	/**float: right;*/
-}
-
-.authoring div[location="formattingsyntax"] {
-	float: right;	
-}
-
-.authoring div[location="attachments"] .v-caption{
+.authoring .attachments .v-caption{
 	font-weight: bold;
 	color: #5F5F5F;
 }
 
 /** The following two icons are from http://www.famfamfam.com/lab/icons/mini/ */
-.authoring div[location="attachments"] .filerow .v-textfield{
+.authoring .attachments .filerow .v-textfield{
 	padding-left: 20px;
 	background: url(../images/icon-attachment.png) no-repeat left center;
 }
 
-.authoring div[location="attachments"] .filerow .v-csslayout-margin{
+.authoring .attachments .filerow .v-csslayout-margin{
 	background: url(../images/icon-delete-attachment.png) no-repeat right center;
 	cursor: pointer;
 } 
 
-.authoring div[location="toolbar"] select {
-	border: 2px solid #c8c7b5;
-}
-
-.authoring div[location="toolbar"] button {
-	box-shadow: none;
-	-moz-box-shadow: none;
-	-webkit-box-shadow: none;
-	padding: 0;
-}
-
-.authoring div[location="toolbar"] button img {
-	margin: 0;
-	padding: 0;
-}
-
-.authoring div[location="toolbar"] .v-nativebutton {
-	border: none;
-	background: none;
-	border-radius: 0;
-	-moz-border-radius: 0;
-	-webkit-border-radius: 0;
-	padding: 0;
-}
-
-.authoring div[location="toolbar"] .v-horizontallayout-margin {
-	padding: 0px;
-	padding-bottom: 2px;
-}
-
-.authoring div[location="input"] textarea,
 .newthread .topicfield {
 	font-size: 14px;
 	color: #464440;
@@ -475,31 +465,27 @@
 	box-sizing: border-box;
 }
 
-.authoring div[location="input"] textarea {
-	width: 100%;
-}
 
-.authoring div[location="captionlabel"] {
+.authoring .v-caption-wysiwyg-editor {
 	color: #64635a;
 	font-size: 18px;
 	font-weight: bold;
 	padding-top: 53px;
 }
 
-.authoring.collapsible div[location="captionlabel"] {
-	padding-top: 0;
+.quickReply .authoring .v-caption-wysiwyg-editor {
+	padding: 0;
+	color: #fff;
+	font-size: 16px;
+	font-weight: normal;
+	position: absolute;
+	left: 60px;
+	top: 10px;
 }
 
 .authoring .previewcaption {
 	font-size: 18px;
 	color: #8c8b7e;
-}
-
-.authoring div[location="preview"] {
-	background: url(../images/preview-bg.png) #fff top left repeat;
-	padding: 18px 14px;
-	max-height: 180px;
-	overflow: auto;
 }
 
 .v-floatingbar.alignment-bottom.quickReply {
@@ -547,53 +533,13 @@
 	padding-bottom: 10px;
 }
 
-.authoring.compact td {
-	vertical-align: middle;
-}
-
-.authoring.compact div[location="formattingsyntax"],
-.authoring.compact div[location="preview"],
-.authoring.compact div[location="toolbar"],
-.authoring.compact .toolbar,
-.authoring.compact .buttons,
-.authoring.compact .previewcaption {
-	display: none;	
-}
-.authoring.compact div[location="input"] textarea {
-	height: 1.8em;
-	padding: 4px 12px;
-	margin-top: 8px;
-	margin-bottom: 8px;
-	border: none;
-	color: #999992;
-	-moz-border-radius: 2px;
-	-webkit-border-radius: 2px;
-	border-radius: 2px;
-}
 .v-floatingbar .authoring {
 	-moz-transition: height 0.2s ease-in-out;
 	-webkit-transition: height 0.2s ease-in-out;
 	-o-transition: height 0.2s ease-in-out;
 	transition: height 0.2s ease-in-out;
-}
-.v-floatingbar .authoring div[location="toolbar"] {
-	display: none;
-}
-.v-floatingbar .authoring div[location="captionlabel"] .v-label,
-.v-floatingbar .authoring .previewcaption {
-	color: #fff;
-	font-size: 13px;
-	font-weight: bold;
-	float: left;
-	margin-left: 9px;
-}
-
-.v-floatingbar .authoring div[location="captionlabel"] .v-label {
-	padding-right: 18px;
-	background: url(../images/icon-expand.png) right center no-repeat;
-}
-.authoring.compact div[location="captionlabel"] .v-label {
-	background-image: none;
+	position: relative;
+	padding-top: 10px;
 }
 
 .threadview .newthread .topiclabel {
@@ -607,11 +553,9 @@
 	height: 30px;
 }
 
-.post div[location="signature"] {
+.post .signature {
 	font-size: smaller;
 	margin: 0.5em 1em;
-}
-.post div[location="signature"] .v-label {
 	border-top: 1px solid #9f9f9f;	
 }
 

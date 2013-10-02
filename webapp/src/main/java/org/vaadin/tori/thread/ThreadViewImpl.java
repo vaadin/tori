@@ -27,10 +27,7 @@ import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.AuthoringComponent;
 import org.vaadin.tori.component.AuthoringComponent.AuthoringListener;
 import org.vaadin.tori.component.FloatingBar;
-import org.vaadin.tori.component.FloatingBar.DisplayEvent;
 import org.vaadin.tori.component.FloatingBar.FloatingAlignment;
-import org.vaadin.tori.component.FloatingBar.HideEvent;
-import org.vaadin.tori.component.FloatingBar.VisibilityListener;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.component.NewThreadComponent;
@@ -183,10 +180,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             reply.setMaxFileSize(getPresenter().getMaxFileSize());
             layout.addComponent(reply);
 
-            final FloatingBar quickReplyBar = getQuickReplyBar(reply);
-            quickReplyBar.setScrollComponent(reply);
-            quickReplyBar.setAlignment(FloatingAlignment.BOTTOM);
-            layout.addComponent(quickReplyBar);
+            layout.addComponent(getQuickReplyBar(reply));
         }
 
         final Label bottomSpacer = new Label("");
@@ -195,7 +189,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     private PostComponent newPostComponent(final Post post) {
-        final PostComponent c = new PostComponent(post, getPresenter());
+        final PostComponent c = new PostComponent(post, getPresenter(), true);
         postsToComponents.put(post, c);
 
         if (post.getAuthor().isBanned()) {
@@ -250,7 +244,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     private PostComponent newPostSummaryComponent(final Post post) {
-        final PostComponent c = new PostComponent(post, getPresenter());
+        final PostComponent c = new PostComponent(post, getPresenter(), true);
         c.addStyleName("summary");
         return c;
     }
@@ -276,6 +270,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                                 .format(firstPost.getTime()));
         final Label topicLabel = new Label(topicXhtml, ContentMode.HTML);
         topicLabel.setWidth(null);
+        topicLabel.setStyleName("topiclabel");
 
         final String showPostContentCaption = "Show post content";
         final String hidePostContentCaption = "Hide post content";
@@ -332,25 +327,44 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         quickReply.getInput().setPropertyDataSource(
                 mirroredAuthoringComponent.getInput());
         quickReply.setWidth(100.0f, Unit.PERCENTAGE);
+        quickReply.getInput().setHeight(140.0f, Unit.PIXELS);
+        quickReply.setVisible(false);
+
+        final String collapsed = "collapsed";
+        final CssLayout quickReplyLayout = new CssLayout();
+        quickReplyLayout.setStyleName("quickreplylayout");
+        quickReplyLayout.addStyleName(collapsed);
+        quickReplyLayout.setWidth(100.0f, Unit.PERCENTAGE);
+
+        final Label showOrHideLabel = new Label("Show quick reply");
+        showOrHideLabel.addStyleName("show-or-hide");
+        showOrHideLabel.setSizeUndefined();
+
+        final CssLayout showOrHideLayout = new CssLayout(showOrHideLabel);
+        showOrHideLayout.setStyleName("showorhidelayout");
+        showOrHideLayout.addLayoutClickListener(new LayoutClickListener() {
+            @Override
+            public void layoutClick(LayoutClickEvent event) {
+                quickReply.setVisible(!quickReply.isVisible());
+                showOrHideLabel.setValue((quickReply.isVisible() ? "Hide"
+                        : "Show") + " quick reply");
+                if (quickReply.isVisible()) {
+                    quickReplyLayout.removeStyleName(collapsed);
+                } else {
+                    quickReplyLayout.addStyleName(collapsed);
+                }
+            }
+        });
+        showOrHideLayout.setWidth(100.0f, Unit.PERCENTAGE);
 
         final FloatingBar bar = new FloatingBar();
         bar.addStyleName("quickReply");
         bar.setAlignment(FloatingAlignment.BOTTOM);
-        bar.setContent(quickReply);
-        bar.addListener(new VisibilityListener() {
+        bar.setScrollComponent(mirroredAuthoringComponent);
 
-            @Override
-            public void onHide(final HideEvent event) {
-                // FIXME re-implement
-                // quickReply.getInput().blur();
-            }
-
-            @Override
-            public void onDisplay(final DisplayEvent event) {
-                // FIXME re-implement
-                // mirroredAuthoringComponent.getInput().blur();
-            }
-        });
+        quickReplyLayout.addComponent(quickReply);
+        quickReplyLayout.addComponent(showOrHideLayout);
+        bar.setContent(quickReplyLayout);
         return bar;
     }
 

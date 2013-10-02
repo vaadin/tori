@@ -27,9 +27,7 @@ import org.vaadin.tori.thread.ThreadPresenter;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.server.Page;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
@@ -40,7 +38,6 @@ import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.BaseTheme;
 
 @SuppressWarnings("serial")
 public class ReportComponent extends CustomComponent {
@@ -51,21 +48,6 @@ public class ReportComponent extends CustomComponent {
     private final PopupButton reportPopup;
     private Component reportLayout;
 
-    ClickListener listener = new ClickListener() {
-
-        @Override
-        public void buttonClick(final ClickEvent event) {
-            try {
-                if (reportLayout == null) {
-                    reportLayout = newReportLayout();
-                    reportPopup.setComponent(reportLayout);
-                }
-                reportPopup.setPopupVisible(true);
-            } catch (final RuntimeException e) {
-                e.printStackTrace();
-            }
-        }
-    };
     private Layout explanationLayout;
     private NativeButton reportButton;
     private final String postPermalink;
@@ -86,10 +68,6 @@ public class ReportComponent extends CustomComponent {
         this.post = post;
         this.presenter = presenter;
         this.postPermalink = postFragmentPermalink;
-
-        final Button reportButton = new Button(null, listener);
-        reportButton.setStyleName(BaseTheme.BUTTON_LINK);
-        root.addComponent(reportButton);
 
         reportPopup = new PopupButton();
         reportPopup.setWidth("0");
@@ -182,5 +160,17 @@ public class ReportComponent extends CustomComponent {
         area.setWidth("100%");
         area.setRows(4);
         return area;
+    }
+
+    public void open() {
+        try {
+            if (reportLayout == null) {
+                reportLayout = newReportLayout();
+                reportPopup.setComponent(reportLayout);
+            }
+            reportPopup.setPopupVisible(true);
+        } catch (final RuntimeException e) {
+            e.printStackTrace();
+        }
     }
 }

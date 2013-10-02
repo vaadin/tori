@@ -148,6 +148,7 @@ public class AuthoringComponent extends CustomComponent {
         attachmentsLayout = new CssLayout();
         attachmentsLayout.setVisible(false);
         attachmentsLayout.setCaption("Attachments");
+        attachmentsLayout.setStyleName("attachments");
         layout.addComponent(attachmentsLayout);
     }
 

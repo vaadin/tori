@@ -23,12 +23,8 @@ import org.vaadin.tori.component.MenuPopup.ContextAction;
 import org.vaadin.tori.component.MenuPopup.ContextComponentSwapper;
 import org.vaadin.tori.component.MenuPopup.MenuClickListener;
 
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.themes.Reindeer;
 
 /**
  * ContextMenu displays a context menu that can contain {@link ContextAction}
@@ -47,7 +43,6 @@ public class ContextMenu extends CustomComponent {
     private final CssLayout layout = new CssLayout();
     private final MenuPopup popupLayout;
     private final PopupButton contextComponent;
-    private final Button settingsIcon;
 
     private final PopupVisibilityListener popupListener = new PopupVisibilityListener() {
         @Override
@@ -57,10 +52,8 @@ public class ContextMenu extends CustomComponent {
             }
 
             if (!event.isPopupVisible()) {
-                settingsIcon.removeStyleName(OPENED_CLASS_NAME);
                 popupLayout.beingOpenedHook();
             } else {
-                settingsIcon.addStyleName(OPENED_CLASS_NAME);
                 popupLayout.beingClosedHook();
 
                 /*
@@ -96,8 +89,6 @@ public class ContextMenu extends CustomComponent {
 
         contextComponent = newContextComponent();
         contextComponent.setStyleName("contextmenu");
-        settingsIcon = newSettingsIcon(contextComponent);
-        layout.addComponent(settingsIcon);
         layout.addComponent(contextComponent);
     }
 
@@ -113,25 +104,12 @@ public class ContextMenu extends CustomComponent {
         setVisible(true);
     }
 
-    private static Button newSettingsIcon(final PopupButton contextComponent) {
-        final Button button = new Button();
-        button.setStyleName(Reindeer.BUTTON_LINK);
-        button.setIcon(new ThemeResource("images/icon-settings.png"));
-        button.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                contextComponent.setPopupVisible(true);
-            }
-        });
-        return button;
-    }
-
     private PopupButton newContextComponent() {
         final PopupButton popupButton = new PopupButton();
         popupButton.setWidth("0");
         popupButton.setHeight("0");
         popupButton.addPopupVisibilityListener(popupListener);
-//        popupButton.setShadowEnabled(false);
+        // popupButton.setShadowEnabled(false);
         popupLayout.setWidth(POPUP_WIDTH);
         return popupButton;
     }
@@ -155,5 +133,9 @@ public class ContextMenu extends CustomComponent {
     public void swap(final ContextAction oldToSwapOut, final String iconName,
             final String caption, final ContextComponentSwapper newSwapper) {
         popupLayout.swap(oldToSwapOut, iconName, caption, newSwapper);
+    }
+
+    public void open() {
+        contextComponent.setPopupVisible(true);
     }
 }
