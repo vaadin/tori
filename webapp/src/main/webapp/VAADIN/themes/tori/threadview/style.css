@@ -310,6 +310,7 @@
 	float: right;
 	padding-left: 16px;
 	cursor: pointer;
+	position: relative;
 }
 
 .quickreplylayout .show-or-hide:BEFORE{
@@ -319,16 +320,16 @@
 	border: 4px solid transparent;
 	font-size: 0;
 	border-top: 7px solid #000;
-	position: relative;
-	left: -3px;
-	top: 4px;
+	position: absolute;
+	left: 1px;
+	top: 6px;
 }
 
 .quickreplylayout.collapsed .show-or-hide:BEFORE {
 	border: 4px solid transparent;
 	border-bottom: 7px solid #000;
-	top: -3px;
-	left: -4px;
+	left: 3px;
+    top: 1px;
 }
 
 .showorhidelayout {

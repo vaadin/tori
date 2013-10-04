@@ -47,13 +47,17 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
         String toriCss = themesPath + toriTheme + "styles.css";
         String threadViewCss = themesPath + toriTheme + "threadview/style.css";
         String editorCss = themesPath + toriTheme + "editor/editor.css";
+        WebBrowser browser = Page.getCurrent().getWebBrowser();
+        if (browser.isIE()) {
+            String ieCss = themesPath + toriTheme + "editor/ie.css";
+            config.setContentsCss(toriCss, threadViewCss, editorCss, ieCss);
+        } else {
+            config.setContentsCss(toriCss, threadViewCss, editorCss);
+        }
         config.setBodyClass("v-app v-widget authoring");
 
-        config.setContentsCss(toriCss, threadViewCss, editorCss);
         config.addToExtraPlugins("custombbcode");
         config.addToExtraPlugins("codebutton");
-
-        WebBrowser browser = Page.getCurrent().getWebBrowser();
 
         boolean disableResizer = true;
         if (autoGrow) {
@@ -97,5 +101,6 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
         sb.append("'").insert(0, "'");
 
         config.addExtraConfig("fontSize_sizes", sb.toString());
+
     }
 }
