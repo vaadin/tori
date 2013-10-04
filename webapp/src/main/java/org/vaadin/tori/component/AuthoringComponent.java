@@ -23,13 +23,13 @@ import java.util.Map.Entry;
 
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Upload;
@@ -37,6 +37,7 @@ import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.Reindeer;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
@@ -52,7 +53,7 @@ public class AuthoringComponent extends CustomComponent {
         void removeAttachment(String fileName);
     }
 
-    private final ClickListener POST_LISTENER = new NativeButton.ClickListener() {
+    private final ClickListener POST_LISTENER = new Button.ClickListener() {
         @Override
         public void buttonClick(final ClickEvent event) {
             listener.submit(input.getValue());
@@ -102,7 +103,10 @@ public class AuthoringComponent extends CustomComponent {
 
         HorizontalLayout buttonsLayout = new HorizontalLayout();
         buttonsLayout.setSpacing(true);
-        buttonsLayout.addComponent(new NativeButton("Post", POST_LISTENER));
+
+        Button postButton = new Button("Post", POST_LISTENER);
+        postButton.addStyleName(Reindeer.BUTTON_DEFAULT);
+        buttonsLayout.addComponent(postButton);
 
         final Receiver receiver = new Receiver() {
 

@@ -486,6 +486,7 @@ public class PostComponent extends AbstractComponentContainer implements
     public void settingsClicked() {
         if (contextMenu.getParent() == null) {
             addComponent(contextMenu);
+            contextMenu.setSettingsIconVisible(false);
             getState().setSettings(contextMenu);
         }
         contextMenu.open();

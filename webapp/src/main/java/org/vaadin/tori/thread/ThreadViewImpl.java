@@ -98,10 +98,14 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     };
 
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't care about serialization")
+    private final static String COLLAPSED = "collapsed";
     private final Map<Post, PostComponent> postsToComponents = new HashMap<Post, PostComponent>();
     private final PostsLayout postsLayout;
     private AuthoringComponent reply;
     private NewThreadComponent newThreadComponent;
+    private AuthoringComponent quickReply;
+    private Label showOrHideLabel;
+    private CssLayout quickReplyLayout;
 
     public ThreadViewImpl() {
         setStyleName("threadview");
@@ -181,11 +185,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             layout.addComponent(reply);
 
             layout.addComponent(getQuickReplyBar(reply));
+            setQuickReplyVisible(false);
         }
-
-        final Label bottomSpacer = new Label("");
-        bottomSpacer.setStyleName("spacer");
-        layout.addComponent(bottomSpacer);
     }
 
     private PostComponent newPostComponent(final Post post) {
@@ -316,9 +317,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     private FloatingBar getQuickReplyBar(
             final AuthoringComponent mirroredAuthoringComponent) {
-        final AuthoringComponent quickReply = new AuthoringComponent(
-                replyListener, getPresenter().getFormattingSyntax(),
-                "Quick Reply", false);
+        quickReply = new AuthoringComponent(replyListener, getPresenter()
+                .getFormattingSyntax(), "Quick Reply", false);
 
         // Using the TextArea of the AuthoringComponent as the property data
         // source
@@ -328,31 +328,21 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 mirroredAuthoringComponent.getInput());
         quickReply.setWidth(100.0f, Unit.PERCENTAGE);
         quickReply.getInput().setHeight(140.0f, Unit.PIXELS);
-        quickReply.setVisible(false);
 
-        final String collapsed = "collapsed";
-        final CssLayout quickReplyLayout = new CssLayout();
+        quickReplyLayout = new CssLayout();
         quickReplyLayout.setStyleName("quickreplylayout");
-        quickReplyLayout.addStyleName(collapsed);
         quickReplyLayout.setWidth(100.0f, Unit.PERCENTAGE);
 
-        final Label showOrHideLabel = new Label("Show quick reply");
+        showOrHideLabel = new Label();
         showOrHideLabel.addStyleName("show-or-hide");
         showOrHideLabel.setSizeUndefined();
 
-        final CssLayout showOrHideLayout = new CssLayout(showOrHideLabel);
+        CssLayout showOrHideLayout = new CssLayout(showOrHideLabel);
         showOrHideLayout.setStyleName("showorhidelayout");
         showOrHideLayout.addLayoutClickListener(new LayoutClickListener() {
             @Override
             public void layoutClick(LayoutClickEvent event) {
-                quickReply.setVisible(!quickReply.isVisible());
-                showOrHideLabel.setValue((quickReply.isVisible() ? "Hide"
-                        : "Show") + " quick reply");
-                if (quickReply.isVisible()) {
-                    quickReplyLayout.removeStyleName(collapsed);
-                } else {
-                    quickReplyLayout.addStyleName(collapsed);
-                }
+                setQuickReplyVisible(!quickReply.isVisible());
             }
         });
         showOrHideLayout.setWidth(100.0f, Unit.PERCENTAGE);
@@ -366,6 +356,16 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         quickReplyLayout.addComponent(showOrHideLayout);
         bar.setContent(quickReplyLayout);
         return bar;
+    }
+
+    protected void setQuickReplyVisible(boolean visible) {
+        quickReply.setVisible(visible);
+        showOrHideLabel.setValue((visible ? "Hide" : "Show") + " quick reply");
+        if (visible) {
+            quickReplyLayout.removeStyleName(COLLAPSED);
+        } else {
+            quickReplyLayout.addStyleName(COLLAPSED);
+        }
     }
 
     @Override
@@ -580,6 +580,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public void appendToReply(final String textToAppend) {
         reply.insertIntoMessage(textToAppend);
+        setQuickReplyVisible(true);
     }
 
     @Override

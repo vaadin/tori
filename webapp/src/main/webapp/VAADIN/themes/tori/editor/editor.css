@@ -66,5 +66,10 @@ blockquote cite {
 
 blockquote cite:AFTER {
 	content: ":";
-	
+}
+
+.cke_panel_block,
+.cke_panel_listItem,
+.cke_panel_listItem a {
+	outline: none;
 }

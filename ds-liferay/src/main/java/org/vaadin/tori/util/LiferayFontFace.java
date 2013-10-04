@@ -24,12 +24,11 @@ import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 public enum LiferayFontFace implements FontFace {
     // @formatter:off
     ARIAL("Arial", "[font=Arial][/font]"),
-    COMIC_SANS("Comic Sans", "[font=Comic Sans][/font]"),
+    COMIC_SANS("Comic Sans MS", "[font=Comic Sans MS][/font]"),
     COURIER_NEW("Courier New", "[font=Courier New][/font]"),
     TAHOMA("Tahoma", "[font=Tahoma][/font]"),
     TIMES_NEW_ROMAN("Times New Roman", "[font=Times New Roman][/font]"),
-    VERDANA("Verdana", "[font=Verdana][/font]"),
-    WINGDINGS("Wingdings", "[font=Wingdings][/font]");
+    VERDANA("Verdana", "[font=Verdana][/font]");
     // @formatter:on
 
     private String name;

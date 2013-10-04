@@ -8,7 +8,7 @@
 
 .post {
 	width: 100%;
-	margin-top: 50px;
+	border-top: 50px solid transparent;
 	border-bottom: 2px solid #e9e9e1;
 	background: #fff;
 	display: table;
@@ -206,7 +206,7 @@
 
 /* Summary post that is displayed in the floating bar */
 .post.summary {
-	padding: 0;
+	padding: 0 4px;
 	margin-top: 0;
 	border: none;
 }
@@ -274,6 +274,7 @@
 }
 .threadSummary .topRow {
 	background: #64635a;
+	padding: 0 8px;
 }
 
 .threadSummary .topRow .v-label {
@@ -297,7 +298,6 @@
 .threadSummary .topRow .topiclabel {
 	float: left;
 }
-.quickreplylayout .show-or-hide,
 .threadSummary .topRow .show-or-hide {
 	float: right;
 	padding-left: 16px;
@@ -306,9 +306,31 @@
 	cursor: pointer;
 }
 
-.quickreplylayout .show-or-hide{
-	background-image: url(../images/icon-expand.png);
+.quickreplylayout .show-or-hide {
+	float: right;
+	padding-left: 16px;
+	cursor: pointer;
 }
+
+.quickreplylayout .show-or-hide:BEFORE{
+	content: "";
+	width: 0px;
+	height: 0px;
+	border: 4px solid transparent;
+	font-size: 0;
+	border-top: 7px solid #000;
+	position: relative;
+	left: -3px;
+	top: 4px;
+}
+
+.quickreplylayout.collapsed .show-or-hide:BEFORE {
+	border: 4px solid transparent;
+	border-bottom: 7px solid #000;
+	top: -3px;
+	left: -4px;
+}
+
 .showorhidelayout {
 	cursor: pointer;
 }
@@ -316,9 +338,7 @@
 .threadSummary .topRow .collapsed {
 	background-image: url(../images/icon-expand.png);
 }
-.quickreplylayout.collapsed .show-or-hide {
-	background-image: url(../images/icon-collapse.png);
-}
+
 
 .reportwindow .v-window-outerheader {
 	padding: 5px;
@@ -470,17 +490,13 @@
 	color: #64635a;
 	font-size: 18px;
 	font-weight: bold;
-	padding-top: 53px;
 }
 
 .quickReply .authoring .v-caption-wysiwyg-editor {
-	padding: 0;
-	color: #fff;
 	font-size: 16px;
-	font-weight: normal;
 	position: absolute;
 	left: 60px;
-	top: 10px;
+	top: 2px;
 }
 
 .authoring .previewcaption {
@@ -492,16 +508,17 @@
 	-moz-border-radius: 4px 4px 0 0;
 	-webkit-border-radius: 4px 4px 0 0;
 	border-radius: 4px 4px 0 0;
-	-moz-box-shadow: 0 0 10px rgba(200, 199, 181, 0.3);
-	-webkit-box-shadow: 0 0 10px rgba(200, 199, 181, 0.3);
-	box-shadow: 0 0 10px rgba(200, 199, 181, 0.3);
+	
+	-moz-box-shadow: 0 0 10px rgb(200, 199, 181);
+	-webkit-box-shadow: 0 0 10px rgb(200, 199, 181);
+	box-shadow: 0 0 10px rgb(200, 199, 181);
 }
-.v-floatingbar.quickReply,
-.v-floatingbar.quickReply:hover {
+.v-floatingbar.quickReply{
 	padding: 0 8px;
 	margin-left: -8px !important;
-	background: #a09f91;	
-	border: 2px solid #a09f91;
+	background: #fff;	
+	border: 2px solid #64635a;
+	border-bottom: none;
 	bottom: -99px;
 }
 
