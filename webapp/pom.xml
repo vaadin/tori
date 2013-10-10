@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.vaadin.tori</groupId>
 		<artifactId>tori</artifactId>
-		<version>2.0.0</version>
+		<version>2.0.1</version>
 	</parent>
 	<artifactId>webapp</artifactId>
 	<packaging>war</packaging>
@@ -27,7 +27,7 @@
 				<dependency>
 					<groupId>org.vaadin.tori</groupId>
 					<artifactId>ds-test</artifactId>
-					<version>2.0.0</version>
+					<version>2.0.1</version>
 				</dependency>
 				<dependency>
 					<groupId>org.json</groupId>
@@ -48,12 +48,12 @@
 				<dependency>
 					<groupId>org.vaadin.tori</groupId>
 					<artifactId>ds-liferay</artifactId>
-					<version>2.0.0</version>
+					<version>2.0.1</version>
 				</dependency>
 				<dependency>
 					<groupId>org.vaadin.tori</groupId>
 					<artifactId>uc-liferay</artifactId>
-					<version>2.0.0</version>
+					<version>2.0.1</version>
 				</dependency>
 				<dependency>
 					<groupId>javax.portlet</groupId>
@@ -74,17 +74,17 @@
 				<dependency>
 					<groupId>org.vaadin.tori</groupId>
 					<artifactId>ds-liferay</artifactId>
-					<version>2.0.0</version>
+					<version>2.0.1</version>
 				</dependency>
 				<dependency>
 					<groupId>org.vaadin.tori</groupId>
 					<artifactId>uc-liferay</artifactId>
-					<version>2.0.0</version>
+					<version>2.0.1</version>
 				</dependency>
 				<dependency>
 					<groupId>org.vaadin.tori</groupId>
 					<artifactId>bp-vaadin</artifactId>
-					<version>2.0.0</version>
+					<version>2.0.1</version>
 				</dependency>
 				<dependency>
 					<groupId>javax.portlet</groupId>
