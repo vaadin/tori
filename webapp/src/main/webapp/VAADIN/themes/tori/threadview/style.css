@@ -612,7 +612,7 @@
 .authoring .code {
 	white-space: pre;
 	padding: 0;
-	margin: 20px 0 30px 0;
+	margin: 10px 0;
 	font-size: 13px;
 	font-family: Monaco, "Courier New", monospace;
 	border: 2px solid #00b4f0;
