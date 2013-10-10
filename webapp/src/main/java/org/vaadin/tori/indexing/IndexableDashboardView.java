@@ -50,7 +50,7 @@ public class IndexableDashboardView extends IndexableView {
                 sb.append("<h2>Categories</h2>");
                 sb.append("<ul>");
                 for (final Category category : subCategories) {
-                    sb.append(String.format("<li><a href=\"#%s\">%s</a>",
+                    sb.append(String.format("<li><a href=\"%s\">%s</a>",
                             getLink(category, ds), getDescription(category)));
                 }
                 sb.append("</ul>");
