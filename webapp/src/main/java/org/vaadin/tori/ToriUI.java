@@ -135,6 +135,7 @@ public class ToriUI extends UI {
         if (portletMode == PortletMode.EDIT) {
             final EditViewImpl editView = new EditViewImpl(getDataSource(),
                     getAuthorizationService());
+            editView.init();
             setContent(editView);
         } else {
             setContent(windowLayout);
