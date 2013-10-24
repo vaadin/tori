@@ -19,6 +19,7 @@ package org.vaadin.tori.widgetset.client.ui.floatingbar;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -119,6 +120,12 @@ class FloatingBarOverlay extends VOverlay {
     public void setVisible(double percentage) {
         // constrain between (incl.) 0..1
         percentage = Math.max(0, Math.min(1, percentage));
+
+        if (percentage > 0) {
+            getElement().getStyle().setDisplay(Display.BLOCK);
+        } else {
+            getElement().getStyle().setDisplay(Display.NONE);
+        }
 
         // this might help slow JS engines a bit.
         if (prevVisibilityPercentage == percentage) {
