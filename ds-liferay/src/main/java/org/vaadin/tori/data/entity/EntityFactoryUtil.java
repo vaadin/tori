@@ -19,6 +19,9 @@ package org.vaadin.tori.data.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portlet.expando.service.ExpandoValueLocalServiceUtil;
 import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBThread;
@@ -101,11 +104,36 @@ public class EntityFactoryUtil {
         final User entity = new User();
         entity.setId(liferayUser.getUserId());
         entity.setDisplayedName(liferayUser.getFullName());
+        if (usesScreennameOnTori(liferayUser)) {
+            entity.setDisplayedName(liferayUser.getScreenName());
+        }
+
         entity.setAvatarUrl(getAvatarUrl(liferayUser.getPortraitId(),
                 imagePath, isFemale));
         entity.setBanned(isBanned);
         entity.setOriginalUserObject(liferayUser);
         return entity;
+    }
+
+    private static final String SCREENNAME_EXPANDO_COLUMN_NAME = "use-screenname-on-tori";
+
+    private static boolean usesScreennameOnTori(
+            final com.liferay.portal.model.User liferayUser) {
+        boolean result = false;
+        try {
+            if (liferayUser != null) {
+                result = ExpandoValueLocalServiceUtil.getData(
+                        liferayUser.getCompanyId(),
+                        com.liferay.portal.model.User.class.getName(),
+                        "CUSTOM_FIELDS", SCREENNAME_EXPANDO_COLUMN_NAME,
+                        liferayUser.getUserId(), false);
+            }
+        } catch (PortalException e) {
+            e.printStackTrace();
+        } catch (SystemException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public static User createAnonymousUser(final String imagePath) {
