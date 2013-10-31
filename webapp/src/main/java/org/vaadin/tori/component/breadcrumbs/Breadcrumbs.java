@@ -33,6 +33,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
@@ -72,13 +73,15 @@ public class Breadcrumbs extends CustomComponent {
         navigator.addViewChangeListener(viewListener);
 
         viewCaption = new Label("");
+        viewCaption.addStyleName("viewcaption");
         layout = new HorizontalLayout();
-        layout.setWidth(100.0f, Unit.PERCENTAGE);
+        layout.setSizeFull();
         layout.setStyleName("breadcrumbs-layout");
 
         final HorizontalLayout wrapper = new HorizontalLayout();
         wrapper.setStyleName("breadcrumbs-wrapper");
-        wrapper.setWidth("100%");
+        wrapper.setWidth(100.0f, Unit.PERCENTAGE);
+        wrapper.setHeight(32.0f, Unit.PIXELS);
         wrapper.addComponent(layout);
         wrapper.setExpandRatio(layout, 1.0f);
         wrapper.addComponent(new ActionBar());
@@ -95,8 +98,9 @@ public class Breadcrumbs extends CustomComponent {
         layout.removeAllComponents();
         final Link dashboardLink = new Link("Dashboard", new ExternalResource(
                 "#" + ToriNavigator.ApplicationView.DASHBOARD.getUrl() + "/"));
-        dashboardLink.addStyleName("dashboardlink");
         layout.addComponent(dashboardLink);
+        layout.setComponentAlignment(dashboardLink, Alignment.MIDDLE_LEFT);
+        layout.addComponent(getSeparator());
 
         if (currentView instanceof CategoryView) {
             final CategoryView categoryView = (CategoryView) currentView;
@@ -107,6 +111,9 @@ public class Breadcrumbs extends CustomComponent {
         } else {
             hideViewCaption();
         }
+
+        Component last = layout.getComponent(layout.getComponentCount() - 1);
+        layout.setExpandRatio(last, 1.0f);
     }
 
     private void showViewCaption(final String caption) {
@@ -124,20 +131,20 @@ public class Breadcrumbs extends CustomComponent {
         final Category currentCategory = threadView.getCurrentCategory();
 
         if (currentThread != null) {
-            inputCategoryCrumb(currentCategory, false);
+            inputCategoryCrumb(currentCategory);
 
             final Link threadCrumb = new Link(currentThread.getTopic(),
                     new ExternalResource("#"
                             + ToriNavigator.ApplicationView.THREADS.getUrl()
                             + "/" + currentThread.getId()));
-            threadCrumb.addStyleName("last");
             threadCrumb.addStyleName("threadcrumb");
             threadCrumb.setWidth(100.0f, Unit.PERCENTAGE);
+            layout.addComponent(getSeparator());
             layout.addComponent(threadCrumb);
-            layout.setExpandRatio(threadCrumb, 1.0f);
+            layout.setComponentAlignment(threadCrumb, Alignment.MIDDLE_LEFT);
             showViewCaption(currentThread.getTopic());
         } else if (currentCategory != null) {
-            inputCategoryCrumb(currentCategory, true);
+            inputCategoryCrumb(currentCategory);
             showViewCaption(currentCategory.getName());
         } else {
             hideViewCaption();
@@ -147,23 +154,24 @@ public class Breadcrumbs extends CustomComponent {
     private void paint(final CategoryView categoryView) {
         final Category currentCategory = categoryView.getCurrentCategory();
         if (currentCategory != null) {
-            inputCategoryCrumb(currentCategory, true);
+            inputCategoryCrumb(currentCategory);
             showViewCaption(currentCategory.getName());
         } else {
             hideViewCaption();
         }
     }
 
-    private void inputCategoryCrumb(final Category currentCategory,
-            final boolean isLast) {
+    private void inputCategoryCrumb(final Category currentCategory) {
         final Link crumb = new Link(currentCategory.getName(),
                 new ExternalResource("#"
                         + ToriNavigator.ApplicationView.CATEGORIES.getUrl()
                         + "/" + currentCategory.getId()));
+        layout.addComponent(crumb);
+        layout.setComponentAlignment(crumb, Alignment.MIDDLE_LEFT);
 
         final PopupButton categoryPopup = new PopupButton();
-        categoryPopup.setHeight(100.0f, Unit.PERCENTAGE);
         categoryPopup.addStyleName("categorypopup");
+        categoryPopup.setWidth(30.0f, Unit.PIXELS);
         categoryPopup.addPopupVisibilityListener(new PopupVisibilityListener() {
             @Override
             public void popupVisibilityChange(
@@ -174,15 +182,8 @@ public class Breadcrumbs extends CustomComponent {
                 }
             }
         });
-
-        layout.addComponent(crumb);
         layout.addComponent(categoryPopup);
-
-        if (isLast) {
-            layout.setExpandRatio(categoryPopup, 1.0f);
-            crumb.addStyleName("last");
-            categoryPopup.addStyleName("last");
-        }
+        layout.setComponentAlignment(categoryPopup, Alignment.MIDDLE_LEFT);
     }
 
     public void selectCategory(final Category selectedCategory) {
@@ -261,5 +262,13 @@ public class Breadcrumbs extends CustomComponent {
 
     private static Logger getLogger() {
         return Logger.getLogger(Breadcrumbs.class);
+    }
+
+    private Component getSeparator() {
+        Label label = new Label();
+        label.addStyleName("breadcrumbs-separator");
+        label.setHeight(100.0f, Unit.PERCENTAGE);
+        label.setWidth(15.0f, Unit.PIXELS);
+        return label;
     }
 }

@@ -1,17 +1,9 @@
 .breadcrumbs-layout .v-link {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	color: white;
+	padding-left: 8px;
 }
 
-.breadcrumbs-layout .v-link {
-	padding: 6px 0 8px 8px;
-}
-
-.breadcrumbs-layout .v-link a span,
-.breadcrumbs-layout .v-link a:link span,
-.breadcrumbs-layout .v-link a:visited span {
-	color: white;
+.breadcrumbs .v-link a span{
+	color: #fff !important;
 }
 
 .breadcrumbs-layout .v-popupbutton,
@@ -19,48 +11,43 @@
 	background: transparent;
 }
 
-.breadcrumbs-layout .dashboardlink,
-.breadcrumbs-layout .categorypopup {
+.breadcrumbs-layout .breadcrumbs-separator {
 	background: url(../images/separator-breadcrumbs.png) transparent top right no-repeat;
 }
 
-.breadcrumbs-layout .dashboardlink {
-	padding-right: 15px;
-}
-
-.breadcrumbs-layout .categorypopup.last {
-	background: transparent;
-}
-
-.breadcrumbs-layout .categorypopup .v-button-wrap {
-	padding: 6px 15px 0 0;
-}
-
 .breadcrumbs-layout .threadcrumb {
+	position: relative;
+	height: 1em;
+	line-height: 1;
+}
+
+.breadcrumbs-layout .threadcrumb span{
+	color: #fff;
+	overflow: hidden;
+	text-overflow: ellipsis;
 	position: absolute;
+	width: 100%;
+	top: 0;
+	padding: 1px 0;
 }
-
-
-.breadcrumbs-layout .v-link.last a span,
-.breadcrumbs-layout .v-link.last a:link span,
-.breadcrumbs-layout .v-link.last a:visited span {
-	background-image: none;
-}
-
 
 .breadcrumbs {
 	background: url(../images/breadcrumbs-bg.png) top left repeat-x;
-	margin: 0;
+	
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 	border-radius: 4px;
+}
+
+.breadcrumbs .v-link span {
+	vertical-align: baseline;	
 }
 
 .breadcrumbs .v-popupbutton .v-popup-indicator {
 	background: url(../images/dropdown-arrow.png) bottom right no-repeat;
 }
 
-.breadcrumbs .v-label {
+.breadcrumbs .viewcaption {
 	background: #f4f4f0;
 	font-size: 24px;
 	font-weight: bold;
@@ -73,14 +60,11 @@
 
 .breadcrumbs .action-bar {
 	background: url(../images/breadcrumbs-bg.png) top left repeat-x;
-	padding: 6px 14px 8px 0;
+	padding-right: 14px;
 }
 .breadcrumbs .action-bar .v-link {
-	margin-left: 5px;	
+	padding-left: 5px;
 }
 .breadcrumbs .action-bar .v-icon {
 	padding-right: 4px;
-}
-.breadcrumbs .action-bar a span {
-	color: #fff !important;
 }
