@@ -1,25 +1,11 @@
-.breadcrumbs-layout table {
-	max-width: 100%;
-}
-
-.breadcrumbs-layout td {
-	height: 32px;
-} 
-
 .breadcrumbs-layout .v-link {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	color: white;
 }
 
-.breadcrumbs-layout td > div,
 .breadcrumbs-layout .v-link {
-	height: 100%;
-}
-
-.breadcrumbs-layout .v-link {
-	padding-top: 6px;
-	padding-left: 8px;
+	padding: 6px 0 8px 8px;
 }
 
 .breadcrumbs-layout .v-link a span,
@@ -28,29 +14,32 @@
 	color: white;
 }
 
-.breadcrumbs-layout div[location='dashboard'] .v-link {
-	padding-right: 18px;
-	display: inline-block;
-	background: url(../images/separator-breadcrumbs.png) transparent top right no-repeat;
-}
-
 .breadcrumbs-layout .v-popupbutton,
 .breadcrumbs-layout .v-popupbutton .v-button-wrap {
 	background: transparent;
 }
 
-.breadcrumbs-layout div[location='categorypopup'] .v-popupbutton {
-	height: 100%;
+.breadcrumbs-layout .dashboardlink,
+.breadcrumbs-layout .categorypopup {
 	background: url(../images/separator-breadcrumbs.png) transparent top right no-repeat;
 }
 
-.breadcrumbs-layout div[location='categorypopup'] .v-popupbutton.last {
+.breadcrumbs-layout .dashboardlink {
+	padding-right: 15px;
+}
+
+.breadcrumbs-layout .categorypopup.last {
 	background: transparent;
 }
 
-.breadcrumbs-layout div[location='categorypopup'] .v-popupbutton .v-button-wrap {
+.breadcrumbs-layout .categorypopup .v-button-wrap {
 	padding: 6px 15px 0 0;
 }
+
+.breadcrumbs-layout .threadcrumb {
+	position: absolute;
+}
+
 
 .breadcrumbs-layout .v-link.last a span,
 .breadcrumbs-layout .v-link.last a:link span,
@@ -67,15 +56,6 @@
 	border-radius: 4px;
 }
 
-.breadcrumbs-wrapper {
-	/* 
-		workaround for vaadin(?) bug
-		org.vaadin.tori.component.breadcrumbs.Breadcrumbs#L67 has .setWidth("100%"), but it doesn't go through to the client side. 
-	*/
-	
-	width: 100%;
-}
-
 .breadcrumbs .v-popupbutton .v-popup-indicator {
 	background: url(../images/dropdown-arrow.png) bottom right no-repeat;
 }
@@ -90,12 +70,10 @@
 	border-radius: 0 0 4px 4px;
 }
 
-.breadcrumbs .breadcrumbs-layout {
-	float: left;
-}
+
 .breadcrumbs .action-bar {
-	float: right;	
-	padding: 6px 14px 0 0;
+	background: url(../images/breadcrumbs-bg.png) top left repeat-x;
+	padding: 6px 14px 8px 0;
 }
 .breadcrumbs .action-bar .v-link {
 	margin-left: 5px;	

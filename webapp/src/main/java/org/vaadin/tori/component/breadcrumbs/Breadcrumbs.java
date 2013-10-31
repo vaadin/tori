@@ -35,7 +35,6 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
@@ -50,19 +49,19 @@ public class Breadcrumbs extends CustomComponent {
     static final String STYLE_CATEGORY = "category";
     static final String STYLE_UNCLICKABLE = "unclickable";
 
-    private final CustomLayout layout;
+    private final HorizontalLayout layout;
     private final Label viewCaption;
 
     private transient final ViewChangeListener viewListener = new ViewChangeListener() {
-		@Override
-		public boolean beforeViewChange(ViewChangeEvent event) {
-			return true;
-		}
+        @Override
+        public boolean beforeViewChange(ViewChangeEvent event) {
+            return true;
+        }
 
-		@Override
-		public void afterViewChange(ViewChangeEvent event) {
-			 renderBreadCrumb(event.getNewView());
-		}
+        @Override
+        public void afterViewChange(ViewChangeEvent event) {
+            renderBreadCrumb(event.getNewView());
+        }
     };
 
     private final ToriNavigator navigator;
@@ -73,7 +72,8 @@ public class Breadcrumbs extends CustomComponent {
         navigator.addViewChangeListener(viewListener);
 
         viewCaption = new Label("");
-        layout = new BreadcrumbsLayout();
+        layout = new HorizontalLayout();
+        layout.setWidth(100.0f, Unit.PERCENTAGE);
         layout.setStyleName("breadcrumbs-layout");
 
         final HorizontalLayout wrapper = new HorizontalLayout();
@@ -91,11 +91,12 @@ public class Breadcrumbs extends CustomComponent {
         renderBreadCrumb(null);
     }
 
-    private void renderBreadCrumb(View currentView ) {
+    private void renderBreadCrumb(View currentView) {
         layout.removeAllComponents();
         final Link dashboardLink = new Link("Dashboard", new ExternalResource(
                 "#" + ToriNavigator.ApplicationView.DASHBOARD.getUrl() + "/"));
-        layout.addComponent(dashboardLink, "dashboard");
+        dashboardLink.addStyleName("dashboardlink");
+        layout.addComponent(dashboardLink);
 
         if (currentView instanceof CategoryView) {
             final CategoryView categoryView = (CategoryView) currentView;
@@ -130,7 +131,10 @@ public class Breadcrumbs extends CustomComponent {
                             + ToriNavigator.ApplicationView.THREADS.getUrl()
                             + "/" + currentThread.getId()));
             threadCrumb.addStyleName("last");
-            layout.addComponent(threadCrumb, "thread");
+            threadCrumb.addStyleName("threadcrumb");
+            threadCrumb.setWidth(100.0f, Unit.PERCENTAGE);
+            layout.addComponent(threadCrumb);
+            layout.setExpandRatio(threadCrumb, 1.0f);
             showViewCaption(currentThread.getTopic());
         } else if (currentCategory != null) {
             inputCategoryCrumb(currentCategory, true);
@@ -158,30 +162,33 @@ public class Breadcrumbs extends CustomComponent {
                         + "/" + currentCategory.getId()));
 
         final PopupButton categoryPopup = new PopupButton();
+        categoryPopup.setHeight(100.0f, Unit.PERCENTAGE);
+        categoryPopup.addStyleName("categorypopup");
         categoryPopup.addPopupVisibilityListener(new PopupVisibilityListener() {
             @Override
             public void popupVisibilityChange(
                     final org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent event) {
                 if (event.isPopupVisible()) {
-                    categoryPopup.setComponent(getCategoryPopup(
-                            currentCategory, categoryPopup));
+                    categoryPopup.setContent(getCategoryPopup(currentCategory,
+                            categoryPopup));
                 }
             }
         });
 
+        layout.addComponent(crumb);
+        layout.addComponent(categoryPopup);
+
         if (isLast) {
+            layout.setExpandRatio(categoryPopup, 1.0f);
             crumb.addStyleName("last");
             categoryPopup.addStyleName("last");
         }
-
-        layout.addComponent(categoryPopup, "categorypopup");
-        layout.addComponent(crumb, "category");
     }
 
     public void selectCategory(final Category selectedCategory) {
         final String catIdAsString = String.valueOf(selectedCategory.getId());
-        navigator.navigateTo(ToriNavigator.ApplicationView.CATEGORIES.getNavigatorUrl()+"/"
-                +catIdAsString);
+        navigator.navigateTo(ToriNavigator.ApplicationView.CATEGORIES
+                .getNavigatorUrl() + "/" + catIdAsString);
     }
 
     private Component getCategoryPopup(final Category currentCategory,
