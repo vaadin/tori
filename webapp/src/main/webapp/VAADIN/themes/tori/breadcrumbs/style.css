@@ -31,6 +31,10 @@
 	padding: 1px 0;
 }
 
+.breadcrumbs-layout .v-link span {
+	vertical-align: baseline;	
+}
+
 .breadcrumbs {
 	background: url(../images/breadcrumbs-bg.png) top left repeat-x;
 	
@@ -39,9 +43,7 @@
 	border-radius: 4px;
 }
 
-.breadcrumbs .v-link span {
-	vertical-align: baseline;	
-}
+
 
 .breadcrumbs .v-popupbutton .v-popup-indicator {
 	background: url(../images/dropdown-arrow.png) bottom right no-repeat;

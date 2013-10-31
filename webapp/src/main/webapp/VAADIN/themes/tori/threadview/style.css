@@ -486,13 +486,6 @@
 	box-sizing: border-box;
 }
 
-
-.authoring .v-caption-wysiwyg-editor {
-	color: #64635a;
-	font-size: 18px;
-	font-weight: bold;
-}
-
 .quickReply .authoring .v-caption-wysiwyg-editor {
 	font-size: 16px;
 	position: absolute;
@@ -542,6 +535,11 @@
 
 .authoring .v-verticallayout {
 	padding-left: 158px;
+}
+
+/* This is temporary means to circumvent a layout bug */
+.authoring .v-verticallayout .v-slot-wysiwyg-editor {
+    width: 808px !important;
 }
 
 .authoring .v-caption-wysiwyg-editor {
