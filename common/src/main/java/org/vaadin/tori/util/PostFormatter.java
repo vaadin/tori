@@ -62,24 +62,6 @@ public interface PostFormatter {
         Collection<FontSize> getFontSizes();
     }
 
-    public interface FormatInfo {
-        public static final String ICON_PACKAGE = "/icons/";
-
-        @NonNull
-        String getFormatName();
-
-        @NonNull
-        String getFormatSyntax();
-
-        /**
-         * The image file name that is located in the DataSource project's
-         * classpath, relative to {@value #ICON_PACKAGE}. Usually only the file
-         * name itself.
-         */
-        @NonNull
-        String getFormatIcon();
-    }
-
     /**
      * Given a raw string of text for a {@link Post}, format it in the
      * appropriate way into valid XHTML.
@@ -94,42 +76,8 @@ public interface PostFormatter {
     @NonNull
     String format(@NonNull String rawPostBody);
 
-    /**
-     * The returned string should be an XHTML-formatted explanation of the
-     * formatting currently being used to render the posts.
-     */
-    @NonNull
-    String getFormattingSyntaxXhtml();
-
     @NonNull
     FontsInfo getFontsInfo();
-
-    /**
-     * Get the format info for "bold".
-     * 
-     * @return might be <code>null</code>, which indicates that there's no bold
-     *         format.
-     */
-    @CheckForNull
-    FormatInfo getBoldInfo();
-
-    /**
-     * Get the format info for "italic".
-     * 
-     * @return might be <code>null</code>, which indicates that there's no
-     *         italic format.
-     */
-    @CheckForNull
-    FormatInfo getItalicInfo();
-
-    /**
-     * All the other styles that are behind buttons.
-     * 
-     * @return might be <code>null</code>, which indicates that there's no other
-     *         formats. The same goes for an empty {@link Collection}
-     */
-    @CheckForNull
-    Collection<? extends FormatInfo> getOtherFormattingInfo();
 
     @NonNull
     String getQuote(final Post postToQuote);

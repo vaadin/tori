@@ -18,7 +18,6 @@ package org.vaadin.tori.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -27,36 +26,6 @@ import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
 
 public class TestPostFormatter implements PostFormatter {
-
-    private static class TestFormatInfo implements FormatInfo {
-
-        private final String formatIconThemeId;
-        private final String formatName;
-        private final String formatSyntax;
-
-        public TestFormatInfo(final String formatName,
-                final String formatSyntax, final String formatIconThemeId) {
-            this.formatName = formatName;
-            this.formatSyntax = formatSyntax;
-            this.formatIconThemeId = formatIconThemeId;
-        }
-
-        @Override
-        public String getFormatName() {
-            return formatName;
-        }
-
-        @Override
-        public String getFormatSyntax() {
-            return formatSyntax;
-        }
-
-        @Override
-        public String getFormatIcon() {
-            return formatIconThemeId;
-        }
-
-    }
 
     private static class TestFontFace implements FontFace {
         private final String name;
@@ -124,13 +93,6 @@ public class TestPostFormatter implements PostFormatter {
 
     };
 
-    private static final FormatInfo BOLD_INFO = new TestFormatInfo("Bold",
-            "[b][/b]", "bold.png");
-    private static final FormatInfo ITALIC_INFO = new TestFormatInfo("Italic",
-            "[i][/i]", "italic.png");
-    private static final Collection<? extends FormatInfo> OTHER_FORMAT_INFO = Collections
-            .singleton(new TestFormatInfo("Vaadin", "}>", "vaadin.png"));
-
     @Override
     public String format(final String rawPostBody) {
         return rawPostBody.replace("<", "&lt;").replace(">", "&gt;")
@@ -139,28 +101,8 @@ public class TestPostFormatter implements PostFormatter {
     }
 
     @Override
-    public String getFormattingSyntaxXhtml() {
-        return "[b]bold[/b] &raquo; <b>bold</b>";
-    }
-
-    @Override
     public FontsInfo getFontsInfo() {
         return FONTS_INFO;
-    }
-
-    @Override
-    public FormatInfo getBoldInfo() {
-        return BOLD_INFO;
-    }
-
-    @Override
-    public FormatInfo getItalicInfo() {
-        return ITALIC_INFO;
-    }
-
-    @Override
-    public Collection<? extends FormatInfo> getOtherFormattingInfo() {
-        return OTHER_FORMAT_INFO;
     }
 
     @Override

@@ -17,6 +17,8 @@
 package org.vaadin.tori.component;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -37,8 +39,6 @@ import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.service.DebugAuthorizationService;
 import org.vaadin.tori.thread.ThreadView;
 
-import com.google.gwt.thirdparty.guava.common.base.Joiner;
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.navigator.ViewChangeListener;
@@ -242,7 +242,7 @@ public class DebugControlPanel extends CustomComponent implements
 
         final Set<Method> setters = getSettersByReflection(authorizationService);
 
-        final List<Method> orderedSetters = Lists.newArrayList(setters);
+        final List<Method> orderedSetters = new ArrayList<Method>(setters);
         Collections.sort(orderedSetters, new Comparator<Method>() {
             @Override
             public int compare(final Method o1, final Method o2) {
@@ -333,12 +333,12 @@ public class DebugControlPanel extends CustomComponent implements
         if (setter.getParameterTypes().length == 1) {
             return setter.getName();
         } else {
-            final List<String> typeNames = Lists.newArrayList();
+            final List<String> typeNames = new ArrayList<String>();
             for (final Class<?> type : setter.getParameterTypes()) {
                 typeNames.add(type.getSimpleName());
             }
             typeNames.remove(typeNames.size() - 1); // the last boolean
-            final String params = Joiner.on(", ").join(typeNames);
+            final String params = Arrays.toString(typeNames.toArray());
             return setter.getName() + "(" + params + ")";
         }
     }

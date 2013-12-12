@@ -42,11 +42,4 @@ public interface SignatureFormatter {
      */
     @NonNull
     String format(@NonNull String rawSignature);
-
-    /**
-     * The returned string should be an XHTML-formatted explanation of the
-     * formatting currently being used to render the signatures.
-     */
-    @NonNull
-    String getFormattingSyntaxXhtml();
 }

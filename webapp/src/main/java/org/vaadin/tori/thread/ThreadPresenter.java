@@ -334,12 +334,6 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         return dataSource.getAttachmentMaxFileSize();
     }
 
-    @NonNull
-    public String getFormattingSyntax() {
-        return ToriUI.getCurrent().getPostFormatter()
-                .getFormattingSyntaxXhtml();
-    }
-
     public final void resetInput() {
         attachments.clear();
         getView().updateAttachmentList(attachments);

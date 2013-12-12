@@ -30,8 +30,6 @@ import org.vaadin.tori.component.FloatingBar;
 import org.vaadin.tori.component.FloatingBar.FloatingAlignment;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
-import org.vaadin.tori.component.NewThreadComponent;
-import org.vaadin.tori.component.NewThreadComponent.NewThreadListener;
 import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.component.post.PostComponent;
 import org.vaadin.tori.component.post.PostsLayout;
@@ -102,7 +100,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     private final Map<Post, PostComponent> postsToComponents = new HashMap<Post, PostComponent>();
     private final PostsLayout postsLayout;
     private AuthoringComponent reply;
-    private NewThreadComponent newThreadComponent;
+    private AuthoringComponent newThreadComponent;
     private AuthoringComponent quickReply;
     private Label showOrHideLabel;
     private CssLayout quickReplyLayout;
@@ -178,8 +176,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             spacer.setStyleName("spacer");
             layout.addComponent(spacer);
 
-            reply = new AuthoringComponent(replyListener, getPresenter()
-                    .getFormattingSyntax(), "Post Reply");
+            reply = new AuthoringComponent(replyListener, "Post Reply", true);
             reply.setUserMayAddFiles(getPresenter().userMayAddFiles());
             reply.setMaxFileSize(getPresenter().getMaxFileSize());
             layout.addComponent(reply);
@@ -317,8 +314,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     private FloatingBar getQuickReplyBar(
             final AuthoringComponent mirroredAuthoringComponent) {
-        quickReply = new AuthoringComponent(replyListener, getPresenter()
-                .getFormattingSyntax(), "Quick Reply", false);
+        quickReply = new AuthoringComponent(replyListener, "Quick Reply", false);
 
         // Using the TextArea of the AuthoringComponent as the property data
         // source
@@ -515,7 +511,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         topicLayout.setExpandRatio(topicField, 1.0f);
         topicField.focus();
 
-        newThreadComponent = new NewThreadComponent(new NewThreadListener() {
+        AuthoringListener listener = new AuthoringListener() {
+
             @Override
             public void submit(final String rawBody) {
                 String errorMessages = "";
@@ -541,7 +538,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                                                 + "/"
                                                 + createdThread.getId());
                     } catch (final DataSourceException e) {
-                        Notification.show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                        Notification
+                                .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
                     }
                 } else {
                     final Notification n = new Notification(errorMessages,
@@ -565,7 +563,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             public void removeAttachment(final String fileName) {
                 getPresenter().removeAttachment(fileName);
             }
-        }, ToriUI.getCurrent().getPostFormatter().getFormattingSyntaxXhtml());
+        };
+
+        newThreadComponent = new AuthoringComponent(listener, "Post body", true);
         newThreadComponent.setUserMayAddFiles(getPresenter().userMayAddFiles());
         newThreadComponent.setMaxFileSize(getPresenter().getMaxFileSize());
         layout.addComponent(newThreadComponent);

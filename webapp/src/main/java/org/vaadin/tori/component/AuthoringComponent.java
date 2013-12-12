@@ -77,19 +77,7 @@ public class AuthoringComponent extends CustomComponent {
     private Upload attach;
 
     public AuthoringComponent(final AuthoringListener listener,
-            final String formattingSyntaxXhtml, final String captionText) {
-        this(listener, formattingSyntaxXhtml, captionText, true);
-    }
-
-    /**
-     * @param formattingSyntaxXhtml
-     *            The forum post formatting reference that will be shown as-is
-     *            to the user, when she clicks on the designated help button.
-     *            The string must be formatted in valid XHTML.
-     */
-    public AuthoringComponent(final AuthoringListener listener,
-            final String formattingSyntaxXhtml, final String captionText,
-            final boolean autoGrow) {
+            final String captionText, final boolean autoGrow) {
         this.listener = listener;
 
         setCompositionRoot(layout);
