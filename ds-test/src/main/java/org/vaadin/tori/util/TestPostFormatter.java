@@ -40,20 +40,15 @@ public class TestPostFormatter implements PostFormatter {
         public String getFontName() {
             return name;
         }
-
-        @Override
-        public String getFontSyntax() {
-            return syntax;
-        }
     }
 
     private static class TestFontSize implements FontSize {
         private final String name;
-        private final String syntax;
+        private final String value;
 
-        public TestFontSize(final String name, final String syntax) {
+        public TestFontSize(final String name, final String value) {
             this.name = name;
-            this.syntax = syntax;
+            this.value = value;
         }
 
         @Override
@@ -62,8 +57,8 @@ public class TestPostFormatter implements PostFormatter {
         }
 
         @Override
-        public String getFontSizeSyntax() {
-            return syntax;
+        public String getFontSizeValue() {
+            return value;
         }
     }
 

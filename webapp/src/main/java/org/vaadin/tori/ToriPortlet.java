@@ -70,6 +70,7 @@ public class ToriPortlet extends VaadinPortlet {
             final List<RequestHandler> requestHandlers = super
                     .createRequestHandlers();
             requestHandlers.add(new UnsupportedDeviceHandler());
+            requestHandlers.add(new PortletRequestAwareHandler());
             return requestHandlers;
         }
     }

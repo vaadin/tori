@@ -55,14 +55,19 @@ public class VaadinBadgeProvider implements UserBadgeProvider {
     }
 
     private boolean hasBadgeRole(final User user) throws SystemException {
-        final List<Role> userRoles = RoleServiceUtil.getUserRoles(liferayUser(
-                user).getUserId());
-        for (final Role role : userRoles) {
-            if (BADGE_ROLE_NAME.equals(role.getName())) {
-                getLogger().debug("Has badge role " + BADGE_ROLE_NAME);
-                return true;
+        try {
+            List<Role> userRoles = RoleServiceUtil.getUserRoles(liferayUser(
+                    user).getUserId());
+            for (final Role role : userRoles) {
+                if (BADGE_ROLE_NAME.equals(role.getName())) {
+                    getLogger().debug("Has badge role " + BADGE_ROLE_NAME);
+                    return true;
+                }
             }
+        } catch (Exception e) {
+            getLogger().error("Exception while trying to list user roles", e);
         }
+
         getLogger().debug("Didn't have badge role " + BADGE_ROLE_NAME);
         return false;
     }

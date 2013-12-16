@@ -41,5 +41,4 @@ public enum LiferayFontFace implements FontFace {
     public String getFontName() {
         return name;
     }
-
 }

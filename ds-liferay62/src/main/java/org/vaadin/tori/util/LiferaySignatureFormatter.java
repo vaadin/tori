@@ -16,30 +16,6 @@
 
 package org.vaadin.tori.util;
 
-import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
-
-/**
- * Font faces supported by Liferay forum.
- */
-public enum LiferayFontFace implements FontFace {
-    // @formatter:off
-    ARIAL("Arial"),
-    COMIC_SANS("Comic Sans MS"),
-    COURIER_NEW("Courier New"),
-    TAHOMA("Tahoma"),
-    TIMES_NEW_ROMAN("Times New Roman"),
-    VERDANA("Verdana");
-    // @formatter:on
-
-    private String name;
-
-    private LiferayFontFace(final String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getFontName() {
-        return name;
-    }
-
+public class LiferaySignatureFormatter extends LiferayPostFormatter implements
+        SignatureFormatter {
 }

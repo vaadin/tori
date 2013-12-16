@@ -34,9 +34,6 @@ public interface PostFormatter {
         public interface FontFace {
             @NonNull
             String getFontName();
-
-            @NonNull
-            String getFontSyntax();
         }
 
         public interface FontSize {
@@ -44,7 +41,7 @@ public interface PostFormatter {
             String getFontSizeName();
 
             @NonNull
-            String getFontSizeSyntax();
+            String getFontSizeValue();
         }
 
         /**

@@ -32,7 +32,6 @@ import com.vaadin.server.SessionInitEvent;
 import com.vaadin.server.SessionInitListener;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinServletService;
-import com.vaadin.util.CurrentInstance;
 
 public class ToriServlet extends VaadinServlet {
     private static final long serialVersionUID = -8123218871730402047L;
@@ -63,15 +62,6 @@ public class ToriServlet extends VaadinServlet {
             final HttpServletResponse response) throws ServletException,
             IOException {
         super.service(request, response);
-        final ToriUI ui = CurrentInstance.get(ToriUI.class);
-
-        /*
-         * Is this still needed? We have similar logic already in
-         * ToriUI.initApiLoader()
-         */
-        if (ui != null) {
-            ui.setRequest(request);
-        }
     }
 
     @Override

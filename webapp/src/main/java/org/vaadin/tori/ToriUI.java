@@ -23,8 +23,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.portlet.PortletMode;
-import javax.portlet.PortletRequest;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.vaadin.tori.component.DebugControlPanel;
@@ -71,10 +69,8 @@ public class ToriUI extends UI {
 
     @Override
     protected void init(final VaadinRequest request) {
-
+        getApiLoader().setRequest(request);
         fixUrl();
-
-        getPage().setTitle("Tori");
 
         windowLayout = new VerticalLayout();
         windowLayout.setMargin(false);
@@ -120,15 +116,6 @@ public class ToriUI extends UI {
 
     void initApiLoader(final VaadinRequest request) {
         getSession().setAttribute(ToriApiLoader.class, new ToriApiLoader());
-
-        /*
-         * this hack is specially reserved for Liferay. Maybe the servlet
-         * request can be put in here too...
-         */
-        if (request instanceof VaadinPortletRequest) {
-            final VaadinPortletRequest vpRequest = (VaadinPortletRequest) request;
-            setRequest(vpRequest.getPortletRequest());
-        }
     }
 
     public final void setPortletMode(final PortletMode portletMode) {
@@ -229,14 +216,6 @@ public class ToriUI extends UI {
             throw new IllegalStateException(ToriApiLoader.class.getName()
                     + " was not found in the state. This is bad...");
         }
-    }
-
-    void setRequest(final HttpServletRequest request) {
-        getApiLoader().setRequest(request);
-    }
-
-    void setRequest(final PortletRequest request) {
-        getApiLoader().setRequest(request);
     }
 
     public static ToriUI getCurrent() {

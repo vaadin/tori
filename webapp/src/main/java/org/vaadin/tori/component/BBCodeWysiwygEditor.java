@@ -96,7 +96,7 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
                 sb.append(";");
             }
             sb.append(fs.getFontSizeName()).append("/")
-                    .append(fs.getFontSizeSyntax());
+                    .append(fs.getFontSizeValue());
         }
         sb.append("'").insert(0, "'");
 

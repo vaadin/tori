@@ -12,13 +12,13 @@
 		<module>common</module>
 		<module>ds-test</module>
 		<module>ds-liferay</module>
+		<module>ds-liferay62</module>
 		<module>bp-vaadin</module>
 		<module>uc-liferay</module>
 	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<liferay.version>6.0.6</liferay.version>
 	</properties>
 
 	<dependencies>
