@@ -28,23 +28,18 @@ import org.apache.log4j.Logger;
 import org.vaadin.tori.component.DebugControlPanel;
 import org.vaadin.tori.component.GoogleAnalyticsTracker;
 import org.vaadin.tori.component.breadcrumbs.Breadcrumbs;
-import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.DataSource.UrlInfo;
 import org.vaadin.tori.data.DataSource.UrlInfo.Destination;
 import org.vaadin.tori.edit.EditViewImpl;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
-import org.vaadin.tori.util.PostFormatter;
-import org.vaadin.tori.util.SignatureFormatter;
 import org.vaadin.tori.util.UrlConverter;
-import org.vaadin.tori.util.UserBadgeProvider;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinPortletRequest;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
@@ -69,7 +64,7 @@ public class ToriUI extends UI {
 
     @Override
     protected void init(final VaadinRequest request) {
-        getApiLoader().setRequest(request);
+        initApiLoader(request);
         fixUrl();
 
         windowLayout = new VerticalLayout();
@@ -79,7 +74,8 @@ public class ToriUI extends UI {
         VerticalLayout navigatorContent = new VerticalLayout();
         navigator = new ToriNavigator(this, navigatorContent);
 
-        final String trackerId = getDataSource().getGoogleAnalyticsTrackerId();
+        final String trackerId = ToriApiLoader.getCurrent().getDataSource()
+                .getGoogleAnalyticsTrackerId();
         if (trackerId != null) {
             analytics = new GoogleAnalyticsTracker(trackerId);
             analytics.setAllowAnchor(true);
@@ -115,13 +111,16 @@ public class ToriUI extends UI {
     }
 
     void initApiLoader(final VaadinRequest request) {
-        getSession().setAttribute(ToriApiLoader.class, new ToriApiLoader());
+        ToriApiLoader toriApiLoader = new ToriApiLoader();
+        toriApiLoader.setRequest(request);
+        getSession().setAttribute(ToriApiLoader.class, toriApiLoader);
     }
 
     public final void setPortletMode(final PortletMode portletMode) {
         if (portletMode == PortletMode.EDIT) {
-            final EditViewImpl editView = new EditViewImpl(getDataSource(),
-                    getAuthorizationService());
+            final EditViewImpl editView = new EditViewImpl(ToriApiLoader
+                    .getCurrent().getDataSource(), ToriApiLoader.getCurrent()
+                    .getAuthorizationService());
             editView.init();
             setContent(editView);
         } else {
@@ -134,7 +133,8 @@ public class ToriUI extends UI {
     }
 
     private void addControlPanelIfInDevelopment() {
-        final AuthorizationService authorizationService = getAuthorizationService();
+        final AuthorizationService authorizationService = ToriApiLoader
+                .getCurrent().getAuthorizationService();
         if (authorizationService instanceof DebugAuthorizationService) {
             windowLayout
                     .addComponent(new DebugControlPanel(
@@ -185,39 +185,6 @@ public class ToriUI extends UI {
         return Logger.getLogger(getClass());
     }
 
-    public AuthorizationService getAuthorizationService() {
-        return getApiLoader().getAuthorizationService();
-    }
-
-    public PostFormatter getPostFormatter() {
-        return getApiLoader().getPostFormatter();
-    }
-
-    public SignatureFormatter getSignatureFormatter() {
-        return getApiLoader().getSignatureFormatter();
-    }
-
-    public DataSource getDataSource() {
-        return getApiLoader().getDs();
-    }
-
-    @CheckForNull
-    public UserBadgeProvider getUserBadgeProvider() {
-        return getApiLoader().getUserBadgeProvider();
-    }
-
-    private ToriApiLoader getApiLoader() {
-        final VaadinSession session = getSession();
-        final ToriApiLoader apiLoader = session
-                .getAttribute(ToriApiLoader.class);
-        if (apiLoader != null) {
-            return apiLoader;
-        } else {
-            throw new IllegalStateException(ToriApiLoader.class.getName()
-                    + " was not found in the state. This is bad...");
-        }
-    }
-
     public static ToriUI getCurrent() {
         return (ToriUI) UI.getCurrent();
     }
@@ -226,7 +193,8 @@ public class ToriUI extends UI {
     private void fixUrl() {
         final URI uri = getPage().getLocation();
         final String path = getLocaleAdjustedURI(uri.getPath());
-        final String pathRoot = getDataSource().getPathRoot();
+        final String pathRoot = ToriApiLoader.getCurrent().getDataSource()
+                .getPathRoot();
 
         if (pathRoot == null) {
             getLogger().info(
@@ -256,7 +224,7 @@ public class ToriUI extends UI {
             final String query = getQueryString(uri);
             UrlInfo toriFragment = null;
 
-            UrlConverter uc = getUrlConverter();
+            UrlConverter uc = ToriApiLoader.getCurrent().getUrlConverter();
             if (uc != null) {
                 try {
                     toriFragment = uc.getToriFragment(relativePath, query);
@@ -319,10 +287,6 @@ public class ToriUI extends UI {
         } else if (fragment != null) {
             getPage().setUriFragment(fragment);
         }
-    }
-
-    private UrlConverter getUrlConverter() {
-        return getApiLoader().getUc();
     }
 
     /**

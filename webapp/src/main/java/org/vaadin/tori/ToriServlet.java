@@ -28,8 +28,6 @@ import org.apache.log4j.Logger;
 import com.vaadin.server.DeploymentConfiguration;
 import com.vaadin.server.RequestHandler;
 import com.vaadin.server.ServiceException;
-import com.vaadin.server.SessionInitEvent;
-import com.vaadin.server.SessionInitListener;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinServletService;
 
@@ -55,8 +53,6 @@ public class ToriServlet extends VaadinServlet {
         }
     }
 
-    private static final String DEFAULT_THEME = "tori";
-
     @Override
     protected void service(final HttpServletRequest request,
             final HttpServletResponse response) throws ServletException,
@@ -76,19 +72,6 @@ public class ToriServlet extends VaadinServlet {
 
     @Override
     protected void servletInitialized() {
-        getService().addSessionInitListener(new SessionInitListener() {
-            private static final long serialVersionUID = -8477299310901347835L;
-
-            @Override
-            public void sessionInit(final SessionInitEvent event)
-                    throws ServiceException {
-                String theme = getInitParameter("theme");
-                theme = (theme != null) ? theme : DEFAULT_THEME;
-
-                event.getSession().addUIProvider(new ToriUiProvider(theme));
-            }
-        });
-
         getService()
                 .setSystemMessagesProvider(ToriSystemMessagesProvider.get());
     }

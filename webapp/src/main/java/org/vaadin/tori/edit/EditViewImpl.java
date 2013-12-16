@@ -56,14 +56,10 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
 
     private CheckBox convertMessageBoardsUrls;
     private TextField analyticsTrackerIdField;
-    private final DataSource dataSource;
-    private final AuthorizationService authorizationService;
     private TextField pathRoot;
 
     public EditViewImpl(final DataSource dataSource,
             final AuthorizationService authorizationService) {
-        this.dataSource = dataSource;
-        this.authorizationService = authorizationService;
     }
 
     @Override
@@ -196,7 +192,7 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
 
     @Override
     protected EditPresenter createPresenter() {
-        return new EditPresenter(dataSource, authorizationService);
+        return new EditPresenter(this);
     }
 
     @Override

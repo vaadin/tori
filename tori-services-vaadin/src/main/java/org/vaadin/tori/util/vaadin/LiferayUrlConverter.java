@@ -1,4 +1,4 @@
-package org.vaadin.tori.url;
+package org.vaadin.tori.util.vaadin;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

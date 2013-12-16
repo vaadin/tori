@@ -18,7 +18,6 @@ package org.vaadin.tori.dashboard;
 
 import java.util.List;
 
-import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.component.PanicComponent;
@@ -62,9 +61,7 @@ public class DashboardViewImpl extends
 
     @Override
     protected DashboardPresenter createPresenter() {
-        final ToriUI ui = ToriUI.getCurrent();
-        return new DashboardPresenter(ui.getDataSource(),
-                ui.getAuthorizationService());
+        return new DashboardPresenter(this);
     }
 
     @Override

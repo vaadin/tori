@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.ToriUtil;
@@ -245,7 +246,7 @@ public class PostComponent extends AbstractComponentContainer implements
 
         final String rawSignature = post.getAuthor().getSignatureRaw();
         if (rawSignature != null && !rawSignature.isEmpty()) {
-            final String formattedSignature = ToriUI.getCurrent()
+            final String formattedSignature = ToriApiLoader.getCurrent()
                     .getSignatureFormatter().format(rawSignature);
             getState().setSignature(formattedSignature);
         }
@@ -260,7 +261,7 @@ public class PostComponent extends AbstractComponentContainer implements
      * set up.
      */
     private void addBadgePossibly(final User user) {
-        final UserBadgeProvider badgeProvider = ToriUI.getCurrent()
+        final UserBadgeProvider badgeProvider = ToriApiLoader.getCurrent()
                 .getUserBadgeProvider();
         if (badgeProvider == null) {
             return;
@@ -426,7 +427,7 @@ public class PostComponent extends AbstractComponentContainer implements
     }
 
     public final void refreshBody(final Post post) {
-        String formattedPost = ToriUI.getCurrent().getPostFormatter()
+        String formattedPost = ToriApiLoader.getCurrent().getPostFormatter()
                 .format(post.getBodyRaw());
         if (!allowHtml) {
             formattedPost = presenter.stripTags(formattedPost);

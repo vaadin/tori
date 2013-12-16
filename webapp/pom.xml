@@ -10,9 +10,9 @@
 	<packaging>war</packaging>
 
 	<properties>
-		<vaadin.version>7.1.9</vaadin.version>
-		<vaadin.plugin.version>7.1.9</vaadin.plugin.version>
+		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<productionMode>false</productionMode>
+		<tori.theme>tori</tori.theme>
 	</properties>
 
 
@@ -38,24 +38,15 @@
 		</profile>
 		<profile>
 			<id>liferay62</id>
-			<activation>
-				<property>
-					<name>productionMode</name>
-					<value>true</value>
-				</property>
-			</activation>
 			<properties>
 				<liferay.versions>6.2.0</liferay.versions>
+				<productionMode>true</productionMode>
+				<tori.theme>tori-liferay</tori.theme>
 			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>org.vaadin.tori</groupId>
 					<artifactId>ds-liferay62</artifactId>
-					<version>2.0.1</version>
-				</dependency>
-				<dependency>
-					<groupId>org.vaadin.tori</groupId>
-					<artifactId>uc-liferay</artifactId>
 					<version>2.0.1</version>
 				</dependency>
 				<dependency>
@@ -67,14 +58,9 @@
 		</profile>
 		<profile>
 			<id>vaadincom</id>
-			<activation>
-				<property>
-					<name>productionMode</name>
-					<value>true</value>
-				</property>
-			</activation>
 			<properties>
 				<liferay.versions>6.0.6</liferay.versions>
+				<productionMode>true</productionMode>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -84,12 +70,7 @@
 				</dependency>
 				<dependency>
 					<groupId>org.vaadin.tori</groupId>
-					<artifactId>uc-liferay</artifactId>
-					<version>2.0.1</version>
-				</dependency>
-				<dependency>
-					<groupId>org.vaadin.tori</groupId>
-					<artifactId>bp-vaadin</artifactId>
+					<artifactId>tori-services-vaadin</artifactId>
 					<version>2.0.1</version>
 				</dependency>
 				<dependency>

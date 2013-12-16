@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.vaadin.openesignforms.ckeditor.CKEditorConfig;
 import org.vaadin.openesignforms.ckeditor.CKEditorTextField;
-import org.vaadin.tori.ToriUI;
+import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.util.PostFormatter.FontsInfo;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
@@ -77,7 +77,7 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
                 + "{ items: ['codebutton'] },"
                 + "{ items: ['Link','Image','NumberedList','BulletedList'] },"
                 + "{ items: ['Source'] }");
-        FontsInfo fontsInfo = ToriUI.getCurrent().getPostFormatter()
+        FontsInfo fontsInfo = ToriApiLoader.getCurrent().getPostFormatter()
                 .getFontsInfo();
         List<String> fontNames = new ArrayList<String>();
         for (FontFace ff : fontsInfo.getFontFaces()) {

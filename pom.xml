@@ -13,12 +13,12 @@
 		<module>ds-test</module>
 		<module>ds-liferay</module>
 		<module>ds-liferay62</module>
-		<module>bp-vaadin</module>
-		<module>uc-liferay</module>
+		<module>tori-services-vaadin</module>
 	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<vaadin.version>7.1.9</vaadin.version>
 	</properties>
 
 	<dependencies>

@@ -21,8 +21,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
+import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.category.CategoryView;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -198,7 +198,7 @@ public class Breadcrumbs extends CustomComponent {
         tree.setImmediate(true);
 
         try {
-            final List<Category> rootCategories = ToriUI.getCurrent()
+            final List<Category> rootCategories = ToriApiLoader.getCurrent()
                     .getDataSource().getRootCategories();
             for (final Category category : rootCategories) {
                 addCategory(tree, category, null);
@@ -249,7 +249,7 @@ public class Breadcrumbs extends CustomComponent {
             tree.setParent(category, parent);
         }
 
-        final List<Category> subCategories = ToriUI.getCurrent()
+        final List<Category> subCategories = ToriApiLoader.getCurrent()
                 .getDataSource().getSubCategories(category);
         if (subCategories.isEmpty()) {
             tree.setChildrenAllowed(category, false);

@@ -17,32 +17,31 @@
 package org.vaadin.tori.mvp;
 
 import org.apache.log4j.Logger;
+import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.service.AuthorizationService;
+import org.vaadin.tori.util.PostFormatter;
 
 public abstract class Presenter<V extends View> {
 
     protected final Logger log = Logger.getLogger(getClass());
-    private V view;
+    protected final V view;
 
-    protected final DataSource dataSource;
-    protected final AuthorizationService authorizationService;
+    protected DataSource dataSource;
+    protected AuthorizationService authorizationService;
+    protected PostFormatter postFormatter;
 
-    public Presenter(final DataSource dataSource,
-            final AuthorizationService authorizationService) {
-        this.dataSource = dataSource;
-        this.authorizationService = authorizationService;
-    }
-
-    public void setView(final V view) {
+    public Presenter(final V view) {
         this.view = view;
+
+        ToriApiLoader toriApiLoader = getApiLoader();
+        dataSource = toriApiLoader.getDataSource();
+        authorizationService = toriApiLoader.getAuthorizationService();
+        postFormatter = getApiLoader().getPostFormatter();
     }
 
-    public V getView() {
-        if (view == null) {
-            throw new IllegalStateException("View has not been set yet.");
-        }
-        return view;
+    protected ToriApiLoader getApiLoader() {
+        return ToriApiLoader.getCurrent();
     }
 
     /**

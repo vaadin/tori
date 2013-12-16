@@ -24,7 +24,6 @@ import java.util.Set;
 import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
-import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.category.EditCategoryForm.EditCategoryListener;
 import org.vaadin.tori.component.category.RearrangeControls.RearrangeListener;
 import org.vaadin.tori.data.entity.Category;
@@ -271,9 +270,8 @@ public class CategoryListing extends
 
     @Override
     protected CategoryListingPresenter createPresenter() {
-        final ToriUI ui = ToriUI.getCurrent();
         final CategoryListingPresenter presenter = new CategoryListingPresenter(
-                ui.getDataSource(), ui.getAuthorizationService());
+                this);
         categoryTree.setPresenter(presenter);
         return presenter;
     }

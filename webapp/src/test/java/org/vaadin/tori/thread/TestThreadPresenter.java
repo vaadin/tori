@@ -17,28 +17,28 @@
 package org.vaadin.tori.thread;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.vaadin.tori.data.DataSource;
-import org.vaadin.tori.service.AuthorizationService;
+import org.vaadin.tori.TestUtil;
+import org.vaadin.tori.ToriApiLoader;
 
-public class ThreadPresenterTest {
+public class TestThreadPresenter {
 
     private ThreadPresenter presenter;
-    private DataSource mockDataSource;
-    private AuthorizationService mockAuthorizationService;
 
     @Before
     public void setup() {
         // create mocks
-        mockDataSource = mock(DataSource.class);
-        mockAuthorizationService = mock(AuthorizationService.class);
+        final ToriApiLoader apiLoader = TestUtil.mockApiLoader();
 
         // create the presenter to test
-        presenter = new ThreadPresenter(mockDataSource,
-                mockAuthorizationService);
+        presenter = new ThreadPresenter(null) {
+            @Override
+            protected ToriApiLoader getApiLoader() {
+                return apiLoader;
+            }
+        };
     }
 
     @Test

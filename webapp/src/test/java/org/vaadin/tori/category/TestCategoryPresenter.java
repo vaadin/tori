@@ -27,11 +27,13 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.vaadin.tori.TestUtil;
+import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.exception.DataSourceException;
 
-public class CategoryPresenterTest {
+public class TestCategoryPresenter {
 
     private CategoryPresenter presenter;
 
@@ -42,11 +44,17 @@ public class CategoryPresenterTest {
     public void setup() {
         // create mocks
         mockView = mock(CategoryView.class);
-        mockDataSource = mock(DataSource.class);
+
+        final ToriApiLoader apiLoader = TestUtil.mockApiLoader();
+        mockDataSource = apiLoader.getDataSource();
 
         // create the presenter to test
-        presenter = new CategoryPresenter(mockDataSource, null);
-        presenter.setView(mockView);
+        presenter = new CategoryPresenter(mockView) {
+            @Override
+            protected ToriApiLoader getApiLoader() {
+                return apiLoader;
+            }
+        };
     }
 
     @Test

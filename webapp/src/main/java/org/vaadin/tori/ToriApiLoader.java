@@ -16,6 +16,7 @@
 
 package org.vaadin.tori;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.ServiceLoader;
 
@@ -28,12 +29,16 @@ import org.vaadin.tori.data.spi.ServiceProvider;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.SignatureFormatter;
+import org.vaadin.tori.util.PageTitleUpdater;
 import org.vaadin.tori.util.UrlConverter;
 import org.vaadin.tori.util.UserBadgeProvider;
 
+import com.vaadin.server.VaadinSession;
+
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
-public class ToriApiLoader {
+@SuppressWarnings("serial")
+public class ToriApiLoader implements Serializable {
 
     private final ServiceProvider spi;
     private final DataSource ds;
@@ -44,6 +49,7 @@ public class ToriApiLoader {
     @CheckForNull
     private final UserBadgeProvider userBadgeProvider;
     private final UrlConverter urlConverter;
+    private final PageTitleUpdater pageTitleUpdater;
 
     public ToriApiLoader() {
         checkThatCommonIsLoaded();
@@ -52,45 +58,25 @@ public class ToriApiLoader {
         postFormatter = createPostFormatter();
         signatureFormatter = createSignatureFormatter();
         authorizationService = createAuthorizationService();
-        userBadgeProvider = createUserBadgeProvider();
-        urlConverter = createUrlConverter();
+        userBadgeProvider = createService(UserBadgeProvider.class);
+        urlConverter = createService(UrlConverter.class);
+        pageTitleUpdater = createService(PageTitleUpdater.class);
     }
 
-    private UrlConverter createUrlConverter() {
-        final ServiceLoader<UrlConverter> loader = ServiceLoader
-                .load(UrlConverter.class);
+    private <T> T createService(Class<T> clazz) {
+        T service = null;
+        final ServiceLoader<T> loader = ServiceLoader.load(clazz);
         if (loader.iterator().hasNext()) {
-            final UrlConverter urlConverter = loader.iterator().next();
-            getLogger().debug(
-                    String.format("Using %s implementation: %s",
-                            UrlConverter.class.getSimpleName(), urlConverter
-                                    .getClass().getName()));
-            return urlConverter;
+            service = loader.iterator().next();
+            getLogger()
+                    .debug(String.format("Using %s implementation: %s",
+                            clazz.getSimpleName(), service.getClass().getName()));
         } else {
             getLogger().debug(
                     String.format("No implementation for %s found",
-                            UrlConverter.class.getSimpleName()));
-            return null;
+                            PageTitleUpdater.class.getSimpleName()));
         }
-    }
-
-    @CheckForNull
-    private UserBadgeProvider createUserBadgeProvider() {
-        final ServiceLoader<UserBadgeProvider> loader = ServiceLoader
-                .load(UserBadgeProvider.class);
-        if (loader.iterator().hasNext()) {
-            final UserBadgeProvider badgeProvider = loader.iterator().next();
-            getLogger().debug(
-                    String.format("Using %s implementation: %s",
-                            UserBadgeProvider.class.getSimpleName(),
-                            badgeProvider.getClass().getName()));
-            return badgeProvider;
-        } else {
-            getLogger().debug(
-                    String.format("No implementation for %s found",
-                            UserBadgeProvider.class.getSimpleName()));
-            return null;
-        }
+        return service;
     }
 
     public final void setRequest(final Object request) {
@@ -139,7 +125,7 @@ public class ToriApiLoader {
         }
     }
 
-    public DataSource createDataSource() {
+    private DataSource createDataSource() {
         final DataSource ds = spi.createDataSource();
         getLogger().debug(
                 String.format("Using %s implementation: %s", DataSource.class
@@ -147,7 +133,7 @@ public class ToriApiLoader {
         return ds;
     }
 
-    public PostFormatter createPostFormatter() {
+    private PostFormatter createPostFormatter() {
         final PostFormatter postFormatter = spi.createPostFormatter();
         getLogger().debug(
                 String.format("Using %s implementation: %s",
@@ -156,7 +142,7 @@ public class ToriApiLoader {
         return postFormatter;
     }
 
-    public SignatureFormatter createSignatureFormatter() {
+    private SignatureFormatter createSignatureFormatter() {
         final SignatureFormatter signatureFormatter = spi
                 .createSignatureFormatter();
         getLogger().debug(
@@ -166,7 +152,7 @@ public class ToriApiLoader {
         return signatureFormatter;
     }
 
-    public AuthorizationService createAuthorizationService() {
+    private AuthorizationService createAuthorizationService() {
         final AuthorizationService authorizationService = spi
                 .createAuthorizationService();
         getLogger().debug(
@@ -180,7 +166,7 @@ public class ToriApiLoader {
         return Logger.getLogger(ToriApiLoader.class);
     }
 
-    public DataSource getDs() {
+    public DataSource getDataSource() {
         return ds;
     }
 
@@ -201,8 +187,22 @@ public class ToriApiLoader {
         return userBadgeProvider;
     }
 
-    public UrlConverter getUc() {
+    public UrlConverter getUrlConverter() {
         return urlConverter;
     }
 
+    public PageTitleUpdater getPageTitleUpdater() {
+        return pageTitleUpdater;
+    }
+
+    public static ToriApiLoader getCurrent() {
+        final ToriApiLoader apiLoader = VaadinSession.getCurrent()
+                .getAttribute(ToriApiLoader.class);
+        if (apiLoader != null) {
+            return apiLoader;
+        } else {
+            throw new IllegalStateException(ToriApiLoader.class.getName()
+                    + " was not found in the state. This is bad...");
+        }
+    }
 }

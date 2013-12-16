@@ -19,19 +19,16 @@ package org.vaadin.tori.edit;
 import java.util.Map;
 
 import org.vaadin.tori.Configuration;
-import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.Presenter;
-import org.vaadin.tori.service.AuthorizationService;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class EditPresenter extends Presenter<EditView> {
 
-    public EditPresenter(final DataSource dataSource,
-            final AuthorizationService authorizationService) {
-        super(dataSource, authorizationService);
+    public EditPresenter(EditView view) {
+        super(view);
     }
 
     @Override
@@ -41,12 +38,12 @@ public class EditPresenter extends Presenter<EditView> {
 
     @SuppressWarnings("deprecation")
     private void refreshView() {
-        getView().setReplacements(dataSource.getPostReplacements());
-        getView().setConvertMessageBoardsUrls(
-                dataSource.getReplaceMessageBoardsLinks());
-        getView().setGoogleAnalyticsTrackerId(
-                dataSource.getGoogleAnalyticsTrackerId());
-        getView().setPathRoot(dataSource.getPathRoot());
+        view.setReplacements(dataSource.getPostReplacements());
+        view.setConvertMessageBoardsUrls(dataSource
+                .getReplaceMessageBoardsLinks());
+        view.setGoogleAnalyticsTrackerId(dataSource
+                .getGoogleAnalyticsTrackerId());
+        view.setPathRoot(dataSource.getPathRoot());
     }
 
     public final void savePreferences(final Map<String, String> replacements,
@@ -60,11 +57,9 @@ public class EditPresenter extends Presenter<EditView> {
             config.setGoogleAnalyticsTrackerId(googleAnalyticsTrackerId);
             config.setPathRoot(pathRoot);
             dataSource.save(config);
-            getView().showNotification("Preferences saved");
+            view.showNotification("Preferences saved");
         } catch (final DataSourceException e) {
-            getView()
-                    .showNotification(
-                            "There was an error while saving preferences. Please see the log.");
+            view.showNotification("There was an error while saving preferences. Please see the log.");
         }
         refreshView();
     }

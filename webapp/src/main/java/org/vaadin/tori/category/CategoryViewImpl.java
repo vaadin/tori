@@ -19,7 +19,6 @@ package org.vaadin.tori.category;
 import java.util.List;
 
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.HeadingLabel;
 import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
 import org.vaadin.tori.component.PanicComponent;
@@ -127,10 +126,7 @@ public class CategoryViewImpl extends
 
     @Override
     protected CategoryPresenter createPresenter() {
-        final ToriUI ui = ToriUI.getCurrent();
-        final CategoryPresenter categoryPresenter = new CategoryPresenter(
-                ui.getDataSource(), ui.getAuthorizationService());
-        return categoryPresenter;
+        return new CategoryPresenter(this);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package org.vaadin.tori.vaadin;
+package org.vaadin.tori.util.vaadin;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

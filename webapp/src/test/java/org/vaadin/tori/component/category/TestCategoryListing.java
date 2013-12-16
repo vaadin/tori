@@ -30,13 +30,15 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.vaadin.tori.TestUtil;
+import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.component.category.CategoryListing.Mode;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.AuthorizationService;
 
-public class CategoryListingTest {
+public class TestCategoryListing {
 
     private CategoryListingPresenter presenter;
 
@@ -48,13 +50,17 @@ public class CategoryListingTest {
     public void setup() {
         // create mocks
         mockView = mock(CategoryListingView.class);
-        mockDataSource = mock(DataSource.class);
-        mockAuthorizationService = mock(AuthorizationService.class);
 
+        final ToriApiLoader apiLoader = TestUtil.mockApiLoader();
+        mockDataSource = apiLoader.getDataSource();
+        mockAuthorizationService = apiLoader.getAuthorizationService();
         // create the presenter to test
-        presenter = new CategoryListingPresenter(mockDataSource,
-                mockAuthorizationService);
-        presenter.setView(mockView);
+        presenter = new CategoryListingPresenter(mockView) {
+            @Override
+            protected ToriApiLoader getApiLoader() {
+                return apiLoader;
+            }
+        };
     }
 
     @Test

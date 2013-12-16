@@ -26,6 +26,7 @@ import org.vaadin.tori.indexing.IndexableView;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.mvp.NullViewImpl;
 import org.vaadin.tori.thread.ThreadViewImpl;
+import org.vaadin.tori.util.PageTitleUpdater;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
@@ -52,6 +53,15 @@ public class ToriNavigator extends Navigator {
 
             @Override
             public void afterViewChange(ViewChangeEvent event) {
+                final View newView = event.getNewView();
+                if (newView instanceof AbstractView<?, ?>) {
+                    String title = ((AbstractView) newView).getTitle();
+                    PageTitleUpdater pageTitleUpdater = ToriApiLoader.getCurrent()
+                            .getPageTitleUpdater();
+                    if (pageTitleUpdater != null) {
+                        pageTitleUpdater.updatePageTitle(title);
+                    }
+                }
             }
         });
 

@@ -20,13 +20,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.vaadin.tori.category.CategoryView.ThreadProvider;
-import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.exception.NoSuchCategoryException;
 import org.vaadin.tori.mvp.Presenter;
-import org.vaadin.tori.service.AuthorizationService;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -38,6 +36,10 @@ public class CategoryPresenter extends Presenter<CategoryView> {
      */
     @CheckForNull
     private Category currentCategory;
+
+    public CategoryPresenter(CategoryView view) {
+        super(view);
+    }
 
     /* package protected due to testing */
     final ThreadProvider recentPostsProvider = new ThreadProvider() {
@@ -95,13 +97,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         }
     };
 
-    public CategoryPresenter(final DataSource dataSource,
-            final AuthorizationService authorizationService) {
-        super(dataSource, authorizationService);
-    }
-
     public void setCurrentCategoryById(final String categoryIdString) {
-        final CategoryView view = getView();
         try {
             if (categoryIdString.equals(SpecialCategory.RECENT_POSTS.getId())) {
                 currentCategory = SpecialCategory.RECENT_POSTS.getInstance();
@@ -124,8 +120,8 @@ public class CategoryPresenter extends Presenter<CategoryView> {
                 } catch (final NumberFormatException e) {
                     log.error("Invalid category id format: " + categoryIdString);
                 } catch (final NoSuchCategoryException e) {
-                    getView().displayCategoryNotFoundError(
-                            String.valueOf(e.getCategoryId()));
+                    view.displayCategoryNotFoundError(String.valueOf(e
+                            .getCategoryId()));
                 }
 
                 if (requestedCategory != null) {
@@ -133,7 +129,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
                     view.displaySubCategories(
                             dataSource.getSubCategories(currentCategory), false);
                 } else {
-                    getView().displayCategoryNotFoundError(categoryIdString);
+                    view.displayCategoryNotFoundError(categoryIdString);
                 }
                 if (countThreads() > 0) {
                     view.displayThreads(defaultThreadsProvider);
@@ -144,7 +140,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             view.setUserMayStartANewThread(userMayStartANewThread());
         } catch (final DataSourceException e) {
             e.printStackTrace();
-            getView().panic();
+            view.panic();
         }
     }
 
@@ -194,7 +190,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             throws DataSourceException {
         try {
             dataSource.follow(thread);
-            getView().confirmFollowing(thread);
+            view.confirmFollowing(thread);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -207,7 +203,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             throws DataSourceException {
         try {
             dataSource.unFollow(thread);
-            getView().confirmUnfollowing(thread);
+            view.confirmUnfollowing(thread);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -247,7 +243,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             final Category destinationCategory) throws DataSourceException {
         try {
             dataSource.move(thread, destinationCategory);
-            getView().confirmThreadMoved();
+            view.confirmThreadMoved();
             resetView();
         } catch (final DataSourceException e) {
             log.error(e);
@@ -261,7 +257,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             throws DataSourceException {
         try {
             final DiscussionThread updatedThread = dataSource.sticky(thread);
-            getView().confirmThreadStickied(updatedThread);
+            view.confirmThreadStickied(updatedThread);
             resetView();
         } catch (final DataSourceException e) {
             log.error(e);
@@ -275,7 +271,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             throws DataSourceException {
         try {
             final DiscussionThread updatedThread = dataSource.unsticky(thread);
-            getView().confirmThreadUnstickied(updatedThread);
+            view.confirmThreadUnstickied(updatedThread);
             resetView();
         } catch (final DataSourceException e) {
             log.error(e);
@@ -296,7 +292,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     public void lock(final DiscussionThread thread) throws DataSourceException {
         try {
             final DiscussionThread updatedThread = dataSource.lock(thread);
-            getView().confirmThreadLocked(updatedThread);
+            view.confirmThreadLocked(updatedThread);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -309,7 +305,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             throws DataSourceException {
         try {
             final DiscussionThread updatedThread = dataSource.unlock(thread);
-            getView().confirmThreadUnlocked(updatedThread);
+            view.confirmThreadUnlocked(updatedThread);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -334,7 +330,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
             throws DataSourceException {
         try {
             dataSource.delete(thread);
-            getView().confirmThreadDeleted();
+            view.confirmThreadDeleted();
             resetView();
         } catch (final DataSourceException e) {
             log.error(e);
@@ -357,7 +353,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     }
 
     private void resetView() throws DataSourceException {
-        getView().displayThreads(defaultThreadsProvider);
+        view.displayThreads(defaultThreadsProvider);
     }
 
     public boolean userHasRead(final DiscussionThread thread) {

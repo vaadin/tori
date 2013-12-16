@@ -226,7 +226,7 @@ public class ToriIndexableApplication {
     }
 
     public DataSource getDataSource() {
-        return apiLoader.getDs();
+        return apiLoader.getDataSource();
     }
 
     public PostFormatter getPostFormatter() {

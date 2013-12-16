@@ -21,11 +21,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.vaadin.tori.category.SpecialCategory;
-import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.Presenter;
-import org.vaadin.tori.service.AuthorizationService;
 
 class CategoryListingPresenter extends Presenter<CategoryListingView> {
 
@@ -36,16 +34,15 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
     private List<Category> categories;
     private Category currentRoot;
 
-    public CategoryListingPresenter(final DataSource dataSource,
-            final AuthorizationService authorizationService) {
-        super(dataSource, authorizationService);
+    public CategoryListingPresenter(final CategoryListingView view) {
+        super(view);
+
     }
 
     @Override
     public void init() {
-        getView().setRearrangeVisible(
-                authorizationService.mayRearrangeCategories());
-        getView().setCreateVisible(authorizationService.mayEditCategories());
+        view.setRearrangeVisible(authorizationService.mayRearrangeCategories());
+        view.setCreateVisible(authorizationService.mayEditCategories());
     }
 
     long getThreadCount(final Category category) throws DataSourceException {
@@ -72,7 +69,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
 
     void applyRearrangement() throws DataSourceException {
         try {
-            final Set<Category> modifiedCategories = getView()
+            final Set<Category> modifiedCategories = view
                     .getModifiedCategories();
             if (log.isDebugEnabled()) {
                 log.debug("Saving " + modifiedCategories.size()
@@ -109,9 +106,9 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
     }
 
     void cancelRearrangement() {
-        if (!getView().getModifiedCategories().isEmpty()) {
+        if (!view.getModifiedCategories().isEmpty()) {
             // restore the original categories
-            getView().displayCategories(categories);
+            view.displayCategories(categories);
         }
     }
 
@@ -119,10 +116,9 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
             final Category rootCategory) {
         this.categories = categories;
         currentRoot = rootCategory;
-        getView().displayCategories(categories);
-        getView().setCreateVisible(
-                authorizationService.mayEditCategories()
-                        && !SpecialCategory.isSpecialCategory(rootCategory));
+        view.displayCategories(categories);
+        view.setCreateVisible(authorizationService.mayEditCategories()
+                && !SpecialCategory.isSpecialCategory(rootCategory));
     }
 
     List<Category> getSubCategories(final Category category)
@@ -151,7 +147,7 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
             newCategory.setDisplayOrder(getMaxDisplayOrder() + 1);
 
             dataSource.save(newCategory);
-            getView().hideCreateCategoryForm();
+            view.hideCreateCategoryForm();
 
             // refresh the categories
             reloadCategoriesFromDataSource();

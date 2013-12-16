@@ -20,8 +20,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 
-import org.vaadin.tori.ToriUI;
-import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
@@ -30,7 +28,6 @@ import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.mvp.Presenter;
-import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.post.PostReport;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -46,9 +43,8 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     private Category categoryWhileCreatingNewThread;
     private final LinkedHashMap<String, byte[]> attachments = new LinkedHashMap<String, byte[]>();
 
-    public ThreadPresenter(final @NonNull DataSource dataSource,
-            final @NonNull AuthorizationService authorizationService) {
-        super(dataSource, authorizationService);
+    public ThreadPresenter(ThreadView view) {
+        super(view);
     }
 
     public void setCurrentThreadById(final @NonNull String threadIdString,
@@ -61,7 +57,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             } catch (final NumberFormatException e) {
                 log.error("Invalid thread id format: " + threadIdString);
             } catch (final NoSuchThreadException e) {
-                getView().displayThreadNotFoundError(threadIdString);
+                view.displayThreadNotFoundError(threadIdString);
                 return;
             }
 
@@ -78,7 +74,6 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                     }
                 }
 
-                final ThreadView view = getView();
                 view.displayPosts(dataSource.getPosts(requestedThread),
                         selectedPostId);
             } else {
@@ -115,7 +110,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             throws DataSourceException {
         try {
             dataSource.reportPost(report);
-            getView().confirmPostReported();
+            view.confirmPostReported();
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -140,7 +135,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     public void ban(final @NonNull User user) throws DataSourceException {
         try {
             dataSource.ban(user);
-            getView().confirmBanned(user);
+            view.confirmBanned(user);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -151,7 +146,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     public void unban(@NonNull final User user) throws DataSourceException {
         try {
             dataSource.unban(user);
-            getView().confirmUnbanned(user);
+            view.confirmUnbanned(user);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -169,7 +164,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         }
         try {
             dataSource.follow(currentThread);
-            getView().confirmFollowingThread();
+            view.confirmFollowingThread();
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -184,7 +179,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
         }
         try {
             dataSource.unFollow(currentThread);
-            getView().confirmUnFollowingThread();
+            view.confirmUnFollowingThread();
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -230,7 +225,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     public void delete(final @NonNull Post post) throws DataSourceException {
         try {
             dataSource.delete(post);
-            getView().confirmPostDeleted();
+            view.confirmPostDeleted();
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -259,7 +254,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                 dataSource.removeUserVote(post);
             }
             final long newScore = dataSource.getScore(post);
-            getView().refreshScores(post, newScore);
+            view.refreshScores(post, newScore);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -280,7 +275,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                 dataSource.removeUserVote(post);
             }
             final long newScore = dataSource.getScore(post);
-            getView().refreshScores(post, newScore);
+            view.refreshScores(post, newScore);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -336,17 +331,17 @@ public class ThreadPresenter extends Presenter<ThreadView> {
 
     public final void resetInput() {
         attachments.clear();
-        getView().updateAttachmentList(attachments);
+        view.updateAttachmentList(attachments);
     }
 
     public final void addAttachment(final String fileName, final byte[] data) {
         attachments.put(fileName, data);
-        getView().updateAttachmentList(attachments);
+        view.updateAttachmentList(attachments);
     }
 
     public final void removeAttachment(final String fileName) {
         attachments.remove(fileName);
-        getView().updateAttachmentList(attachments);
+        view.updateAttachmentList(attachments);
     }
 
     public void sendReply(final @NonNull String rawBody)
@@ -365,14 +360,14 @@ public class ThreadPresenter extends Presenter<ThreadView> {
 
                 resetInput();
 
-                getView().confirmReplyPostedAndShowIt(updatedPost);
+                view.confirmReplyPostedAndShowIt(updatedPost);
             } catch (final DataSourceException e) {
                 log.error(e);
                 e.printStackTrace();
                 throw e;
             }
         } else {
-            getView().displayUserCanNotReply();
+            view.displayUserCanNotReply();
         }
     }
 
@@ -391,7 +386,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             final DiscussionThread thread = currentThread;
 
             if (thread != null) {
-                getView().displayPosts(dataSource.getPosts(thread), null);
+                view.displayPosts(dataSource.getPosts(thread), null);
             } else {
                 throw new IllegalStateException(
                         "This method may not be called while currentThread is null");
@@ -426,7 +421,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                     if (category != null) {
                         categoryWhileCreatingNewThread = category;
 
-                        getView().displayNewThreadFormFor(category);
+                        view.displayNewThreadFormFor(category);
                         return;
                     }
                 } catch (final NumberFormatException IGNORE) {
@@ -440,7 +435,7 @@ public class ThreadPresenter extends Presenter<ThreadView> {
          * if some error occurred that really shouldn't have, just redirect back
          * to dashboard.
          */
-        getView().redirectToDashboard();
+        view.redirectToDashboard();
 
     }
 
@@ -478,9 +473,8 @@ public class ThreadPresenter extends Presenter<ThreadView> {
     }
 
     public void quotePost(final Post post) {
-        final String quote = ToriUI.getCurrent().getPostFormatter()
-                .getQuote(post);
-        getView().appendToReply(quote + "\n\n ");
+        final String quote = postFormatter.getQuote(post);
+        view.appendToReply(quote + "\n\n ");
     }
 
     public void saveEdited(final Post post, final String newBody)
@@ -489,9 +483,9 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             // FIXME: umm, maybe we should clone this first?
             post.setBodyRaw(newBody);
             dataSource.save(post);
-            getView().refresh(post);
+            view.refresh(post);
         } else {
-            getView().displayUserCanNotEdit();
+            view.displayUserCanNotEdit();
         }
     }
 

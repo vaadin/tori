@@ -22,7 +22,7 @@ package org.vaadin.tori.mvp;
 public class NullPresenter extends Presenter<NullView> {
 
     public NullPresenter() {
-        super(null, null);
+        super(null);
     }
 
 }

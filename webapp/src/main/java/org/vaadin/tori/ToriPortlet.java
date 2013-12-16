@@ -36,8 +36,6 @@ import com.vaadin.server.Constants;
 import com.vaadin.server.DeploymentConfiguration;
 import com.vaadin.server.RequestHandler;
 import com.vaadin.server.ServiceException;
-import com.vaadin.server.SessionInitEvent;
-import com.vaadin.server.SessionInitListener;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.UIProvider;
 import com.vaadin.server.VaadinPortlet;
@@ -47,7 +45,6 @@ import com.vaadin.server.VaadinPortletService;
 public class ToriPortlet extends VaadinPortlet {
     private static final long serialVersionUID = 1394935675720995291L;
 
-    private static final String DEFAULT_THEME = "tori-liferay";
     private static final String PORTAL_UTIL_CLASS = "com.liferay.portal.util.PortalUtil";
 
     private class ToriPortletService extends VaadinPortletService {
@@ -174,17 +171,6 @@ public class ToriPortlet extends VaadinPortlet {
 
     @Override
     protected void portletInitialized() {
-        getService().addSessionInitListener(new SessionInitListener() {
-
-            @Override
-            public void sessionInit(final SessionInitEvent event)
-                    throws ServiceException {
-                String theme = getInitParameter("theme");
-                theme = (theme != null) ? theme : DEFAULT_THEME;
-                event.getSession().addUIProvider(new ToriUiProvider(theme));
-            }
-        });
-
         getService()
                 .setSystemMessagesProvider(ToriSystemMessagesProvider.get());
     }
