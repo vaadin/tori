@@ -65,12 +65,12 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         @NonNull
         public List<DiscussionThread> getThreadsBetween(final int from,
                 final int to) throws DataSourceException {
-            return dataSource.getMyPosts(from, to);
+            return dataSource.getMyPostThreads(from, to);
         }
 
         @Override
         public int getThreadAmount() throws DataSourceException {
-            return dataSource.getMyPostsAmount();
+            return dataSource.getMyPostThreadsCount();
         }
     };
 

@@ -268,7 +268,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     };
 
     @Override
-    public List<DiscussionThread> getMyPosts(final int from, final int to)
+    public List<DiscussionThread> getMyPostThreads(final int from, final int to)
             throws DataSourceException {
         try {
             final List<MBThread> liferayThreads = getLiferayMyPosts(from, to);
@@ -292,12 +292,12 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public int getMyPostsAmount() throws DataSourceException {
+    public int getMyPostThreadsCount() throws DataSourceException {
         try {
             final int groupThreadsCount = MBThreadServiceUtil
                     .getGroupThreadsCount(scopeGroupId, currentUserId,
                             WorkflowConstants.STATUS_ANY);
-            log.debug("LiferayDataSource.getMyPostsAmount(): "
+            log.debug("LiferayDataSource.getMyPostThreadsCount(): "
                     + groupThreadsCount);
             return groupThreadsCount;
         } catch (final SystemException e) {

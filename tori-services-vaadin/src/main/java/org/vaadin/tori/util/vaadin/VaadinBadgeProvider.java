@@ -96,7 +96,12 @@ public class VaadinBadgeProvider implements UserBadgeProvider {
     }
 
     private String getBadgeUserId(final User user) {
-        return md5(liferayUser(user).getUuid());
+        String result = null;
+        com.liferay.portal.model.User liferayUser = liferayUser(user);
+        if (liferayUser != null) {
+            result = md5(liferayUser.getUuid());
+        }
+        return result;
     }
 
     /** cleans up the code a bit */

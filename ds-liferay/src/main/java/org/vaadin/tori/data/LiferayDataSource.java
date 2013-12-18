@@ -24,9 +24,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,6 +52,7 @@ import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.post.PostReport;
 
 import com.liferay.documentlibrary.service.DLServiceUtil;
+import com.liferay.portal.NoSuchUserException;
 import com.liferay.portal.kernel.exception.NestableException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -269,20 +272,30 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     };
 
     @Override
-    public List<DiscussionThread> getMyPosts(final int from, final int to)
+    public List<DiscussionThread> getMyPostThreads(final int from, final int to)
             throws DataSourceException {
         try {
-            final List<MBThread> liferayThreads = getLiferayMyPosts(from, to);
-
             // collection for the final result
-            final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
-                    liferayThreads.size());
-            for (final MBThread liferayThread : liferayThreads) {
-                final DiscussionThread thread = wrapLiferayThread(
-                        liferayThread, null);
-                result.add(thread);
+            final List<DiscussionThread> threads = new ArrayList<DiscussionThread>();
+            final Set<Long> processedThreads = new HashSet<Long>();
+            for (final MBMessage liferayMessage : getLiferayMyPosts(QUERY_ALL,
+                    QUERY_ALL)) {
+                if (to == QUERY_ALL || threads.size() - 1 < to) {
+                    if (processedThreads.add(liferayMessage.getThreadId())) {
+                        try {
+                            MBThread liferayThread = liferayMessage.getThread();
+                            final DiscussionThread thread = wrapLiferayThread(
+                                    liferayThread, null);
+                            threads.add(thread);
+                        } catch (NoSuchThreadException e) {
+                            // Ignore and continue
+                        }
+                    }
+                } else {
+                    break;
+                }
             }
-            return result;
+            return threads.subList(Math.max(0, from), threads.size());
         } catch (final SystemException e) {
             log.error("Couldn't get my posts.", e);
             throw new DataSourceException(e);
@@ -293,18 +306,18 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public int getMyPostsAmount() throws DataSourceException {
-        try {
-            final int groupThreadsCount = MBThreadServiceUtil
-                    .getGroupThreadsCount(scopeGroupId, currentUserId,
-                            WorkflowConstants.STATUS_ANY);
-            log.debug("LiferayDataSource.getMyPostsAmount(): "
-                    + groupThreadsCount);
-            return groupThreadsCount;
-        } catch (final SystemException e) {
-            log.error("Couldn't get my posts' count.", e);
-            throw new DataSourceException(e);
-        }
+    public int getMyPostThreadsCount() throws DataSourceException {
+        // Not an optimal solution (performance-wise), but currently
+        // MBThreadServiceUtil.getGroupThreadsCount doesn't _always_ give the
+        // same count for my threads as getMyPostThreads does.
+        final int groupThreadsCount = getMyPostThreads(QUERY_ALL, QUERY_ALL)
+                .size();
+        log.debug("LiferayDataSource.getMyPostThreadsCount(): "
+                + groupThreadsCount);
+        return groupThreadsCount;
+
+        // MBThreadServiceUtil.getGroupThreadsCount(scopeGroupId, currentUserId,
+        // WorkflowConstants.STATUS_ANY);
     }
 
     private DiscussionThread wrapLiferayThread(final MBThread liferayThread,
@@ -333,20 +346,27 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     private User getUser(final long userId) throws PortalException,
             SystemException {
+        User result = null;
         if (userId == 0) {
-            return EntityFactoryUtil.createAnonymousUser(imagePath);
+            result = EntityFactoryUtil.createAnonymousUser(imagePath);
         } else {
-            final com.liferay.portal.model.User liferayUser = UserLocalServiceUtil
-                    .getUser(userId);
-            if (liferayUser.isDefaultUser()) {
-                return EntityFactoryUtil.createAnonymousUser(imagePath);
-            } else {
-                final boolean isBanned = MBBanLocalServiceUtil.hasBan(
-                        scopeGroupId, liferayUser.getUserId());
-                return EntityFactoryUtil.createUser(liferayUser, imagePath,
-                        liferayUser.isFemale(), isBanned);
+            try {
+                final com.liferay.portal.model.User liferayUser = UserLocalServiceUtil
+                        .getUser(userId);
+                if (liferayUser.isDefaultUser()) {
+                    result = EntityFactoryUtil.createAnonymousUser(imagePath);
+                } else {
+                    final boolean isBanned = MBBanLocalServiceUtil.hasBan(
+                            scopeGroupId, liferayUser.getUserId());
+                    result = EntityFactoryUtil.createUser(liferayUser,
+                            imagePath, liferayUser.isFemale(), isBanned);
+                }
+            } catch (NoSuchUserException e) {
+                result = EntityFactoryUtil.createAnonymousUser(imagePath);
             }
         }
+
+        return result;
     }
 
     private List<MBThread> getLiferayThreadsForCategory(final long categoryId,
@@ -369,10 +389,10 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                 INCLUDE_SUBSCRIBED, start, end + 1);
     }
 
-    private List<MBThread> getLiferayMyPosts(final int start, final int end)
+    private List<MBMessage> getLiferayMyPosts(final int start, final int end)
             throws SystemException, PortalException {
-        return MBThreadServiceUtil.getGroupThreads(scopeGroupId, currentUserId,
-                WorkflowConstants.STATUS_ANY, start, end + 1);
+        return MBMessageLocalServiceUtil.getGroupMessages(scopeGroupId,
+                currentUserId, WorkflowConstants.STATUS_ANY, start, end);
     }
 
     @Override

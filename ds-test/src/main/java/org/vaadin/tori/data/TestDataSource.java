@@ -877,18 +877,18 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    public List<DiscussionThread> getMyPosts(final int from, final int to)
+    public List<DiscussionThread> getMyPostThreads(final int from, final int to)
             throws DataSourceException {
-        System.out.println("TestDataSource.getMyPosts(): "
-                + "My posts not implemented in " + getClass().getSimpleName()
+        System.out.println("TestDataSource.getMyPostThreads(): "
+                + "getMyPostThreads not implemented in " + getClass().getSimpleName()
                 + ".");
         return Collections.emptyList();
     }
 
     @Override
-    public int getMyPostsAmount() throws DataSourceException {
-        System.out.println("TestDataSource.getMyPostsAmount(): "
-                + "My posts not implemented in " + getClass().getSimpleName()
+    public int getMyPostThreadsCount() throws DataSourceException {
+        System.out.println("TestDataSource.getMyPostThreadsCount(): "
+                + "getMyPostThreads not implemented in " + getClass().getSimpleName()
                 + ".");
         return 0;
     }

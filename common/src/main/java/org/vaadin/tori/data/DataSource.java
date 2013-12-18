@@ -346,10 +346,10 @@ public interface DataSource {
     int getRecentPostsAmount() throws DataSourceException;
 
     @NonNull
-    List<DiscussionThread> getMyPosts(int from, int to)
+    List<DiscussionThread> getMyPostThreads(int from, int to)
             throws DataSourceException;
 
-    int getMyPostsAmount() throws DataSourceException;
+    int getMyPostThreadsCount() throws DataSourceException;
 
     int getAttachmentMaxFileSize();
 
