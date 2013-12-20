@@ -1042,9 +1042,6 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
         // trim because liferay seems to bug out otherwise
         String subject = post.getThread().getTopic().trim();
-        if (parentMessageId != MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID) {
-            subject = "RE: " + subject;
-        }
         final String body = post.getBodyRaw().trim();
         final List<ObjectValuePair<String, InputStream>> attachments = new ArrayList<ObjectValuePair<String, InputStream>>();
 
@@ -1067,10 +1064,20 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         final boolean allowPingbacks = false;
         final String format = "bbcode";
 
-        return MBMessageServiceUtil.addMessage(groupId, categoryId, subject,
-                body, format, attachments, anonymous, priority, allowPingbacks,
-                mbMessageServiceContext);
+        MBMessage message = null;
 
+        if (parentMessageId == MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID) {
+            // Post new thread
+            message = MBMessageServiceUtil.addMessage(groupId, categoryId,
+                    subject, body, format, attachments, anonymous, priority,
+                    allowPingbacks, mbMessageServiceContext);
+        } else {
+            // Post reply
+            message = MBMessageServiceUtil.addMessage(parentMessageId, "RE: "
+                    + subject, body, format, attachments, anonymous, priority,
+                    allowPingbacks, mbMessageServiceContext);
+        }
+        return message;
     }
 
     @Override
