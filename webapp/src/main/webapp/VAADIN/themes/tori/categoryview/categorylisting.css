@@ -97,6 +97,11 @@
 	border: none;
 }
 
+/* Circumventing a TreeTable header width calculation bug */
+.categoryTree .v-table-header {
+	position: absolute;
+}
+
 .categoryTree .v-table-resizer {
 	display: none;
 }
