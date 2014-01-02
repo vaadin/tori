@@ -27,6 +27,7 @@ import org.vaadin.tori.category.CategoryView;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.thread.ThreadView;
 
 import com.vaadin.event.ItemClickEvent;
@@ -196,12 +197,16 @@ public class Breadcrumbs extends CustomComponent {
             final PopupButton popupButton) {
         final Tree tree = new Tree();
         tree.setImmediate(true);
+        AuthorizationService authorizationService = ToriApiLoader.getCurrent()
+                .getAuthorizationService();
 
         try {
             final List<Category> rootCategories = ToriApiLoader.getCurrent()
                     .getDataSource().getRootCategories();
             for (final Category category : rootCategories) {
-                addCategory(tree, category, null);
+                if (authorizationService.mayView(category)) {
+                    addCategory(tree, category, null);
+                }
             }
         } catch (final DataSourceException e) {
             getLogger().error(e);
