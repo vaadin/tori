@@ -35,7 +35,6 @@ import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
 import org.vaadin.tori.util.UrlConverter;
 
-import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinPortletRequest;
@@ -47,7 +46,6 @@ import com.vaadin.ui.VerticalLayout;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 
-@Theme("tori")
 @SuppressWarnings("serial")
 @Widgetset("org.vaadin.tori.widgetset.ToriWidgetset")
 public class ToriUI extends UI {
