@@ -23,19 +23,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 import com.vaadin.server.DeploymentConfiguration;
 import com.vaadin.server.RequestHandler;
 import com.vaadin.server.ServiceException;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinServletService;
 
+@SuppressWarnings("serial")
 public class ToriServlet extends VaadinServlet {
-    private static final long serialVersionUID = -8123218871730402047L;
 
     public class ToriServletService extends VaadinServletService {
-        private static final long serialVersionUID = -3390522304961795849L;
 
         public ToriServletService(final ToriServlet servlet,
                 final DeploymentConfiguration deploymentConfiguration)
@@ -50,6 +48,11 @@ public class ToriServlet extends VaadinServlet {
                     .createRequestHandlers();
             requestHandlers.add(new UnsupportedDeviceHandler());
             return requestHandlers;
+        }
+
+        @Override
+        public String getConfiguredTheme(VaadinRequest request) {
+            return getInitParameter("theme");
         }
     }
 
@@ -76,7 +79,4 @@ public class ToriServlet extends VaadinServlet {
                 .setSystemMessagesProvider(ToriSystemMessagesProvider.get());
     }
 
-    private static Logger getLogger() {
-        return Logger.getLogger(ToriServlet.class);
-    }
 }

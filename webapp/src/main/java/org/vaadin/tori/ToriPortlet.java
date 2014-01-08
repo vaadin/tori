@@ -32,23 +32,22 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.vaadin.tori.indexing.ToriIndexableApplication;
 
-import com.vaadin.server.Constants;
 import com.vaadin.server.DeploymentConfiguration;
 import com.vaadin.server.RequestHandler;
 import com.vaadin.server.ServiceException;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.UIProvider;
 import com.vaadin.server.VaadinPortlet;
-import com.vaadin.server.VaadinPortletRequest;
 import com.vaadin.server.VaadinPortletService;
+import com.vaadin.server.VaadinRequest;
 
+@SuppressWarnings("serial")
 public class ToriPortlet extends VaadinPortlet {
-    private static final long serialVersionUID = 1394935675720995291L;
 
     private static final String PORTAL_UTIL_CLASS = "com.liferay.portal.util.PortalUtil";
+    private static final String DEFAULT_THEME_NAME = "tori-liferay";
 
     private class ToriPortletService extends VaadinPortletService {
-        private static final long serialVersionUID = -2117466377821216962L;
 
         public ToriPortletService(final VaadinPortlet portlet,
                 final DeploymentConfiguration config) throws ServiceException {
@@ -59,6 +58,17 @@ public class ToriPortlet extends VaadinPortlet {
         public boolean preserveUIOnRefresh(final UIProvider provider,
                 final UICreateEvent event) {
             return false;
+        }
+
+        @Override
+        public String getConfiguredTheme(VaadinRequest request) {
+            String theme = getInitParameter("theme");
+            return theme != null ? theme : DEFAULT_THEME_NAME;
+        }
+
+        @Override
+        public String getStaticFileLocation(VaadinRequest request) {
+            return request.getContextPath();
         }
 
         @Override
@@ -131,42 +141,6 @@ public class ToriPortlet extends VaadinPortlet {
             e.printStackTrace();
         }
         return null;
-    }
-
-    @Override
-    @SuppressWarnings("serial")
-    protected VaadinPortletRequest createVaadinRequest(
-            final PortletRequest request) {
-
-        /*
-         * This method seems to be responsible for redirecting widgetset and
-         * theme fetching from the deployed servlet instead of the portlet
-         * environment.
-         * 
-         * This allows us to package the widgetset and theme inside the war,
-         * without requiring the end-user to modify the portal environment at
-         * all.
-         */
-
-        VaadinPortletRequest wrapped = super.createVaadinRequest(request);
-
-        final String portalInfo = request.getPortalContext().getPortalInfo()
-                .toLowerCase();
-        if (portalInfo.contains("liferay")) {
-            wrapped = new VaadinLiferayRequest(request, wrapped.getService()) {
-                @Override
-                public String getPortalProperty(final String name) {
-                    // catch the query of where vaadin resources are located at.
-                    if (Constants.PORTAL_PARAMETER_VAADIN_RESOURCE_PATH
-                            .equals(name)) {
-                        return request.getContextPath();
-                    } else {
-                        return super.getPortalProperty(name);
-                    }
-                }
-            };
-        }
-        return wrapped;
     }
 
     @Override
