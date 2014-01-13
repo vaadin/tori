@@ -71,13 +71,14 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     @Override
     public void initView() {
         layout.setSpacing(true);
+        setStyleName("editview");
 
-        analyticsTrackerIdField = new TextField("Google Analytics Tracker id");
+        layout.addComponent(getSubTitle("Google Analytics Tracker id"));
+        analyticsTrackerIdField = new TextField();
         layout.addComponent(analyticsTrackerIdField);
 
-        layout.addComponent(new Label(
-                "Define post body regex-patterns/replacements to be "
-                        + "applied whenever posts are being displayed/previewed."));
+        layout.addComponent(getSubTitle("Define post body regex-patterns/replacements to be "
+                + "applied whenever posts are being displayed/previewed."));
 
         replacementsTable = new Table();
         replacementsTable.setWidth("100%");
@@ -141,16 +142,14 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
         buttonsLayout.addComponent(removeButton);
         buttonsLayout.addComponent(newButton);
         layout.addComponent(buttonsLayout);
-
-        layout.addComponent(new Label(
-                "Check the box beneath to let Tori scan post content render-time for links "
-                        + "intended for Liferay message boards portlet and convert them to tori-format for display."));
+        layout.addComponent(getSubTitle("Check the box beneath to let Tori scan post content render-time for links "
+                + "intended for Liferay message boards portlet and convert them to tori-format for display."));
         convertMessageBoardsUrls = new CheckBox(
                 "Replace message boards link data with tori format");
         layout.addComponent(convertMessageBoardsUrls);
 
-        pathRoot = new TextField(
-                "What is the root path for Tori? (e.g. http://example.com/community/tori/ would mean \"/community/tori\"");
+        layout.addComponent(getSubTitle("What is the root path for Tori? (e.g. http://example.com/community/tori/ would mean \"/community/tori\""));
+        pathRoot = new TextField();
         layout.addComponent(pathRoot);
 
         saveButton = new Button("Save preferences", new Button.ClickListener() {
@@ -188,6 +187,12 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
         });
         layout.addComponent(saveButton);
         layout.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
+    }
+
+    private Component getSubTitle(String string) {
+        Label titleLabel = new Label(string);
+        titleLabel.addStyleName("subtitle");
+        return titleLabel;
     }
 
     @Override
@@ -237,6 +242,6 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
 
     @Override
     public String getTitle() {
-        return "Configuration View";
+        return "Preferences View";
     }
 }

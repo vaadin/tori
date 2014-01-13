@@ -29,16 +29,15 @@ import org.vaadin.tori.component.category.RearrangeControls.RearrangeListener;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.AbstractView;
-import org.vaadin.tori.util.StyleConstants;
 
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * UI component for displaying a vertical hierarchical list of categories.
@@ -64,7 +63,7 @@ public class CategoryListing extends
 
     private final Mode mode;
     private CategoryTreeTable categoryTree;
-    private CssLayout layout;
+    private VerticalLayout layout;
     private Component adminControls;
     private PopupButton createCategoryButton;
     private Button rearrangeCategoriesButton;
@@ -81,7 +80,7 @@ public class CategoryListing extends
 
     @Override
     protected Component createCompositionRoot() {
-        layout = new CssLayout();
+        layout = new VerticalLayout();
         return layout;
     }
 
@@ -128,8 +127,7 @@ public class CategoryListing extends
         rearrangeCategoriesButton.setIcon(new ThemeResource(
                 "images/icon-rearrange.png"));
         createCategoryButton = new PopupButton("Create a new category");
-        createCategoryButton
-                .addStyleName(StyleConstants.POPUP_INDICATOR_HIDDEN);
+        createCategoryButton.addStyleName("createcategorybutton");
         createCategoryButton.setIcon(new ThemeResource("images/icon-add.png"));
         final EditCategoryForm editCategoryForm = new EditCategoryForm(
                 new EditCategoryListener() {

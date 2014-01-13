@@ -26,10 +26,10 @@ import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Upload;
@@ -64,7 +64,7 @@ public class AuthoringComponent extends CustomComponent {
     private final VerticalLayout layout = new VerticalLayout();
     private final AuthoringListener listener;
     private final Field<String> input;
-    private final CssLayout attachmentsLayout;
+    private final VerticalLayout attachmentsLayout;
     private String attachmentFileName;
     private ByteArrayOutputStream attachmentData;
 
@@ -137,7 +137,7 @@ public class AuthoringComponent extends CustomComponent {
 
         layout.addComponent(buttonsLayout);
 
-        attachmentsLayout = new CssLayout();
+        attachmentsLayout = new VerticalLayout();
         attachmentsLayout.setVisible(false);
         attachmentsLayout.setCaption("Attachments");
         attachmentsLayout.setStyleName("attachments");
@@ -188,18 +188,25 @@ public class AuthoringComponent extends CustomComponent {
                 // NOP
             }
 
-            final CssLayout wrapperLayout = new CssLayout();
-            wrapperLayout.setWidth("300px");
+            final HorizontalLayout wrapperLayout = new HorizontalLayout();
             wrapperLayout.addStyleName("filerow");
+            wrapperLayout.addComponent(nameComponent);
+            nameComponent.setWidth(300.0f, Unit.PIXELS);
+
+            final Label deleteLabel = new Label();
+            deleteLabel.setHeight(20.0f, Unit.PIXELS);
+            deleteLabel.setWidth(20.0f, Unit.PIXELS);
+
+            deleteLabel.addStyleName("deleteattachment");
+            wrapperLayout.addComponent(deleteLabel);
             wrapperLayout.addLayoutClickListener(new LayoutClickListener() {
                 @Override
                 public void layoutClick(final LayoutClickEvent event) {
-                    if (event.getChildComponent() != nameComponent) {
+                    if (event.getChildComponent() == deleteLabel) {
                         listener.removeAttachment(fileName);
                     }
                 }
             });
-            wrapperLayout.addComponent(nameComponent);
 
             attachmentsLayout.addComponent(wrapperLayout);
 

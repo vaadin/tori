@@ -1,0 +1,131 @@
+@import "variables.scss";
+
+.createcategorybutton .v-popup-indicator {
+    display: none !important;
+}
+
+.tori-liferay .categoryview.v-customcomponent {
+	overflow: visible;
+}
+
+.categoryTree.v-treetable {
+    margin-bottom: 20px;
+    
+
+    .v-widget {
+        font-size: 15px;
+    }
+
+    .category {
+        line-height: 1.3;
+    
+        .categoryLink,
+        .categoryLink span {
+            font-weight: bold;
+            display: block;
+        }
+    
+        .v-customcomponent-contextmenu {
+            visibility: hidden;
+            position: absolute;
+            top: 10px;
+            right: 100px;
+            
+            .v-touch & {
+                display: none;
+            }
+            
+            .v-icon {
+                display: none;
+            }
+            
+            .v-button {
+                position: absolute;
+                background: transparent;
+                border: none;
+                line-height: 0;
+                
+                &:before {
+                    font-family: "Tori-Icons";
+                    content: "\e005";
+                    height: 30px;
+                    width: 30px;
+                }
+            }
+            
+            .v-popup-indicator {
+                background: none;
+            }
+        }
+        
+        &:hover .contextmenu {
+            visibility: visible;
+        }
+    }
+    
+    .v-table-header-wrap {
+        background: $header-background-color;
+        height: auto;
+        border-color: $grid-border-color;
+        
+        .v-table-caption-container {
+            font-size: 15px;
+            font-weight: normal;
+            padding-top: 9px;
+            padding-right: 10px;
+        }
+        
+        .v-table-header-cell:first-child .v-table-caption-container {
+            text-indent: 18px;
+        }
+        
+        .v-table-resizer {
+            height: 36px;
+            background: $grid-border-color;
+        }
+    }
+    
+    .v-table-body {
+        border: $grid-border;
+    
+        .v-table-row,
+        .v-table-row-odd {
+            font-size: 15px;
+            
+            .v-table-cell-content {
+                padding: 10px;
+                border-right: $grid-border;
+            }
+            
+            &:nth-child(n+2) .v-table-cell-content {
+                border-top: $grid-border;
+            }
+            
+            &:hover {
+                background: #edf8fd;
+            }
+        }
+        
+        .v-table-row-odd {
+            background: #f9f9f9;
+        }
+        
+        .v-treetable-treespacer {
+            top: 4px;
+            left: -2px;
+        }
+        
+        .threadCount {
+            float: right;
+        }
+    }
+    
+    &.v-table-rearranging {
+        .v-table-row,
+        .v-table-row-odd {
+            td:first-child {
+                background: url(images/icon-rearranging.png) transparent 10px 25px no-repeat;;
+            }
+        }
+    }
+}

@@ -466,7 +466,7 @@
 	background: url(../images/icon-attachment.png) no-repeat left center;
 }
 
-.authoring .attachments .filerow .v-csslayout-margin{
+.authoring .attachments .filerow .deleteattachment{
 	background: url(../images/icon-delete-attachment.png) no-repeat right center;
 	cursor: pointer;
 } 
@@ -533,7 +533,7 @@
 	visibility: hidden;
 }
 
-.authoring .v-verticallayout {
+.authoring > .v-verticallayout {
 	padding-left: 158px;
 }
 

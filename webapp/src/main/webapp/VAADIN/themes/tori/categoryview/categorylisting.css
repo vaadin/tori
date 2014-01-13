@@ -1,5 +1,9 @@
 /* Styles for the CategoryListing component. */
 
+.createcategorybutton .v-popup-indicator {
+	display: none !important;
+}
+
 .v-link-categoryLink {
 	font-size: 110%;
 	font-weight: bold;

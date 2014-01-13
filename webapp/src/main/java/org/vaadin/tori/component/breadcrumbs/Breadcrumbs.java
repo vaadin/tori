@@ -197,6 +197,7 @@ public class Breadcrumbs extends CustomComponent {
             final PopupButton popupButton) {
         final Tree tree = new Tree();
         tree.setImmediate(true);
+        tree.setWidth(250.0f, Unit.PIXELS);
         AuthorizationService authorizationService = ToriApiLoader.getCurrent()
                 .getAuthorizationService();
 

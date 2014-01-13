@@ -17,7 +17,6 @@
 package org.vaadin.tori.component.category;
 
 import org.vaadin.tori.data.entity.Category;
-import org.vaadin.tori.util.StyleConstants;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -41,7 +40,6 @@ class EditCategoryForm extends CustomComponent {
         setData(categoryToEdit);
 
         final VerticalLayout newCategoryLayout = new VerticalLayout();
-        newCategoryLayout.addStyleName(StyleConstants.HALF_MARGIN);
         newCategoryLayout.setSpacing(true);
         newCategoryLayout.setMargin(true);
         newCategoryLayout.setWidth("100%");

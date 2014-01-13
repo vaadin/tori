@@ -31,6 +31,7 @@ import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.thread.ThreadPresenter;
 
 import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -70,6 +71,8 @@ public class CategoryViewImpl extends
 
     @Override
     public void initView() {
+        setStyleName("categoryview");
+
         categoryLayout = new VerticalLayout();
         layout.addComponent(categoryLayout);
 
@@ -79,6 +82,8 @@ public class CategoryViewImpl extends
                 Mode.SINGLE_COLUMN));
 
         final VerticalLayout threadLayout = new VerticalLayout();
+        threadLayout.setMargin(new MarginInfo(true, false, false, false));
+        threadLayout.setSpacing(true);
         layout.addComponent(threadLayout);
 
         final HorizontalLayout threadHeaderLayout = new HorizontalLayout();

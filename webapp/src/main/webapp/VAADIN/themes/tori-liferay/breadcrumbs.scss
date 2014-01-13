@@ -1,0 +1,57 @@
+@import "variables.scss";
+
+.breadcrumbs {
+    border: 1px solid $grid-border-color;
+    background-color: $header-background-color;
+    margin-top: 10px;
+    
+    .breadcrumbs-layout a {
+        padding-left: 12px;
+    }
+    
+    .breadcrumbs-wrapper .v-widget {
+        font-size: 15px;
+    }
+    
+    .v-link {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        
+        span {
+            line-height: 32px;
+        }
+    }
+    
+    .v-button.v-popupbutton {
+        border: none;
+        background: transparent;
+        box-shadow: none;
+    }
+    
+    .breadcrumbs-separator {
+        background: url("images/separator-breadcrumbs.png") no-repeat right center;
+    }
+    
+    .action-bar {
+        .v-link {
+            padding-right: 10px;
+        }
+        
+        .v-icon {
+            padding-right: 5px;
+        }
+    }
+    
+    .v-label.viewcaption {
+        font-size: 24.5px;
+        font-weight: bold;
+        padding-left: 12px;
+        padding-bottom: 5px;
+    }
+    
+}
+
+.v-popupbutton-popup-categorypopup .v-tree-node-caption > div{
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

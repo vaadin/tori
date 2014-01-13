@@ -147,15 +147,6 @@ TODO: vaadin has a font-size: 0 fix for IE10, which somehow interferes with thes
     cursor: -webkit-grabbing;
 }
 
-.v-popupbutton.popupIndicatorHidden .v-popup-indicator {
-	display: none;
-}
-
-.v-horizontallayout-halfMargin .v-horizontallayout-margin,
-.v-verticallayout-halfMargin .v-verticallayout-margin {
-	padding: 9px;
-}
-
 .hidden {
 	visibility: hidden;
 }

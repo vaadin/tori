@@ -66,7 +66,8 @@ class FloatingBarOverlay extends VOverlay {
             for (int i = 0; i < elements.getLength(); i++) {
                 final Element e = elements.getItem(i);
 
-                if (e.getClassName().contains("site-breadcrumbs")) {
+                if (e.getClassName().contains("site-breadcrumbs")
+                        || e.getClassName().contains("lfr-hudcrumbs")) {
                     paddingAdditionBar = e;
                     break;
                 }

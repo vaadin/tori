@@ -29,6 +29,7 @@ import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.WebBrowser;
+import com.vaadin.ui.UI;
 
 @SuppressWarnings("serial")
 public class BBCodeWysiwygEditor extends CKEditorTextField {
@@ -43,18 +44,18 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
 
         String themesPath = VaadinService.getCurrentRequest().getContextPath()
                 + "/VAADIN/themes/";
-        String toriTheme = "tori/";
+        String toriTheme = UI.getCurrent().getTheme() + "/";
         String toriCss = themesPath + toriTheme + "styles.css";
-        String threadViewCss = themesPath + toriTheme + "threadview/style.css";
         String editorCss = themesPath + toriTheme + "editor/editor.css";
         WebBrowser browser = Page.getCurrent().getWebBrowser();
         if (browser.isIE()) {
             String ieCss = themesPath + toriTheme + "editor/ie.css";
-            config.setContentsCss(toriCss, threadViewCss, editorCss, ieCss);
+            config.setContentsCss(toriCss, editorCss, ieCss);
         } else {
-            config.setContentsCss(toriCss, threadViewCss, editorCss);
+            config.setContentsCss(toriCss, editorCss);
         }
-        config.setBodyClass("v-app v-widget authoring");
+        config.setBodyClass("v-app v-widget authoring "
+                + UI.getCurrent().getTheme());
 
         config.addToExtraPlugins("custombbcode");
         config.addToExtraPlugins("codebutton");

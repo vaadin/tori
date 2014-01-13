@@ -77,7 +77,7 @@ public class ReportComponent extends CustomComponent {
 
     private Component newReportLayout() {
         final VerticalLayout layout = new VerticalLayout();
-        layout.setWidth("250px");
+        layout.setWidth("260px");
         layout.setSpacing(true);
 
         layout.addComponent(new Label("What's wrong with this post?"));

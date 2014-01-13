@@ -279,13 +279,15 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
             @Override
             public void layoutClick(final LayoutClickEvent event) {
-                postSummary.setVisible(!postSummary.isVisible());
-                showOrHideLabel.setValue(postSummary.isVisible() ? hidePostContentCaption
-                        : showPostContentCaption);
-                if (postSummary.isVisible()) {
-                    showOrHideLabel.removeStyleName(collapsedStyle);
-                } else {
-                    showOrHideLabel.addStyleName(collapsedStyle);
+                if (!event.isDoubleClick()) {
+                    postSummary.setVisible(!postSummary.isVisible());
+                    showOrHideLabel.setValue(postSummary.isVisible() ? hidePostContentCaption
+                            : showPostContentCaption);
+                    if (postSummary.isVisible()) {
+                        showOrHideLabel.removeStyleName(collapsedStyle);
+                    } else {
+                        showOrHideLabel.addStyleName(collapsedStyle);
+                    }
                 }
             }
         });
@@ -306,6 +308,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             final PostComponent originalPost) {
         final FloatingBar bar = new FloatingBar();
         bar.addStyleName("threadSummaryBar");
+        bar.addStyleName(UI.getCurrent().getTheme());
         bar.setContent(getThreadSummary(post));
         return bar;
     }
@@ -336,13 +339,16 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         showOrHideLayout.addLayoutClickListener(new LayoutClickListener() {
             @Override
             public void layoutClick(LayoutClickEvent event) {
-                setQuickReplyVisible(!quickReply.isVisible());
+                if (!event.isDoubleClick()) {
+                    setQuickReplyVisible(!quickReply.isVisible());
+                }
             }
         });
         showOrHideLayout.setWidth(100.0f, Unit.PERCENTAGE);
 
         final FloatingBar bar = new FloatingBar();
         bar.addStyleName("quickReply");
+        bar.addStyleName(UI.getCurrent().getTheme());
         bar.setAlignment(FloatingAlignment.BOTTOM);
         bar.setScrollComponent(mirroredAuthoringComponent);
 
@@ -490,9 +496,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         getUI().scrollIntoView(heading);
 
         final HorizontalLayout topicLayout = new HorizontalLayout();
+        topicLayout.setWidth(70.0f, Unit.PERCENTAGE);
         topicLayout.setSpacing(true);
         topicLayout.setMargin(new MarginInfo(true, false, false, false));
-        topicLayout.setWidth("50em");
         topicLayout.setStyleName("newthread");
         layout.addComponent(topicLayout);
 

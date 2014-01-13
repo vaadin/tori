@@ -1,0 +1,88 @@
+.tori-liferay {
+
+    .menupopup{
+    
+        .link {
+            width: 100%;
+            border: none;
+            background: #fff;
+            height: 26px;
+            position: relative;
+            
+            .v-button-wrap {
+                vertical-align: middle;
+                padding-left: 40px;
+                
+                
+                .v-button-caption {
+                    vertical-align: middle;
+                    text-decoration: none;
+                    text-shadow: none;
+                }
+            }
+            
+            &:HOVER {
+                background: #0db5e7;
+                color: #fff;
+            }
+            
+            &:BEFORE{
+                font-family: "Tori-Icons";
+                position: absolute;
+                left: 18px;
+                top: 3px;
+                font-size: 17px;
+            }
+            
+            &.icon-follow:BEFORE { content: "\e00d";}
+            &.icon-unfollow:BEFORE { content: "\e002";}
+            &.icon-delete:BEFORE { content: "\e00f";}
+            &.icon-edit:BEFORE { content: "\e00e";}
+            &.icon-ban:BEFORE { content: "\e011";}
+            &.icon-unban:BEFORE { content: "\e003";}
+        }
+        
+    }
+    
+    .threadlistingrow-popup{
+        z-index: 999;
+        width: 200px;
+        border-radius: 3px;
+        -moz-box-shadow: 0px 0px 10px #888;
+        -webkit-box-shadow: 0px 0px 10px #888;
+        box-shadow: 0px 0px 10px #888;
+    
+        .control {
+            background: #fff;
+            font-size: 14px;
+            height: 22px;
+            padding: 4px 0 0 40px;
+            position: relative;
+            
+            &:HOVER {
+                background: #0db5e7;
+                color: #fff;
+            }
+            
+            &:BEFORE {
+                font-family: 'Tori-Icons';
+                position: absolute;
+                left: 18px;
+                top: 3px;
+                font-size: 17px;
+            }
+        }
+    
+        .control-follow:before { content: "\e00d"; }
+        .control-unfollow:before { content: "\e002"; }
+        .control-lock:before { content: "\e00c"; }
+        .control-unlock:before { content: "\e001"; }
+        .control-sticky:before { content: "\e004"; }
+        .control-unsticky:before { content: "\e000"; }
+        .control-delete:before { content: "\e00f"; }
+        .control-move:before { content: "\e00b"; }
+        
+        
+    }
+    
+}

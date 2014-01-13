@@ -45,6 +45,8 @@ public class ThreadMoveComponent2 extends Window {
     public ThreadMoveComponent2(final DiscussionThread thread,
             final CategoryPresenter presenter) {
         this.thread = thread;
+        setClosable(false);
+        setResizable(false);
 
         try {
             setContent(layout);
