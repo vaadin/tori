@@ -23,7 +23,7 @@ public enum LiferayFontSize implements FontSize {
     SIZE1("1", "0.7em"),
     SIZE2("2", "0.8em"),
     SIZE3("3", "0.9em"),
-    SIZE4("4", "1.0em"),
+    SIZE4("4", "1em"),
     SIZE5("5", "1.1em"),
     SIZE6("6", "1.3em"),
     SIZE7("7", "1.5em");
