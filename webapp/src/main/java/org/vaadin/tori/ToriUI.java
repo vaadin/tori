@@ -62,6 +62,7 @@ public class ToriUI extends UI {
 
     @Override
     protected void init(final VaadinRequest request) {
+        setPollInterval(1000 * 10);
         initApiLoader(request);
         fixUrl();
 
