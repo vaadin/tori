@@ -20,11 +20,9 @@ import org.vaadin.tori.category.CategoryViewImpl;
 import org.vaadin.tori.dashboard.DashboardViewImpl;
 import org.vaadin.tori.indexing.IndexableCategoryView;
 import org.vaadin.tori.indexing.IndexableDashboardView;
-import org.vaadin.tori.indexing.IndexableNullView;
 import org.vaadin.tori.indexing.IndexableThreadView;
 import org.vaadin.tori.indexing.IndexableView;
 import org.vaadin.tori.mvp.AbstractView;
-import org.vaadin.tori.mvp.NullViewImpl;
 import org.vaadin.tori.thread.ThreadViewImpl;
 import org.vaadin.tori.util.PageTitleUpdater;
 
@@ -56,8 +54,8 @@ public class ToriNavigator extends Navigator {
                 final View newView = event.getNewView();
                 if (newView instanceof AbstractView<?, ?>) {
                     String title = ((AbstractView) newView).getTitle();
-                    PageTitleUpdater pageTitleUpdater = ToriApiLoader.getCurrent()
-                            .getPageTitleUpdater();
+                    PageTitleUpdater pageTitleUpdater = ToriApiLoader
+                            .getCurrent().getPageTitleUpdater();
                     if (pageTitleUpdater != null) {
                         pageTitleUpdater.updatePageTitle(title);
                     }
@@ -75,8 +73,7 @@ public class ToriNavigator extends Navigator {
 		DASHBOARD("dashboard", DashboardViewImpl.class,
 				IndexableDashboardView.class), CATEGORIES("category",
 				CategoryViewImpl.class, IndexableCategoryView.class), THREADS(
-				"thread", ThreadViewImpl.class, IndexableThreadView.class), USERS(
-				"user", NullViewImpl.class, IndexableNullView.class);
+				"thread", ThreadViewImpl.class, IndexableThreadView.class);
 		// @formatter:on
 
         private String viewName;
