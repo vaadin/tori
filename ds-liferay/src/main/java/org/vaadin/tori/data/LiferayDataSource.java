@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -61,6 +62,7 @@ import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portal.service.ServiceContext;
@@ -275,11 +277,36 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     public List<DiscussionThread> getMyPostThreads(final int from, final int to)
             throws DataSourceException {
         try {
+            final List<MBThread> liferayThreads = MBThreadServiceUtil
+                    .getGroupThreads(scopeGroupId, currentUserId,
+                            WorkflowConstants.STATUS_ANY, from, to + 1);
+            final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
+                    liferayThreads.size());
+            for (final MBThread liferayThread : liferayThreads) {
+                final DiscussionThread thread = wrapLiferayThread(
+                        liferayThread, null);
+                result.add(thread);
+            }
+
+            return result;
+        } catch (Exception e) {
+            // getGroupThreads() failed, handle with getGroupMessages
+            return getMyPostThreadsFromMessages(from, to);
+        }
+
+    }
+
+    private List<DiscussionThread> getMyPostThreadsFromMessages(int from, int to)
+            throws DataSourceException {
+
+        try {
             // collection for the final result
             final List<DiscussionThread> threads = new ArrayList<DiscussionThread>();
+            final Map<Long, Date> myLastPostDates = new HashMap<Long, Date>();
             final Set<Long> processedThreads = new HashSet<Long>();
-            for (final MBMessage liferayMessage : getLiferayMyPosts(QUERY_ALL,
-                    QUERY_ALL)) {
+            for (final MBMessage liferayMessage : MBMessageLocalServiceUtil
+                    .getGroupMessages(scopeGroupId, currentUserId,
+                            WorkflowConstants.STATUS_ANY, QUERY_ALL, QUERY_ALL)) {
                 if (to == QUERY_ALL || threads.size() - 1 < to) {
                     if (processedThreads.add(liferayMessage.getThreadId())) {
                         try {
@@ -291,10 +318,24 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                             // Ignore and continue
                         }
                     }
+
+                    myLastPostDates.put(liferayMessage.getThreadId(),
+                            liferayMessage.getCreateDate());
+
                 } else {
                     break;
                 }
             }
+
+            Collections.sort(threads, new Comparator<DiscussionThread>() {
+                @Override
+                public int compare(DiscussionThread t1, DiscussionThread t2) {
+                    return myLastPostDates.get(t2.getId()).compareTo(
+                            myLastPostDates.get(t1.getId()));
+
+                }
+            });
+
             return threads.subList(Math.max(0, from), threads.size());
         } catch (final SystemException e) {
             log.error("Couldn't get my posts.", e);
@@ -387,12 +428,6 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         return MBThreadServiceUtil.getGroupThreads(scopeGroupId, 0,
                 WorkflowConstants.STATUS_APPROVED, INCLUDE_ANONYMOUS,
                 INCLUDE_SUBSCRIBED, start, end + 1);
-    }
-
-    private List<MBMessage> getLiferayMyPosts(final int start, final int end)
-            throws SystemException, PortalException {
-        return MBMessageLocalServiceUtil.getGroupMessages(scopeGroupId,
-                currentUserId, WorkflowConstants.STATUS_ANY, start, end);
     }
 
     @Override
@@ -1205,7 +1240,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         determineMessageBoardsParameters(request);
 
         final ThemeDisplay themeDisplay = (ThemeDisplay) request
-                .getAttribute("THEME_DISPLAY");
+                .getAttribute(WebKeys.THEME_DISPLAY);
 
         if (themeDisplay != null) {
             if (scopeGroupId < 0) {
