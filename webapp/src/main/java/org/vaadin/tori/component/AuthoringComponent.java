@@ -123,7 +123,7 @@ public class AuthoringComponent extends CustomComponent {
         attach.addStartedListener(new Upload.StartedListener() {
             @Override
             public void uploadStarted(final StartedEvent event) {
-                if (event.getContentLength() > maxFileSize) {
+                if (maxFileSize > 0 && event.getContentLength() > maxFileSize) {
                     attach.interruptUpload();
                     Notification.show("File size too large");
                     return;
