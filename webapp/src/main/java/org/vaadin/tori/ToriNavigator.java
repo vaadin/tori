@@ -29,6 +29,7 @@ import org.vaadin.tori.util.PageTitleUpdater;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Page;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.UI;
 
@@ -60,6 +61,9 @@ public class ToriNavigator extends Navigator {
                         pageTitleUpdater.updatePageTitle(title);
                     }
                 }
+
+                String currentFragment = Page.getCurrent().getUriFragment();
+                ToriUI.getCurrent().trackAction("#" + currentFragment, null);
             }
         });
 
