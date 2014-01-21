@@ -42,6 +42,8 @@ import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.mvp.AbstractView;
 
 import com.ocpsoft.pretty.time.PrettyTime;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.shared.ui.MarginInfo;
@@ -86,6 +88,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
         @Override
         public void resetInput() {
+            setCachedInput(getPresenter().getCurrentThread(), null);
             getPresenter().resetInput();
         }
 
@@ -161,7 +164,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
         layout.addComponent(postsLayout);
 
-        Post post = posts.get(0);
+        final Post post = posts.get(0);
         final PostComponent c = postsToComponents.get(post);
         final FloatingBar summaryBar = getSummaryBar(post, c);
         summaryBar.setScrollComponent(c);
@@ -177,11 +180,30 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             reply = new AuthoringComponent(replyListener, "Post Reply", true);
             reply.setUserMayAddFiles(getPresenter().userMayAddFiles());
             reply.setMaxFileSize(getPresenter().getMaxFileSize());
+            reply.getInput().setValue(getCachedInput(post.getThread()));
+            reply.getInput().addValueChangeListener(new ValueChangeListener() {
+                @Override
+                public void valueChange(ValueChangeEvent event) {
+                    setCachedInput(post.getThread(), (String) event
+                            .getProperty().getValue());
+                }
+            });
+
             layout.addComponent(reply);
 
             layout.addComponent(getQuickReplyBar(reply));
             setQuickReplyVisible(false);
         }
+    }
+
+    private void setCachedInput(DiscussionThread thread, String text) {
+        UI.getCurrent().getSession()
+                .setAttribute(String.valueOf(thread.getId()), text);
+    }
+
+    private String getCachedInput(DiscussionThread thread) {
+        return (String) UI.getCurrent().getSession()
+                .getAttribute(String.valueOf(thread.getId()));
     }
 
     private PostComponent newPostComponent(final Post post) {
