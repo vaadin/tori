@@ -54,12 +54,14 @@ import org.vaadin.tori.service.post.PostReport;
 import com.liferay.portal.kernel.exception.NestableException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.util.HttpUtil;
+import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
+import com.liferay.portal.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.SubscriptionLocalServiceUtil;
@@ -109,11 +111,9 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     private static final double STICKY_PRIORITY = 2.0d;
 
     private long scopeGroupId = -1;
-    private long companyId;
     private long currentUserId;
     private com.liferay.portal.model.User currentUser;
     private String imagePath;
-    private String mainPath;
 
     private ServiceContext mbMessageServiceContext;
     private ServiceContext mbBanServiceContext;
@@ -121,6 +121,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     private ServiceContext mbCategoryServiceContext;
 
     private PortletPreferences portletPreferences;
+    private ThemeDisplay themeDisplay;
 
     private static final String PREFS_ANALYTICS_ID = "analytics";
     private static final String PREFS_REPLACE_MESSAGE_BOARDS_LINKS = "toriReplaceMessageBoardsLinks";
@@ -593,33 +594,28 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     @NonNull
     private List<Attachment> getAttachments(final MBMessage message)
             throws PortalException, SystemException {
-        // if (message.getAttachmentsFileEntriesCount() > 0) {
-        // final List<FileEntry> filenames = message
-        // .getAttachmentsFileEntries();
-        // final List<Attachment> attachments = new ArrayList<Attachment>(
-        // filenames.size());
-        // for (final FileEntry fileEntry : filenames) {
-        // DLAppLocalServiceUtil.getFileEntry(fileEntryId)
-        // final String shortFilename = FileUtil
-        // .getShortFileName(fileEntry.getname);
-        // final long fileSize = DLStoreUtil.getFileSize(companyId,
-        // CompanyConstants.SYSTEM, filename);
-        //
-        // final Attachment attachment = new Attachment(shortFilename,
-        // fileSize);
-        // attachment.setDownloadUrl(getAttachmentDownloadUrl(
-        // shortFilename, message.getMessageId()));
-        // attachments.add(attachment);
-        // }
-        // return attachments;
-        // }
-        return Collections.emptyList();
-    }
 
-    private String getAttachmentDownloadUrl(final String filename,
-            final long messageId) throws SystemException {
-        return mainPath + "/message_boards/get_message_attachment?messageId="
-                + messageId + "&attachment=" + HttpUtil.encodeURL(filename);
+        if (message.getAttachmentsFileEntriesCount() > 0) {
+            final List<FileEntry> filenames = message
+                    .getAttachmentsFileEntries();
+            final List<Attachment> attachments = new ArrayList<Attachment>(
+                    filenames.size());
+            for (final FileEntry fileEntry : filenames) {
+                String downloadUrl = PortletFileRepositoryUtil
+                        .getPortletFileEntryURL(themeDisplay, fileEntry,
+                                StringPool.BLANK);
+
+                final String shortFilename = fileEntry.getTitle();
+                final long fileSize = fileEntry.getSize();
+
+                final Attachment attachment = new Attachment(shortFilename,
+                        fileSize);
+                attachment.setDownloadUrl(downloadUrl);
+                attachments.add(attachment);
+            }
+            return attachments;
+        }
+        return Collections.emptyList();
     }
 
     private List<MBMessage> getLiferayPostsForThread(final long threadId)
@@ -1197,7 +1193,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
         determineMessageBoardsParameters(request);
 
-        final ThemeDisplay themeDisplay = (ThemeDisplay) request
+        themeDisplay = (ThemeDisplay) request
                 .getAttribute(WebKeys.THEME_DISPLAY);
 
         if (themeDisplay != null) {
@@ -1218,8 +1214,6 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             if (imagePath == null) {
                 imagePath = themeDisplay.getPathImage();
             }
-            mainPath = themeDisplay.getPathMain();
-            companyId = themeDisplay.getCompanyId();
         }
 
         try {
