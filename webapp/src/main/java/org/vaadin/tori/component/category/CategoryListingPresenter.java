@@ -179,9 +179,9 @@ class CategoryListingPresenter extends Presenter<CategoryListingView> {
 
     List<ContextMenuOperation> getContextMenuOperations(final Category category) {
         final List<ContextMenuOperation> items = new ArrayList<ContextMenuOperation>();
-        if (authorizationService.mayFollow(category)) {
-            items.add(ContextMenuOperation.FOLLOW);
-        }
+        // if (authorizationService.mayFollow(category)) {
+        // items.add(ContextMenuOperation.FOLLOW);
+        // }
         if (authorizationService.mayDelete(category)) {
             items.add(ContextMenuOperation.DELETE);
         }

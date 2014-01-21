@@ -159,17 +159,17 @@ public class TestCategoryListing {
         when(mockAuthorizationService.mayEdit(category)).thenReturn(true);
         when(mockAuthorizationService.mayDelete(category)).thenReturn(true);
         when(mockAuthorizationService.mayFollow(category)).thenReturn(true);
-        assertEquals(3, presenter.getContextMenuOperations(category).size());
+        assertEquals(2, presenter.getContextMenuOperations(category).size());
 
         when(mockAuthorizationService.mayEdit(category)).thenReturn(true);
         when(mockAuthorizationService.mayDelete(category)).thenReturn(false);
         when(mockAuthorizationService.mayFollow(category)).thenReturn(true);
-        assertEquals(2, presenter.getContextMenuOperations(category).size());
+        assertEquals(1, presenter.getContextMenuOperations(category).size());
 
         when(mockAuthorizationService.mayEdit(category)).thenReturn(false);
         when(mockAuthorizationService.mayDelete(category)).thenReturn(false);
         when(mockAuthorizationService.mayFollow(category)).thenReturn(true);
-        assertEquals(1, presenter.getContextMenuOperations(category).size());
+        assertEquals(0, presenter.getContextMenuOperations(category).size());
 
         when(mockAuthorizationService.mayEdit(category)).thenReturn(false);
         when(mockAuthorizationService.mayDelete(category)).thenReturn(false);
