@@ -46,6 +46,7 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
@@ -88,7 +89,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
         @Override
         public void resetInput() {
-            setCachedInput(getPresenter().getCurrentThread(), null);
+            getInputCache().put(getCurrentThread().getId(), null);
             getPresenter().resetInput();
         }
 
@@ -100,6 +101,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't care about serialization")
     private final static String COLLAPSED = "collapsed";
+    private final static String INPUT_CACHE_NAME = "inputcache";
     private final Map<Post, PostComponent> postsToComponents = new HashMap<Post, PostComponent>();
     private final PostsLayout postsLayout;
     private AuthoringComponent reply;
@@ -180,12 +182,13 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             reply = new AuthoringComponent(replyListener, "Post Reply", true);
             reply.setUserMayAddFiles(getPresenter().userMayAddFiles());
             reply.setMaxFileSize(getPresenter().getMaxFileSize());
-            reply.getInput().setValue(getCachedInput(post.getThread()));
+            reply.getInput().setValue(
+                    getInputCache().get(getCurrentThread().getId()));
             reply.getInput().addValueChangeListener(new ValueChangeListener() {
                 @Override
                 public void valueChange(ValueChangeEvent event) {
-                    setCachedInput(post.getThread(), (String) event
-                            .getProperty().getValue());
+                    getInputCache().put(getCurrentThread().getId(),
+                            (String) event.getProperty().getValue());
                 }
             });
 
@@ -196,14 +199,13 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         }
     }
 
-    private void setCachedInput(DiscussionThread thread, String text) {
-        UI.getCurrent().getSession()
-                .setAttribute(String.valueOf(thread.getId()), text);
-    }
-
-    private String getCachedInput(DiscussionThread thread) {
-        return (String) UI.getCurrent().getSession()
-                .getAttribute(String.valueOf(thread.getId()));
+    @SuppressWarnings("unchecked")
+    private Map<Long, String> getInputCache() {
+        VaadinSession session = UI.getCurrent().getSession();
+        if (session.getAttribute(INPUT_CACHE_NAME) == null) {
+            session.setAttribute(INPUT_CACHE_NAME, new HashMap<Long, String>());
+        }
+        return (Map<Long, String>) session.getAttribute(INPUT_CACHE_NAME);
     }
 
     private PostComponent newPostComponent(final Post post) {
@@ -268,7 +270,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     private Component getThreadSummary(final Post firstPost) {
-        final DiscussionThread thread = getPresenter().getCurrentThread();
+        final DiscussionThread thread = getCurrentThread();
         if (thread == null) {
             return new Label("No thread selected");
         }
