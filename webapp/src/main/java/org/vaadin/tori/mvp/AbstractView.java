@@ -84,6 +84,7 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
                     + (arguments != null ? " with params: "
                             + Arrays.toString(arguments) : ""));
         }
+        presenter.navigationTo(arguments);
         navigationTo(arguments);
     }
 
@@ -97,6 +98,10 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
      *            the {@link String} parameter passed to this view.
      */
     protected abstract void navigationTo(String[] arguments);
+
+    public void exit() {
+        presenter.navigationFrom();
+    }
 
     protected ToriNavigator getNavigator() {
         return (ToriNavigator) UI.getCurrent().getNavigator();

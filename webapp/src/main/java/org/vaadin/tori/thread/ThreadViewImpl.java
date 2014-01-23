@@ -189,6 +189,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 public void valueChange(ValueChangeEvent event) {
                     getInputCache().put(getCurrentThread().getId(),
                             (String) event.getProperty().getValue());
+
+                    getPresenter().inputValueChanged();
+
                 }
             });
 
@@ -631,5 +634,30 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public String getTitle() {
         return getPresenter().getThreadTopic();
+    }
+
+    @Override
+    public void otherUserAuthored(Post post) {
+        getUI().access(new Runnable() {
+            @Override
+            public void run() {
+                // TODO Auto-generated method stub
+            }
+        });
+    }
+
+    @Override
+    public void otherUserTyping(final User user) {
+        getUI().access(new Runnable() {
+            @SuppressWarnings("deprecation")
+            @Override
+            public void run() {
+                String userName = "Anonymous user";
+                if (user != null) {
+                    userName = "User " + user.getDisplayedName();
+                }
+                getUI().showNotification(userName + " is typing to this thread");
+            }
+        });
     }
 }

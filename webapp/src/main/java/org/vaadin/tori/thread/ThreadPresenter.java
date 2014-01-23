@@ -29,11 +29,14 @@ import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.post.PostReport;
+import org.vaadin.tori.util.ToriActivityMessaging.UserAuthoredListener;
+import org.vaadin.tori.util.ToriActivityMessaging.UserTypingListener;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
-public class ThreadPresenter extends Presenter<ThreadView> {
+public class ThreadPresenter extends Presenter<ThreadView> implements
+        UserTypingListener, UserAuthoredListener {
 
     public static final String NEW_THREAD_ARGUMENT = "new";
 
@@ -308,6 +311,12 @@ public class ThreadPresenter extends Presenter<ThreadView> {
 
     }
 
+    public void inputValueChanged() {
+        if (messaging != null) {
+            messaging.sendUserTyping(currentThread.getId());
+        }
+    }
+
     public boolean userMayReply() {
         return currentThread != null
                 && authorizationService.mayReplyIn(currentThread);
@@ -357,7 +366,8 @@ public class ThreadPresenter extends Presenter<ThreadView> {
                 final Post updatedPost = dataSource.saveAsCurrentUser(post,
                         attachments);
                 dataSource.markRead(updatedPost.getThread());
-
+                messaging.sendUserAuthored(updatedPost.getId(),
+                        currentThread.getId());
                 resetInput();
 
                 view.confirmReplyPostedAndShowIt(updatedPost);
@@ -454,7 +464,10 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             thread.setPosts(Arrays.asList(post));
             post.setThread(thread);
 
-            return dataSource.saveNewThread(thread, attachments, post);
+            DiscussionThread discussionThread = dataSource.saveNewThread(
+                    thread, attachments, post);
+            messaging.sendUserAuthored(post.getId(), discussionThread.getId());
+            return discussionThread;
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -494,6 +507,46 @@ public class ThreadPresenter extends Presenter<ThreadView> {
             return currentThread.getTopic();
         } else {
             return "?";
+        }
+    }
+
+    @Override
+    public void navigationFrom() {
+        if (messaging != null) {
+            messaging.removeUserAuthoredListener(this);
+            messaging.removeUserTypingListener(this);
+        }
+    }
+
+    @Override
+    public void navigationTo(String[] args) {
+        if (messaging != null) {
+            messaging.addUserAuthoredListener(this);
+            messaging.addUserTypingListener(this);
+        }
+    }
+
+    @Override
+    public void userTyping(long userId, long threadId) {
+        if (currentThread.getId() == threadId) {
+            try {
+                view.otherUserTyping(dataSource.getToriUser(userId));
+            } catch (DataSourceException e) {
+                log.error(e);
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void userAuthored(long postId, long threadId) {
+        if (currentThread.getId() == threadId) {
+            try {
+                view.otherUserAuthored(dataSource.getPost(postId));
+            } catch (DataSourceException e) {
+                log.error(e);
+                e.printStackTrace();
+            }
         }
     }
 }

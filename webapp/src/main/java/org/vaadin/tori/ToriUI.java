@@ -51,6 +51,7 @@ import edu.umd.cs.findbugs.annotations.CheckForNull;
 public class ToriUI extends UI {
 
     private static final String PATH_ACTION_SEPARATOR = "$";
+    public static final int DEFAULT_POLL_INTERVAL = 1000 * 10;
 
     private ToriNavigator navigator;
     private VerticalLayout windowLayout;
@@ -62,8 +63,8 @@ public class ToriUI extends UI {
 
     @Override
     protected void init(final VaadinRequest request) {
-        setPollInterval(1000 * 10);
-        initApiLoader(request);
+        setPollInterval(DEFAULT_POLL_INTERVAL);
+        ToriApiLoader.init(request);
         fixUrl();
 
         windowLayout = new VerticalLayout();
@@ -107,12 +108,6 @@ public class ToriUI extends UI {
             final VaadinPortletRequest r = (VaadinPortletRequest) request;
             setPortletMode(r.getPortletRequest().getPortletMode());
         }
-    }
-
-    void initApiLoader(final VaadinRequest request) {
-        ToriApiLoader toriApiLoader = new ToriApiLoader();
-        toriApiLoader.setRequest(request);
-        getSession().setAttribute(ToriApiLoader.class, toriApiLoader);
     }
 
     public final void setPortletMode(final PortletMode portletMode) {

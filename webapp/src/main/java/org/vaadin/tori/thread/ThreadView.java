@@ -99,4 +99,8 @@ public interface ThreadView extends View {
 
     void updateAttachmentList(@NonNull LinkedHashMap<String, byte[]> attachments);
 
+    void otherUserAuthored(Post post);
+
+    void otherUserTyping(User user);
+
 }

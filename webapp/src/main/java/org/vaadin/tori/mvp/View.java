@@ -16,8 +16,6 @@
 
 package org.vaadin.tori.mvp;
 
-import org.vaadin.tori.ToriNavigator;
-
 public interface View {
 
     /**

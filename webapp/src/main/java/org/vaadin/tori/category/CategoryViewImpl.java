@@ -123,9 +123,7 @@ public class CategoryViewImpl extends
                                                 .getId()));
             }
         });
-        button.setWidth("163px"); // same as
-                                  // org.vaadin.tori.component.thread.ThreadListing.PROPERTY_ID_LATESTPOST
-                                  // with padding and all
+        button.setWidth("163px");
         return button;
     }
 

@@ -1506,4 +1506,38 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
         return null;
     }
+
+    @Override
+    public User getToriUser(long userId) throws DataSourceException {
+        User user = null;
+        if (userId > 0) {
+            try {
+                user = getUser(userId);
+            } catch (NestableException e) {
+                throw new DataSourceException(e);
+            }
+        }
+        return user;
+    }
+
+    @Override
+    public Post getPost(long postId) throws DataSourceException {
+        Post result = null;
+        try {
+            MBMessage message = MBMessageLocalServiceUtil.getMBMessage(postId);
+            final User author = getUser(message.getUserId());
+            final List<Attachment> attachments = getAttachments(message);
+
+            DiscussionThread thread = getThread(message.getThreadId());
+            result = EntityFactoryUtil.createPost(message, author, thread,
+                    attachments);
+            if (getReplaceMessageBoardsLinks()) {
+                replaceMessageBoardsLinksCategories(result);
+                replaceMessageBoardsLinksMessages(result);
+            }
+        } catch (NestableException e) {
+            throw new DataSourceException(e);
+        }
+        return result;
+    }
 }

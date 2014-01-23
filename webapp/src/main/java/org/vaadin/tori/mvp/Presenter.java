@@ -21,6 +21,7 @@ import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
+import org.vaadin.tori.util.ToriActivityMessaging;
 
 public abstract class Presenter<V extends View> {
 
@@ -30,6 +31,7 @@ public abstract class Presenter<V extends View> {
     protected DataSource dataSource;
     protected AuthorizationService authorizationService;
     protected PostFormatter postFormatter;
+    protected ToriActivityMessaging messaging;
 
     public Presenter(final V view) {
         this.view = view;
@@ -37,7 +39,8 @@ public abstract class Presenter<V extends View> {
         ToriApiLoader toriApiLoader = getApiLoader();
         dataSource = toriApiLoader.getDataSource();
         authorizationService = toriApiLoader.getAuthorizationService();
-        postFormatter = getApiLoader().getPostFormatter();
+        postFormatter = toriApiLoader.getPostFormatter();
+        messaging = toriApiLoader.getToriActivityMessaging();
     }
 
     protected ToriApiLoader getApiLoader() {
@@ -49,6 +52,14 @@ public abstract class Presenter<V extends View> {
      * be obtained by calling {@link #getView()} method.
      */
     public void init() {
+        // NOP, subclasses may override
+    }
+
+    public void navigationFrom() {
+        // NOP, subclasses may override
+    }
+
+    public void navigationTo(String[] arguments) {
         // NOP, subclasses may override
     }
 

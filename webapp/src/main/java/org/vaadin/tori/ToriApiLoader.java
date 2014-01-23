@@ -27,12 +27,14 @@ import org.apache.log4j.Logger;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.spi.ServiceProvider;
 import org.vaadin.tori.service.AuthorizationService;
+import org.vaadin.tori.util.PageTitleUpdater;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.SignatureFormatter;
-import org.vaadin.tori.util.PageTitleUpdater;
+import org.vaadin.tori.util.ToriActivityMessaging;
 import org.vaadin.tori.util.UrlConverter;
 import org.vaadin.tori.util.UserBadgeProvider;
 
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
@@ -50,6 +52,7 @@ public class ToriApiLoader implements Serializable {
     private final UserBadgeProvider userBadgeProvider;
     private final UrlConverter urlConverter;
     private final PageTitleUpdater pageTitleUpdater;
+    private final ToriActivityMessaging toriActivityMessaging;
 
     public ToriApiLoader() {
         checkThatCommonIsLoaded();
@@ -61,6 +64,7 @@ public class ToriApiLoader implements Serializable {
         userBadgeProvider = createService(UserBadgeProvider.class);
         urlConverter = createService(UrlConverter.class);
         pageTitleUpdater = createService(PageTitleUpdater.class);
+        toriActivityMessaging = createService(ToriActivityMessaging.class);
     }
 
     private <T> T createService(Class<T> clazz) {
@@ -81,7 +85,8 @@ public class ToriApiLoader implements Serializable {
 
     public final void setRequest(final Object request) {
         if (request != null) {
-            for (final Object aware : Arrays.asList(ds, authorizationService)) {
+            for (final Object aware : Arrays.asList(ds, authorizationService,
+                    toriActivityMessaging)) {
                 if (aware instanceof PortletRequestAware
                         && request instanceof PortletRequest) {
                     ((PortletRequestAware) aware)
@@ -195,6 +200,10 @@ public class ToriApiLoader implements Serializable {
         return pageTitleUpdater;
     }
 
+    public ToriActivityMessaging getToriActivityMessaging() {
+        return toriActivityMessaging;
+    }
+
     public static ToriApiLoader getCurrent() {
         final ToriApiLoader apiLoader = VaadinSession.getCurrent()
                 .getAttribute(ToriApiLoader.class);
@@ -204,5 +213,16 @@ public class ToriApiLoader implements Serializable {
             throw new IllegalStateException(ToriApiLoader.class.getName()
                     + " was not found in the state. This is bad...");
         }
+    }
+
+    public static void init(VaadinRequest request) {
+        ToriApiLoader toriApiLoader = VaadinSession.getCurrent().getAttribute(
+                ToriApiLoader.class);
+        if (toriApiLoader == null) {
+            toriApiLoader = new ToriApiLoader();
+            VaadinSession.getCurrent().setAttribute(ToriApiLoader.class,
+                    toriApiLoader);
+        }
+        toriApiLoader.setRequest(request);
     }
 }

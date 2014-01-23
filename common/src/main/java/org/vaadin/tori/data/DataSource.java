@@ -397,4 +397,8 @@ public interface DataSource {
     @CheckForNull
     UrlInfo getUrlInfoFromBackendNativeRequest(HttpServletRequest servletRequest)
             throws NoSuchThreadException, DataSourceException;
+
+    User getToriUser(long userId) throws DataSourceException;
+
+    Post getPost(long postId) throws DataSourceException;
 }

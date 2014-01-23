@@ -880,16 +880,16 @@ public class TestDataSource implements DataSource, DebugDataSource {
     public List<DiscussionThread> getMyPostThreads(final int from, final int to)
             throws DataSourceException {
         System.out.println("TestDataSource.getMyPostThreads(): "
-                + "getMyPostThreads not implemented in " + getClass().getSimpleName()
-                + ".");
+                + "getMyPostThreads not implemented in "
+                + getClass().getSimpleName() + ".");
         return Collections.emptyList();
     }
 
     @Override
     public int getMyPostThreadsCount() throws DataSourceException {
         System.out.println("TestDataSource.getMyPostThreadsCount(): "
-                + "getMyPostThreads not implemented in " + getClass().getSimpleName()
-                + ".");
+                + "getMyPostThreads not implemented in "
+                + getClass().getSimpleName() + ".");
         return 0;
     }
 
@@ -951,5 +951,28 @@ public class TestDataSource implements DataSource, DebugDataSource {
             final HttpServletRequest servletRequest)
             throws NoSuchThreadException, DataSourceException {
         return null;
+    }
+
+    @Override
+    public User getToriUser(long userId) {
+        User user = null;
+        if (userId > 0) {
+            try {
+                user = getUser(userId);
+            } catch (DataSourceException e) {
+                e.printStackTrace();
+            }
+        }
+        return user;
+    }
+
+    @Override
+    public Post getPost(final long postId) throws DataSourceException {
+        return executeWithEntityManager(new Command<Post>() {
+            @Override
+            public final Post execute(final EntityManager em) {
+                return em.find(Post.class, postId);
+            }
+        });
     }
 }
