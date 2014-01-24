@@ -3,14 +3,18 @@
 <module>
 	<inherits name="com.vaadin.DefaultWidgetSet" />
 	<inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset" />
-	<inherits
-		name="org.vaadin.openesignforms.ckeditor.widgetset.VaadinCKEditorWidgetset" />
-	<inherits
-		name="org.vaadin.hene.expandingtextarea.widgetset.ExpandingtextareaWidgetset" />
-
+    <inherits name="org.vaadin.openesignforms.ckeditor.widgetset.VaadinCKEditorWidgetset" />
+    <inherits name="org.vaadin.hene.expandingtextarea.widgetset.ExpandingtextareaWidgetset" />
+    
 	<replace-with class="org.vaadin.tori.widgetset.client.ui.ToriUIConnector">
 		<when-type-is class="com.vaadin.client.ui.ui.UIConnector" />
 	</replace-with>
-
-	<!-- <collapse-all-properties /> -->
+	
+	<generate-with
+        class="org.vaadin.tori.ToriConnectorBundleLoaderFactory">
+        <when-type-assignable
+            class="com.vaadin.client.metadata.ConnectorBundleLoader" />
+    </generate-with> 
+	
+<!-- 	<collapse-all-properties /> -->
 </module>
