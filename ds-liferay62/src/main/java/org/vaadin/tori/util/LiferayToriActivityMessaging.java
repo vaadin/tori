@@ -80,7 +80,7 @@ public class LiferayToriActivityMessaging implements ToriActivityMessaging,
         Message message = new Message();
         message.put(POST_ID, new Long(postId));
         message.put(THREAD_ID, new Long(threadId));
-        sendMessage(message, USER_TYPING_DESTINATION);
+        sendMessage(message, USER_AUTHORED_DESTINATION);
     }
 
     private void sendMessage(Message message, String destinationName) {
@@ -140,7 +140,10 @@ public class LiferayToriActivityMessaging implements ToriActivityMessaging,
 
     private void removeListener(Object key, String destination) {
         MessageListener messageListener = getListeners().remove(key);
-        MessageBusUtil.unregisterMessageListener(destination, messageListener);
+        if (messageListener != null) {
+            MessageBusUtil.unregisterMessageListener(destination,
+                    messageListener);
+        }
     }
 
     @SuppressWarnings("unchecked")

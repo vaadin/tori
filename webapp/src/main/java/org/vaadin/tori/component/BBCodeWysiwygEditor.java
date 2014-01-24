@@ -24,15 +24,10 @@ import org.vaadin.openesignforms.ckeditor.CKEditorConfig;
 import org.vaadin.openesignforms.ckeditor.CKEditorTextField;
 import org.vaadin.openesignforms.ckeditor.widgetset.client.ui.VCKEditorTextField;
 import org.vaadin.tori.ToriApiLoader;
-import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.util.PostFormatter.FontsInfo;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
 
-import com.vaadin.event.FieldEvents.BlurEvent;
-import com.vaadin.event.FieldEvents.BlurListener;
-import com.vaadin.event.FieldEvents.FocusEvent;
-import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.server.Page;
 import com.vaadin.server.PaintException;
 import com.vaadin.server.PaintTarget;
@@ -60,20 +55,6 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
         config.setEnterMode(1);
 
         setConfig(config);
-
-        addBlurListener(new BlurListener() {
-            @Override
-            public void blur(BlurEvent event) {
-                UI.getCurrent().setPollInterval(ToriUI.DEFAULT_POLL_INTERVAL);
-            }
-        });
-
-        addFocusListener(new FocusListener() {
-            @Override
-            public void focus(FocusEvent event) {
-                UI.getCurrent().setPollInterval(3000);
-            }
-        });
     }
 
     private void configureToolbar(CKEditorConfig config) {

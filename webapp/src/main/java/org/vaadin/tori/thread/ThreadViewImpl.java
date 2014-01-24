@@ -26,6 +26,7 @@ import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.AuthoringComponent;
 import org.vaadin.tori.component.AuthoringComponent.AuthoringListener;
+import org.vaadin.tori.component.BBCodeWysiwygEditor;
 import org.vaadin.tori.component.FloatingBar;
 import org.vaadin.tori.component.FloatingBar.FloatingAlignment;
 import org.vaadin.tori.component.HeadingLabel;
@@ -44,6 +45,10 @@ import org.vaadin.tori.mvp.AbstractView;
 import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
+import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.server.VaadinSession;
@@ -192,6 +197,22 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
                     getPresenter().inputValueChanged();
 
+                }
+            });
+
+            BBCodeWysiwygEditor editor = (BBCodeWysiwygEditor) reply.getInput();
+            editor.addBlurListener(new BlurListener() {
+                @Override
+                public void blur(BlurEvent event) {
+                    UI.getCurrent().setPollInterval(
+                            ToriUI.DEFAULT_POLL_INTERVAL);
+                }
+            });
+
+            editor.addFocusListener(new FocusListener() {
+                @Override
+                public void focus(FocusEvent event) {
+                    UI.getCurrent().setPollInterval(3000);
                 }
             });
 
@@ -637,11 +658,11 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void otherUserAuthored(Post post) {
+    public void otherUserAuthored(final Post post) {
         getUI().access(new Runnable() {
             @Override
             public void run() {
-                // TODO Auto-generated method stub
+                postsLayout.addComponent(newPostComponent(post));
             }
         });
     }
