@@ -36,7 +36,6 @@ import org.vaadin.tori.service.DebugAuthorizationService;
 import org.vaadin.tori.util.UrlConverter;
 
 import com.vaadin.annotations.Widgetset;
-import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinPortletRequest;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.Notification;
@@ -88,20 +87,6 @@ public class ToriUI extends UI {
         final Breadcrumbs breadcrumbs = new Breadcrumbs(navigator);
         addControlPanelIfInDevelopment();
         windowLayout.addComponent(breadcrumbs);
-
-        navigator.addViewChangeListener(new ViewChangeListener() {
-            @Override
-            public boolean beforeViewChange(ViewChangeEvent event) {
-                return true;
-            }
-
-            @Override
-            public void afterViewChange(ViewChangeEvent event) {
-                if (event.getNewView() == windowLayout) {
-                    scrollIntoView(breadcrumbs);
-                }
-            }
-        });
         windowLayout.addComponent(navigatorContent);
 
         if (request instanceof VaadinPortletRequest) {
