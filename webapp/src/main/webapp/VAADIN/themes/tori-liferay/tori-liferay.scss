@@ -21,6 +21,10 @@
 @mixin tori-liferay {
     @include base;
     
+    .portlet-body & .v-ui{
+    	overflow: visible;
+    }
+    
     &,
     .v-widget {
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
