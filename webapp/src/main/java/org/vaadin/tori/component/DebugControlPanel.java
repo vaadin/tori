@@ -49,8 +49,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.PopupView;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 @SuppressWarnings("serial")
@@ -235,10 +234,10 @@ public class DebugControlPanel extends CustomComponent implements
     private Component createControlPanel(final ContextData data) {
         this.data = data;
 
-        final Panel panel = new Panel();
-        panel.setStyleName(Reindeer.PANEL_LIGHT);
-        panel.setWidth("300px");
-        panel.setHeight("300px");
+        final VerticalLayout layout = new VerticalLayout();
+        layout.setStyleName(Reindeer.PANEL_LIGHT);
+        layout.setWidth("300px");
+        layout.setSpacing(true);
 
         final Set<Method> setters = getSettersByReflection(authorizationService);
 
@@ -253,17 +252,18 @@ public class DebugControlPanel extends CustomComponent implements
         try {
             for (final Method setter : orderedSetters) {
                 if (isForPosts(setter)) {
-                    panel.setContent(createPostControl(setter, data.getPosts()));
+                    layout.addComponent(createPostControl(setter,
+                            data.getPosts()));
                 } else {
-                    panel.setContent(createRegularControl(setter));
+                    layout.addComponent(createRegularControl(setter));
                 }
             }
         } catch (final Exception e) {
             e.printStackTrace();
-            panel.setContent(new Label(e.toString()));
+            layout.addComponent(new Label(e.toString()));
         }
 
-        return panel;
+        return layout;
     }
 
     private Component createPostControl(final Method setter,
@@ -274,38 +274,38 @@ public class DebugControlPanel extends CustomComponent implements
             return label;
         }
 
-        final PopupView popup = new PopupView(getNameForCheckBox(setter),
-                new CustomComponent() {
-                    {
-                        final CssLayout root = new CssLayout();
-                        setCompositionRoot(root);
-                        root.setWidth("100%");
-                        setWidth("400px");
+        final PopupButton popup = new PopupButton(getNameForCheckBox(setter));
+        popup.setHeight(30.0f, Unit.PIXELS);
+        Component content = new CustomComponent() {
+            {
+                final CssLayout root = new CssLayout();
+                setCompositionRoot(root);
+                root.setWidth("100%");
+                setWidth("400px");
 
-                        root.addComponent(new Label(setter.getName()));
+                root.addComponent(new Label(setter.getName()));
 
-                        for (final Post post : posts) {
-                            final Method getter = getGetterFrom(setter);
-                            final boolean getterValue = (Boolean) getter
-                                    .invoke(authorizationService, post);
+                for (final Post post : posts) {
+                    final Method getter = getGetterFrom(setter);
+                    final boolean getterValue = (Boolean) getter.invoke(
+                            authorizationService, post);
 
-                            final String authorName = post.getAuthor()
-                                    .getDisplayedName();
-                            final String postBody = post.getBodyRaw()
-                                    .substring(0, 20);
+                    final String authorName = post.getAuthor()
+                            .getDisplayedName();
+                    final String postBody = post.getBodyRaw().substring(0, 20);
 
-                            final CheckBox checkbox = new CheckBox(authorName
-                                    + " :: " + postBody);
-                            checkbox.setValue(getterValue);
-                            checkbox.addValueChangeListener(new PostCheckboxListener(
-                                    post, setter));
-                            checkbox.setImmediate(true);
-                            checkbox.setWidth("100%");
-                            root.addComponent(checkbox);
-                        }
-                    }
-                });
-        popup.setHideOnMouseOut(false);
+                    final CheckBox checkbox = new CheckBox(authorName + " :: "
+                            + postBody);
+                    checkbox.setValue(getterValue);
+                    checkbox.addValueChangeListener(new PostCheckboxListener(
+                            post, setter));
+                    checkbox.setImmediate(true);
+                    checkbox.setWidth("100%");
+                    root.addComponent(checkbox);
+                }
+            }
+        };
+        popup.setContent(content);
         return popup;
     }
 
