@@ -23,14 +23,20 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.PatternSyntaxException;
 
+import javax.portlet.PortletRequest;
+
 import org.apache.log4j.Logger;
+import org.vaadin.tori.PortletRequestAware;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
 
 import com.liferay.portal.kernel.parsers.bbcode.BBCodeTranslatorUtil;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.theme.ThemeDisplay;
 
-public class LiferayPostFormatter implements PostFormatter {
+public class LiferayPostFormatter implements PostFormatter, PortletRequestAware {
 
     private static final Logger log = Logger
             .getLogger(LiferayPostFormatter.class);
@@ -38,6 +44,8 @@ public class LiferayPostFormatter implements PostFormatter {
     private static Collection<FontFace> fontFaces;
     private static Collection<FontSize> fontSizes;
     private Map<String, String> postReplacements;
+
+    private ThemeDisplay themeDisplay;
 
     static {
         fontFaces = new ArrayList<FontFace>(Arrays.asList(LiferayFontFace
@@ -50,6 +58,9 @@ public class LiferayPostFormatter implements PostFormatter {
     public String format(final String rawPostBody) {
         try {
             String body = BBCodeTranslatorUtil.getHTML(rawPostBody.trim());
+            body = StringUtil.replace(body, "@theme_images_path@/emoticons",
+                    themeDisplay.getPathThemeImages() + "/emoticons");
+
             if (postReplacements != null) {
                 for (final Entry<String, String> entry : postReplacements
                         .entrySet()) {
@@ -98,5 +109,11 @@ public class LiferayPostFormatter implements PostFormatter {
     public final void setPostReplacements(
             final Map<String, String> postReplacements) {
         this.postReplacements = postReplacements;
+    }
+
+    @Override
+    public void setRequest(PortletRequest request) {
+        themeDisplay = (ThemeDisplay) request
+                .getAttribute(WebKeys.THEME_DISPLAY);
     }
 }

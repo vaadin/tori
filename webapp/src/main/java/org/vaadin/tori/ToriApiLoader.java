@@ -86,7 +86,7 @@ public class ToriApiLoader implements Serializable {
     public final void setRequest(final Object request) {
         if (request != null) {
             for (final Object aware : Arrays.asList(ds, authorizationService,
-                    toriActivityMessaging)) {
+                    toriActivityMessaging, postFormatter)) {
                 if (aware instanceof PortletRequestAware
                         && request instanceof PortletRequest) {
                     ((PortletRequestAware) aware)
