@@ -247,6 +247,11 @@ class CategoryTreeTable extends TreeTable {
 														.show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
 											}
 										}
+
+                                        @Override
+                                        public void cancel() {
+                                            contextMenu.close();
+                                        }
 									};
 									return new EditCategoryForm(listener,
 											category);

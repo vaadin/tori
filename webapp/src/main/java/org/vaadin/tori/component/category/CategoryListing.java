@@ -154,6 +154,11 @@ public class CategoryListing extends
                                     + "your modifications :(");
                         }
                     }
+
+                    @Override
+                    public void cancel() {
+                        createCategoryButton.setPopupVisible(false);
+                    }
                 });
         createCategoryButton.setComponent(editCategoryForm);
         createCategoryButton

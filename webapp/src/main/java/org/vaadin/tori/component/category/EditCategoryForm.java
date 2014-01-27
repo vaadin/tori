@@ -22,6 +22,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -77,9 +78,25 @@ class EditCategoryForm extends CustomComponent {
                         descriptionField.setValue("");
                     }
                 });
-        newCategoryLayout.addComponent(saveButton);
-        newCategoryLayout.setComponentAlignment(saveButton,
+        final Button cancelButton = new Button(("cancel"),
+                new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(final ClickEvent event) {
+                        listener.cancel();
+                        nameField.setValue("");
+                        descriptionField.setValue("");
+                    }
+                });
+
+        HorizontalLayout buttonsLayout = new HorizontalLayout(cancelButton,
+                saveButton);
+        buttonsLayout.setWidth(100.0f, Unit.PERCENTAGE);
+        buttonsLayout.setSpacing(true);
+        buttonsLayout.setExpandRatio(cancelButton, 1.0f);
+        buttonsLayout.setComponentAlignment(cancelButton,
                 Alignment.BOTTOM_RIGHT);
+
+        newCategoryLayout.addComponent(buttonsLayout);
 
         setWidth("300px");
         setCompositionRoot(newCategoryLayout);
@@ -88,6 +105,8 @@ class EditCategoryForm extends CustomComponent {
     interface EditCategoryListener {
 
         void commit(String name, String description);
+
+        void cancel();
 
     }
 
