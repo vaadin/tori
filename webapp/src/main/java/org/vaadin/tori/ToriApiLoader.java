@@ -27,7 +27,6 @@ import org.apache.log4j.Logger;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.spi.ServiceProvider;
 import org.vaadin.tori.service.AuthorizationService;
-import org.vaadin.tori.util.PageTitleUpdater;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.SignatureFormatter;
 import org.vaadin.tori.util.ToriActivityMessaging;
@@ -51,7 +50,6 @@ public class ToriApiLoader implements Serializable {
     @CheckForNull
     private final UserBadgeProvider userBadgeProvider;
     private final UrlConverter urlConverter;
-    private final PageTitleUpdater pageTitleUpdater;
     private final ToriActivityMessaging toriActivityMessaging;
 
     public ToriApiLoader() {
@@ -64,8 +62,6 @@ public class ToriApiLoader implements Serializable {
         toriActivityMessaging = createToriActivityMessaging();
         userBadgeProvider = createService(UserBadgeProvider.class);
         urlConverter = createService(UrlConverter.class);
-        pageTitleUpdater = createService(PageTitleUpdater.class);
-
     }
 
     private <T> T createService(Class<T> clazz) {
@@ -79,7 +75,7 @@ public class ToriApiLoader implements Serializable {
         } else {
             getLogger().debug(
                     String.format("No implementation for %s found",
-                            PageTitleUpdater.class.getSimpleName()));
+                            clazz.getSimpleName()));
         }
         return service;
     }
@@ -205,10 +201,6 @@ public class ToriApiLoader implements Serializable {
 
     public UrlConverter getUrlConverter() {
         return urlConverter;
-    }
-
-    public PageTitleUpdater getPageTitleUpdater() {
-        return pageTitleUpdater;
     }
 
     public ToriActivityMessaging getToriActivityMessaging() {

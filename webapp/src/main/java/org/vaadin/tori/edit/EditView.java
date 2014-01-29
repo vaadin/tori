@@ -28,6 +28,10 @@ public interface EditView extends View {
 
     void setConvertMessageBoardsUrls(boolean convert);
 
+    void setUpdatePageTitle(boolean update);
+
+    void setPageTitlePrefix(String pageTitlePrefix);
+
     void showNotification(String notification);
 
     void setGoogleAnalyticsTrackerId(

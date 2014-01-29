@@ -24,13 +24,13 @@ import org.vaadin.tori.indexing.IndexableThreadView;
 import org.vaadin.tori.indexing.IndexableView;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.thread.ThreadViewImpl;
-import org.vaadin.tori.util.PageTitleUpdater;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.UI;
 
 @SuppressWarnings("serial")
@@ -55,10 +55,10 @@ public class ToriNavigator extends Navigator {
                 final View newView = event.getNewView();
                 if (newView instanceof AbstractView<?, ?>) {
                     String title = ((AbstractView) newView).getTitle();
-                    PageTitleUpdater pageTitleUpdater = ToriApiLoader
-                            .getCurrent().getPageTitleUpdater();
-                    if (pageTitleUpdater != null) {
-                        pageTitleUpdater.updatePageTitle(title);
+                    boolean updatePateTitle = ToriApiLoader.getCurrent()
+                            .getDataSource().getUpdatePageTitle();
+                    if (updatePateTitle) {
+                        updatePageTitle(title);
                     }
                 }
 
@@ -72,8 +72,44 @@ public class ToriNavigator extends Navigator {
                         "#" + (currentFragment == null ? "" : currentFragment),
                         null);
             }
+
         });
 
+    }
+
+    private void updatePageTitle(String title) {
+        String prefix = ToriApiLoader.getCurrent().getDataSource()
+                .getPageTitlePrefix();
+
+        StringBuilder sb = new StringBuilder();
+        if (prefix != null) {
+            sb.append(prefix);
+        }
+        if (title != null && !title.isEmpty()) {
+            if (!sb.toString().isEmpty()) {
+                sb.append(" > ");
+            }
+            sb.append(title);
+        }
+
+        String pageTitle = sb.toString();
+        Page.getCurrent().setTitle(pageTitle);
+
+        // Liferay session.js resets the document.title after every request
+        // (when logged in).
+        // This hack is a workaround for the issue.
+        JavaScript.eval(
+// @formatter:off
+        //Liferay 6.0
+        "try {"+
+            "Liferay.Session._originalTitle = '"+ pageTitle+ "';"+
+        "} catch(err){}"+
+        //Liferay 6.2
+        "try {"+
+            "Liferay.Session.display._state.data.pageTitle.initValue = '"+ pageTitle+ "';"+
+            "Liferay.Session.display._state.data.pageTitle.lazy.value = '"+ pageTitle+ "';"+
+        "} catch(err){}");
+ // @formatter:on
     }
 
     /**

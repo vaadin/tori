@@ -360,6 +360,10 @@ public interface DataSource {
 
     boolean getReplaceMessageBoardsLinks();
 
+    boolean getUpdatePageTitle();
+
+    String getPageTitlePrefix();
+
     void save(@NonNull Configuration configuration) throws DataSourceException;
 
     /**
@@ -401,4 +405,5 @@ public interface DataSource {
     User getToriUser(long userId) throws DataSourceException;
 
     Post getPost(long postId) throws DataSourceException;
+
 }

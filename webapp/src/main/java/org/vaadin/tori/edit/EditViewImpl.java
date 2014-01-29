@@ -28,6 +28,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.ui.Alignment;
@@ -55,6 +56,8 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     private Button newButton;
 
     private CheckBox convertMessageBoardsUrls;
+    private CheckBox updatePageTitle;
+    private TextField pageTitlePrefix;
     private TextField analyticsTrackerIdField;
     private TextField pathRoot;
 
@@ -148,6 +151,19 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
                 "Replace message boards link data with tori format");
         layout.addComponent(convertMessageBoardsUrls);
 
+        layout.addComponent(getSubTitle("Check the box beneath to let Tori update the title of the page."));
+        updatePageTitle = new CheckBox("Update the page title");
+        layout.addComponent(updatePageTitle);
+        pageTitlePrefix = new TextField("Page title prefix");
+        pageTitlePrefix.setEnabled(false);
+        layout.addComponent(pageTitlePrefix);
+        updatePageTitle.addValueChangeListener(new ValueChangeListener() {
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                pageTitlePrefix.setEnabled(updatePageTitle.getValue());
+            }
+        });
+
         layout.addComponent(getSubTitle("What is the root path for Tori? (e.g. http://example.com/community/tori/ would mean \"/community/tori\""));
         pathRoot = new TextField();
         layout.addComponent(pathRoot);
@@ -168,6 +184,7 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
                 }
 
                 final String trackerId = analyticsTrackerIdField.getValue();
+                final String titlePrefix = pageTitlePrefix.getValue();
                 final String fixedTrackerId = "".equals(trackerId) ? null
                         : trackerId;
 
@@ -181,8 +198,9 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
                 }
 
                 getPresenter().savePreferences(replacements,
-                        convertMessageBoardsUrls.getValue(), fixedTrackerId,
-                        fixedPathRoot);
+                        convertMessageBoardsUrls.getValue(),
+                        updatePageTitle.getValue(), titlePrefix,
+                        fixedTrackerId, fixedPathRoot);
             }
         });
         layout.addComponent(saveButton);
@@ -218,6 +236,11 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     }
 
     @Override
+    public void setUpdatePageTitle(boolean update) {
+        updatePageTitle.setValue(update);
+    }
+
+    @Override
     protected void navigationTo(final String[] arguments) {
 
     }
@@ -243,5 +266,10 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     @Override
     public String getTitle() {
         return "Preferences View";
+    }
+
+    @Override
+    public void setPageTitlePrefix(String pageTitlePrefix) {
+        this.pageTitlePrefix.setValue(pageTitlePrefix);
     }
 }

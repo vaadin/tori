@@ -41,13 +41,16 @@ public class EditPresenter extends Presenter<EditView> {
         view.setReplacements(dataSource.getPostReplacements());
         view.setConvertMessageBoardsUrls(dataSource
                 .getReplaceMessageBoardsLinks());
+        view.setUpdatePageTitle(dataSource.getUpdatePageTitle());
+        view.setPageTitlePrefix(dataSource.getPageTitlePrefix());
         view.setGoogleAnalyticsTrackerId(dataSource
                 .getGoogleAnalyticsTrackerId());
         view.setPathRoot(dataSource.getPathRoot());
     }
 
     public final void savePreferences(final Map<String, String> replacements,
-            final boolean replaceMessageBoardsLinks,
+            final boolean replaceMessageBoardsLinks, boolean updatePageTitle,
+            String pageTitlePrefix,
             final @CheckForNull String googleAnalyticsTrackerId,
             @NonNull final String pathRoot) {
         try {
@@ -56,6 +59,8 @@ public class EditPresenter extends Presenter<EditView> {
             config.setReplacements(replacements);
             config.setGoogleAnalyticsTrackerId(googleAnalyticsTrackerId);
             config.setPathRoot(pathRoot);
+            config.setUpdatePageTitle(updatePageTitle);
+            config.setPageTitlePrefix(pageTitlePrefix);
             dataSource.save(config);
             view.showNotification("Preferences saved");
         } catch (final DataSourceException e) {

@@ -975,4 +975,14 @@ public class TestDataSource implements DataSource, DebugDataSource {
             }
         });
     }
+
+    @Override
+    public boolean getUpdatePageTitle() {
+        return true;
+    }
+
+    @Override
+    public String getPageTitlePrefix() {
+        return "Tori";
+    }
 }

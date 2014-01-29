@@ -22,6 +22,8 @@ import javax.annotation.CheckForNull;
 
 public class Configuration {
 
+    private boolean updatePageTitle;
+    private String pageTitlePrefix;
     private boolean replaceMessageBoardsLinks;
     private Map<String, String> replacements;
     private String googleAnalyticsTrackerId;
@@ -92,4 +94,21 @@ public class Configuration {
     public String getPathRoot() {
         return pathRoot;
     }
+
+    public boolean isUpdatePageTitle() {
+        return updatePageTitle;
+    }
+
+    public void setUpdatePageTitle(boolean updatePageTitle) {
+        this.updatePageTitle = updatePageTitle;
+    }
+
+    public String getPageTitlePrefix() {
+        return pageTitlePrefix;
+    }
+
+    public void setPageTitlePrefix(String pageTitlePrefix) {
+        this.pageTitlePrefix = pageTitlePrefix;
+    }
+
 }

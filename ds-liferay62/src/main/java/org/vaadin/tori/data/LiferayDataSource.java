@@ -125,6 +125,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     private static final String PREFS_ANALYTICS_ID = "analytics";
     private static final String PREFS_REPLACE_MESSAGE_BOARDS_LINKS = "toriReplaceMessageBoardsLinks";
+    private static final String PREFS_UPDATE_PAGE_TITLE = "toriUpdatePageTitle";
+    private static final String PREFS_PAGE_TITLE_PREFIX = "toriPageTitlePrefix";
 
     private static final String PREFS_PATHROOT = "pathroot";
 
@@ -1390,6 +1392,22 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
+    public boolean getUpdatePageTitle() {
+        boolean result = true;
+        if (portletPreferences != null) {
+            final String booleanValue = portletPreferences.getValue(
+                    PREFS_UPDATE_PAGE_TITLE, Boolean.TRUE.toString());
+            result = Boolean.parseBoolean(booleanValue);
+        }
+        return result;
+    }
+
+    @Override
+    public String getPageTitlePrefix() {
+        return portletPreferences.getValue(PREFS_PAGE_TITLE_PREFIX, null);
+    }
+
+    @Override
     public final void save(final Configuration config)
             throws DataSourceException {
 
@@ -1426,6 +1444,11 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                         config.getGoogleAnalyticsTrackerId());
                 portletPreferences.setValue(PREFS_PATHROOT,
                         config.getPathRoot());
+
+                portletPreferences.setValue(PREFS_UPDATE_PAGE_TITLE, Boolean
+                        .valueOf(config.isUpdatePageTitle()).toString());
+                portletPreferences.setValue(PREFS_PAGE_TITLE_PREFIX,
+                        config.getPageTitlePrefix());
 
                 portletPreferences.store();
             } catch (final Exception e) {
