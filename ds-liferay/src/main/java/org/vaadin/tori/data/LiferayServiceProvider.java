@@ -23,6 +23,7 @@ import org.vaadin.tori.util.LiferayPostFormatter;
 import org.vaadin.tori.util.LiferaySignatureFormatter;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.SignatureFormatter;
+import org.vaadin.tori.util.ToriActivityMessaging;
 
 public class LiferayServiceProvider implements ServiceProvider {
 
@@ -44,6 +45,12 @@ public class LiferayServiceProvider implements ServiceProvider {
     @Override
     public SignatureFormatter createSignatureFormatter() {
         return new LiferaySignatureFormatter();
+    }
+
+    @Override
+    public ToriActivityMessaging createToriActivityMessaging() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

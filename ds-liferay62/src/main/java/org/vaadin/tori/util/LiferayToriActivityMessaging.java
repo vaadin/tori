@@ -135,11 +135,11 @@ public class LiferayToriActivityMessaging implements ToriActivityMessaging,
             FilteringMessageListener messageListener) {
         MessageBusUtil.registerMessageListener(messageListener.destinationName,
                 messageListener);
-        getListeners().put(key, messageListener);
+        getListeners(messageListener.destinationName).put(key, messageListener);
     }
 
     private void removeListener(Object key, String destination) {
-        MessageListener messageListener = getListeners().remove(key);
+        MessageListener messageListener = getListeners(destination).remove(key);
         if (messageListener != null) {
             MessageBusUtil.unregisterMessageListener(destination,
                     messageListener);
@@ -147,14 +147,13 @@ public class LiferayToriActivityMessaging implements ToriActivityMessaging,
     }
 
     @SuppressWarnings("unchecked")
-    private Map<Object, MessageListener> getListeners() {
+    private Map<Object, MessageListener> getListeners(String destination) {
         PortletSession session = request.getPortletSession();
-        if (session.getAttribute(TORIACTIVITYLISTENERS) == null) {
-            session.setAttribute(TORIACTIVITYLISTENERS,
-                    new HashMap<Object, MessageListener>());
+        String attrId = TORIACTIVITYLISTENERS + destination;
+        if (session.getAttribute(attrId) == null) {
+            session.setAttribute(attrId, new HashMap<Object, MessageListener>());
         }
-        return (Map<Object, MessageListener>) session
-                .getAttribute(TORIACTIVITYLISTENERS);
+        return (Map<Object, MessageListener>) session.getAttribute(attrId);
     }
 
     @Override
@@ -176,9 +175,13 @@ public class LiferayToriActivityMessaging implements ToriActivityMessaging,
         @Override
         public void receive(Message message) throws MessageListenerException {
             try {
-                getListeners();
+                getListeners(USER_TYPING_DESTINATION);
                 if (!isThisSender(message)) {
-                    process(message);
+                    try {
+                        process(message);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             } catch (IllegalStateException e) {
                 // Invalid session, unregister the listener

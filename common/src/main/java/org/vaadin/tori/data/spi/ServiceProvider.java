@@ -22,6 +22,7 @@ import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.SignatureFormatter;
+import org.vaadin.tori.util.ToriActivityMessaging;
 
 /**
  * This interface needs to be implemented for the datasource project included in
@@ -60,5 +61,10 @@ public interface ServiceProvider {
      * Returns a new {@link SignatureFormatter} instance.
      */
     SignatureFormatter createSignatureFormatter();
+
+    /**
+     * Returns a new {@link ToriActivityMessaging} instance.
+     */
+    ToriActivityMessaging createToriActivityMessaging();
 
 }

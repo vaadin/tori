@@ -24,6 +24,7 @@ import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.SignatureFormatter;
 import org.vaadin.tori.util.TestPostFormatter;
 import org.vaadin.tori.util.TestSignatureFormatter;
+import org.vaadin.tori.util.ToriActivityMessaging;
 
 public class TestServiceProvider implements ServiceProvider {
 
@@ -49,6 +50,11 @@ public class TestServiceProvider implements ServiceProvider {
     @Override
     public SignatureFormatter createSignatureFormatter() {
         return new TestSignatureFormatter();
+    }
+
+    @Override
+    public ToriActivityMessaging createToriActivityMessaging() {
+        return null;
     }
 
 }

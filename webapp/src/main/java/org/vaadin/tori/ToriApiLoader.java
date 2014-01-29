@@ -61,10 +61,11 @@ public class ToriApiLoader implements Serializable {
         postFormatter = createPostFormatter();
         signatureFormatter = createSignatureFormatter();
         authorizationService = createAuthorizationService();
+        toriActivityMessaging = createToriActivityMessaging();
         userBadgeProvider = createService(UserBadgeProvider.class);
         urlConverter = createService(UrlConverter.class);
         pageTitleUpdater = createService(PageTitleUpdater.class);
-        toriActivityMessaging = createService(ToriActivityMessaging.class);
+
     }
 
     private <T> T createService(Class<T> clazz) {
@@ -165,6 +166,16 @@ public class ToriApiLoader implements Serializable {
                         PostFormatter.class.getSimpleName(),
                         authorizationService.getClass().getName()));
         return authorizationService;
+    }
+
+    private ToriActivityMessaging createToriActivityMessaging() {
+        final ToriActivityMessaging toriActivityMessaging = spi
+                .createToriActivityMessaging();
+        getLogger().debug(
+                String.format("Using %s implementation: %s",
+                        ToriActivityMessaging.class.getSimpleName(),
+                        toriActivityMessaging.getClass().getName()));
+        return toriActivityMessaging;
     }
 
     private static Logger getLogger() {
