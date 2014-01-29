@@ -43,6 +43,7 @@ import com.vaadin.client.ui.optiongroup.OptionGroupConnector;
 import com.vaadin.client.ui.orderedlayout.HorizontalLayoutConnector;
 import com.vaadin.client.ui.orderedlayout.VerticalLayoutConnector;
 import com.vaadin.client.ui.panel.PanelConnector;
+import com.vaadin.client.ui.table.TableConnector;
 import com.vaadin.client.ui.textarea.TextAreaConnector;
 import com.vaadin.client.ui.textfield.TextFieldConnector;
 import com.vaadin.client.ui.tree.TreeConnector;
@@ -83,6 +84,7 @@ public class ToriConnectorBundleLoaderFactory extends
         addConnector(TextAreaConnector.class, true);
         addConnector(CheckBoxConnector.class, true);
         addConnector(OptionGroupConnector.class, true);
+        addConnector(TableConnector.class, true);
     }
 
     private static void addConnector(Class<? extends Connector> clazz,
