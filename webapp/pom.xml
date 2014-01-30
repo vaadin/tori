@@ -143,6 +143,12 @@
 			<version>1.0.7</version>
 		</dependency>
 		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>googleanalyticstracker</artifactId>
+			<version>2.0.0</version>
+		</dependency>
+
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
@@ -168,51 +174,51 @@
 			</plugin>
 
 			<plugin>
-			<artifactId>maven-clean-plugin</artifactId>
-			<version>2.5</version>
-			<configuration>
-			<filesets>
-			<fileset>
-			<directory>src/main/webapp/VAADIN/widgetsets</directory>
-			</fileset>
-			<fileset>
-			<directory>src/main/webapp/VAADIN/gwt-unitCache</directory>
-			</fileset>
-			</filesets>
-			</configuration>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>src/main/webapp/VAADIN/widgetsets</directory>
+						</fileset>
+						<fileset>
+							<directory>src/main/webapp/VAADIN/gwt-unitCache</directory>
+						</fileset>
+					</filesets>
+				</configuration>
 			</plugin>
 			<plugin>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-maven-plugin</artifactId>
-			<version>${vaadin.plugin.version}</version>
-			<configuration>
-			<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-			<runTarget>mobilemail</runTarget>
-			<webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets
-			</webappDirectory>
-			<hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets
-			</hostedWebapp>
-			<noServer>true</noServer>
-			<draftCompile>false</draftCompile>
-			<style>OBF</style>
-			<compileReport>true</compileReport>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-maven-plugin</artifactId>
+				<version>${vaadin.plugin.version}</version>
+				<configuration>
+					<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+					<runTarget>mobilemail</runTarget>
+					<webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets
+					</webappDirectory>
+					<hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets
+					</hostedWebapp>
+					<noServer>true</noServer>
+					<draftCompile>false</draftCompile>
+					<style>OBF</style>
+					<compileReport>true</compileReport>
 
 
-			<runTarget>http://localhost:8080/</runTarget>
-			</configuration>
-			<executions>
-			<execution>
-			<configuration>
-			</configuration>
-			<goals>
-			<goal>resources</goal>
-			<goal>update-widgetset</goal>
-			<goal>compile</goal>
-			<goal>compile-theme</goal>
-			<goal>update-theme</goal>
-			</goals>
-			</execution>
-			</executions>
+					<runTarget>http://localhost:8080/</runTarget>
+				</configuration>
+				<executions>
+					<execution>
+						<configuration>
+						</configuration>
+						<goals>
+							<goal>resources</goal>
+							<goal>update-widgetset</goal>
+							<goal>compile</goal>
+							<goal>compile-theme</goal>
+							<goal>update-theme</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 			<plugin>

@@ -152,7 +152,7 @@ public class PostComponent extends AbstractComponentContainer implements
         public void postEdited(final String newPostBody) {
             try {
                 presenter.saveEdited(post, newPostBody);
-                ToriUI.getCurrent().trackAction(null, "edit-post");
+                ToriUI.getCurrent().trackAction("edit-post");
                 // this component will be replaced with a new one. So no need to
                 // change the state.
             } catch (final DataSourceException e) {

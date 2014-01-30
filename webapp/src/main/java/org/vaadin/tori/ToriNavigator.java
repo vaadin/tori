@@ -67,10 +67,7 @@ public class ToriNavigator extends Navigator {
                     ((AbstractView<?, ?>) oldView).exit();
                 }
 
-                String currentFragment = Page.getCurrent().getUriFragment();
-                ToriUI.getCurrent().trackAction(
-                        "#" + (currentFragment == null ? "" : currentFragment),
-                        null);
+                ToriUI.getCurrent().trackAction(null);
             }
 
         });
