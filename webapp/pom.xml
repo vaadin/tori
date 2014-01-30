@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.vaadin.tori</groupId>
 		<artifactId>tori</artifactId>
-		<version>2.0.1</version>
+		<version>1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>webapp</artifactId>
 	<packaging>war</packaging>
@@ -25,9 +25,8 @@
 			</activation>
 			<dependencies>
 				<dependency>
-					<groupId>org.vaadin.tori</groupId>
+					<groupId>${project.groupId}</groupId>
 					<artifactId>ds-test</artifactId>
-					<version>2.0.1</version>
 				</dependency>
 				<dependency>
 					<groupId>org.json</groupId>
@@ -44,9 +43,8 @@
 			</properties>
 			<dependencies>
 				<dependency>
-					<groupId>org.vaadin.tori</groupId>
+					<groupId>${project.groupId}</groupId>
 					<artifactId>ds-liferay62</artifactId>
-					<version>2.0.1</version>
 				</dependency>
 				<dependency>
 					<groupId>javax.portlet</groupId>
@@ -55,7 +53,7 @@
 				</dependency>
 			</dependencies>
 			<build>
-				<finalName>tori-portlet-${version}.0</finalName>
+				<finalName>tori-portlet-6.2.${version}</finalName>
 			</build>
 		</profile>
 		<profile>
@@ -67,14 +65,12 @@
 			</properties>
 			<dependencies>
 				<dependency>
-					<groupId>org.vaadin.tori</groupId>
+					<groupId>${project.groupId}</groupId>
 					<artifactId>ds-liferay</artifactId>
-					<version>2.0.1</version>
 				</dependency>
 				<dependency>
-					<groupId>org.vaadin.tori</groupId>
+					<groupId>${project.groupId}</groupId>
 					<artifactId>tori-services-vaadin</artifactId>
-					<version>2.0.1</version>
 				</dependency>
 				<dependency>
 					<groupId>javax.portlet</groupId>
@@ -97,9 +93,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.vaadin.tori</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>common</artifactId>
-			<version>2.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.vaadin</groupId>
