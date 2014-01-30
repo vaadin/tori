@@ -38,7 +38,6 @@ import com.vaadin.ui.themes.Reindeer;
 public class ThreadMoveComponent2 extends Window {
 
     private final VerticalLayout layout = new VerticalLayout();
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We ignore serialization")
     private final DiscussionThread thread;
     private Tree categories;
 

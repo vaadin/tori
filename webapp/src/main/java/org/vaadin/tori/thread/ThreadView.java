@@ -25,20 +25,17 @@ import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.View;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 public interface ThreadView extends View {
     /**
      * May return <code>null</code>, e.g. when the user visited an invalid URL,
      * or a new thread is being created.
      */
-    @CheckForNull
+
     DiscussionThread getCurrentThread();
 
-    void displayPosts(@NonNull List<Post> posts, Long selectedPostId);
+    void displayPosts(List<Post> posts, Long selectedPostId);
 
-    void displayThreadNotFoundError(@NonNull String threadIdString);
+    void displayThreadNotFoundError(String threadIdString);
 
     void confirmPostReported();
 
@@ -52,7 +49,7 @@ public interface ThreadView extends View {
 
     void confirmPostDeleted();
 
-    void refreshScores(@NonNull Post post, long newScore);
+    void refreshScores(Post post, long newScore);
 
     /**
      * Acknowledge that the post was properly accepted and saved.
@@ -61,7 +58,7 @@ public interface ThreadView extends View {
      *            The new {@link Post} <strong>that should be added to the
      *            thread visually (if applicable).</strong>
      */
-    void confirmReplyPostedAndShowIt(@NonNull Post updatedPost);
+    void confirmReplyPostedAndShowIt(Post updatedPost);
 
     /**
      * This method is called when a reply is tried to be sent, but the current
@@ -83,21 +80,21 @@ public interface ThreadView extends View {
 
     void redirectToDashboard();
 
-    void displayNewThreadFormFor(@NonNull Category category);
+    void displayNewThreadFormFor(Category category);
 
     /** May return <code>null</code>, e.g. when the user visited an invalid URL */
-    @CheckForNull
+
     Category getCurrentCategory();
 
     /** For those occasions when a regular error message simply doesn't suffice. */
     void panic();
 
-    void appendToReply(@NonNull String textToAppend);
+    void appendToReply(String textToAppend);
 
     /** Re-renders the post with the given post. */
     void refresh(Post post);
 
-    void updateAttachmentList(@NonNull LinkedHashMap<String, byte[]> attachments);
+    void updateAttachmentList(LinkedHashMap<String, byte[]> attachments);
 
     void otherUserAuthored(Post post);
 

@@ -26,15 +26,12 @@ import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.exception.NoSuchCategoryException;
 import org.vaadin.tori.mvp.Presenter;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 public class CategoryPresenter extends Presenter<CategoryView> {
 
     /**
      * This is <code>null</code> if the user is visiting a non-existing category
      */
-    @CheckForNull
+
     private Category currentCategory;
 
     public CategoryPresenter(CategoryView view) {
@@ -44,7 +41,6 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     /* package protected due to testing */
     final ThreadProvider recentPostsProvider = new ThreadProvider() {
         @Override
-        @NonNull
         public List<DiscussionThread> getThreadsBetween(final int from,
                 final int to) throws DataSourceException {
             final List<DiscussionThread> recentPosts = dataSource
@@ -62,7 +58,6 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     /* package protected due to testing */
     final ThreadProvider myPostsProvider = new ThreadProvider() {
         @Override
-        @NonNull
         public List<DiscussionThread> getThreadsBetween(final int from,
                 final int to) throws DataSourceException {
             return dataSource.getMyPostThreads(from, to);
@@ -77,7 +72,6 @@ public class CategoryPresenter extends Presenter<CategoryView> {
     /* package protected due to testing */
     final ThreadProvider defaultThreadsProvider = new ThreadProvider() {
         @Override
-        @NonNull
         public List<DiscussionThread> getThreadsBetween(final int from,
                 final int to) throws DataSourceException {
             if (currentCategory != null) {
@@ -148,7 +142,7 @@ public class CategoryPresenter extends Presenter<CategoryView> {
      * Might return <code>null</code> if the visited URL doesn't include a valid
      * category id.
      */
-    @CheckForNull
+
     public Category getCurrentCategory() {
         return currentCategory;
     }

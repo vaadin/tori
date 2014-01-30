@@ -2,9 +2,6 @@ package org.vaadin.tori.util;
 
 import org.vaadin.tori.data.DataSource.UrlInfo;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 public interface UrlConverter {
     /**
      * @param queryUrl
@@ -18,7 +15,5 @@ public interface UrlConverter {
      * @throws Exception
      *             if the translation to a Tori fragment was unsuccessful.
      */
-    @CheckForNull
-    UrlInfo getToriFragment(@NonNull String queryUrl, String queryPart)
-            throws Exception;
+    UrlInfo getToriFragment(String queryUrl, String queryPart) throws Exception;
 }

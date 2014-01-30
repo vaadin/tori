@@ -18,8 +18,6 @@ package org.vaadin.tori;
 
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-
 public class Configuration {
 
     private boolean updatePageTitle;
@@ -50,7 +48,6 @@ public class Configuration {
      * The Google Analytics tracker to be used to log activity.
      * <code>null</code> for not to log.
      */
-    @CheckForNull
     public String getGoogleAnalyticsTrackerId() {
         return googleAnalyticsTrackerId;
     }

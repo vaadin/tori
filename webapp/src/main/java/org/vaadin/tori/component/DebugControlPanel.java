@@ -168,10 +168,8 @@ public class DebugControlPanel extends CustomComponent implements
     private final DebugAuthorizationService authorizationService;
     private final ToriNavigator navigator;
 
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "we don't care about serialization")
     private ContextData data;
 
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "we don't care about serialization")
     private final Logger log = Logger.getLogger(getClass());
     protected com.vaadin.navigator.View currentView;
 

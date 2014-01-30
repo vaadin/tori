@@ -18,8 +18,6 @@ package org.vaadin.tori.util;
 
 import org.vaadin.tori.data.entity.User;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 /**
  * Since the formatting allowed in signatures may differ from the formatting
  * allowed in a post, this interface allows the back-end to define it so.
@@ -40,6 +38,5 @@ public interface SignatureFormatter {
      * @return The XHTML to be rendered as-is.
      * @see User#getSignatureRaw()
      */
-    @NonNull
-    String format(@NonNull String rawSignature);
+    String format(String rawSignature);
 }

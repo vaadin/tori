@@ -36,8 +36,6 @@ import org.vaadin.tori.util.UserBadgeProvider;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-
 @SuppressWarnings("serial")
 public class ToriApiLoader implements Serializable {
 
@@ -47,7 +45,6 @@ public class ToriApiLoader implements Serializable {
     private final SignatureFormatter signatureFormatter;
     private final AuthorizationService authorizationService;
 
-    @CheckForNull
     private final UserBadgeProvider userBadgeProvider;
     private final UrlConverter urlConverter;
     private final ToriActivityMessaging toriActivityMessaging;
@@ -194,7 +191,6 @@ public class ToriApiLoader implements Serializable {
         return authorizationService;
     }
 
-    @CheckForNull
     public UserBadgeProvider getUserBadgeProvider() {
         return userBadgeProvider;
     }

@@ -24,9 +24,6 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.View;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 public interface CategoryView extends View {
     public interface ThreadProvider {
         /**
@@ -41,12 +38,12 @@ public interface CategoryView extends View {
          * Get all threads in indices between, and including, <code>from</code>
          * and <code>to</code>.
          */
-        @NonNull
+
         public List<DiscussionThread> getThreadsBetween(int from, int to)
                 throws DataSourceException;
     }
 
-    void displaySubCategories(@NonNull List<Category> subCategories,
+    void displaySubCategories(List<Category> subCategories,
             boolean specialCategory);
 
     // void displayThreads(List<DiscussionThread> threadsInCategory);
@@ -59,10 +56,10 @@ public interface CategoryView extends View {
      * <strong>Note:</strong> This method may return <code>null</code>, if the
      * user visited an url leading to an non-existent category
      */
-    @CheckForNull
+
     Category getCurrentCategory();
 
-    void displayThreads(@NonNull ThreadProvider threadProvider);
+    void displayThreads(ThreadProvider threadProvider);
 
     void confirmFollowing(DiscussionThread thread);
 

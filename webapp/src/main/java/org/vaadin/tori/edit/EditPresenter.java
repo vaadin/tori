@@ -22,9 +22,6 @@ import org.vaadin.tori.Configuration;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.Presenter;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 public class EditPresenter extends Presenter<EditView> {
 
     public EditPresenter(EditView view) {
@@ -50,9 +47,8 @@ public class EditPresenter extends Presenter<EditView> {
 
     public final void savePreferences(final Map<String, String> replacements,
             final boolean replaceMessageBoardsLinks, boolean updatePageTitle,
-            String pageTitlePrefix,
-            final @CheckForNull String googleAnalyticsTrackerId,
-            @NonNull final String pathRoot) {
+            String pageTitlePrefix, final String googleAnalyticsTrackerId,
+            final String pathRoot) {
         try {
             final Configuration config = new Configuration();
             config.setReplaceMessageBoardsLinks(replaceMessageBoardsLinks);

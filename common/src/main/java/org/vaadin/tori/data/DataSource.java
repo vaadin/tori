@@ -32,9 +32,6 @@ import org.vaadin.tori.exception.NoSuchCategoryException;
 import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.service.post.PostReport;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 public interface DataSource {
 
     public interface UrlInfo {
@@ -52,7 +49,6 @@ public interface DataSource {
      * 
      * @return all root {@link Category} instances.
      */
-    @NonNull
     List<Category> getRootCategories() throws DataSourceException;
 
     /**
@@ -63,7 +59,6 @@ public interface DataSource {
      *            The parent <code>Category</code> for the queried
      *            <code>Categories</code>.
      */
-    @NonNull
     List<Category> getSubCategories(Category category)
             throws DataSourceException;
 
@@ -84,8 +79,7 @@ public interface DataSource {
      * @see #getThreadCountRecursively(Category)
      * @see #getThreads(Category, int, int)
      */
-    @NonNull
-    List<DiscussionThread> getThreads(@NonNull Category category)
+    List<DiscussionThread> getThreads(Category category)
             throws DataSourceException;
 
     /**
@@ -103,15 +97,15 @@ public interface DataSource {
      * @see #getThreadCountRecursively(Category)
      * @see #getThreads()
      */
-    @NonNull
-    List<DiscussionThread> getThreads(@NonNull Category category,
-            int startIndex, int endIndex) throws DataSourceException;
+
+    List<DiscussionThread> getThreads(Category category, int startIndex,
+            int endIndex) throws DataSourceException;
 
     /**
      * Returns the Category corresponding to the id or <code>null</code> if no
      * such Category exist.
      */
-    @CheckForNull
+
     Category getCategory(long categoryId) throws DataSourceException;
 
     /**
@@ -122,7 +116,7 @@ public interface DataSource {
      *            Category from which to count the threads.
      * @return number of DiscussionThreads
      */
-    long getThreadCountRecursively(@NonNull Category category)
+    long getThreadCountRecursively(Category category)
             throws DataSourceException;
 
     /**
@@ -133,7 +127,7 @@ public interface DataSource {
      *            Category from which to count the threads.
      * @return number of DiscussionThreads
      */
-    long getThreadCount(@NonNull Category category) throws DataSourceException;
+    long getThreadCount(Category category) throws DataSourceException;
 
     /**
      * Returns the number of {@link DiscussionThread DiscussionThreads} in the
@@ -143,14 +137,13 @@ public interface DataSource {
      *            Category from which to count the unread threads.
      * @return number of unread DiscussionThreads
      */
-    long getUnreadThreadCount(@NonNull Category category)
-            throws DataSourceException;
+    long getUnreadThreadCount(Category category) throws DataSourceException;
 
     /**
      * Returns the {@link DiscussionThread} corresponding to the id or
      * <code>null</code> if no such <code>DiscussionThread</code> exists.
      */
-    @CheckForNull
+
     DiscussionThread getThread(long threadId) throws NoSuchThreadException,
             DataSourceException;
 
@@ -158,9 +151,8 @@ public interface DataSource {
      * Returns all {@link Post Posts} in a {@link Thread} in ascending time
      * order (oldest, i.e. first, post first).
      */
-    @NonNull
-    List<Post> getPosts(@NonNull DiscussionThread thread)
-            throws DataSourceException;
+
+    List<Post> getPosts(DiscussionThread thread) throws DataSourceException;
 
     /**
      * Saves all changes made to the given {@link Category Categories}.
@@ -168,8 +160,7 @@ public interface DataSource {
      * @param categoriesToSave
      *            {@link Category Categories} to save.
      */
-    void save(@NonNull Iterable<Category> categoriesToSave)
-            throws DataSourceException;
+    void save(Iterable<Category> categoriesToSave) throws DataSourceException;
 
     /**
      * Saves all changes made to the given {@link Category Category} or adds it
@@ -179,7 +170,7 @@ public interface DataSource {
      *            {@link Category Category} to save.
      * @return
      */
-    Category save(@NonNull Category categoryToSave) throws DataSourceException;
+    Category save(Category categoryToSave) throws DataSourceException;
 
     /**
      * Removes the given {@link Category} along with all containing
@@ -189,7 +180,7 @@ public interface DataSource {
      * @param categoryToDelete
      *            {@link Category Category} to delete.
      */
-    void delete(@NonNull Category categoryToDelete) throws DataSourceException;
+    void delete(Category categoryToDelete) throws DataSourceException;
 
     /**
      * Handles the reporting of a single {@link Post}.
@@ -197,31 +188,29 @@ public interface DataSource {
      * @param report
      *            The report in its entirety.
      */
-    void reportPost(@NonNull PostReport report) throws DataSourceException;
+    void reportPost(PostReport report) throws DataSourceException;
 
-    void save(@NonNull Post post) throws DataSourceException;
+    void save(Post post) throws DataSourceException;
 
-    void ban(@NonNull User user) throws DataSourceException;
+    void ban(User user) throws DataSourceException;
 
-    void unban(@NonNull User user) throws DataSourceException;
+    void unban(User user) throws DataSourceException;
 
-    void follow(@NonNull DiscussionThread thread) throws DataSourceException;
+    void follow(DiscussionThread thread) throws DataSourceException;
 
-    void unFollow(@NonNull DiscussionThread thread) throws DataSourceException;
+    void unFollow(DiscussionThread thread) throws DataSourceException;
 
-    boolean isFollowing(@NonNull DiscussionThread thread)
-            throws DataSourceException;
+    boolean isFollowing(DiscussionThread thread) throws DataSourceException;
 
-    void delete(@NonNull Post post) throws DataSourceException;
+    void delete(Post post) throws DataSourceException;
 
-    @NonNull
-    PostVote getPostVote(@NonNull Post post) throws DataSourceException;
+    PostVote getPostVote(Post post) throws DataSourceException;
 
     /**
      * Deletes the current user's possible vote on the given {@link Post}. If no
      * such vote is given, this method does nothing.
      */
-    void removeUserVote(@NonNull Post post) throws DataSourceException;
+    void removeUserVote(Post post) throws DataSourceException;
 
     /**
      * The current user upvotes the given {@link Post}.
@@ -229,7 +218,7 @@ public interface DataSource {
      * <em>Note:</em> This method must make sure that all previous votes on the
      * given {@link Post} are removed before the new vote is given.
      */
-    void upvote(@NonNull Post post) throws DataSourceException;
+    void upvote(Post post) throws DataSourceException;
 
     /**
      * The current user downvotes the given {@link Post}
@@ -237,7 +226,7 @@ public interface DataSource {
      * <em>Note:</em> This method must make sure that all previous votes on the
      * given {@link Post} are removed before the new vote is given.
      */
-    void downvote(@NonNull Post post) throws DataSourceException;
+    void downvote(Post post) throws DataSourceException;
 
     /**
      * Upvotes count as +1 points, downvotes count as -1 points.
@@ -246,7 +235,7 @@ public interface DataSource {
      * or this method might be split in three: <code>getUpvotes</code>,
      * <code>getDownvotes</code> and <code>getVoteCount</code>
      */
-    long getScore(@NonNull Post post) throws DataSourceException;
+    long getScore(Post post) throws DataSourceException;
 
     /**
      * Same as {@link #save(Post)}, but makes sure that the <code>post</code>'s
@@ -256,27 +245,20 @@ public interface DataSource {
      * 
      * @return The properly updated {@link Post}
      */
-    Post saveAsCurrentUser(@NonNull Post post, Map<String, byte[]> files)
+    Post saveAsCurrentUser(Post post, Map<String, byte[]> files)
             throws DataSourceException;
 
-    void move(@NonNull DiscussionThread thread,
-            @NonNull Category destinationCategory) throws DataSourceException;
-
-    @NonNull
-    DiscussionThread sticky(@NonNull DiscussionThread thread)
+    void move(DiscussionThread thread, Category destinationCategory)
             throws DataSourceException;
 
-    @NonNull
-    DiscussionThread unsticky(@NonNull DiscussionThread thread)
+    DiscussionThread sticky(DiscussionThread thread) throws DataSourceException;
+
+    DiscussionThread unsticky(DiscussionThread thread)
             throws DataSourceException;
 
-    @NonNull
-    DiscussionThread lock(@NonNull DiscussionThread thread)
-            throws DataSourceException;
+    DiscussionThread lock(DiscussionThread thread) throws DataSourceException;
 
-    @NonNull
-    DiscussionThread unlock(@NonNull DiscussionThread thread)
-            throws DataSourceException;
+    DiscussionThread unlock(DiscussionThread thread) throws DataSourceException;
 
     /**
      * Deletes a thread.
@@ -291,7 +273,7 @@ public interface DataSource {
      * @see org.vaadin.tori.data.entity.PostVote PostVote
      * @see org.vaadin.tori.data.entity.Following Following
      */
-    void delete(@NonNull DiscussionThread thread) throws DataSourceException;
+    void delete(DiscussionThread thread) throws DataSourceException;
 
     /**
      * This method is responsible for making sure that a new thread is created,
@@ -303,9 +285,9 @@ public interface DataSource {
      * @return the newly created {@link DiscussionThread} that contains a proper
      *         thread id.
      */
-    @NonNull
-    DiscussionThread saveNewThread(@NonNull DiscussionThread newThread,
-            final Map<String, byte[]> files, @NonNull Post firstPost)
+
+    DiscussionThread saveNewThread(DiscussionThread newThread,
+            final Map<String, byte[]> files, Post firstPost)
             throws DataSourceException;
 
     /**
@@ -339,13 +321,11 @@ public interface DataSource {
      */
     void markRead(DiscussionThread thread) throws DataSourceException;
 
-    @NonNull
     List<DiscussionThread> getRecentPosts(int from, int to)
             throws DataSourceException;
 
     int getRecentPostsAmount() throws DataSourceException;
 
-    @NonNull
     List<DiscussionThread> getMyPostThreads(int from, int to)
             throws DataSourceException;
 
@@ -355,7 +335,6 @@ public interface DataSource {
 
     boolean isLoggedInUser();
 
-    @NonNull
     Map<String, String> getPostReplacements();
 
     boolean getReplaceMessageBoardsLinks();
@@ -364,13 +343,13 @@ public interface DataSource {
 
     String getPageTitlePrefix();
 
-    void save(@NonNull Configuration configuration) throws DataSourceException;
+    void save(Configuration configuration) throws DataSourceException;
 
     /**
      * @return The tracker id to be used, or <code>null</code> if there is no
      *         tracker id. Then the tracker won't be used at all.
      */
-    @CheckForNull
+
     String getGoogleAnalyticsTrackerId();
 
     /**
@@ -398,7 +377,7 @@ public interface DataSource {
      * @throws DataSourceException
      *             pokemon
      */
-    @CheckForNull
+
     UrlInfo getUrlInfoFromBackendNativeRequest(HttpServletRequest servletRequest)
             throws NoSuchThreadException, DataSourceException;
 

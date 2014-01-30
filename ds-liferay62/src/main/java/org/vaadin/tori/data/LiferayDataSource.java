@@ -95,9 +95,6 @@ import com.liferay.portlet.ratings.service.RatingsEntryLocalServiceUtil;
 import com.liferay.portlet.ratings.service.RatingsEntryServiceUtil;
 import com.liferay.portlet.ratings.service.RatingsStatsLocalServiceUtil;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     private static final boolean INCLUDE_SUBSCRIBED = false;
@@ -168,7 +165,6 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         }
     }
 
-    @NonNull
     private List<Category> internalGetSubCategories(final Category category)
             throws DataSourceException {
         final long parentCategoryId = (category != null ? category.getId()
@@ -593,7 +589,6 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         post.setBodyRaw(bodyRaw);
     }
 
-    @NonNull
     private List<Attachment> getAttachments(final MBMessage message)
             throws PortalException, SystemException {
 
@@ -794,7 +789,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public void unban(@NonNull final User user) throws DataSourceException {
+    public void unban(final User user) throws DataSourceException {
         try {
             MBBanServiceUtil.deleteBan(user.getId(), mbBanServiceContext);
         } catch (final PortalException e) {
@@ -1253,7 +1248,6 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     /** @see org.vaadin.tori.ToriApplication.TORI_MESSAGE_ID */
     private static final String TORI_MESSAGE_ID = "toriMessageId";
 
-    @CheckForNull
     private Map<String, String> postReplacements;
 
     private void determineMessageBoardsParameters(final PortletRequest request) {
@@ -1356,7 +1350,6 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    @NonNull
     public final Map<String, String> getPostReplacements() {
         if (postReplacements == null) {
             if (portletPreferences != null) {
@@ -1470,7 +1463,6 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    @CheckForNull
     public UrlInfo getUrlInfoFromBackendNativeRequest(
             final HttpServletRequest servletRequest)
             throws org.vaadin.tori.exception.NoSuchThreadException,

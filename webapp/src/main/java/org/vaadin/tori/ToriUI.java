@@ -43,8 +43,6 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-
 @SuppressWarnings("serial")
 @Widgetset("org.vaadin.tori.widgetset.ToriWidgetset")
 public class ToriUI extends UI {
@@ -55,7 +53,6 @@ public class ToriUI extends UI {
     private ToriNavigator navigator;
     private VerticalLayout windowLayout;
 
-    @CheckForNull
     private GoogleAnalyticsTracker analytics;
 
     private String lastPath = "";
@@ -132,7 +129,6 @@ public class ToriUI extends UI {
      *            the action performed in the path. <code>null</code> to ignore.
      *            E.g. "reply"
      */
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH", justification = "false positive")
     public void trackAction(final String path, final String action) {
         if (analytics != null) {
 

@@ -43,9 +43,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 @SuppressWarnings("serial")
 public class CategoryViewImpl extends
         AbstractView<CategoryView, CategoryPresenter> implements CategoryView {
@@ -110,7 +107,6 @@ public class CategoryViewImpl extends
         button.setIcon(new ThemeResource("images/icon-newthread.png"));
         button.addClickListener(new Button.ClickListener() {
             @Override
-            @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE", justification = "This method is never called if the category isn't set")
             public void buttonClick(final ClickEvent event) {
                 UI.getCurrent()
                         .getNavigator()
@@ -178,7 +174,6 @@ public class CategoryViewImpl extends
     }
 
     @Override
-    @CheckForNull
     public Category getCurrentCategory() {
         return getPresenter().getCurrentCategory();
     }
@@ -239,7 +234,7 @@ public class CategoryViewImpl extends
     }
 
     @Override
-    public void displayThreads(@NonNull final ThreadProvider threadProvider) {
+    public void displayThreads(final ThreadProvider threadProvider) {
         threadListing = new ThreadListing2(getPresenter(), threadProvider);
         replacePlaceholder();
         setThreadLabel(THREADS);

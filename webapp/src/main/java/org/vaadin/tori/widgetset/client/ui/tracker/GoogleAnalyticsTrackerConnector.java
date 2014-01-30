@@ -41,7 +41,6 @@ public class GoogleAnalyticsTrackerConnector extends AbstractComponentConnector
     }
 
     @Override
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SBSC_USE_STRINGBUFFER_CONCATENATION", justification = "non-issue, readibility")
     public void updateFromUIDL(final UIDL uidl,
             final ApplicationConnection client) {
         final String trackerId = uidl.getStringAttribute("trackerid");

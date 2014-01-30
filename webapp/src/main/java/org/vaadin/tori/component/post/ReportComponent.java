@@ -41,9 +41,7 @@ import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
 public class ReportComponent extends CustomComponent {
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "ignore serialization")
     private final Post post;
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "ignore serialization")
     private final ThreadPresenter presenter;
     private final PopupButton reportPopup;
     private Component reportLayout;

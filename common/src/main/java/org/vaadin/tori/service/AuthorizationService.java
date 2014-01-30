@@ -20,8 +20,6 @@ import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 /**
  * Provides methods for specifying access rights to resources or certain
  * operations.
@@ -34,36 +32,36 @@ public interface AuthorizationService {
 
     boolean mayReportPosts();
 
-    boolean mayFollow(@NonNull Category category);
+    boolean mayFollow(Category category);
 
-    boolean mayDelete(@NonNull Category category);
+    boolean mayDelete(Category category);
 
-    boolean mayEdit(@NonNull Category category);
+    boolean mayEdit(Category category);
 
-    boolean mayEdit(@NonNull Post post);
+    boolean mayEdit(Post post);
 
-    boolean mayReplyIn(@NonNull DiscussionThread thread);
+    boolean mayReplyIn(DiscussionThread thread);
 
     boolean mayBan();
 
-    boolean mayFollow(@NonNull DiscussionThread currentThread);
+    boolean mayFollow(DiscussionThread currentThread);
 
-    boolean mayDelete(@NonNull Post post);
+    boolean mayDelete(Post post);
 
     boolean mayVote();
 
-    boolean mayMove(@NonNull DiscussionThread thread);
+    boolean mayMove(DiscussionThread thread);
 
-    boolean maySticky(@NonNull DiscussionThread thread);
+    boolean maySticky(DiscussionThread thread);
 
-    boolean mayLock(@NonNull DiscussionThread thread);
+    boolean mayLock(DiscussionThread thread);
 
-    boolean mayDelete(@NonNull DiscussionThread thread);
+    boolean mayDelete(DiscussionThread thread);
 
-    boolean mayCreateThreadIn(@NonNull Category category);
+    boolean mayCreateThreadIn(Category category);
 
-    boolean mayAddFiles(@NonNull Category category);
+    boolean mayAddFiles(Category category);
 
-    boolean mayView(@NonNull Category category);
+    boolean mayView(Category category);
 
 }

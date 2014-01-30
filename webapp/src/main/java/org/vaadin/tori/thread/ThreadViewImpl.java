@@ -64,10 +64,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-
 @SuppressWarnings("serial")
-@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD_STORE", justification = "We're ignoring serialization")
 public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         implements ThreadView {
 
@@ -104,7 +101,6 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         }
     };
 
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "We don't care about serialization")
     private final static String COLLAPSED = "collapsed";
     private final static String INPUT_CACHE_NAME = "inputcache";
     private final Map<Post, PostComponent> postsToComponents = new HashMap<Post, PostComponent>();
@@ -140,7 +136,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
      * @return returns <code>null</code> if the visitor has entered an invalid
      *         URL or a new thread is being created.
      */
-    @CheckForNull
+
     @Override
     public DiscussionThread getCurrentThread() {
         return getPresenter().getCurrentThread();
@@ -149,7 +145,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     /**
      * @return <code>null</code> if the visitor has entered an invalid URL.
      */
-    @CheckForNull
+
     @Override
     public Category getCurrentCategory() {
         return getPresenter().getCurrentCategory();

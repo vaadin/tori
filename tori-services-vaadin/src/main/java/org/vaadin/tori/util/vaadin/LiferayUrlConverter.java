@@ -10,9 +10,6 @@ import org.vaadin.tori.util.UrlConverter;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 public class LiferayUrlConverter implements UrlConverter {
     private static final Pattern LIFERAY_FORUM_URL_MESSAGE_PATTERN = Pattern
             .compile("/-/[^/]+/view_message/([0-9]+)");
@@ -22,9 +19,8 @@ public class LiferayUrlConverter implements UrlConverter {
             .compile(".+mbCategoryId=([0-9]+)(&.*)?");
 
     @Override
-    @CheckForNull
-    public UrlInfo getToriFragment(@NonNull final String queryUrl,
-            final String queryPart) throws Exception {
+    public UrlInfo getToriFragment(final String queryUrl, final String queryPart)
+            throws Exception {
         final Matcher messageMatcher = LIFERAY_FORUM_URL_MESSAGE_PATTERN
                 .matcher(queryUrl);
         if (messageMatcher.matches()) {

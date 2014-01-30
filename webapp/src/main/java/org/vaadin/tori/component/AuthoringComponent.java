@@ -39,8 +39,6 @@ import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-
 @SuppressWarnings("serial")
 public class AuthoringComponent extends CustomComponent {
     public interface AuthoringListener {
@@ -68,9 +66,8 @@ public class AuthoringComponent extends CustomComponent {
     private String attachmentFileName;
     private ByteArrayOutputStream attachmentData;
 
-    @CheckForNull
     private String italicSyntax;
-    @CheckForNull
+
     private String boldSyntax;
     private int maxFileSize = 307200;
 

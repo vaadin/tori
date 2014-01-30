@@ -14,9 +14,6 @@ import com.liferay.portal.model.Role;
 import com.liferay.portal.service.RoleServiceUtil;
 import com.liferay.portlet.expando.service.ExpandoValueLocalServiceUtil;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 public class VaadinBadgeProvider implements UserBadgeProvider {
 
     private static final String BADGE_FONT_ICON_CHARACTER = "\ue015";
@@ -26,8 +23,7 @@ public class VaadinBadgeProvider implements UserBadgeProvider {
     private static final String BADGE_ROLE_NAME = "Vaadin 7 Certified Developer";
 
     @Override
-    @CheckForNull
-    public String getHtmlBadgeFor(@NonNull final User user) {
+    public String getHtmlBadgeFor(final User user) {
         final String userId = getBadgeUserId(user);
         if (userId == null) {
             return null;
@@ -109,7 +105,6 @@ public class VaadinBadgeProvider implements UserBadgeProvider {
         return (com.liferay.portal.model.User) user.getOriginalUserObject();
     }
 
-    @NonNull
     private static String md5(final String stringToHash) {
         try {
             final MessageDigest md = MessageDigest.getInstance("md5");

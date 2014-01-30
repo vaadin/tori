@@ -47,9 +47,6 @@ import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.service.post.PostReport;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 public class TestDataSource implements DataSource, DebugDataSource {
 
     private static final long CURRENT_USER_ID = 3;
@@ -132,7 +129,6 @@ public class TestDataSource implements DataSource, DebugDataSource {
         return _getSubCategories(category);
     }
 
-    @NonNull
     private List<Category> _getSubCategories(final Category category)
             throws DataSourceException {
         return executeWithEntityManager(new Command<List<Category>>() {
@@ -361,7 +357,6 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "NP_ALWAYS_NULL", justification = "System.out will never be null, afaik")
     public void reportPost(final PostReport report) {
         System.out.println("TestDataSource.reportPost()");
         System.out.println("Post: " + report.getPost());
@@ -403,7 +398,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void unban(@NonNull final User user) throws DataSourceException {
+    public void unban(final User user) throws DataSourceException {
         user.setBanned(false);
         save(user);
     }
@@ -816,7 +811,6 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "DMI_RANDOM_USED_ONLY_ONCE", justification = "just a test implementation")
     public boolean isRead(final DiscussionThread thread) {
         // TODO actual implementation
         return new Random().nextBoolean();
@@ -946,7 +940,6 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    @CheckForNull
     public UrlInfo getUrlInfoFromBackendNativeRequest(
             final HttpServletRequest servletRequest)
             throws NoSuchThreadException, DataSourceException {

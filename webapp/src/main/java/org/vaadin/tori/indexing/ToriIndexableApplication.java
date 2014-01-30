@@ -31,8 +31,6 @@ import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.util.PostFormatter;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 public class ToriIndexableApplication {
 
     public static final String ESCAPED_FRAGMENT = "_escaped_fragment_";
@@ -55,8 +53,7 @@ public class ToriIndexableApplication {
     }
 
     /** Get the resulting XHTML page (<code>&lt;html&gt;</code> tags and all) */
-    public String getResultInHtml(
-            @NonNull final HttpServletRequest servletRequest) {
+    public String getResultInHtml(final HttpServletRequest servletRequest) {
 
         try {
             final UrlInfo urlInfo = getDataSource()
@@ -79,7 +76,7 @@ public class ToriIndexableApplication {
         return view.getHtml();
     }
 
-    private String getRedirectionTag(@NonNull final UrlInfo urlInfo) {
+    private String getRedirectionTag(final UrlInfo urlInfo) {
         @SuppressWarnings("deprecation")
         String pathRoot = getDataSource().getPathRoot();
         if (pathRoot == null) {
@@ -107,9 +104,8 @@ public class ToriIndexableApplication {
                 + "'\">";
     }
 
-    @NonNull
     private static List<String> getArguments(
-            @NonNull final ArrayList<String> fragmentArguments) {
+            final ArrayList<String> fragmentArguments) {
         if (fragmentArguments.isEmpty()) {
             return fragmentArguments;
         }
@@ -128,9 +124,8 @@ public class ToriIndexableApplication {
         }
     }
 
-    @NonNull
     private static ArrayList<String> getFragmentArguments(
-            @NonNull final HttpServletRequest servletRequest) {
+            final HttpServletRequest servletRequest) {
         final String fragment = servletRequest.getParameter(ESCAPED_FRAGMENT);
 
         if (fragment == null) {
@@ -149,8 +144,7 @@ public class ToriIndexableApplication {
         return args;
     }
 
-    @NonNull
-    private static IndexableView getIndexableView(@NonNull final String view,
+    private static IndexableView getIndexableView(final String view,
             final List<String> arguments,
             final ToriIndexableApplication application) {
 

@@ -23,24 +23,19 @@ import javax.persistence.Transient;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.util.SignatureFormatter;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-
 @Entity
 public class User extends AbstractEntity {
 
     @Transient
-    @CheckForNull
     private Object originalUserObject;
 
     @Column(nullable = false)
     private String displayedName;
 
     @Column(nullable = true)
-    @CheckForNull
     private String avatarUrl;
 
     @Column(nullable = true)
-    @CheckForNull
     private String rawSignature;
 
     @Column(nullable = false)
@@ -65,7 +60,7 @@ public class User extends AbstractEntity {
     /**
      * The URL to the avatar image for this user. May return <code>null</code>.
      */
-    @CheckForNull
+
     public String getAvatarUrl() {
         return avatarUrl;
     }
@@ -83,7 +78,7 @@ public class User extends AbstractEntity {
      * 
      * @see SignatureFormatter#format(String)
      */
-    @CheckForNull
+
     public String getSignatureRaw() {
         return rawSignature;
     }

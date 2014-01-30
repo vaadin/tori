@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
-
 public final class ToriUtil {
     private ToriUtil() {
         // not instantiable
@@ -60,7 +58,6 @@ public final class ToriUtil {
 
     /** Remove the first object in an array */
     @java.lang.SuppressWarnings("unchecked")
-    @SuppressWarnings(justification = "Java doesn't support generics in this case")
     public static <T extends Object> T[] tail(final T[] array) {
         ToriUtil.checkForNull(array, "array must not be null");
 

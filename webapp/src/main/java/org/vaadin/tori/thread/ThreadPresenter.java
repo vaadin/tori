@@ -32,16 +32,13 @@ import org.vaadin.tori.service.post.PostReport;
 import org.vaadin.tori.util.ToriActivityMessaging.UserAuthoredListener;
 import org.vaadin.tori.util.ToriActivityMessaging.UserTypingListener;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 public class ThreadPresenter extends Presenter<ThreadView> implements
         UserTypingListener, UserAuthoredListener {
 
     public static final String NEW_THREAD_ARGUMENT = "new";
 
     /** This can be null if the user is visiting a non-existing thread. */
-    @CheckForNull
+
     private DiscussionThread currentThread;
     private Category categoryWhileCreatingNewThread;
     private final LinkedHashMap<String, byte[]> attachments = new LinkedHashMap<String, byte[]>();
@@ -50,7 +47,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         super(view);
     }
 
-    public void setCurrentThreadById(final @NonNull String threadIdString,
+    public void setCurrentThreadById(final String threadIdString,
             String selectedPostIdString) throws DataSourceException {
         DiscussionThread requestedThread = null;
         try {
@@ -104,12 +101,12 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     /**
      * @return <code>null</code> if the URL is invalid.
      */
-    @CheckForNull
+
     public DiscussionThread getCurrentThread() {
         return currentThread;
     }
 
-    public void handlePostReport(final @NonNull PostReport report)
+    public void handlePostReport(final PostReport report)
             throws DataSourceException {
         try {
             dataSource.reportPost(report);
@@ -126,16 +123,16 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         return authorizationService.mayReportPosts();
     }
 
-    public boolean userMayEdit(final @NonNull Post post) {
+    public boolean userMayEdit(final Post post) {
         return authorizationService.mayEdit(post);
     }
 
-    public boolean userMayQuote(final @NonNull Post post) {
+    public boolean userMayQuote(final Post post) {
         return currentThread != null
                 && authorizationService.mayReplyIn(currentThread);
     }
 
-    public void ban(final @NonNull User user) throws DataSourceException {
+    public void ban(final User user) throws DataSourceException {
         try {
             dataSource.ban(user);
             view.confirmBanned(user);
@@ -146,7 +143,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         }
     }
 
-    public void unban(@NonNull final User user) throws DataSourceException {
+    public void unban(final User user) throws DataSourceException {
         try {
             dataSource.unban(user);
             view.confirmUnbanned(user);
@@ -225,7 +222,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     }
 
-    public void delete(final @NonNull Post post) throws DataSourceException {
+    public void delete(final Post post) throws DataSourceException {
         try {
             dataSource.delete(post);
             view.confirmPostDeleted();
@@ -237,7 +234,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     }
 
-    public boolean userMayDelete(final @NonNull Post post) {
+    public boolean userMayDelete(final Post post) {
         return authorizationService.mayDelete(post);
     }
 
@@ -249,7 +246,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
      * If the user hasn't upvoted a post, give it an upvote. If that user
      * already has upvoted the post, remove the vote.
      */
-    public void upvote(final @NonNull Post post) throws DataSourceException {
+    public void upvote(final Post post) throws DataSourceException {
         try {
             if (!getPostVote(post).isUpvote()) {
                 dataSource.upvote(post);
@@ -270,7 +267,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
      * if the user hasn't downvoted a post, give it a downvote. Otherwise,
      * remove this user's downvote.
      */
-    public void downvote(final @NonNull Post post) throws DataSourceException {
+    public void downvote(final Post post) throws DataSourceException {
         try {
             if (!getPostVote(post).isDownvote()) {
                 dataSource.downvote(post);
@@ -287,9 +284,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     }
 
-    @NonNull
-    public PostVote getPostVote(final @NonNull Post post)
-            throws DataSourceException {
+    public PostVote getPostVote(final Post post) throws DataSourceException {
         try {
             return dataSource.getPostVote(post);
         } catch (final DataSourceException e) {
@@ -300,7 +295,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     }
 
-    public long getScore(final @NonNull Post post) throws DataSourceException {
+    public long getScore(final Post post) throws DataSourceException {
         try {
             return dataSource.getScore(post);
         } catch (final DataSourceException e) {
@@ -353,8 +348,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         view.updateAttachmentList(attachments);
     }
 
-    public void sendReply(final @NonNull String rawBody)
-            throws DataSourceException {
+    public void sendReply(final String rawBody) throws DataSourceException {
         if (userMayReply()) {
             try {
                 final Post post = new Post();
@@ -409,11 +403,11 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     }
 
-    public String stripTags(final @NonNull String html) {
+    public String stripTags(final String html) {
         return html.replaceAll("\\<.*?>", "");
     }
 
-    public void handleArguments(final @NonNull String[] arguments)
+    public void handleArguments(final String[] arguments)
             throws NoSuchThreadException, DataSourceException {
         if (arguments.length > 0) {
             if (!arguments[0].equals(NEW_THREAD_ARGUMENT)) {
@@ -449,9 +443,8 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     }
 
-    @NonNull
-    public DiscussionThread createNewThread(final @NonNull Category category,
-            final @NonNull String topic, final @NonNull String rawBody)
+    public DiscussionThread createNewThread(final Category category,
+            final String topic, final String rawBody)
             throws DataSourceException {
         try {
             final DiscussionThread thread = new DiscussionThread(topic);
@@ -476,7 +469,6 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     }
 
-    @CheckForNull
     public Category getCurrentCategory() {
         if (currentThread != null) {
             return currentThread.getCategory();

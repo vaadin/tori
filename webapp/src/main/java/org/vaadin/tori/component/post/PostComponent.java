@@ -54,8 +54,6 @@ import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-
 @SuppressWarnings("serial")
 public class PostComponent extends AbstractComponentContainer implements
         PostComponentRpc {
@@ -337,7 +335,6 @@ public class PostComponent extends AbstractComponentContainer implements
         setDescription(null);
     }
 
-    @CheckForNull
     private Map<String, String> getAttachments(final Post post) {
         Map<String, String> attachments = new HashMap<String, String>();
         if (post.hasAttachments()) {

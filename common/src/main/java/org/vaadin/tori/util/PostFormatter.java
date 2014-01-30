@@ -21,9 +21,6 @@ import java.util.Map;
 
 import org.vaadin.tori.data.entity.Post;
 
-import edu.umd.cs.findbugs.annotations.CheckForNull;
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 /**
  * Since formatting the posts depends on the back-end, this needs to be deferred
  * to the back-end specific projects.
@@ -32,15 +29,14 @@ public interface PostFormatter {
 
     public interface FontsInfo {
         public interface FontFace {
-            @NonNull
+
             String getFontName();
         }
 
         public interface FontSize {
-            @NonNull
+
             String getFontSizeName();
 
-            @NonNull
             String getFontSizeValue();
         }
 
@@ -48,14 +44,12 @@ public interface PostFormatter {
          * @return Font face information. <code>null</code> is returned if the
          *         author is not allowed to change the font.
          */
-        @CheckForNull
         Collection<FontFace> getFontFaces();
 
         /**
          * @return Font size information. <code>null</code> is returned if the
          *         author is not allowed to change the font size.
          */
-        @CheckForNull
         Collection<FontSize> getFontSizes();
     }
 
@@ -70,13 +64,10 @@ public interface PostFormatter {
      * @return The XHTML to be rendered as-is.
      * @see Post#getBodyRaw()
      */
-    @NonNull
-    String format(@NonNull String rawPostBody);
+    String format(String rawPostBody);
 
-    @NonNull
     FontsInfo getFontsInfo();
 
-    @NonNull
     String getQuote(final Post postToQuote);
 
     void setPostReplacements(Map<String, String> postReplacements);
