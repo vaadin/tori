@@ -279,11 +279,6 @@ public class CategoryListing extends
         return presenter;
     }
 
-    @Override
-    protected void navigationTo(final String[] arguments) {
-        // NOP
-    }
-
     /**
      * <p>
      * Remove the create category button, and return the button component.

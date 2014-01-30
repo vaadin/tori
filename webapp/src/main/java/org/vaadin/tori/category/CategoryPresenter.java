@@ -91,6 +91,11 @@ public class CategoryPresenter extends Presenter<CategoryView> {
         }
     };
 
+    @Override
+    public void navigationTo(String[] arguments) {
+        setCurrentCategoryById(arguments[0]);
+    };
+
     public void setCurrentCategoryById(final String categoryIdString) {
         try {
             if (categoryIdString.equals(SpecialCategory.RECENT_POSTS.getId())) {

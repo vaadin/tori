@@ -516,6 +516,14 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             messaging.addUserAuthoredListener(this);
             messaging.addUserTypingListener(this);
         }
+
+        try {
+            handleArguments(args);
+        } catch (final NoSuchThreadException e) {
+            view.displayThreadNotFoundError(String.valueOf(e.getThreadId()));
+        } catch (final DataSourceException e) {
+            view.panic();
+        }
     }
 
     @Override

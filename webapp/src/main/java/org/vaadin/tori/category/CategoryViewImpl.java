@@ -161,11 +161,6 @@ public class CategoryViewImpl extends
     }
 
     @Override
-    protected void navigationTo(final String[] arguments) {
-        super.getPresenter().setCurrentCategoryById(arguments[0]);
-    }
-
-    @Override
     public void displayCategoryNotFoundError(final String requestedCategoryId) {
         layout.removeAllComponents();
         layout.addComponent(new HeadingLabel(

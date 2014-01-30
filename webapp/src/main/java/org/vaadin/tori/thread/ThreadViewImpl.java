@@ -39,7 +39,6 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
-import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.mvp.AbstractView;
 
 import com.ocpsoft.pretty.time.PrettyTime;
@@ -418,17 +417,6 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         layout.addComponent(new HeadingLabel(
                 "This thread does not exist. Maybe someone deleted it?",
                 HeadingLevel.H1));
-    }
-
-    @Override
-    protected void navigationTo(final String[] arguments) {
-        try {
-            super.getPresenter().handleArguments(arguments);
-        } catch (final NoSuchThreadException e) {
-            displayThreadNotFoundError(String.valueOf(e.getThreadId()));
-        } catch (final DataSourceException e) {
-            panic();
-        }
     }
 
     @Override

@@ -241,11 +241,6 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     }
 
     @Override
-    protected void navigationTo(final String[] arguments) {
-
-    }
-
-    @Override
     public void showNotification(final String notification) {
         Notification.show(notification);
     }

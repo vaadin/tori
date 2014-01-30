@@ -85,19 +85,7 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
                             + Arrays.toString(arguments) : ""));
         }
         presenter.navigationTo(arguments);
-        navigationTo(arguments);
     }
-
-    /**
-     * This method is called on each visit of this view.
-     * <p/>
-     * <strong>Tip:</string> use this method to pass the viewed object id to the
-     * presenter for parsing.
-     * 
-     * @param arguments
-     *            the {@link String} parameter passed to this view.
-     */
-    protected abstract void navigationTo(String[] arguments);
 
     public void exit() {
         presenter.navigationFrom();

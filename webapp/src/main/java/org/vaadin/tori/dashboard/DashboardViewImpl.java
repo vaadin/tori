@@ -65,11 +65,6 @@ public class DashboardViewImpl extends
     }
 
     @Override
-    protected void navigationTo(final String[] arguments) {
-        // NOP
-    }
-
-    @Override
     public void panic() {
         layout.removeAllComponents();
         layout.addComponent(new PanicComponent());
