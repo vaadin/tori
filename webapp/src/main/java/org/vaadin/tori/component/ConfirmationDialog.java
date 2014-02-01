@@ -58,7 +58,7 @@ public class ConfirmationDialog extends CustomComponent {
                         } catch (final DataSourceException e) {
                             layout.removeAllComponents();
                             layout.addComponent(new Label(
-                                    DataSourceException.BORING_GENERIC_ERROR_MESSAGE));
+                                    DataSourceException.GENERIC_ERROR_MESSAGE));
                         }
                     }
                 });

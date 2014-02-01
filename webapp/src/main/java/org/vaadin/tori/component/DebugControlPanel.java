@@ -29,15 +29,17 @@ import org.apache.log4j.Logger;
 import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
+import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.category.CategoryView;
-import org.vaadin.tori.dashboard.DashboardView;
+import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.data.entity.AbstractEntity;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.DebugAuthorizationService;
-import org.vaadin.tori.thread.ThreadView;
+import org.vaadin.tori.view.listing.ListingView;
+import org.vaadin.tori.view.thread.ThreadView;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
@@ -115,17 +117,21 @@ public class DebugControlPanel extends CustomComponent implements
                 }
 
                 else {
-                    final Class<?> paramClass = setter.getParameterTypes()[0];
+                    Class<?> paramClass = parseAbstractEntityclass(setter);
                     if (paramClass == Post.class) {
                         throw new IllegalStateException("Setters for "
                                 + Post.class.getName()
                                 + " should be handled by "
                                 + "another piece of code. MAJOR BUG!");
                     } else {
+
                         final Object setterParam = getCorrectTypeOfDataFrom(
                                 paramClass, data);
-                        setter.invoke(authorizationService, setterParam,
-                                newValue);
+                        if (setterParam instanceof AbstractEntity) {
+                            setter.invoke(authorizationService,
+                                    ((AbstractEntity) setterParam).getId(),
+                                    newValue);
+                        }
                     }
                 }
 
@@ -207,11 +213,22 @@ public class DebugControlPanel extends CustomComponent implements
 
     private ContextData getContextData() {
         final ContextData data = new ContextData();
-        if (currentView instanceof DashboardView) {
-            // NOP - no context data, can't populate
-        } else if (currentView instanceof CategoryView) {
-            final CategoryView categoryView = (CategoryView) currentView;
-            data.setCategory(categoryView.getCurrentCategory());
+        if (currentView instanceof ListingView) {
+            String state = ToriUI.getCurrent().getNavigator().getState();
+
+            if (state.startsWith(ToriNavigator.ApplicationView.CATEGORIES
+                    .getNavigatorUrl())) {
+                String sid = state.substring(state.lastIndexOf("/") + 1);
+                long categoryId = Long.parseLong(sid);
+                try {
+                    data.setCategory(ToriApiLoader.getCurrent().getDataSource()
+                            .getCategory(categoryId));
+                } catch (DataSourceException e) {
+                    e.printStackTrace();
+                }
+            }
+            // final ListingView listingView = (ListingView) currentView;
+            // data.setCategory(listingView.getCurrentCategory());
         } else if (currentView instanceof ThreadView) {
             final ThreadView threadView = (ThreadView) currentView;
             final DiscussionThread currentThread = threadView
@@ -350,19 +367,31 @@ public class DebugControlPanel extends CustomComponent implements
         if (methodHasArguments(getter, 0)) {
             return (Boolean) getter.invoke(authorizationService);
         } else if (methodHasArguments(getter, 1)) {
-            final Class<?> paramClass = getter.getParameterTypes()[0];
-            final Object entityParameter = getCorrectTypeOfDataFrom(paramClass,
-                    data);
 
-            if (entityParameter != null) {
+            Class<?> paramClass = parseAbstractEntityclass(getter);
+
+            Object entityParameter = getCorrectTypeOfDataFrom(paramClass, data);
+
+            if (entityParameter instanceof AbstractEntity) {
                 return (Boolean) getter.invoke(authorizationService,
-                        entityParameter);
+                        ((AbstractEntity) entityParameter).getId());
             } else {
                 throw new CheckBoxShouldBeDisabledException();
             }
         } else {
             throw new IllegalArgumentException("Getter has too many parameters");
         }
+    }
+
+    private Class<?> parseAbstractEntityclass(Method getter) {
+        String name = getter.getName();
+        Class<?> result = null;
+        if (name.endsWith("Category")) {
+            result = Category.class;
+        } else if (name.endsWith("Thread")) {
+            result = DiscussionThread.class;
+        }
+        return result;
     }
 
     private Method getGetterFrom(final Method setter) throws SecurityException,
@@ -445,7 +474,8 @@ public class DebugControlPanel extends CustomComponent implements
         if (methodHasArguments(method, 1)) {
             return parameterTypes[0] == boolean.class;
         } else if (methodHasArguments(method, 2)) {
-            return AbstractEntity.class.isAssignableFrom(parameterTypes[0])
+            return (AbstractEntity.class.isAssignableFrom(parameterTypes[0]) || parameterTypes[0]
+                    .toString().equals("long"))
                     && parameterTypes[1] == boolean.class;
         } else {
             throw new IllegalArgumentException(

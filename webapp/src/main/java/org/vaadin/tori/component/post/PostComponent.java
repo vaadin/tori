@@ -41,8 +41,8 @@ import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
-import org.vaadin.tori.thread.ThreadPresenter;
 import org.vaadin.tori.util.UserBadgeProvider;
+import org.vaadin.tori.view.thread.ThreadPresenter;
 import org.vaadin.tori.widgetset.client.ui.post.PostComponentRpc;
 import org.vaadin.tori.widgetset.client.ui.post.PostComponentState;
 
@@ -157,7 +157,7 @@ public class PostComponent extends AbstractComponentContainer implements
                 // change the state.
             } catch (final DataSourceException e) {
                 final Notification n = new Notification(
-                        DataSourceException.BORING_GENERIC_ERROR_MESSAGE,
+                        DataSourceException.GENERIC_ERROR_MESSAGE,
                         Notification.Type.ERROR_MESSAGE);
                 n.show(getUI().getPage());
             }
@@ -170,8 +170,7 @@ public class PostComponent extends AbstractComponentContainer implements
             try {
                 presenter.followThread();
             } catch (final DataSourceException e) {
-                Notification
-                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification.show(DataSourceException.GENERIC_ERROR_MESSAGE);
             }
         }
     };
@@ -182,8 +181,7 @@ public class PostComponent extends AbstractComponentContainer implements
             try {
                 presenter.unFollowThread();
             } catch (final DataSourceException e) {
-                Notification
-                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification.show(DataSourceException.GENERIC_ERROR_MESSAGE);
             }
 
         }
@@ -203,8 +201,7 @@ public class PostComponent extends AbstractComponentContainer implements
             try {
                 presenter.unban(post.getAuthor());
             } catch (final DataSourceException e) {
-                Notification
-                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification.show(DataSourceException.GENERIC_ERROR_MESSAGE);
             }
         }
     };
@@ -388,7 +385,7 @@ public class PostComponent extends AbstractComponentContainer implements
             getState().setUpVoted(upVoted);
 
         } catch (final DataSourceException e) {
-            Notification.show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+            Notification.show(DataSourceException.GENERIC_ERROR_MESSAGE);
         }
     }
 
@@ -469,8 +466,7 @@ public class PostComponent extends AbstractComponentContainer implements
                     presenter.downvote(post);
                 }
             } catch (final DataSourceException e) {
-                Notification
-                        .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                Notification.show(DataSourceException.GENERIC_ERROR_MESSAGE);
             }
         }
     }

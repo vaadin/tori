@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.vaadin.tori.category;
+package org.vaadin.tori.view.listing;
 
 import java.util.ArrayList;
 import java.util.List;

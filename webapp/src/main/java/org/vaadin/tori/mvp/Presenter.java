@@ -47,14 +47,6 @@ public abstract class Presenter<V extends View> {
         return ToriApiLoader.getCurrent();
     }
 
-    /**
-     * When this method is called, the view has already been initialized and can
-     * be obtained by calling {@link #getView()} method.
-     */
-    public void init() {
-        // NOP, subclasses may override
-    }
-
     public void navigationFrom() {
         // NOP, subclasses may override
     }

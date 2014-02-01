@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.vaadin.tori.thread;
+package org.vaadin.tori.view.thread;
 
 import java.util.LinkedHashMap;
 import java.util.List;

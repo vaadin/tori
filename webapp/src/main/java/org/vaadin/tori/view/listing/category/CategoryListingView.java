@@ -14,21 +14,40 @@
  * the License.
  */
 
-package org.vaadin.tori.dashboard;
+package org.vaadin.tori.view.listing.category;
 
 import java.util.List;
 
-import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.View;
 
-public interface DashboardView extends View {
+public interface CategoryListingView extends View {
 
-    void displayCategories(List<Category> categories);
+    void showError(String message);
 
-    /**
-     * An unrecoverable error occurred, which can't be shown in any other way
-     * than utter chaos, mayhem and pandemonium
-     */
-    void panic();
+    void setCategories(List<CategoryData> categories);
+
+    public interface CategoryData {
+
+        long getId();
+
+        boolean mayEditCategory();
+
+        boolean mayDeleteCategory();
+
+        int getUnreadThreadCount();
+
+        int getThreadCount();
+
+        String getName();
+
+        String getDescription();
+
+        List<CategoryData> getSubCategories();
+
+        void setName(String name);
+
+        void setDescription(String description);
+
+    }
 
 }

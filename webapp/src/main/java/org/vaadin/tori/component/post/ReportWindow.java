@@ -20,7 +20,7 @@ import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.post.PostReport;
 import org.vaadin.tori.service.post.PostReport.Reason;
-import org.vaadin.tori.thread.ThreadPresenter;
+import org.vaadin.tori.view.thread.ThreadPresenter;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -35,13 +35,13 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
 @SuppressWarnings("serial")
-class ReportWindow2 extends Window {
+class ReportWindow extends Window {
 
     private final CssLayout explanationLayout;
     private final NativeButton reportButton;
     private final VerticalLayout layout = new VerticalLayout();
 
-    public ReportWindow2(final Post post, final ThreadPresenter presenter,
+    public ReportWindow(final Post post, final ThreadPresenter presenter,
             final int x, final int y, final String postPermalink) {
         super("Report Post");
         layout.setSpacing(true);
@@ -113,12 +113,12 @@ class ReportWindow2 extends Window {
 
                 try {
                     presenter.handlePostReport(report);
-                    ReportWindow2.this.close();
+                    ReportWindow.this.close();
                 } catch (final DataSourceException e) {
                     layout.removeAllComponents();
                     layout.addComponent(new Label(
-                            DataSourceException.BORING_GENERIC_ERROR_MESSAGE));
-                    ReportWindow2.this.setClosable(true);
+                            DataSourceException.GENERIC_ERROR_MESSAGE));
+                    ReportWindow.this.setClosable(true);
                 }
             }
         });
@@ -129,7 +129,7 @@ class ReportWindow2 extends Window {
         cancel.addClickListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
-                ReportWindow2.this.close();
+                ReportWindow.this.close();
             }
         });
         footer.addComponent(cancel);

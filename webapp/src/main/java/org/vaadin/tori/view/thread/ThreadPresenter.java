@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.vaadin.tori.thread;
+package org.vaadin.tori.view.thread;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -129,7 +129,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     public boolean userMayQuote(final Post post) {
         return currentThread != null
-                && authorizationService.mayReplyIn(currentThread);
+                && authorizationService.mayReplyInThread(currentThread.getId());
     }
 
     public void ban(final User user) throws DataSourceException {
@@ -163,7 +163,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             return;
         }
         try {
-            dataSource.follow(currentThread);
+            dataSource.followThread(currentThread.getId());
             view.confirmFollowingThread();
         } catch (final DataSourceException e) {
             log.error(e);
@@ -178,7 +178,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             return;
         }
         try {
-            dataSource.unFollow(currentThread);
+            dataSource.unfollowThread(currentThread.getId());
             view.confirmUnFollowingThread();
         } catch (final DataSourceException e) {
             log.error(e);
@@ -193,16 +193,9 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
      * thread, and can follow threads.
      */
     public boolean userCanFollowThread() throws DataSourceException {
-        try {
-            return currentThread != null
-                    && authorizationService.mayFollow(currentThread)
-                    && !dataSource.isFollowing(currentThread);
-        } catch (final DataSourceException e) {
-            log.error(e);
-            e.printStackTrace();
-            throw e;
-        }
-
+        return currentThread != null
+                && authorizationService.mayFollowThread(currentThread.getId())
+                && !dataSource.isFollowingThread(currentThread.getId());
     }
 
     /**
@@ -210,15 +203,9 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
      * can follow threads.
      */
     public boolean userCanUnFollowThread() throws DataSourceException {
-        try {
-            return currentThread != null
-                    && authorizationService.mayFollow(currentThread)
-                    && dataSource.isFollowing(currentThread);
-        } catch (final DataSourceException e) {
-            log.error(e);
-            e.printStackTrace();
-            throw e;
-        }
+        return currentThread != null
+                && authorizationService.mayFollowThread(currentThread.getId())
+                && dataSource.isFollowingThread(currentThread.getId());
 
     }
 
@@ -314,17 +301,18 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     public boolean userMayReply() {
         return currentThread != null
-                && authorizationService.mayReplyIn(currentThread);
+                && authorizationService.mayReplyInThread(currentThread.getId());
     }
 
     public final boolean userMayAddFiles() {
         boolean mayAddFiles;
         if (currentThread == null) {
             mayAddFiles = authorizationService
-                    .mayAddFiles(categoryWhileCreatingNewThread);
+                    .mayAddFilesInCategory(categoryWhileCreatingNewThread
+                            .getId());
         } else {
-            mayAddFiles = authorizationService.mayAddFiles(currentThread
-                    .getCategory());
+            mayAddFiles = authorizationService
+                    .mayAddFilesInCategory(currentThread.getCategory().getId());
         }
         return mayAddFiles;
     }

@@ -16,14 +16,13 @@
 
 package org.vaadin.tori;
 
-import org.vaadin.tori.category.CategoryViewImpl;
-import org.vaadin.tori.dashboard.DashboardViewImpl;
 import org.vaadin.tori.indexing.IndexableCategoryView;
 import org.vaadin.tori.indexing.IndexableDashboardView;
 import org.vaadin.tori.indexing.IndexableThreadView;
 import org.vaadin.tori.indexing.IndexableView;
 import org.vaadin.tori.mvp.AbstractView;
-import org.vaadin.tori.thread.ThreadViewImpl;
+import org.vaadin.tori.view.listing.ListingViewImpl;
+import org.vaadin.tori.view.thread.ThreadViewImpl;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
@@ -35,6 +34,8 @@ import com.vaadin.ui.UI;
 
 @SuppressWarnings("serial")
 public class ToriNavigator extends Navigator {
+    private final boolean updatePateTitle = ToriApiLoader.getCurrent()
+            .getDataSource().getUpdatePageTitle();
 
     public ToriNavigator(UI ui, ComponentContainer container) {
         super(ui, container);
@@ -55,8 +56,6 @@ public class ToriNavigator extends Navigator {
                 final View newView = event.getNewView();
                 if (newView instanceof AbstractView<?, ?>) {
                     String title = ((AbstractView) newView).getTitle();
-                    boolean updatePateTitle = ToriApiLoader.getCurrent()
-                            .getDataSource().getUpdatePageTitle();
                     if (updatePateTitle) {
                         updatePageTitle(title);
                     }
@@ -114,9 +113,9 @@ public class ToriNavigator extends Navigator {
      */
     public enum ApplicationView {
         // @formatter:off
-		DASHBOARD("dashboard", DashboardViewImpl.class,
+		DASHBOARD("dashboard", ListingViewImpl.class,
 				IndexableDashboardView.class), CATEGORIES("category",
-				CategoryViewImpl.class, IndexableCategoryView.class), THREADS(
+				ListingViewImpl.class, IndexableCategoryView.class), THREADS(
 				"thread", ThreadViewImpl.class, IndexableThreadView.class);
 		// @formatter:on
 

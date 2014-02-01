@@ -54,7 +54,45 @@ public class TestServiceProvider implements ServiceProvider {
 
     @Override
     public ToriActivityMessaging createToriActivityMessaging() {
-        return null;
+        return new ToriActivityMessaging() {
+
+            @Override
+            public void addUserTypingListener(UserTypingListener listener) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void addUserAuthoredListener(UserAuthoredListener listener) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void removeUserTypingListener(UserTypingListener listener) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void removeUserAuthoredListener(UserAuthoredListener listener) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void sendUserTyping(long threadId) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void sendUserAuthored(long postId, long threadId) {
+                // TODO Auto-generated method stub
+
+            }
+
+        };
     }
 
 }

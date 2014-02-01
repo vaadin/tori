@@ -21,8 +21,6 @@ import javax.portlet.PortletRequest;
 import org.apache.log4j.Logger;
 import org.vaadin.tori.PortletRequestAware;
 import org.vaadin.tori.data.LiferayDataSource;
-import org.vaadin.tori.data.entity.Category;
-import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.LiferayAuthorizationConstants.CategoryAction;
@@ -67,18 +65,18 @@ public class LiferayAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayFollow(final Category category) {
-        return hasCategoryPermission(CategoryAction.SUBSCRIBE, category);
+    public boolean mayFollowCategory(long categoryId) {
+        return hasCategoryPermission(CategoryAction.SUBSCRIBE, categoryId);
     }
 
     @Override
-    public boolean mayDelete(final Category category) {
-        return hasCategoryPermission(CategoryAction.DELETE, category);
+    public boolean mayDeleteCategory(long categoryId) {
+        return hasCategoryPermission(CategoryAction.DELETE, categoryId);
     }
 
     @Override
-    public boolean mayEdit(final Category category) {
-        return hasCategoryPermission(CategoryAction.UPDATE, category);
+    public boolean mayEditCategory(long categoryId) {
+        return hasCategoryPermission(CategoryAction.UPDATE, categoryId);
     }
 
     @Override
@@ -87,22 +85,22 @@ public class LiferayAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayReplyIn(final DiscussionThread thread) {
+    public boolean mayReplyInThread(long threadid) {
         MBThread mbThread = null;
         try {
-            mbThread = MBThreadLocalServiceUtil.getThread(thread.getId());
+            mbThread = MBThreadLocalServiceUtil.getThread(threadid);
         } catch (final NestableException e) {
             log.error(e);
         }
         return mbThread != null
                 && !mbThread.isLocked()
                 && hasCategoryPermission(CategoryAction.REPLY_TO_MESSAGE,
-                        thread.getCategory());
+                        mbThread.getCategoryId());
     }
 
     @Override
-    public boolean mayAddFiles(final Category category) {
-        return hasCategoryPermission(CategoryAction.ADD_FILE, category);
+    public boolean mayAddFilesInCategory(long categoryId) {
+        return hasCategoryPermission(CategoryAction.ADD_FILE, categoryId);
     }
 
     @Override
@@ -111,10 +109,10 @@ public class LiferayAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayFollow(final DiscussionThread thread) {
+    public boolean mayFollowThread(long threadId) {
         try {
             return hasMessagePermission(MessageAction.SUBSCRIBE,
-                    LiferayDataSource.getRootMessageId(thread));
+                    LiferayDataSource.getRootMessageId(threadId));
         } catch (final DataSourceException e) {
             log.error(e);
         }
@@ -132,28 +130,26 @@ public class LiferayAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayMove(final DiscussionThread thread) {
-        return hasCategoryPermission(CategoryAction.MOVE_THREAD,
-                thread.getCategory());
+    public boolean mayMoveThreadInCategory(long categoryId) {
+        return hasCategoryPermission(CategoryAction.MOVE_THREAD, categoryId);
     }
 
     @Override
-    public boolean maySticky(final DiscussionThread thread) {
+    public boolean mayStickyThreadInCategory(long categoryId) {
         return hasCategoryPermission(CategoryAction.UPDATE_THREAD_PRIORITY,
-                thread.getCategory());
+                categoryId);
     }
 
     @Override
-    public boolean mayLock(final DiscussionThread thread) {
-        return hasCategoryPermission(CategoryAction.LOCK_THREAD,
-                thread.getCategory());
+    public boolean mayLockThreadInCategory(long categoryId) {
+        return hasCategoryPermission(CategoryAction.LOCK_THREAD, categoryId);
     }
 
     @Override
-    public boolean mayDelete(final DiscussionThread thread) {
+    public boolean mayDeleteThread(long threadId) {
         try {
             return hasMessagePermission(MessageAction.DELETE,
-                    LiferayDataSource.getRootMessageId(thread));
+                    LiferayDataSource.getRootMessageId(threadId));
         } catch (final DataSourceException e) {
             log.error(e);
         }
@@ -161,8 +157,8 @@ public class LiferayAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayCreateThreadIn(final Category category) {
-        return hasCategoryPermission(CategoryAction.ADD_MESSAGE, category);
+    public boolean mayCreateThreadInCategory(long categoryId) {
+        return hasCategoryPermission(CategoryAction.ADD_MESSAGE, categoryId);
     }
 
     private PermissionChecker getPermissionChecker() {
@@ -176,12 +172,12 @@ public class LiferayAuthorizationService implements AuthorizationService,
     }
 
     private boolean hasCategoryPermission(final CategoryAction action,
-            final Category category) {
+            final long categoryId) {
         if (isBanned()) {
             return false;
         }
         return getPermissionChecker().hasPermission(scopeGroupId,
-                CategoryAction.getScope(), category.getId(), action.toString());
+                CategoryAction.getScope(), categoryId, action.toString());
     }
 
     private boolean hasMessagePermission(final MessageAction action,
@@ -271,8 +267,8 @@ public class LiferayAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayView(final Category category) {
-        return hasCategoryPermission(CategoryAction.VIEW, category);
+    public boolean mayViewCategory(long categoryId) {
+        return hasCategoryPermission(CategoryAction.VIEW, categoryId);
     }
 
 }

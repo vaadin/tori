@@ -18,7 +18,7 @@ import com.vaadin.client.communication.StateChangeEvent;
 import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.shared.ui.Connect;
 
-@Connect(org.vaadin.tori.component.thread.ThreadListing2.class)
+@Connect(org.vaadin.tori.view.listing.thread.ThreadListing.class)
 public class ThreadListingConnector extends AbstractComponentConnector {
     private static final long serialVersionUID = 6535780735129905996L;
 

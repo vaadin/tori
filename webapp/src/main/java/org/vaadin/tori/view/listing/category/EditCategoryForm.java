@@ -14,9 +14,9 @@
  * the License.
  */
 
-package org.vaadin.tori.component.category;
+package org.vaadin.tori.view.listing.category;
 
-import org.vaadin.tori.data.entity.Category;
+import org.vaadin.tori.view.listing.category.CategoryListingView.CategoryData;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -28,16 +28,14 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
-class EditCategoryForm extends CustomComponent {
-
-    private final TextField nameField;
+public class EditCategoryForm extends CustomComponent {
 
     public EditCategoryForm(final EditCategoryListener listener) {
         this(listener, null);
     }
 
     public EditCategoryForm(final EditCategoryListener listener,
-            final Category categoryToEdit) {
+            final CategoryData categoryToEdit) {
         setData(categoryToEdit);
 
         final VerticalLayout newCategoryLayout = new VerticalLayout();
@@ -45,7 +43,7 @@ class EditCategoryForm extends CustomComponent {
         newCategoryLayout.setMargin(true);
         newCategoryLayout.setWidth("100%");
 
-        nameField = new TextField();
+        final TextField nameField = new TextField();
         nameField.setInputPrompt("Category name");
         nameField.setWidth("100%");
         if (categoryToEdit != null) {
@@ -102,16 +100,12 @@ class EditCategoryForm extends CustomComponent {
         setCompositionRoot(newCategoryLayout);
     }
 
-    interface EditCategoryListener {
+    public interface EditCategoryListener {
 
         void commit(String name, String description);
 
         void cancel();
 
-    }
-
-    public Focusable getTitleField() {
-        return nameField;
     }
 
 }

@@ -19,31 +19,28 @@ package org.vaadin.tori.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.vaadin.tori.data.entity.AbstractEntity;
-import org.vaadin.tori.data.entity.Category;
-import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 
 public class TestAuthorizationService implements DebugAuthorizationService {
 
     private boolean isCategoryAdministrator = true;
     private boolean mayReportPosts = true;
-    private final Map<Category, Boolean> mayViewCategory = new HashMap<Category, Boolean>();
-    private final Map<Category, Boolean> mayFollowCategory = new HashMap<Category, Boolean>();
-    private final Map<Category, Boolean> mayDeleteCategory = new HashMap<Category, Boolean>();
-    private final Map<Category, Boolean> mayEditCategory = new HashMap<Category, Boolean>();
-    private final Map<DiscussionThread, Boolean> mayReplyInThread = new HashMap<DiscussionThread, Boolean>();
-    private final Map<Category, Boolean> mayAddFilesInThread = new HashMap<Category, Boolean>();
-    private final Map<Post, Boolean> mayEditPost = new HashMap<Post, Boolean>();
+    private final Map<Long, Boolean> mayViewCategory = new HashMap<Long, Boolean>();
+    private final Map<Long, Boolean> mayFollowCategory = new HashMap<Long, Boolean>();
+    private final Map<Long, Boolean> mayDeleteCategory = new HashMap<Long, Boolean>();
+    private final Map<Long, Boolean> mayEditCategory = new HashMap<Long, Boolean>();
+    private final Map<Long, Boolean> mayReplyInThread = new HashMap<Long, Boolean>();
+    private final Map<Long, Boolean> mayAddFilesInThread = new HashMap<Long, Boolean>();
+    private final Map<Long, Boolean> mayEditPost = new HashMap<Long, Boolean>();
     private boolean mayBan = true;
-    private final Map<DiscussionThread, Boolean> mayFollow = new HashMap<DiscussionThread, Boolean>();
-    private final Map<Post, Boolean> mayDelete = new HashMap<Post, Boolean>();
+    private final Map<Long, Boolean> mayFollow = new HashMap<Long, Boolean>();
+    private final Map<Long, Boolean> mayDelete = new HashMap<Long, Boolean>();
     private boolean mayVote = true;
-    private final Map<DiscussionThread, Boolean> mayMove = new HashMap<DiscussionThread, Boolean>();
-    private final Map<DiscussionThread, Boolean> maySticky = new HashMap<DiscussionThread, Boolean>();
-    private final Map<DiscussionThread, Boolean> mayLock = new HashMap<DiscussionThread, Boolean>();
-    private final Map<DiscussionThread, Boolean> mayDeleteThread = new HashMap<DiscussionThread, Boolean>();
-    private final Map<Category, Boolean> mayCreateThread = new HashMap<Category, Boolean>();
+    private final Map<Long, Boolean> mayMove = new HashMap<Long, Boolean>();
+    private final Map<Long, Boolean> maySticky = new HashMap<Long, Boolean>();
+    private final Map<Long, Boolean> mayLock = new HashMap<Long, Boolean>();
+    private final Map<Long, Boolean> mayDeleteThread = new HashMap<Long, Boolean>();
+    private final Map<Long, Boolean> mayCreateThread = new HashMap<Long, Boolean>();
 
     @Override
     public boolean mayEditCategories() {
@@ -71,39 +68,38 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     }
 
     @Override
-    public void setMayFollow(final Category category, final boolean b) {
-        mayFollowCategory.put(category, b);
+    public void setMayFollowCategory(long categoryId, final boolean b) {
+        mayFollowCategory.put(categoryId, b);
     }
 
     @Override
-    public boolean mayFollow(final Category category) {
-        return get(mayFollowCategory, category, true);
+    public boolean mayFollowCategory(long categoryId) {
+        return get(mayFollowCategory, categoryId, true);
     }
 
     @Override
-    public boolean mayDelete(final Category category) {
-        return get(mayDeleteCategory, category, true);
+    public boolean mayDeleteCategory(long categoryId) {
+        return get(mayDeleteCategory, categoryId, true);
     }
 
     @Override
-    public void setMayDelete(final Category category, final boolean b) {
-        mayDeleteCategory.put(category, b);
+    public void setMayDeleteCategory(long categoryId, final boolean b) {
+        mayDeleteCategory.put(categoryId, b);
     }
 
     @Override
-    public boolean mayEdit(final Category category) {
-        return get(mayEditCategory, category, true);
+    public boolean mayEditCategory(long categoryId) {
+        return get(mayEditCategory, categoryId, true);
     }
 
     @Override
-    public void setMayEdit(final Category category, final boolean b) {
-        mayEditCategory.put(category, b);
+    public void setMayEditCategory(long categoryId, final boolean b) {
+        mayEditCategory.put(categoryId, b);
     }
 
-    private static <T extends AbstractEntity> boolean get(
-            final Map<T, Boolean> rights, final T referenceEntity,
+    private static boolean get(final Map<Long, Boolean> rights, long key,
             final boolean defaultValue) {
-        final Boolean value = rights.get(referenceEntity);
+        final Boolean value = rights.get(key);
         if (value == null) {
             return defaultValue;
         } else {
@@ -113,32 +109,32 @@ public class TestAuthorizationService implements DebugAuthorizationService {
 
     @Override
     public boolean mayEdit(final Post post) {
-        return get(mayEditPost, post, true);
+        return get(mayEditPost, post.getId(), true);
     }
 
     @Override
     public void setMayEdit(final Post post, final boolean b) {
-        mayEditPost.put(post, b);
+        mayEditPost.put(post.getId(), b);
     }
 
     @Override
-    public boolean mayReplyIn(final DiscussionThread thread) {
-        return get(mayReplyInThread, thread, true);
+    public boolean mayReplyInThread(long threadId) {
+        return get(mayReplyInThread, threadId, true);
     }
 
     @Override
-    public boolean mayAddFiles(final Category category) {
-        return get(mayAddFilesInThread, category, true);
+    public boolean mayAddFilesInCategory(long categoryId) {
+        return get(mayAddFilesInThread, categoryId, true);
     }
 
     @Override
-    public void setMayReplyIn(final DiscussionThread thread, final boolean b) {
-        mayReplyInThread.put(thread, b);
+    public void setMayReplyInThread(long threadId, final boolean b) {
+        mayReplyInThread.put(threadId, b);
     }
 
     @Override
-    public void setMayAddFiles(final Category category, final boolean b) {
-        mayAddFilesInThread.put(category, b);
+    public void setMayAddFilesInCategory(long categoryId, final boolean b) {
+        mayAddFilesInThread.put(categoryId, b);
     }
 
     @Override
@@ -152,23 +148,23 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     }
 
     @Override
-    public boolean mayFollow(final DiscussionThread currentThread) {
-        return get(mayFollow, currentThread, true);
+    public boolean mayFollowThread(long threadId) {
+        return get(mayFollow, threadId, true);
     }
 
     @Override
-    public void setMayFollow(final DiscussionThread thread, final boolean b) {
-        mayFollow.put(thread, b);
+    public void setMayFollowThread(long threadId, final boolean b) {
+        mayFollow.put(threadId, b);
     }
 
     @Override
     public boolean mayDelete(final Post post) {
-        return get(mayDelete, post, true);
+        return get(mayDelete, post.getId(), true);
     }
 
     @Override
     public void setMayDelete(final Post post, final boolean b) {
-        mayDelete.put(post, b);
+        mayDelete.put(post.getId(), b);
     }
 
     @Override
@@ -182,63 +178,63 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     }
 
     @Override
-    public boolean mayMove(final DiscussionThread thread) {
-        return get(mayMove, thread, true);
+    public boolean mayMoveThreadInCategory(long categoryId) {
+        return get(mayMove, categoryId, true);
     }
 
     @Override
-    public void setMayMove(final DiscussionThread thread, final boolean b) {
-        mayMove.put(thread, b);
+    public void setMayMoveThreadInCategory(long categoryId, final boolean b) {
+        mayMove.put(categoryId, b);
     }
 
     @Override
-    public boolean maySticky(final DiscussionThread thread) {
-        return get(maySticky, thread, true);
+    public boolean mayStickyThreadInCategory(long categoryId) {
+        return get(maySticky, categoryId, true);
     }
 
     @Override
-    public void setMaySticky(final DiscussionThread thread, final boolean b) {
-        maySticky.put(thread, b);
+    public void setMayStickyThreadInCategory(long categoryId, final boolean b) {
+        maySticky.put(categoryId, b);
     }
 
     @Override
-    public boolean mayLock(final DiscussionThread thread) {
-        return get(mayLock, thread, true);
+    public boolean mayLockThreadInCategory(long categoryId) {
+        return get(mayLock, categoryId, true);
     }
 
     @Override
-    public void setMayLock(final DiscussionThread thread, final boolean b) {
-        mayLock.put(thread, b);
+    public void setMayLockThreadInCategory(long categoryId, final boolean b) {
+        mayLock.put(categoryId, b);
     }
 
     @Override
-    public boolean mayDelete(final DiscussionThread thread) {
-        return get(mayDeleteThread, thread, true);
+    public boolean mayDeleteThread(long threadId) {
+        return get(mayDeleteThread, threadId, true);
     }
 
     @Override
-    public void setMayDelete(final DiscussionThread thread, final boolean b) {
-        mayDeleteThread.put(thread, b);
+    public void setMayDeleteThread(long threadId, final boolean b) {
+        mayDeleteThread.put(threadId, b);
     }
 
     @Override
-    public boolean mayCreateThreadIn(final Category category) {
-        return get(mayCreateThread, category, true);
+    public boolean mayCreateThreadInCategory(long categoryId) {
+        return get(mayCreateThread, categoryId, true);
     }
 
     @Override
-    public void setMayCreateThreadIn(final Category category, final boolean b) {
-        mayCreateThread.put(category, b);
+    public void setMayCreateThreadInCategory(long categoryId, final boolean b) {
+        mayCreateThread.put(categoryId, b);
     }
 
     @Override
-    public boolean mayView(final Category category) {
-        return get(mayViewCategory, category, true);
+    public boolean mayViewCategory(long categoryId) {
+        return get(mayViewCategory, categoryId, true);
     }
 
     @Override
-    public void setMayView(final Category category, final boolean b) {
-        mayViewCategory.put(category, b);
+    public void setMayViewCategory(long categoryId, final boolean b) {
+        mayViewCategory.put(categoryId, b);
     }
 
 }

@@ -20,8 +20,8 @@ import java.util.Iterator;
 
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.category.SpecialCategory;
 import org.vaadin.tori.data.DataSource;
+import org.vaadin.tori.view.listing.SpecialCategory;
 
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.ThemeResource;

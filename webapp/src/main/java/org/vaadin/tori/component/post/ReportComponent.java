@@ -23,7 +23,7 @@ import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.post.PostReport;
 import org.vaadin.tori.service.post.PostReport.Reason;
-import org.vaadin.tori.thread.ThreadPresenter;
+import org.vaadin.tori.view.thread.ThreadPresenter;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.server.Page;
@@ -134,7 +134,7 @@ public class ReportComponent extends CustomComponent {
                     e.printStackTrace();
                     layout.removeAllComponents();
                     layout.addComponent(new Label(
-                            DataSourceException.BORING_GENERIC_ERROR_MESSAGE));
+                            DataSourceException.GENERIC_ERROR_MESSAGE));
                 }
             }
         });

@@ -44,11 +44,14 @@ import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.data.util.PersistenceUtil;
 import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.exception.NoSuchCategoryException;
 import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.service.post.PostReport;
 
-public class TestDataSource implements DataSource, DebugDataSource {
+public class TestDataSource implements DataSource {
 
+    private static final String CONTEXT = "/webapp";
+    private static final String ATTACHMENT_PREFIX = CONTEXT + "/attachments/";
     private static final long CURRENT_USER_ID = 3;
     private final User currentUser;
 
@@ -119,13 +122,14 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    public List<Category> getRootCategories() throws DataSourceException {
-        return _getSubCategories(null);
-    }
-
-    @Override
-    public List<Category> getSubCategories(final Category category)
+    public List<Category> getSubCategories(Long categoryId)
             throws DataSourceException {
+        Category category = null;
+        try {
+            category = getCategory(categoryId != null ? categoryId : 0);
+        } catch (NoSuchCategoryException e) {
+
+        }
         return _getSubCategories(category);
     }
 
@@ -137,8 +141,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
             public List<Category> execute(final EntityManager em) {
                 final Query q = em
                         .createQuery("select c from Category c where c.parentCategory "
-                                + (category != null ? "= :parent" : "is null")
-                                + " order by c.displayOrder");
+                                + (category != null ? "= :parent" : "is null"));
                 if (category != null) {
                     q.setParameter("parent", category);
                 }
@@ -148,9 +151,15 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    public List<DiscussionThread> getThreads(final Category category,
+    public List<DiscussionThread> getThreads(long categoryId,
             final int startIndex, final int endIndex)
             throws DataSourceException {
+        Category category = null;
+        try {
+            category = getCategory(categoryId);
+        } catch (NoSuchCategoryException e) {
+        }
+        final Category theCategory = category;
         return executeWithEntityManager(new Command<List<DiscussionThread>>() {
             @Override
             public final List<DiscussionThread> execute(final EntityManager em) {
@@ -166,7 +175,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
                             + " to " + endIndex + ", max results "
                             + (endIndex - startIndex + 1) + ".");
                 }
-                threadQuery.setParameter("category", category);
+                threadQuery.setParameter("category", theCategory);
 
                 return threadQuery.getResultList();
             }
@@ -176,26 +185,31 @@ public class TestDataSource implements DataSource, DebugDataSource {
     @Override
     public List<DiscussionThread> getThreads(final Category category)
             throws DataSourceException {
-        return getThreads(category, -1, -1);
+        return getThreads(category.getId(), -1, -1);
     }
 
     @Override
     public Category getCategory(final long categoryId)
             throws DataSourceException {
-        return executeWithEntityManager(new Command<Category>() {
+        Category category = executeWithEntityManager(new Command<Category>() {
             @Override
             public final Category execute(final EntityManager em) {
                 return em.find(Category.class, categoryId);
             }
         });
+        if (category == null) {
+            throw new NoSuchCategoryException(categoryId, null);
+        }
+        return category;
     }
 
     @Override
-    public long getThreadCountRecursively(final Category category)
+    public int getThreadCountRecursively(long categoryId)
             throws DataSourceException {
-        return executeWithEntityManager(new Command<Long>() {
+        final Category category = getCategory(categoryId);
+        return executeWithEntityManager(new Command<Integer>() {
             @Override
-            public Long execute(final EntityManager em) {
+            public Integer execute(final EntityManager em) {
                 final TypedQuery<Long> query = em
                         .createQuery(
                                 "select count(t) from DiscussionThread t where t.category = :category",
@@ -206,32 +220,40 @@ public class TestDataSource implements DataSource, DebugDataSource {
 
                 // recursively add thread count of all sub categories
                 try {
-                    final List<Category> subCategories = getSubCategories(category);
+                    final List<Category> subCategories = getSubCategories(category
+                            .getId());
                     for (final Category subCategory : subCategories) {
-                        threadCount += getThreadCountRecursively(subCategory);
+                        threadCount += getThreadCountRecursively(subCategory
+                                .getId());
                     }
                 } catch (final DataSourceException e) {
                     throw new RuntimeException(e);
                 }
-                return threadCount;
+                return new Long(threadCount).intValue();
             }
         });
     }
 
     @Override
-    public long getThreadCount(final Category category)
-            throws DataSourceException {
-        return executeWithEntityManager(new Command<Long>() {
+    public int getThreadCount(long categoryId) throws DataSourceException {
+        Category category = null;
+        try {
+            category = getCategory(categoryId);
+        } catch (NoSuchCategoryException e) {
+        }
+        final Category theCategory = category;
+        long result = executeWithEntityManager(new Command<Long>() {
             @Override
             public Long execute(final EntityManager em) {
                 final TypedQuery<Long> q = em
                         .createQuery(
                                 "select count(t) from DiscussionThread t where t.category = :category",
                                 Long.class);
-                q.setParameter("category", category);
+                q.setParameter("category", theCategory);
                 return q.getSingleResult();
             }
         });
+        return new Long(result).intValue();
     }
 
     @Override
@@ -305,35 +327,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    public Category save(final Category categoryToSave)
-            throws DataSourceException {
-        executeWithEntityManager(new Command<Category>() {
-            @Override
-            public Category execute(final EntityManager em) {
-                final EntityTransaction transaction = em.getTransaction();
-                transaction.begin();
-                try {
-                    if (categoryToSave.getId() == 0) {
-                        em.persist(categoryToSave);
-                    } else {
-                        em.merge(categoryToSave);
-                    }
-                    transaction.commit();
-                } catch (final Exception e) {
-                    e.printStackTrace();
-                    if (transaction.isActive()) {
-                        transaction.rollback();
-                    }
-                }
-                return null;
-            }
-        });
-
-        return null;
-    }
-
-    @Override
-    public void delete(final Category categoryToDelete)
+    public void deleteCategory(final long categoryId)
             throws DataSourceException {
         executeWithEntityManager(new Command<Void>() {
             @Override
@@ -342,8 +336,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
                 transaction.begin();
                 try {
                     // must merge detached entity before removal
-                    final Category mergedCategory = em.merge(categoryToDelete);
-                    em.remove(mergedCategory);
+                    em.remove(em.find(Category.class, categoryId));
                     transaction.commit();
                 } catch (final Exception e) {
                     e.printStackTrace();
@@ -365,7 +358,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    public long getUnreadThreadCount(final Category category) {
+    public int getUnreadThreadCount(long categoryId) {
         // TODO implement actual unread thread logic
         return 0;
     }
@@ -418,9 +411,9 @@ public class TestDataSource implements DataSource, DebugDataSource {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void follow(final DiscussionThread thread)
-            throws DataSourceException {
-        if (!isFollowing(thread)) {
+    public void followThread(long threadId) throws DataSourceException {
+        DiscussionThread thread = getThread(threadId);
+        if (!isFollowingThread(threadId)) {
             final org.vaadin.tori.data.entity.Following following = new org.vaadin.tori.data.entity.Following();
             following.setFollower(currentUser);
             following.setThread(thread);
@@ -444,8 +437,8 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    public void unFollow(final DiscussionThread thread)
-            throws DataSourceException {
+    public void unfollowThread(long threadId) throws DataSourceException {
+        final DiscussionThread thread = getThread(threadId);
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
@@ -466,25 +459,29 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    public boolean isFollowing(final DiscussionThread thread)
-            throws DataSourceException {
-        return executeWithEntityManager(new Command<Boolean>() {
-            @Override
-            public Boolean execute(final EntityManager em) {
-                final TypedQuery<Long> query = em
-                        .createQuery(
-                                "select count(f) from Following f where f.follower = :follower AND f.thread = :thread",
-                                Long.class);
-                query.setParameter("follower", currentUser);
-                query.setParameter("thread", thread);
-                final Long result = query.getSingleResult();
-                if (result != null) {
-                    return result > 0;
-                } else {
-                    return false;
+    public boolean isFollowingThread(long threadId) {
+        try {
+            final DiscussionThread thread = getThread(threadId);
+            return executeWithEntityManager(new Command<Boolean>() {
+                @Override
+                public Boolean execute(final EntityManager em) {
+                    final TypedQuery<Long> query = em
+                            .createQuery(
+                                    "select count(f) from Following f where f.follower = :follower AND f.thread = :thread",
+                                    Long.class);
+                    query.setParameter("follower", currentUser);
+                    query.setParameter("thread", thread);
+                    final Long result = query.getSingleResult();
+                    if (result != null) {
+                        return result > 0;
+                    } else {
+                        return false;
+                    }
                 }
-            }
-        });
+            });
+        } catch (DataSourceException e) {
+            return false;
+        }
     }
 
     @Override
@@ -672,8 +669,10 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    public void move(final DiscussionThread thread,
-            final Category destinationCategory) throws DataSourceException {
+    public void moveThread(long threadId, final long destinationCategoryId)
+            throws DataSourceException {
+        final DiscussionThread thread = getThread(threadId);
+        final Category destinationCategory = getCategory(destinationCategoryId);
         executeWithEntityManager(new Command<Void>() {
 
             @Override
@@ -689,31 +688,31 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    public DiscussionThread sticky(final DiscussionThread thread)
-            throws DataSourceException {
+    public void stickyThread(long threadId) throws DataSourceException {
+        DiscussionThread thread = getThread(threadId);
         thread.setSticky(true);
-        return save(thread);
+        save(thread);
     }
 
     @Override
-    public DiscussionThread unsticky(final DiscussionThread thread)
-            throws DataSourceException {
+    public void unstickyThread(long threadId) throws DataSourceException {
+        DiscussionThread thread = getThread(threadId);
         thread.setSticky(false);
-        return save(thread);
+        save(thread);
     }
 
     @Override
-    public DiscussionThread lock(final DiscussionThread thread)
-            throws DataSourceException {
+    public void lockThread(long threadId) throws DataSourceException {
+        DiscussionThread thread = getThread(threadId);
         thread.setLocked(true);
-        return save(thread);
+        save(thread);
     }
 
     @Override
-    public DiscussionThread unlock(final DiscussionThread thread)
-            throws DataSourceException {
+    public void unlockThread(long threadId) throws DataSourceException {
+        DiscussionThread thread = getThread(threadId);
         thread.setLocked(false);
-        return save(thread);
+        save(thread);
     }
 
     private static DiscussionThread save(final DiscussionThread thread)
@@ -731,14 +730,14 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    public void delete(final DiscussionThread thread)
-            throws DataSourceException {
+    public void deleteThread(final long threadId) throws DataSourceException {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
                 final EntityTransaction t = em.getTransaction();
                 t.begin();
-                final DiscussionThread mergedThread = em.merge(thread);
+                final DiscussionThread thread = em.find(DiscussionThread.class,
+                        threadId);
 
                 // remove all Following references
                 final Query followDelete = em
@@ -748,7 +747,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
 
                 try {
                     // remove all votes for posts inside thread.
-                    for (final Post post : getPosts(mergedThread)) {
+                    for (final Post post : getPosts(thread)) {
                         // "in" is not supported :(
                         final Query postDelete = em
                                 .createQuery("delete from PostVote where post = :post");
@@ -759,7 +758,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
                     throw new RuntimeException(e);
                 }
 
-                em.remove(mergedThread);
+                em.remove(thread);
                 t.commit();
                 return null;
             }
@@ -811,7 +810,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    public boolean isRead(final DiscussionThread thread) {
+    public boolean isThreadRead(long threadId) {
         // TODO actual implementation
         return new Random().nextBoolean();
     }
@@ -854,7 +853,7 @@ public class TestDataSource implements DataSource, DebugDataSource {
     }
 
     @Override
-    public int getRecentPostsAmount() throws DataSourceException {
+    public int getRecentPostsCount() throws DataSourceException {
         final Number number = executeWithEntityManager(new Command<Number>() {
             @Override
             public Number execute(final EntityManager em) {
@@ -885,23 +884,6 @@ public class TestDataSource implements DataSource, DebugDataSource {
                 + "getMyPostThreads not implemented in "
                 + getClass().getSimpleName() + ".");
         return 0;
-    }
-
-    @Override
-    public byte[] getAttachmentData(final long id) {
-        try {
-            return executeWithEntityManager(new Command<byte[]>() {
-                @Override
-                public byte[] execute(final EntityManager em) {
-                    final AttachmentData data = em.find(AttachmentData.class,
-                            id);
-                    return data.getData();
-                }
-            });
-        } catch (final DataSourceException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     @Override
@@ -977,5 +959,57 @@ public class TestDataSource implements DataSource, DebugDataSource {
     @Override
     public String getPageTitlePrefix() {
         return "Tori";
+    }
+
+    @Override
+    public void saveNewCategory(final Long parentCategoryId, final String name,
+            final String description) throws DataSourceException {
+        executeWithEntityManager(new Command<Category>() {
+            @Override
+            public Category execute(final EntityManager em) {
+                final EntityTransaction transaction = em.getTransaction();
+                transaction.begin();
+                try {
+                    Category category = new Category();
+                    category.setName(name);
+                    category.setDescription(description);
+                    if (parentCategoryId != null) {
+                        category.setParentCategory(getCategory(parentCategoryId));
+                    }
+                    em.persist(category);
+                    transaction.commit();
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                    if (transaction.isActive()) {
+                        transaction.rollback();
+                    }
+                }
+                return null;
+            }
+        });
+    }
+
+    @Override
+    public void updateCategory(final long categoryId, final String name,
+            final String description) throws DataSourceException {
+        executeWithEntityManager(new Command<Category>() {
+            @Override
+            public Category execute(final EntityManager em) {
+                final EntityTransaction transaction = em.getTransaction();
+                transaction.begin();
+                try {
+                    Category category = em.find(Category.class, categoryId);
+                    category.setName(name);
+                    category.setDescription(description);
+                    transaction.commit();
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                    if (transaction.isActive()) {
+                        transaction.rollback();
+                    }
+                }
+                return null;
+            }
+        });
     }
 }

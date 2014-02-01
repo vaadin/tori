@@ -16,8 +16,6 @@
 
 package org.vaadin.tori.service;
 
-import org.vaadin.tori.data.entity.Category;
-import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 
 /**
@@ -32,36 +30,35 @@ public interface AuthorizationService {
 
     boolean mayReportPosts();
 
-    boolean mayFollow(Category category);
+    boolean mayFollowCategory(long categoryId);
 
-    boolean mayDelete(Category category);
+    boolean mayDeleteCategory(long categoryId);
 
-    boolean mayEdit(Category category);
+    boolean mayEditCategory(long categoryId);
 
     boolean mayEdit(Post post);
 
-    boolean mayReplyIn(DiscussionThread thread);
+    boolean mayReplyInThread(long threadId);
 
     boolean mayBan();
 
-    boolean mayFollow(DiscussionThread currentThread);
+    boolean mayFollowThread(long threadId);
 
     boolean mayDelete(Post post);
 
     boolean mayVote();
 
-    boolean mayMove(DiscussionThread thread);
+    boolean mayMoveThreadInCategory(long categoryId);
 
-    boolean maySticky(DiscussionThread thread);
+    boolean mayStickyThreadInCategory(long categoryId);
 
-    boolean mayLock(DiscussionThread thread);
+    boolean mayLockThreadInCategory(long categoryId);
 
-    boolean mayDelete(DiscussionThread thread);
+    boolean mayDeleteThread(long threadId);
 
-    boolean mayCreateThreadIn(Category category);
+    boolean mayCreateThreadInCategory(long categoryId);
 
-    boolean mayAddFiles(Category category);
+    boolean mayAddFilesInCategory(long categoryId);
 
-    boolean mayView(Category category);
-
+    boolean mayViewCategory(long categoryId);
 }

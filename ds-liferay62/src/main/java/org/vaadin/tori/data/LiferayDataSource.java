@@ -135,40 +135,28 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     private static final String REPLACEMENT_SEPARATOR = "<TORI-REPLACEMENT>";
 
     @Override
-    public List<Category> getRootCategories() throws DataSourceException {
-        return internalGetSubCategories(null);
-    }
-
-    @Override
-    public List<Category> getSubCategories(final Category category)
+    public List<Category> getSubCategories(Long categoryId)
             throws DataSourceException {
-        return internalGetSubCategories(category);
+        return internalGetSubCategories(categoryId);
     }
 
-    public static long getRootMessageId(final DiscussionThread thread)
+    public static long getRootMessageId(final long threadId)
             throws DataSourceException {
         try {
-            final long threadId = thread.getId();
             final MBThread liferayThread = MBThreadLocalServiceUtil
                     .getMBThread(threadId);
             return liferayThread.getRootMessageId();
-        } catch (final PortalException e) {
+        } catch (final NestableException e) {
             log.error(String.format(
-                    "Couldn't get root message id for thread %d.",
-                    thread.getId()), e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error(String.format(
-                    "Couldn't get root message id for thread %d.",
-                    thread.getId()), e);
+                    "Couldn't get root message id for thread %d.", threadId), e);
             throw new DataSourceException(e);
         }
     }
 
-    private List<Category> internalGetSubCategories(final Category category)
+    private List<Category> internalGetSubCategories(Long categoryId)
             throws DataSourceException {
-        final long parentCategoryId = (category != null ? category.getId()
-                : ROOT_CATEGORY_ID);
+        final long parentCategoryId = categoryId != null ? categoryId
+                : ROOT_CATEGORY_ID;
 
         try {
             List<MBCategory> categories = MBCategoryLocalServiceUtil
@@ -188,17 +176,17 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public List<DiscussionThread> getThreads(final Category category,
+    public List<DiscussionThread> getThreads(final long categoryId,
             final int startIndex, int endIndex) throws DataSourceException {
-        ToriUtil.checkForNull(category, "Category must not be null.");
-
         try {
             if (endIndex != QUERY_ALL) {
                 // adjust the endIndex to be inclusive
                 endIndex += 1;
             }
             final List<MBThread> liferayThreads = getLiferayThreadsForCategory(
-                    category.getId(), startIndex, endIndex);
+                    categoryId, startIndex, endIndex);
+
+            final Category category = getCategory(categoryId);
 
             // collection for the final result
             final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
@@ -211,11 +199,11 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             return result;
         } catch (final SystemException e) {
             log.error(String.format("Couldn't get threads for category %d.",
-                    category.getId()), e);
+                    categoryId), e);
             throw new DataSourceException(e);
         } catch (final PortalException e) {
             log.error(String.format("Couldn't get threads for category %d.",
-                    category.getId()), e);
+                    categoryId), e);
             throw new DataSourceException(e);
         }
     }
@@ -225,7 +213,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             throws DataSourceException {
         final int startIndex = QUERY_ALL; // use QUERY_ALL to get all
         final int endIndex = QUERY_ALL; // use QUERY_ALL get all
-        return getThreads(category, startIndex, endIndex);
+        return getThreads(category.getId(), startIndex, endIndex);
     }
 
     @Override
@@ -255,7 +243,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public int getRecentPostsAmount() throws DataSourceException {
+    public int getRecentPostsCount() throws DataSourceException {
         try {
             return MBThreadServiceUtil.getGroupThreadsCount(scopeGroupId, 0,
                     WorkflowConstants.STATUS_APPROVED, INCLUDE_ANONYMOUS,
@@ -394,40 +382,37 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public long getThreadCountRecursively(final Category category)
+    public int getThreadCountRecursively(long categoryId)
             throws DataSourceException {
-        ToriUtil.checkForNull(category, "Category must not be null.");
         try {
-            long count = MBThreadLocalServiceUtil.getCategoryThreadsCount(
-                    scopeGroupId, category.getId(),
-                    WorkflowConstants.STATUS_APPROVED);
+            int count = MBThreadLocalServiceUtil
+                    .getCategoryThreadsCount(scopeGroupId, categoryId,
+                            WorkflowConstants.STATUS_APPROVED);
 
             // recursively add thread count of all sub categories
-            final List<Category> subCategories = getSubCategories(category);
+            final List<Category> subCategories = getSubCategories(categoryId);
             for (final Category subCategory : subCategories) {
-                count += getThreadCountRecursively(subCategory);
+                count += getThreadCountRecursively(subCategory.getId());
             }
             return count;
         } catch (final SystemException e) {
             log.error(String.format(
                     "Couldn't get recursive thread count for category %d.",
-                    category.getId()), e);
+                    categoryId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public long getThreadCount(final Category category)
-            throws DataSourceException {
-        ToriUtil.checkForNull(category, "Category must not be null.");
+    public int getThreadCount(long categoryId) throws DataSourceException {
         try {
-            return MBThreadLocalServiceUtil.getCategoryThreadsCount(
-                    scopeGroupId, category.getId(),
-                    WorkflowConstants.STATUS_APPROVED);
+            return MBThreadLocalServiceUtil
+                    .getCategoryThreadsCount(scopeGroupId, categoryId,
+                            WorkflowConstants.STATUS_APPROVED);
         } catch (final SystemException e) {
             log.error(String.format(
-                    "Couldn't get thread count for category %d.",
-                    category.getId()), e);
+                    "Couldn't get thread count for category %d.", categoryId),
+                    e);
             throw new DataSourceException(e);
         }
     }
@@ -637,63 +622,48 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public Category save(final Category categoryToSave)
-            throws DataSourceException {
+    public void saveNewCategory(Long parentCategoryId, String name,
+            String description) throws DataSourceException {
         try {
-            if (categoryToSave.getId() > 0) {
-                log.debug("Updating existing category: "
-                        + categoryToSave.getName());
-                final MBCategory category = MBCategoryLocalServiceUtil
-                        .getCategory(categoryToSave.getId());
-                EntityFactoryUtil.copyFields(categoryToSave, category);
-                final MBCategory c = MBCategoryLocalServiceUtil
-                        .updateMBCategory(category);
-                return EntityFactoryUtil.createCategory(c);
-            } else {
-                log.debug("Adding new category: " + categoryToSave.getName());
-                final long parentCategoryId = categoryToSave
-                        .getParentCategory() != null ? categoryToSave
-                        .getParentCategory().getId() : ROOT_CATEGORY_ID;
+            log.debug("Adding new category: " + name);
+            final long parentId = parentCategoryId != null ? parentCategoryId
+                    : ROOT_CATEGORY_ID;
 
-                final String displayStyle = "default";
+            final String displayStyle = "default";
 
-                final MBCategory c = MBCategoryServiceUtil.addCategory(
-                        parentCategoryId, categoryToSave.getName(),
-                        categoryToSave.getDescription(), displayStyle, null,
-                        null, null, 0, false, null, null, 0, null, false, null,
-                        0, false, null, null, false, false,
-                        mbCategoryServiceContext);
-
-                return EntityFactoryUtil.createCategory(c);
-            }
-        } catch (final PortalException e) {
-            log.error(
-                    String.format("Cannot save category %d",
-                            categoryToSave.getId()), e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error(
-                    String.format("Cannot save category %d",
-                            categoryToSave.getId()), e);
+            final MBCategory c = MBCategoryServiceUtil.addCategory(
+                    parentCategoryId, name, description, displayStyle, null,
+                    null, null, 0, false, null, null, 0, null, false, null, 0,
+                    false, null, null, false, false, mbCategoryServiceContext);
+        } catch (final NestableException e) {
+            log.error("Cannot persist category", e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public void delete(final Category categoryToDelete)
+    public void updateCategory(long categoryId, String name, String description)
             throws DataSourceException {
         try {
-            MBCategoryServiceUtil.deleteCategory(scopeGroupId,
-                    categoryToDelete.getId());
-        } catch (final PortalException e) {
-            log.error(
-                    String.format("Cannot delete category %d",
-                            categoryToDelete.getId()), e);
+            log.debug("Updating existing category: " + categoryId);
+            final MBCategory category = MBCategoryLocalServiceUtil
+                    .getCategory(categoryId);
+            category.setName(name);
+            category.setDescription(description);
+            final MBCategory c = MBCategoryLocalServiceUtil
+                    .updateMBCategory(category);
+        } catch (NestableException e) {
+            log.error(String.format("Cannot save category %d", categoryId), e);
             throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error(
-                    String.format("Cannot delete category %d",
-                            categoryToDelete.getId()), e);
+        }
+    }
+
+    @Override
+    public void deleteCategory(long categoryId) throws DataSourceException {
+        try {
+            MBCategoryServiceUtil.deleteCategory(scopeGroupId, categoryId);
+        } catch (final NestableException e) {
+            log.error(String.format("Cannot delete category %d", categoryId), e);
             throw new DataSourceException(e);
         }
     }
@@ -723,8 +693,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public long getUnreadThreadCount(final Category category)
-            throws DataSourceException {
+    public int getUnreadThreadCount(long categoryId) throws DataSourceException {
         if (currentUserId <= 0) {
             return 0;
         }
@@ -735,7 +704,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet result = null;
-        final long totalThreadCount = getThreadCountRecursively(category);
+        final long totalThreadCount = getThreadCountRecursively(categoryId);
         try {
             connection = JdbcUtil.getJdbcConnection();
             statement = connection
@@ -745,12 +714,12 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                             + "and MBThread.categoryId = ? and MBThreadFlag.userId = ?");
 
             statement.setLong(1, totalThreadCount);
-            statement.setLong(2, category.getId());
+            statement.setLong(2, categoryId);
             statement.setLong(3, currentUserId);
 
             result = statement.executeQuery();
             if (result.next()) {
-                return result.getLong(1);
+                return result.getInt(1);
             } else {
                 return 0;
             }
@@ -802,65 +771,44 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public void follow(final DiscussionThread thread)
-            throws DataSourceException {
+    public void followThread(long threadId) throws DataSourceException {
         try {
             SubscriptionLocalServiceUtil.addSubscription(currentUserId,
                     currentUser.getGroupId(), MBThread.class.getName(),
-                    thread.getId());
-        } catch (final PortalException e) {
-            log.error(String.format("Cannot follow thread %d", thread.getId()),
-                    e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error(String.format("Cannot follow thread %d", thread.getId()),
-                    e);
+                    threadId);
+        } catch (final NestableException e) {
+            log.error(String.format("Cannot follow thread %d", threadId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public void unFollow(final DiscussionThread thread)
-            throws DataSourceException {
+    public void unfollowThread(long threadId) throws DataSourceException {
         try {
             SubscriptionLocalServiceUtil.deleteSubscription(currentUserId,
-                    MBThread.class.getName(), thread.getId());
-        } catch (final PortalException e) {
-            log.error(
-                    String.format("Cannot unfollow thread %d", thread.getId()),
-                    e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error(
-                    String.format("Cannot unfollow thread %d", thread.getId()),
-                    e);
+                    MBThread.class.getName(), threadId);
+        } catch (final NestableException e) {
+            log.error(String.format("Cannot unfollow thread %d", threadId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public boolean isFollowing(final DiscussionThread thread)
-            throws DataSourceException {
-        if (currentUserId <= 0) {
-            return false;
+    public boolean isFollowingThread(long threadId) {
+        boolean result = false;
+        if (currentUserId > 0) {
+            try {
+                final com.liferay.portal.model.User user = getCurrentUser();
+                result = SubscriptionLocalServiceUtil.isSubscribed(
+                        user.getCompanyId(), user.getUserId(),
+                        MBThread.class.getName(), threadId);
+            } catch (final NestableException e) {
+                log.error(String
+                        .format("Cannot check if user is following thread %d",
+                                threadId), e);
+            }
         }
-
-        try {
-            final com.liferay.portal.model.User user = getCurrentUser();
-            return SubscriptionLocalServiceUtil.isSubscribed(
-                    user.getCompanyId(), user.getUserId(),
-                    MBThread.class.getName(), thread.getId());
-        } catch (final SystemException e) {
-            log.error(String.format(
-                    "Cannot check if user is following thread %d",
-                    thread.getId()), e);
-            throw new DataSourceException(e);
-        } catch (final PortalException e) {
-            log.error(String.format(
-                    "Cannot check if user is following thread %d",
-                    thread.getId()), e);
-            throw new DataSourceException(e);
-        }
+        return result;
     }
 
     @Override
@@ -884,27 +832,22 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public boolean isRead(final DiscussionThread thread)
-            throws DataSourceException {
+    public boolean isThreadRead(long threadId) {
+        boolean result = false;
         if (currentUserId > 0) {
             try {
-                return MBThreadFlagLocalServiceUtil.hasThreadFlag(
+                result = MBThreadFlagLocalServiceUtil.hasThreadFlag(
                         currentUserId,
-                        MBThreadLocalServiceUtil.getThread(thread.getId()));
-            } catch (final PortalException e) {
-                log.error(String.format(
-                        "Couldn't check for read flag on thread %d.",
-                        thread.getId()), e);
-                throw new DataSourceException(e);
-            } catch (final SystemException e) {
-                log.error(String.format(
-                        "Couldn't check for read flag on thread %d.",
-                        thread.getId()), e);
-                throw new DataSourceException(e);
+                        MBThreadLocalServiceUtil.getThread(threadId));
+            } catch (final NestableException e) {
+                log.error(
+                        String.format(
+                                "Couldn't check for read flag on thread %d.",
+                                threadId), e);
             }
         }
         // default to read in case of an anonymous user
-        return true;
+        return result;
     }
 
     @Override
@@ -1008,7 +951,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             final Map<String, byte[]> files) throws DataSourceException {
         try {
             final MBMessage newPost = internalSaveAsCurrentUser(post, files,
-                    getRootMessageId(post.getThread()));
+                    getRootMessageId(post.getThread().getId()));
             final Post post2 = EntityFactoryUtil.createPost(newPost,
                     getUser(currentUserId), getThread(newPost.getThreadId()),
                     getAttachments(newPost));
@@ -1074,113 +1017,68 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public void move(final DiscussionThread thread,
-            final Category destinationCategory) throws DataSourceException {
+    public void moveThread(final long threadId, long destinationCategoryId)
+            throws DataSourceException {
         try {
             MBThreadLocalServiceUtil.moveThread(scopeGroupId,
-                    destinationCategory.getId(), thread.getId());
-        } catch (final PortalException e) {
-            log.error(
-                    String.format("Couldn't move thread %d.", thread.getId()),
-                    e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error(
-                    String.format("Couldn't move thread %d.", thread.getId()),
-                    e);
+                    destinationCategoryId, threadId);
+        } catch (final NestableException e) {
+            log.error(String.format("Couldn't move thread %d.", threadId), e);
             throw new DataSourceException(e);
         }
 
     }
 
     @Override
-    public DiscussionThread sticky(final DiscussionThread thread)
-            throws DataSourceException {
-        updateThreadPriority(thread, STICKY_PRIORITY);
-        thread.setSticky(true);
-        return thread;
+    public void stickyThread(long threadId) throws DataSourceException {
+        updateThreadPriority(threadId, STICKY_PRIORITY);
     }
 
     @Override
-    public DiscussionThread unsticky(final DiscussionThread thread)
-            throws DataSourceException {
-        updateThreadPriority(thread, MBThreadConstants.PRIORITY_NOT_GIVEN);
-        thread.setSticky(false);
-        return thread;
+    public void unstickyThread(long threadId) throws DataSourceException {
+        updateThreadPriority(threadId, MBThreadConstants.PRIORITY_NOT_GIVEN);
     }
 
-    private void updateThreadPriority(final DiscussionThread thread,
-            final double newPriority) throws DataSourceException {
+    private void updateThreadPriority(long threadId, final double newPriority)
+            throws DataSourceException {
         try {
             final MBThread liferayThread = MBThreadLocalServiceUtil
-                    .getThread(thread.getId());
+                    .getThread(threadId);
             liferayThread.setPriority(newPriority);
             MBThreadLocalServiceUtil.updateMBThread(liferayThread);
-        } catch (final PortalException e) {
+        } catch (final NestableException e) {
             log.error(String.format("Couldn't change priority for thread %d.",
-                    thread.getId()), e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error(String.format("Couldn't change priority for thread %d.",
-                    thread.getId()), e);
+                    threadId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public DiscussionThread lock(final DiscussionThread thread)
-            throws DataSourceException {
+    public void lockThread(long threadId) throws DataSourceException {
         try {
-            MBThreadServiceUtil.lockThread(thread.getId());
-            thread.setLocked(true);
-            return thread;
-        } catch (final PortalException e) {
-            log.error(
-                    String.format("Couldn't lock thread %d.", thread.getId()),
-                    e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error(
-                    String.format("Couldn't lock thread %d.", thread.getId()),
-                    e);
+            MBThreadServiceUtil.lockThread(threadId);
+        } catch (final NestableException e) {
+            log.error(String.format("Couldn't lock thread %d.", threadId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public DiscussionThread unlock(final DiscussionThread thread)
-            throws DataSourceException {
+    public void unlockThread(long threadId) throws DataSourceException {
         try {
-            MBThreadServiceUtil.unlockThread(thread.getId());
-            thread.setLocked(false);
-            return thread;
-        } catch (final PortalException e) {
-            log.error(
-                    String.format("Couldn't unlock thread %d.", thread.getId()),
-                    e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error(
-                    String.format("Couldn't unlock thread %d.", thread.getId()),
-                    e);
+            MBThreadServiceUtil.unlockThread(threadId);
+        } catch (final NestableException e) {
+            log.error(String.format("Couldn't unlock thread %d.", threadId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public void delete(final DiscussionThread thread)
-            throws DataSourceException {
+    public void deleteThread(long threadId) throws DataSourceException {
         try {
-            MBThreadLocalServiceUtil.deleteMBThread(thread.getId());
-        } catch (final PortalException e) {
-            log.error(
-                    String.format("Couldn't delete thread %d.", thread.getId()),
-                    e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error(
-                    String.format("Couldn't delete thread %d.", thread.getId()),
-                    e);
+            MBThreadLocalServiceUtil.deleteMBThread(threadId);
+        } catch (final NestableException e) {
+            log.error(String.format("Couldn't delete thread %d.", threadId), e);
             throw new DataSourceException(e);
         }
     }
@@ -1555,4 +1453,5 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         }
         return result;
     }
+
 }

@@ -28,7 +28,6 @@ public class EditPresenter extends Presenter<EditView> {
         super(view);
     }
 
-    @Override
     public final void init() {
         refreshView();
     }

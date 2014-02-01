@@ -45,22 +45,10 @@ public interface DataSource {
     }
 
     /**
-     * Returns a list of all root {@link Category} instances.
-     * 
-     * @return all root {@link Category} instances.
-     */
-    List<Category> getRootCategories() throws DataSourceException;
-
-    /**
      * Get all {@link Category Categories} that have <code>category</code> as
      * their parent.
-     * 
-     * @param root
-     *            The parent <code>Category</code> for the queried
-     *            <code>Categories</code>.
      */
-    List<Category> getSubCategories(Category category)
-            throws DataSourceException;
+    List<Category> getSubCategories(Long categoryId) throws DataSourceException;
 
     /**
      * Get all threads in the given {@code category}, in the following ordering
@@ -98,7 +86,7 @@ public interface DataSource {
      * @see #getThreads()
      */
 
-    List<DiscussionThread> getThreads(Category category, int startIndex,
+    List<DiscussionThread> getThreads(long categoryId, int startIndex,
             int endIndex) throws DataSourceException;
 
     /**
@@ -112,32 +100,25 @@ public interface DataSource {
      * Returns the number {@link DiscussionThread DiscussionThreads} in the
      * given {@link Category}, and all categories beneath it.
      * 
-     * @param category
-     *            Category from which to count the threads.
      * @return number of DiscussionThreads
      */
-    long getThreadCountRecursively(Category category)
-            throws DataSourceException;
+    int getThreadCountRecursively(long categoryId) throws DataSourceException;
 
     /**
      * Returns the number {@link DiscussionThread DiscussionThreads} in the
      * given {@link Category}.
      * 
-     * @param category
-     *            Category from which to count the threads.
      * @return number of DiscussionThreads
      */
-    long getThreadCount(Category category) throws DataSourceException;
+    int getThreadCount(long categoryId) throws DataSourceException;
 
     /**
      * Returns the number of {@link DiscussionThread DiscussionThreads} in the
      * given {@link Category} that are considered unread by the current user.
      * 
-     * @param category
-     *            Category from which to count the unread threads.
      * @return number of unread DiscussionThreads
      */
-    long getUnreadThreadCount(Category category) throws DataSourceException;
+    int getUnreadThreadCount(long categoryId) throws DataSourceException;
 
     /**
      * Returns the {@link DiscussionThread} corresponding to the id or
@@ -163,26 +144,6 @@ public interface DataSource {
     void save(Iterable<Category> categoriesToSave) throws DataSourceException;
 
     /**
-     * Saves all changes made to the given {@link Category Category} or adds it
-     * if it's a new Category.
-     * 
-     * @param categoryToSave
-     *            {@link Category Category} to save.
-     * @return
-     */
-    Category save(Category categoryToSave) throws DataSourceException;
-
-    /**
-     * Removes the given {@link Category} along with all containing
-     * {@link DiscussionThread DiscussionThreads}, {@link Post Posts} and sub
-     * categories.
-     * 
-     * @param categoryToDelete
-     *            {@link Category Category} to delete.
-     */
-    void delete(Category categoryToDelete) throws DataSourceException;
-
-    /**
      * Handles the reporting of a single {@link Post}.
      * 
      * @param report
@@ -196,11 +157,11 @@ public interface DataSource {
 
     void unban(User user) throws DataSourceException;
 
-    void follow(DiscussionThread thread) throws DataSourceException;
+    void followThread(long threadId) throws DataSourceException;
 
-    void unFollow(DiscussionThread thread) throws DataSourceException;
+    void unfollowThread(long threadId) throws DataSourceException;
 
-    boolean isFollowing(DiscussionThread thread) throws DataSourceException;
+    boolean isFollowingThread(long threadId);
 
     void delete(Post post) throws DataSourceException;
 
@@ -248,17 +209,16 @@ public interface DataSource {
     Post saveAsCurrentUser(Post post, Map<String, byte[]> files)
             throws DataSourceException;
 
-    void move(DiscussionThread thread, Category destinationCategory)
+    void moveThread(long threadId, long destinatinoCategoryId)
             throws DataSourceException;
 
-    DiscussionThread sticky(DiscussionThread thread) throws DataSourceException;
+    void stickyThread(long threadId) throws DataSourceException;
 
-    DiscussionThread unsticky(DiscussionThread thread)
-            throws DataSourceException;
+    void unstickyThread(long threadId) throws DataSourceException;
 
-    DiscussionThread lock(DiscussionThread thread) throws DataSourceException;
+    void lockThread(long threadId) throws DataSourceException;
 
-    DiscussionThread unlock(DiscussionThread thread) throws DataSourceException;
+    void unlockThread(long threadId) throws DataSourceException;
 
     /**
      * Deletes a thread.
@@ -273,7 +233,7 @@ public interface DataSource {
      * @see org.vaadin.tori.data.entity.PostVote PostVote
      * @see org.vaadin.tori.data.entity.Following Following
      */
-    void delete(DiscussionThread thread) throws DataSourceException;
+    void deleteThread(long threadId) throws DataSourceException;
 
     /**
      * This method is responsible for making sure that a new thread is created,
@@ -303,13 +263,8 @@ public interface DataSource {
     /**
      * Returns true if the current user has read the given thread. If no user is
      * logged in, this method will return true for any thread.
-     * 
-     * @param thread
-     * @return
-     * @throws DataSourceException
-     * @see {@link #markRead(DiscussionThread)}
      */
-    boolean isRead(DiscussionThread thread) throws DataSourceException;
+    boolean isThreadRead(long threadId);
 
     /**
      * Marks the given thread as read. If no user is logged in, this method
@@ -324,7 +279,7 @@ public interface DataSource {
     List<DiscussionThread> getRecentPosts(int from, int to)
             throws DataSourceException;
 
-    int getRecentPostsAmount() throws DataSourceException;
+    int getRecentPostsCount() throws DataSourceException;
 
     List<DiscussionThread> getMyPostThreads(int from, int to)
             throws DataSourceException;
@@ -384,5 +339,18 @@ public interface DataSource {
     User getToriUser(long userId) throws DataSourceException;
 
     Post getPost(long postId) throws DataSourceException;
+
+    void saveNewCategory(Long parentCategoryId, String name, String description)
+            throws DataSourceException;
+
+    void updateCategory(long categoryId, String name, String description)
+            throws DataSourceException;
+
+    /**
+     * Removes the given category along with all containing
+     * {@link DiscussionThread DiscussionThreads}, {@link Post Posts} and sub
+     * categories.
+     */
+    void deleteCategory(long categoryId) throws DataSourceException;
 
 }

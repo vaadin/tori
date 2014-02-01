@@ -23,12 +23,12 @@ import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.category.CategoryView;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.AuthorizationService;
-import org.vaadin.tori.thread.ThreadView;
+import org.vaadin.tori.view.listing.ListingView;
+import org.vaadin.tori.view.thread.ThreadView;
 
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.View;
@@ -103,8 +103,8 @@ public class Breadcrumbs extends CustomComponent {
         layout.setComponentAlignment(dashboardLink, Alignment.MIDDLE_LEFT);
         layout.addComponent(getSeparator());
 
-        if (currentView instanceof CategoryView) {
-            final CategoryView categoryView = (CategoryView) currentView;
+        if (currentView instanceof ListingView) {
+            final ListingView categoryView = (ListingView) currentView;
             paint(categoryView);
         } else if (currentView instanceof ThreadView) {
             final ThreadView threadView = (ThreadView) currentView;
@@ -152,14 +152,14 @@ public class Breadcrumbs extends CustomComponent {
         }
     }
 
-    private void paint(final CategoryView categoryView) {
-        final Category currentCategory = categoryView.getCurrentCategory();
-        if (currentCategory != null) {
-            inputCategoryCrumb(currentCategory);
-            showViewCaption(currentCategory.getName());
-        } else {
-            hideViewCaption();
-        }
+    private void paint(final ListingView listingView) {
+        // final Category currentCategory = categoryView.getCurrentCategory();
+        // if (currentCategory != null) {
+        // inputCategoryCrumb(currentCategory);
+        // showViewCaption(currentCategory.getName());
+        // } else {
+        // hideViewCaption();
+        // }
     }
 
     private void inputCategoryCrumb(final Category currentCategory) {
@@ -202,10 +202,11 @@ public class Breadcrumbs extends CustomComponent {
                 .getAuthorizationService();
 
         try {
+            // TODO: Use getSubcategoriesrecursively
             final List<Category> rootCategories = ToriApiLoader.getCurrent()
-                    .getDataSource().getRootCategories();
+                    .getDataSource().getSubCategories(0l);
             for (final Category category : rootCategories) {
-                if (authorizationService.mayView(category)) {
+                if (authorizationService.mayViewCategory(category.getId())) {
                     addCategory(tree, category, null);
                 }
             }
@@ -256,7 +257,7 @@ public class Breadcrumbs extends CustomComponent {
         }
 
         final List<Category> subCategories = ToriApiLoader.getCurrent()
-                .getDataSource().getSubCategories(category);
+                .getDataSource().getSubCategories(category.getId());
         if (subCategories.isEmpty()) {
             tree.setChildrenAllowed(category, false);
         } else {

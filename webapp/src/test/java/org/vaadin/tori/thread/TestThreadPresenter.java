@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.vaadin.tori.TestUtil;
 import org.vaadin.tori.ToriApiLoader;
+import org.vaadin.tori.view.thread.ThreadPresenter;
 
 public class TestThreadPresenter {
 

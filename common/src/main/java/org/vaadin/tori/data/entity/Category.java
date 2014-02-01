@@ -33,7 +33,6 @@ public class Category extends AbstractEntity {
 
     @Column(nullable = false)
     private String description;
-    private int displayOrder;
 
     @ManyToOne(optional = true)
     private Category parentCategory;
@@ -74,14 +73,6 @@ public class Category extends AbstractEntity {
 
     protected List<Category> getSubCategories() {
         return subCategories;
-    }
-
-    public int getDisplayOrder() {
-        return displayOrder;
-    }
-
-    public void setDisplayOrder(final int displayOrder) {
-        this.displayOrder = displayOrder;
     }
 
     @Override

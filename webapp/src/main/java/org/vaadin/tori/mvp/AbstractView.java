@@ -42,11 +42,6 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
      */
     protected abstract Component createCompositionRoot();
 
-    /**
-     * Instantiates the Presenter for this View.
-     * 
-     * @return Presenter for this View.
-     */
     protected abstract P createPresenter();
 
     @Override
@@ -55,23 +50,12 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
             log.debug("Initializing view " + getClass().getName());
         }
 
-        // initialize the view first
+        presenter = createPresenter();
         setCompositionRoot(createCompositionRoot());
         initView();
-
-        // then initialize the presenter
-        presenter = createPresenter();
-        if (log.isDebugEnabled()) {
-            log.debug("Initializing presenter "
-                    + presenter.getClass().getName());
-        }
-        presenter.init();
     }
 
-    protected P getPresenter() {
-        if (presenter == null) {
-            init();
-        }
+    public P getPresenter() {
         return presenter;
     }
 

@@ -4,9 +4,21 @@
     display: none !important;
 }
 
-.tori-liferay .categoryview.v-customcomponent {
-	overflow: visible;
+.v-ui { 
+	.categoryview.v-customcomponent {
+		overflow: visible;
+	}
+	
+	.headerlayout {
+		background: #f7f7f7;
+		margin-top: 30px;
+		
+		.v-popup-indicator {
+			display: none;
+		}
+	}
 }
+
 
 .categoryTree.v-treetable {
     margin-bottom: 20px;
@@ -86,15 +98,26 @@
     }
     
     .v-table-body {
-        border: $grid-border;
+        border: none;
+        
+        .v-table-row:FIRST-CHILD .v-table-cell-content:nth-child(2) .v-table-cell-wrapper:before{
+        	content: "UNREAD";
+        	margin-right: 10px;
+        }
+        
+        .v-table-row:FIRST-CHILD .v-table-cell-content:nth-child(3) .v-table-cell-wrapper:before{
+        	content: "TOPICS";
+        	margin-right: 10px;
+        }
     
         .v-table-row,
         .v-table-row-odd {
             font-size: 15px;
+            height: 57px;
             
             .v-table-cell-content {
                 padding: 10px;
-                border-right: $grid-border;
+                border-right: none;
             }
             
             &:nth-child(n+2) .v-table-cell-content {
@@ -104,10 +127,6 @@
             &:hover {
                 background: #edf8fd;
             }
-        }
-        
-        .v-table-row-odd {
-            background: #f9f9f9;
         }
         
         .v-treetable-treespacer {

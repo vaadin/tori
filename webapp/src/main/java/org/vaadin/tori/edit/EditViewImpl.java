@@ -205,6 +205,8 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
         });
         layout.addComponent(saveButton);
         layout.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
+
+        getPresenter().init();
     }
 
     private Component getSubTitle(String string) {

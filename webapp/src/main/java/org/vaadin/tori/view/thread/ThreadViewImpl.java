@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.vaadin.tori.thread;
+package org.vaadin.tori.view.thread;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -77,7 +77,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                     ToriUI.getCurrent().trackAction("reply");
                 } catch (final DataSourceException e) {
                     Notification
-                            .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                            .show(DataSourceException.GENERIC_ERROR_MESSAGE);
                 }
             }
         }
@@ -575,7 +575,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                                                 + createdThread.getId());
                     } catch (final DataSourceException e) {
                         Notification
-                                .show(DataSourceException.BORING_GENERIC_ERROR_MESSAGE);
+                                .show(DataSourceException.GENERIC_ERROR_MESSAGE);
                     }
                 } else {
                     final Notification n = new Notification(errorMessages,

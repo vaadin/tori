@@ -3,14 +3,14 @@
 # SQL clauses cannot span over multiple lines.
 #
 # Categories
-insert into CATEGORY set ID = 1, NAME = "News & Announcements", DESCRIPTION = "All news and announcements.", DISPLAYORDER = 0;
-insert into CATEGORY set ID = 2, NAME = "Using the Forums", DESCRIPTION = "Guidelines and tips for using the forums.", DISPLAYORDER = 1;
-insert into CATEGORY set ID = 3, NAME = "Vaadin Discussion", DESCRIPTION = "All Vaadin related discussion.", DISPLAYORDER = 2;
-insert into CATEGORY set ID = 4, NAME = "Git Discussion", DESCRIPTION = "All Git related discussion.", DISPLAYORDER = 3;
+insert into CATEGORY set ID = 1, NAME = "News & Announcements", DESCRIPTION = "All news and announcements.";
+insert into CATEGORY set ID = 2, NAME = "Using the Forums", DESCRIPTION = "Guidelines and tips for using the forums.";
+insert into CATEGORY set ID = 3, NAME = "Vaadin Discussion", DESCRIPTION = "All Vaadin related discussion.";
+insert into CATEGORY set ID = 4, NAME = "Git Discussion", DESCRIPTION = "All Git related discussion.";
 
 # SubCategories
-insert into CATEGORY set ID = 5, PARENTCATEGORY_ID = 1, NAME = "News", DESCRIPTION = "All news.", DISPLAYORDER = 0;
-insert into CATEGORY set ID = 6, PARENTCATEGORY_ID = 1, NAME = "Announcements", DESCRIPTION = "All announcements.", DISPLAYORDER = 1;
+insert into CATEGORY set ID = 5, PARENTCATEGORY_ID = 1, NAME = "News", DESCRIPTION = "All news.";
+insert into CATEGORY set ID = 6, PARENTCATEGORY_ID = 1, NAME = "Announcements", DESCRIPTION = "All announcements.";
 
 # Threads
 insert into DISCUSSIONTHREAD set ID = 1, VIEWCOUNT = 0, CATEGORY_ID = 5, TOPIC = "Tori alpha 1 released";

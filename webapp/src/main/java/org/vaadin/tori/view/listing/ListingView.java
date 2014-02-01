@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Vaadin Ltd.
+ * Copyright 2014 Vaadin Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,25 +14,24 @@
  * the License.
  */
 
-package org.vaadin.tori.data;
+package org.vaadin.tori.view.listing;
 
-/**
- * <p>
- * If the deployed {@link DataSource} is an instance of
- * <code>DebugDataSource</code>, the developer will be presented with additional
- * testing controls.
- * </p>
- */
-public interface DebugDataSource {
-    String CONTEXT = "/webapp";
-    String ATTACHMENT_PREFIX = CONTEXT + "/attachments/";
+import org.vaadin.tori.component.PanicComponent;
+import org.vaadin.tori.data.entity.Category;
+import org.vaadin.tori.mvp.View;
+
+public interface ListingView extends View {
+
+    void displayCategoryNotFoundError(String requestedCategoryId);
 
     /**
-     * Returns data as byte array for an attachment with the given id.
+     * Show an error message to the user that says that something irrecoverable
+     * went wrong, and there's nothing really we can do.
      * 
-     * @param attachmentDataId
-     * @return The data as byte array.
+     * @see PanicComponent
      */
-    public byte[] getAttachmentData(final long attachmentDataId);
+    void panic();
+
+    void setCategory(Category category);
 
 }

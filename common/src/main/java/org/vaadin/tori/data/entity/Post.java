@@ -48,6 +48,9 @@ public class Post extends AbstractEntity {
     private String bodyRaw;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<PostVote> postVotes;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Attachment> attachments;
 
     public void setAuthor(final User author) {

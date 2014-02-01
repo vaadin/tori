@@ -260,7 +260,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public int getRecentPostsAmount() throws DataSourceException {
+    public int getRecentPostsCount() throws DataSourceException {
         try {
             return MBThreadServiceUtil.getGroupThreadsCount(scopeGroupId, 0,
                     WorkflowConstants.STATUS_APPROVED, INCLUDE_ANONYMOUS,

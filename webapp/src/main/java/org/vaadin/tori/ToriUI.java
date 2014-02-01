@@ -62,12 +62,11 @@ public class ToriUI extends UI {
         mainLayout.setMargin(false);
         setContent(mainLayout);
 
-        addControlPanelIfInDevelopment();
-
         VerticalLayout navigatorContent = new VerticalLayout();
         navigator = new ToriNavigator(this, navigatorContent);
         final Breadcrumbs breadcrumbs = new Breadcrumbs(navigator);
 
+        addControlPanelIfInDevelopment();
         mainLayout.addComponent(breadcrumbs);
         mainLayout.addComponent(navigatorContent);
 
