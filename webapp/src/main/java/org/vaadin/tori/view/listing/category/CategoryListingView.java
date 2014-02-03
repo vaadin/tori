@@ -26,6 +26,8 @@ public interface CategoryListingView extends View {
 
     void setCategories(List<CategoryData> categories);
 
+    void setMayCreateCategories(boolean mayEditCategories);
+
     public interface CategoryData {
 
         long getId();

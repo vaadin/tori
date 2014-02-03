@@ -36,6 +36,7 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
     }
 
     public void categorySelected(Category category) {
+        view.setMayCreateThreads(false);
         ThreadProvider threadProvider = null;
         if (category == SpecialCategory.RECENT_POSTS.getInstance()) {
             threadProvider = getRecentThreadsProvider();
@@ -44,8 +45,11 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
         } else {
             long categoryId = category != null ? category.getId() : 0;
             threadProvider = getDefaultThreadProvider(categoryId);
+            view.setMayCreateThreads(authorizationService
+                    .mayCreateThreadInCategory(categoryId));
         }
         view.setThreadProvider(threadProvider);
+
     }
 
     public void follow(long threadId) {
@@ -157,8 +161,11 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
         List<Category> result = new ArrayList<Category>();
         try {
             for (Category subCategory : dataSource.getSubCategories(categoryId)) {
-                result.add(subCategory);
-                result.addAll(getSubCategoriesRecursively(subCategory.getId()));
+                if (authorizationService.mayViewCategory(subCategory.getId())) {
+                    result.add(subCategory);
+                    result.addAll(getSubCategoriesRecursively(subCategory
+                            .getId()));
+                }
             }
         } catch (DataSourceException e) {
             // NOP

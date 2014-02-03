@@ -41,6 +41,8 @@ public interface ThreadListingView extends View {
 
     void updateThread(ThreadData thread);
 
+    void setMayCreateThreads(boolean mayCreateThreads);
+
     void showThreadMovePopup(long threadId, long threadCategoryId,
             List<Category> allCategories);
 
@@ -85,4 +87,5 @@ public interface ThreadListingView extends View {
         Date getLatestPostTime();
 
     }
+
 }

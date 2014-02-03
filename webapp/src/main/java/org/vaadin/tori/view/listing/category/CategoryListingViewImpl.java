@@ -87,9 +87,9 @@ public class CategoryListingViewImpl extends
             }
         });
         createCategoryButton.setContent(createCategoryForm);
-        result.addComponent(createCategoryButton);
-        result.setComponentAlignment(createCategoryButton,
-                Alignment.MIDDLE_RIGHT);
+        Component buttonWrapper = new HorizontalLayout(createCategoryButton);
+        result.addComponent(buttonWrapper);
+        result.setComponentAlignment(buttonWrapper, Alignment.MIDDLE_RIGHT);
         return result;
     }
 
@@ -120,5 +120,10 @@ public class CategoryListingViewImpl extends
         noCategoriesLabel.setVisible(!hasCategories);
         categoryTree.setVisible(hasCategories);
         categoryTree.setCategories(categories);
+    }
+
+    @Override
+    public void setMayCreateCategories(boolean mayEditCategories) {
+        createCategoryButton.setVisible(mayEditCategories);
     }
 }

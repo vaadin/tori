@@ -41,7 +41,7 @@ public class CategoryListingPresenter extends Presenter<CategoryListingView> {
             displayError(e);
         }
         // refresh the categories
-        reloadCategoriesFromDataSource();
+        updateView();
     }
 
     public void deleteCategory(long categoryId) {
@@ -51,7 +51,7 @@ public class CategoryListingPresenter extends Presenter<CategoryListingView> {
             displayError(e);
         }
         // refresh the categories
-        reloadCategoriesFromDataSource();
+        updateView();
     }
 
     public void updateCategory(long categoryId, final String name,
@@ -61,18 +61,19 @@ public class CategoryListingPresenter extends Presenter<CategoryListingView> {
         } catch (final DataSourceException e) {
             displayError(e);
             // refresh the categories
-            reloadCategoriesFromDataSource();
+            updateView();
         }
     }
 
-    private void reloadCategoriesFromDataSource() {
+    private void updateView() {
         view.setCategories(getCategorySubCategories(parentCategoryId));
+        view.setMayCreateCategories(authorizationService.mayEditCategories());
     }
 
     public void categorySelected(Category category) {
         if (!SpecialCategory.isSpecialCategory(category)) {
             this.parentCategoryId = category != null ? category.getId() : null;
-            reloadCategoriesFromDataSource();
+            updateView();
         }
     }
 
@@ -80,7 +81,9 @@ public class CategoryListingPresenter extends Presenter<CategoryListingView> {
         List<CategoryData> result = new ArrayList<CategoryData>();
         try {
             for (Category subCategory : dataSource.getSubCategories(categoryId)) {
-                result.add(getCategoryData(subCategory));
+                if (authorizationService.mayViewCategory(subCategory.getId())) {
+                    result.add(getCategoryData(subCategory));
+                }
             }
         } catch (DataSourceException e) {
             displayError(e);

@@ -34,4 +34,6 @@ public interface ListingView extends View {
 
     void setCategory(Category category);
 
+    void showError(String message);
+
 }

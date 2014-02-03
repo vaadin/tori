@@ -27,6 +27,8 @@ import org.vaadin.tori.view.listing.thread.ThreadListingViewImpl;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
@@ -99,5 +101,10 @@ public class ListingViewImpl extends
         result.addComponent(title);
         result.setComponentAlignment(title, Alignment.MIDDLE_LEFT);
         return result;
+    }
+
+    @Override
+    public void showError(String message) {
+        Notification.show(message, Type.ERROR_MESSAGE);
     }
 }

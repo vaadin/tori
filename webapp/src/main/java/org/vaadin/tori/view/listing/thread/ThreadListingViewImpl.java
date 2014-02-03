@@ -76,8 +76,10 @@ public class ThreadListingViewImpl extends
                 // getNavigator().navigateTo(ToriNavigator.ApplicationView.)
             }
         });
-        result.addComponent(createTopicButton);
-        result.setComponentAlignment(createTopicButton, Alignment.MIDDLE_RIGHT);
+
+        Component buttonWrapper = new HorizontalLayout(createTopicButton);
+        result.addComponent(buttonWrapper);
+        result.setComponentAlignment(buttonWrapper, Alignment.MIDDLE_RIGHT);
         return result;
     }
 
@@ -134,6 +136,11 @@ public class ThreadListingViewImpl extends
     @Override
     public void updateThread(ThreadData thread) {
         threadListing.updateThreadRow(thread);
+    }
+
+    @Override
+    public void setMayCreateThreads(boolean mayCreateThreads) {
+        createTopicButton.setVisible(mayCreateThreads);
     }
 
 }

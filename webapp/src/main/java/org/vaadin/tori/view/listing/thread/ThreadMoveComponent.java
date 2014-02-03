@@ -20,7 +20,10 @@ import java.util.List;
 
 import org.vaadin.tori.data.entity.Category;
 
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.NativeButton;
 import com.vaadin.ui.Panel;
@@ -59,7 +62,7 @@ public class ThreadMoveComponent extends Window {
         final HorizontalLayout horizontalLayout = new HorizontalLayout();
         layout.addComponent(horizontalLayout);
 
-        horizontalLayout.addComponent(new NativeButton("Move Thread",
+        final Component moveButton = new NativeButton("Move Thread",
                 new NativeButton.ClickListener() {
                     @Override
                     public void buttonClick(final ClickEvent event) {
@@ -70,7 +73,17 @@ public class ThreadMoveComponent extends Window {
                         }
                         close();
                     }
-                }));
+                });
+        moveButton.setEnabled(false);
+        horizontalLayout.addComponent(moveButton);
+        categoriesTree.addValueChangeListener(new ValueChangeListener() {
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                moveButton.setEnabled(!event.getProperty().getValue()
+                        .equals(currentCategoryId));
+            }
+        });
+
         horizontalLayout.addComponent(new NativeButton("Cancel",
                 new NativeButton.ClickListener() {
                     @Override
@@ -99,6 +112,7 @@ public class ThreadMoveComponent extends Window {
 
         tree.setValue(threadCategoryId);
         tree.setNullSelectionAllowed(false);
+        tree.setImmediate(true);
         return tree;
     }
 

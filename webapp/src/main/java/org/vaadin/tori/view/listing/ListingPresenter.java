@@ -56,8 +56,11 @@ public class ListingPresenter extends Presenter<ListingView> {
             } else {
                 final long categoryId = Long.valueOf(categoryIdString);
                 try {
-                    category = dataSource.getCategory(categoryId);
-
+                    if (authorizationService.mayViewCategory(categoryId)) {
+                        category = dataSource.getCategory(categoryId);
+                    } else {
+                        view.showError("No rights to access this category");
+                    }
                 } catch (final NumberFormatException e) {
                     log.error("Invalid category id format: " + categoryId);
                 } catch (final NoSuchCategoryException e) {
