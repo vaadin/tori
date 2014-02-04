@@ -46,6 +46,8 @@ public interface ThreadListingView extends View {
     void showThreadMovePopup(long threadId, long threadCategoryId,
             List<Category> allCategories);
 
+    void navigateToNewThreadView(long categoryId);
+
     public interface ThreadProvider {
         int getThreadCount();
 

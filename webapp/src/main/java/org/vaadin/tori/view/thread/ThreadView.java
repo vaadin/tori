@@ -16,40 +16,20 @@
 
 package org.vaadin.tori.view.thread;
 
-import java.util.LinkedHashMap;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
-import org.vaadin.tori.data.entity.Category;
-import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.View;
 
 public interface ThreadView extends View {
-    /**
-     * May return <code>null</code>, e.g. when the user visited an invalid URL,
-     * or a new thread is being created.
-     */
+    void setPosts(List<PostData> posts);
 
-    DiscussionThread getCurrentThread();
+    void showNotification(String message);
 
-    void displayPosts(List<Post> posts, Long selectedPostId);
-
-    void displayThreadNotFoundError(String threadIdString);
-
-    void confirmPostReported();
-
-    void confirmBanned(User user);
-
-    void confirmUnbanned(User user);
-
-    void confirmFollowingThread();
-
-    void confirmUnFollowingThread();
-
-    void confirmPostDeleted();
-
-    void refreshScores(Post post, long newScore);
+    void showError(String message);
 
     /**
      * Acknowledge that the post was properly accepted and saved.
@@ -60,44 +40,69 @@ public interface ThreadView extends View {
      */
     void confirmReplyPostedAndShowIt(Post updatedPost);
 
-    /**
-     * This method is called when a reply is tried to be sent, but the current
-     * {@link User} doens't have the rights to.
-     * <p/>
-     * Most probably happens when the <code>User</code> was revoked replying
-     * rights while the post was being authored.
-     */
-    void displayUserCanNotReply();
-
-    /**
-     * This method is called when trying to edit a {@link Post}, but the current
-     * {@link User} doens't have the rights to do so.
-     * <p/>
-     * Most probably happens when the <code>User</code> was revoked editing
-     * rights while the post was being modified.
-     */
-    void displayUserCanNotEdit();
-
     void redirectToDashboard();
-
-    void displayNewThreadFormFor(Category category);
-
-    /** May return <code>null</code>, e.g. when the user visited an invalid URL */
-
-    Category getCurrentCategory();
 
     /** For those occasions when a regular error message simply doesn't suffice. */
     void panic();
 
     void appendToReply(String textToAppend);
 
-    /** Re-renders the post with the given post. */
-    void refresh(Post post);
-
-    void updateAttachmentList(LinkedHashMap<String, byte[]> attachments);
-
     void otherUserAuthored(Post post);
 
     void otherUserTyping(User user);
+
+    void setViewPermissions(ViewPermissions viewPermissions);
+
+    public interface PostData {
+
+        long getId();
+
+        long getThreadId();
+
+        String getAuthorName();
+
+        Date getTime();
+
+        String getAuthorAvatarUrl();
+
+        long getScore();
+
+        String getRawBody();
+
+        String getFormattedBody(boolean allowHtml);
+
+        boolean isSelected();
+
+        boolean hasAttachments();
+
+        Map<String, String> getAttachments();
+
+        long getAuthorId();
+
+        Boolean getUpVoted();
+
+        String getBadgeHTML();
+
+        boolean isAuthorBanned();
+
+        boolean userMayReportPosts();
+
+        boolean userMayEdit();
+
+        boolean userMayQuote();
+
+        boolean userMayVote();
+
+        boolean userMayBanAuthor();
+
+        boolean userMayDelete();
+
+    }
+
+    interface ViewPermissions {
+        boolean mayAddFiles();
+
+        int getMaxFileSize();
+    }
 
 }

@@ -16,8 +16,6 @@
 
 package org.vaadin.tori.service;
 
-import org.vaadin.tori.data.entity.Post;
-
 /**
  * Provides methods for specifying access rights to resources or certain
  * operations.
@@ -36,7 +34,7 @@ public interface AuthorizationService {
 
     boolean mayEditCategory(long categoryId);
 
-    boolean mayEdit(Post post);
+    boolean mayEditPost(long postId);;
 
     boolean mayReplyInThread(long threadId);
 
@@ -44,7 +42,7 @@ public interface AuthorizationService {
 
     boolean mayFollowThread(long threadId);
 
-    boolean mayDelete(Post post);
+    boolean mayDeletePost(long postId);
 
     boolean mayVote();
 
@@ -61,4 +59,5 @@ public interface AuthorizationService {
     boolean mayAddFilesInCategory(long categoryId);
 
     boolean mayViewCategory(long categoryId);
+
 }

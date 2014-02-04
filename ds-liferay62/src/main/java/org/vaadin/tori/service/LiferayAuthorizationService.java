@@ -21,7 +21,6 @@ import javax.portlet.PortletRequest;
 import org.apache.log4j.Logger;
 import org.vaadin.tori.PortletRequestAware;
 import org.vaadin.tori.data.LiferayDataSource;
-import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.LiferayAuthorizationConstants.CategoryAction;
 import org.vaadin.tori.service.LiferayAuthorizationConstants.MbAction;
@@ -80,8 +79,8 @@ public class LiferayAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayEdit(final Post post) {
-        return hasMessagePermission(MessageAction.UPDATE, post.getId());
+    public boolean mayEditPost(long postId) {
+        return hasMessagePermission(MessageAction.UPDATE, postId);
     }
 
     @Override
@@ -120,8 +119,8 @@ public class LiferayAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayDelete(final Post post) {
-        return hasMessagePermission(MessageAction.DELETE, post.getId());
+    public boolean mayDeletePost(long postId) {
+        return hasMessagePermission(MessageAction.DELETE, postId);
     }
 
     @Override

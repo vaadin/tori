@@ -18,6 +18,7 @@ package org.vaadin.tori.view.listing.thread;
 
 import java.util.List;
 
+import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.AbstractView;
@@ -73,7 +74,7 @@ public class ThreadListingViewImpl extends
         createTopicButton = new Button("Create Topic", new ClickListener() {
             @Override
             public void buttonClick(ClickEvent event) {
-                // getNavigator().navigateTo(ToriNavigator.ApplicationView.)
+                getPresenter().createTopicRequested();
             }
         });
 
@@ -141,6 +142,11 @@ public class ThreadListingViewImpl extends
     @Override
     public void setMayCreateThreads(boolean mayCreateThreads) {
         createTopicButton.setVisible(mayCreateThreads);
+    }
+
+    @Override
+    public void navigateToNewThreadView(long categoryId) {
+        ToriNavigator.getCurrent().navigateToNewThread(categoryId);
     }
 
 }

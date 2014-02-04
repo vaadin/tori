@@ -230,17 +230,17 @@ public class DebugControlPanel extends CustomComponent implements
             // final ListingView listingView = (ListingView) currentView;
             // data.setCategory(listingView.getCurrentCategory());
         } else if (currentView instanceof ThreadView) {
-            final ThreadView threadView = (ThreadView) currentView;
-            final DiscussionThread currentThread = threadView
-                    .getCurrentThread();
-
-            if (currentThread != null) {
-                data.setCategory(currentThread.getCategory());
-                data.setThread(currentThread);
-                data.setPosts(currentThread.getPosts());
-            } else {
-                log.warn("currentThread was null");
-            }
+            // final ThreadView threadView = (ThreadView) currentView;
+            // final DiscussionThread currentThread = threadView
+            // .getCurrentThread();
+            //
+            // if (currentThread != null) {
+            // data.setCategory(currentThread.getCategory());
+            // data.setThread(currentThread);
+            // data.setPosts(currentThread.getPosts());
+            // } else {
+            // log.warn("currentThread was null");
+            // }
         }
 
         return data;
@@ -307,7 +307,11 @@ public class DebugControlPanel extends CustomComponent implements
 
                     final String authorName = post.getAuthor()
                             .getDisplayedName();
-                    final String postBody = post.getBodyRaw().substring(0, 20);
+
+                    String postBody = post.getBodyRaw();
+                    if (postBody.length() > 20) {
+                        postBody = postBody.substring(0, 20);
+                    }
 
                     final CheckBox checkbox = new CheckBox(authorName + " :: "
                             + postBody);

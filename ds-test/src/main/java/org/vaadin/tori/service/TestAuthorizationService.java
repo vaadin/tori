@@ -19,8 +19,6 @@ package org.vaadin.tori.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.vaadin.tori.data.entity.Post;
-
 public class TestAuthorizationService implements DebugAuthorizationService {
 
     private boolean isCategoryAdministrator = true;
@@ -108,13 +106,13 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     }
 
     @Override
-    public boolean mayEdit(final Post post) {
-        return get(mayEditPost, post.getId(), true);
+    public boolean mayEditPost(long postId) {
+        return get(mayEditPost, postId, true);
     }
 
     @Override
-    public void setMayEdit(final Post post, final boolean b) {
-        mayEditPost.put(post.getId(), b);
+    public void setMayEditPost(long postId, final boolean b) {
+        mayEditPost.put(postId, b);
     }
 
     @Override
@@ -158,13 +156,13 @@ public class TestAuthorizationService implements DebugAuthorizationService {
     }
 
     @Override
-    public boolean mayDelete(final Post post) {
-        return get(mayDelete, post.getId(), true);
+    public boolean mayDeletePost(long postId) {
+        return get(mayDelete, postId, true);
     }
 
     @Override
-    public void setMayDelete(final Post post, final boolean b) {
-        mayDelete.put(post.getId(), b);
+    public void setMayDeletePost(long postId, final boolean b) {
+        mayDelete.put(postId, b);
     }
 
     @Override

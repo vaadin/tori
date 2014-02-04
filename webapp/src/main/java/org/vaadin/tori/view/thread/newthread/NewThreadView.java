@@ -14,8 +14,25 @@
  * the License.
  */
 
-package org.vaadin.tori.widgetset.client.ui.floatingbar;
+package org.vaadin.tori.view.thread.newthread;
 
-public interface FloatingBarWidgetListener {
-    public void visibilityChanged(final boolean visible);
+import org.vaadin.tori.mvp.View;
+
+public interface NewThreadView extends View {
+    void showNotification(String message);
+
+    void showError(String message);
+
+    void redirectToDashboard();
+
+    void setViewPermissions(ViewPermissions viewPermissions);
+
+    void newThreadCreated(long threadId);
+
+    interface ViewPermissions {
+        boolean mayAddFiles();
+
+        int getMaxFileSize();
+    }
+
 }

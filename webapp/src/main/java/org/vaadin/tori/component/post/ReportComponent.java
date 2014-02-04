@@ -19,11 +19,9 @@ package org.vaadin.tori.component.post;
 import java.net.URI;
 
 import org.vaadin.hene.popupbutton.PopupButton;
-import org.vaadin.tori.data.entity.Post;
-import org.vaadin.tori.exception.DataSourceException;
-import org.vaadin.tori.service.post.PostReport;
 import org.vaadin.tori.service.post.PostReport.Reason;
 import org.vaadin.tori.view.thread.ThreadPresenter;
+import org.vaadin.tori.view.thread.ThreadView.PostData;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.server.Page;
@@ -41,7 +39,7 @@ import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
 public class ReportComponent extends CustomComponent {
-    private final Post post;
+    private final PostData post;
     private final ThreadPresenter presenter;
     private final PopupButton reportPopup;
     private Component reportLayout;
@@ -57,8 +55,8 @@ public class ReportComponent extends CustomComponent {
      * @param postFragmentPermalink
      *            The fragment part to the post component to be reported.
      */
-    public ReportComponent(final Post post, final ThreadPresenter presenter,
-            final String postFragmentPermalink) {
+    public ReportComponent(final PostData post,
+            final ThreadPresenter presenter, final String postFragmentPermalink) {
 
         final CssLayout root = new CssLayout();
         setCompositionRoot(root);
@@ -124,18 +122,9 @@ public class ReportComponent extends CustomComponent {
                 final URI l = Page.getCurrent().getLocation();
                 final String link = l.getScheme() + "://" + l.getAuthority()
                         + l.getPath() + postPermalink;
-                final PostReport report = new PostReport(post, (Reason) reason
-                        .getValue(), reasonText.getValue(), link);
-
-                try {
-                    presenter.handlePostReport(report);
-                    reportPopup.setPopupVisible(false);
-                } catch (final DataSourceException e) {
-                    e.printStackTrace();
-                    layout.removeAllComponents();
-                    layout.addComponent(new Label(
-                            DataSourceException.GENERIC_ERROR_MESSAGE));
-                }
+                presenter.handlePostReport(post, (Reason) reason.getValue(),
+                        reasonText.getValue(), link);
+                reportPopup.setPopupVisible(false);
             }
         });
         reportButton.setEnabled(false);

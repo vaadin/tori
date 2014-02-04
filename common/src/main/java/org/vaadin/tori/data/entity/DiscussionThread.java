@@ -41,7 +41,6 @@ public class DiscussionThread extends AbstractEntity {
     private int postCount = -1;
 
     @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
     private Category category;
 
     @Column(nullable = false)

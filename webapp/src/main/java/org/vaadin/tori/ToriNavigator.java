@@ -23,6 +23,7 @@ import org.vaadin.tori.indexing.IndexableView;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.view.listing.ListingViewImpl;
 import org.vaadin.tori.view.thread.ThreadViewImpl;
+import org.vaadin.tori.view.thread.newthread.NewThreadViewImpl;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
@@ -108,15 +109,34 @@ public class ToriNavigator extends Navigator {
  // @formatter:on
     }
 
+    public void navigateToDashboard() {
+        navigateTo(ApplicationView.DASHBOARD.getNavigatorUrl());
+    }
+
+    public void navigateToCategory(long categoryId) {
+        navigateTo(ApplicationView.CATEGORIES.getNavigatorUrl() + "/"
+                + categoryId);
+    }
+
+    public void navigateToThread(long threadId) {
+        navigateTo(ApplicationView.THREADS.getNavigatorUrl() + "/" + threadId);
+    }
+
+    public void navigateToNewThread(long categoryId) {
+        navigateTo(String.format("%s/%s",
+                ToriNavigator.ApplicationView.NEWTHREAD.getNavigatorUrl(),
+                categoryId));
+    }
+
     /**
      * All the views of Tori application that can be navigated to.
      */
     public enum ApplicationView {
         // @formatter:off
-		DASHBOARD("dashboard", ListingViewImpl.class,
-				IndexableDashboardView.class), CATEGORIES("category",
-				ListingViewImpl.class, IndexableCategoryView.class), THREADS(
-				"thread", ThreadViewImpl.class, IndexableThreadView.class);
+		DASHBOARD("dashboard", ListingViewImpl.class, IndexableDashboardView.class),
+		CATEGORIES("category", ListingViewImpl.class, IndexableCategoryView.class),
+		THREADS("thread", ThreadViewImpl.class, IndexableThreadView.class),
+		NEWTHREAD("thread/new", NewThreadViewImpl.class, null);
 		// @formatter:on
 
         private String viewName;
@@ -158,4 +178,9 @@ public class ToriNavigator extends Navigator {
             return viewClass;
         }
     }
+
+    public static ToriNavigator getCurrent() {
+        return (ToriNavigator) UI.getCurrent().getNavigator();
+    }
+
 }

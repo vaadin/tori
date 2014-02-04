@@ -31,6 +31,8 @@ import org.vaadin.tori.view.listing.thread.ThreadListingView.ThreadProvider;
 
 public class ThreadListingPresenter extends Presenter<ThreadListingView> {
 
+    private long categoryId;
+
     public ThreadListingPresenter(ThreadListingView view) {
         super(view);
     }
@@ -45,6 +47,7 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
         } else {
             long categoryId = category != null ? category.getId() : 0;
             threadProvider = getDefaultThreadProvider(categoryId);
+            this.categoryId = categoryId;
             view.setMayCreateThreads(authorizationService
                     .mayCreateThreadInCategory(categoryId));
         }
@@ -340,6 +343,10 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
         protected abstract List<DiscussionThread> getThreadsBetweenInternal(
                 int from, int to) throws DataSourceException;
 
+    }
+
+    public void createTopicRequested() {
+        view.navigateToNewThreadView(categoryId);
     }
 
 }

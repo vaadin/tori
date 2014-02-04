@@ -24,7 +24,6 @@ import java.util.Map;
 import org.vaadin.hene.popupbutton.widgetset.client.ui.PopupButtonConnector;
 import org.vaadin.openesignforms.ckeditor.widgetset.client.ui.CKEditorConnector;
 import org.vaadin.tori.widgetset.client.ui.ToriUIConnector;
-import org.vaadin.tori.widgetset.client.ui.floatingbar.FloatingBarConnector;
 import org.vaadin.tori.widgetset.client.ui.post.PostComponentConnector;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingConnector;
 
@@ -37,6 +36,7 @@ import com.vaadin.client.ui.button.ButtonConnector;
 import com.vaadin.client.ui.checkbox.CheckBoxConnector;
 import com.vaadin.client.ui.csslayout.CssLayoutConnector;
 import com.vaadin.client.ui.customcomponent.CustomComponentConnector;
+import com.vaadin.client.ui.image.ImageConnector;
 import com.vaadin.client.ui.label.LabelConnector;
 import com.vaadin.client.ui.link.LinkConnector;
 import com.vaadin.client.ui.optiongroup.OptionGroupConnector;
@@ -77,7 +77,6 @@ public class ToriConnectorBundleLoaderFactory extends
         addConnector(CKEditorConnector.class, true);
         addConnector(TreeTableConnector.class, true);
         addConnector(ThreadListingConnector.class, true);
-        addConnector(FloatingBarConnector.class, true);
         addConnector(UploadConnector.class, true);
         addConnector(ButtonConnector.class, true);
         addConnector(TextFieldConnector.class, true);
@@ -85,6 +84,7 @@ public class ToriConnectorBundleLoaderFactory extends
         addConnector(CheckBoxConnector.class, true);
         addConnector(OptionGroupConnector.class, true);
         addConnector(TableConnector.class, true);
+        addConnector(ImageConnector.class, true);
     }
 
     private static void addConnector(Class<? extends Connector> clazz,

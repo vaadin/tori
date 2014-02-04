@@ -16,21 +16,27 @@
 
 package org.vaadin.tori.view.thread;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.vaadin.tori.ToriApiLoader;
+import org.vaadin.tori.data.entity.Attachment;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
-import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.mvp.Presenter;
-import org.vaadin.tori.service.post.PostReport;
+import org.vaadin.tori.service.post.PostReport.Reason;
 import org.vaadin.tori.util.ToriActivityMessaging.UserAuthoredListener;
 import org.vaadin.tori.util.ToriActivityMessaging.UserTypingListener;
+import org.vaadin.tori.util.UserBadgeProvider;
+import org.vaadin.tori.view.thread.ThreadView.PostData;
+import org.vaadin.tori.view.thread.ThreadView.ViewPermissions;
 
 public class ThreadPresenter extends Presenter<ThreadView> implements
         UserTypingListener, UserAuthoredListener {
@@ -40,11 +46,157 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     /** This can be null if the user is visiting a non-existing thread. */
 
     private DiscussionThread currentThread;
-    private Category categoryWhileCreatingNewThread;
-    private final LinkedHashMap<String, byte[]> attachments = new LinkedHashMap<String, byte[]>();
+
+    // private final LinkedHashMap<String, byte[]> attachments = new
+    // LinkedHashMap<String, byte[]>();
 
     public ThreadPresenter(ThreadView view) {
         super(view);
+    }
+
+    public PostData getPostData(final Post post, final Long selectedPostId) {
+        final long postId = post.getId();
+        final long selectedId = selectedPostId != null ? selectedPostId : 0;
+        final User author = post.getAuthor();
+        final String bodyRaw = post.getBodyRaw();
+        return new PostData() {
+
+            @Override
+            public long getId() {
+                return postId;
+            }
+
+            @Override
+            public Date getTime() {
+                return post.getTime();
+            }
+
+            @Override
+            public String getAuthorName() {
+                return author.getDisplayedName();
+            }
+
+            @Override
+            public boolean userMayBanAuthor() {
+                return authorizationService.mayBan();
+            }
+
+            @Override
+            public long getThreadId() {
+                return post.getThread().getId();
+            }
+
+            @Override
+            public String getAuthorAvatarUrl() {
+                return author.getAvatarUrl();
+            }
+
+            @Override
+            public long getScore() {
+                long result = 9001;
+                try {
+                    result = dataSource.getPostScore(postId);
+                } catch (final DataSourceException e) {
+                    log.error(e);
+                    e.printStackTrace();
+                }
+                return result;
+            }
+
+            @Override
+            public String getFormattedBody(boolean allowHtml) {
+                String formattedPost = postFormatter.format(bodyRaw);
+                if (!allowHtml) {
+                    formattedPost = stripTags(formattedPost);
+                }
+                return formattedPost;
+            }
+
+            @Override
+            public boolean isSelected() {
+                return postId == selectedId;
+            }
+
+            @Override
+            public String getRawBody() {
+                return bodyRaw;
+            }
+
+            @Override
+            public boolean hasAttachments() {
+                return post.hasAttachments();
+            }
+
+            @Override
+            public Map<String, String> getAttachments() {
+                Map<String, String> attachments = new LinkedHashMap<String, String>();
+                for (Attachment attachment : post.getAttachments()) {
+                    final String linkCaption = String.format("%s (%s KB)",
+                            attachment.getFilename(),
+                            attachment.getFileSize() / 1024);
+                    attachments.put(attachment.getDownloadUrl(), linkCaption);
+                }
+                return attachments;
+            }
+
+            @Override
+            public long getAuthorId() {
+                return author.getId();
+            }
+
+            @Override
+            public Boolean getUpVoted() {
+                Boolean result = null;
+                try {
+                    result = dataSource.getPostVote(postId);
+                } catch (DataSourceException e) {
+                }
+                return result;
+            }
+
+            @Override
+            public String getBadgeHTML() {
+                String result = null;
+                final UserBadgeProvider badgeProvider = ToriApiLoader
+                        .getCurrent().getUserBadgeProvider();
+                if (badgeProvider != null) {
+                    result = badgeProvider.getHtmlBadgeFor(author);
+                }
+                return result;
+            }
+
+            @Override
+            public boolean isAuthorBanned() {
+                return author.isBanned();
+            }
+
+            @Override
+            public boolean userMayReportPosts() {
+                return authorizationService.mayReportPosts();
+            }
+
+            @Override
+            public boolean userMayEdit() {
+                return authorizationService.mayEditPost(postId);
+            }
+
+            @Override
+            public boolean userMayQuote() {
+                return authorizationService.mayReplyInThread(post.getThread()
+                        .getId());
+            }
+
+            @Override
+            public boolean userMayVote() {
+                return authorizationService.mayVote();
+            }
+
+            @Override
+            public boolean userMayDelete() {
+                return authorizationService.mayDeletePost(postId);
+            }
+
+        };
     }
 
     public void setCurrentThreadById(final String threadIdString,
@@ -54,31 +206,47 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             try {
                 final long threadId = Long.valueOf(threadIdString);
                 requestedThread = dataSource.getThread(threadId);
+
+                if (requestedThread != null) {
+                    currentThread = requestedThread;
+
+                    Long selectedPostId = null;
+                    if (selectedPostIdString != null) {
+                        try {
+                            selectedPostId = Long
+                                    .parseLong(selectedPostIdString);
+                        } catch (final NumberFormatException e) {
+                            log.error("Invalid post id format: "
+                                    + selectedPostIdString);
+                        }
+                    }
+
+                    displayPosts(threadId, selectedPostId);
+                    view.setViewPermissions(new ViewPermissions() {
+                        @Override
+                        public boolean mayAddFiles() {
+                            return authorizationService
+                                    .mayAddFilesInCategory(currentThread
+                                            .getCategory().getId());
+                        }
+
+                        @Override
+                        public int getMaxFileSize() {
+                            return dataSource.getAttachmentMaxFileSize();
+                        }
+                    });
+
+                } else {
+                    log.error("requestedthread was null, but no exception was thrown.");
+                }
+
             } catch (final NumberFormatException e) {
                 log.error("Invalid thread id format: " + threadIdString);
             } catch (final NoSuchThreadException e) {
-                view.displayThreadNotFoundError(threadIdString);
+                view.showError("Thread not found");
                 return;
             }
 
-            if (requestedThread != null) {
-                currentThread = requestedThread;
-
-                Long selectedPostId = null;
-                if (selectedPostIdString != null) {
-                    try {
-                        selectedPostId = Long.parseLong(selectedPostIdString);
-                    } catch (final NumberFormatException e) {
-                        log.error("Invalid post id format: "
-                                + selectedPostIdString);
-                    }
-                }
-
-                view.displayPosts(dataSource.getPosts(requestedThread),
-                        selectedPostId);
-            } else {
-                log.error("requestedthread was null, but no exception was thrown.");
-            }
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -98,6 +266,18 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         }
     }
 
+    private void displayPosts(long threadId, Long selectedPostId) {
+        List<PostData> posts = new ArrayList<PostData>();
+        try {
+            for (Post post : dataSource.getPosts(threadId)) {
+                posts.add(getPostData(post, selectedPostId));
+            }
+        } catch (DataSourceException e) {
+            e.printStackTrace();
+        }
+        view.setPosts(posts);
+    }
+
     /**
      * @return <code>null</code> if the URL is invalid.
      */
@@ -106,36 +286,10 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         return currentThread;
     }
 
-    public void handlePostReport(final PostReport report)
-            throws DataSourceException {
+    public void ban(final long userId) throws DataSourceException {
         try {
-            dataSource.reportPost(report);
-            view.confirmPostReported();
-        } catch (final DataSourceException e) {
-            log.error(e);
-            e.printStackTrace();
-            throw e;
-        }
-
-    }
-
-    public boolean userMayReportPosts() {
-        return authorizationService.mayReportPosts();
-    }
-
-    public boolean userMayEdit(final Post post) {
-        return authorizationService.mayEdit(post);
-    }
-
-    public boolean userMayQuote(final Post post) {
-        return currentThread != null
-                && authorizationService.mayReplyInThread(currentThread.getId());
-    }
-
-    public void ban(final User user) throws DataSourceException {
-        try {
-            dataSource.ban(user);
-            view.confirmBanned(user);
+            dataSource.banUser(userId);
+            view.showNotification("User banned");
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -143,49 +297,15 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         }
     }
 
-    public void unban(final User user) throws DataSourceException {
+    public void unban(final long userId) throws DataSourceException {
         try {
-            dataSource.unban(user);
-            view.confirmUnbanned(user);
+            dataSource.unbanUser(userId);
+            view.showNotification("User unbanned");
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
             throw e;
         }
-    }
-
-    public boolean userMayBan() {
-        return authorizationService.mayBan();
-    }
-
-    public void followThread() throws DataSourceException {
-        if (currentThread == null) {
-            return;
-        }
-        try {
-            dataSource.followThread(currentThread.getId());
-            view.confirmFollowingThread();
-        } catch (final DataSourceException e) {
-            log.error(e);
-            e.printStackTrace();
-            throw e;
-        }
-
-    }
-
-    public void unFollowThread() throws DataSourceException {
-        if (currentThread == null) {
-            return;
-        }
-        try {
-            dataSource.unfollowThread(currentThread.getId());
-            view.confirmUnFollowingThread();
-        } catch (final DataSourceException e) {
-            log.error(e);
-            e.printStackTrace();
-            throw e;
-        }
-
     }
 
     /**
@@ -209,10 +329,10 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     }
 
-    public void delete(final Post post) throws DataSourceException {
+    public void delete(long postId) throws DataSourceException {
         try {
-            dataSource.delete(post);
-            view.confirmPostDeleted();
+            dataSource.deletePost(postId);
+            view.showNotification("Post deleted");
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -221,27 +341,18 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     }
 
-    public boolean userMayDelete(final Post post) {
-        return authorizationService.mayDelete(post);
-    }
-
-    public boolean userMayVote() {
-        return authorizationService.mayVote();
-    }
-
     /**
      * If the user hasn't upvoted a post, give it an upvote. If that user
      * already has upvoted the post, remove the vote.
      */
-    public void upvote(final Post post) throws DataSourceException {
+    public void upvote(long postId) throws DataSourceException {
         try {
-            if (!getPostVote(post).isUpvote()) {
-                dataSource.upvote(post);
+            Boolean vote = getPostVote(postId);
+            if (vote == null || !vote) {
+                dataSource.upvote(postId);
             } else {
-                dataSource.removeUserVote(post);
+                dataSource.removeUserVote(postId);
             }
-            final long newScore = dataSource.getScore(post);
-            view.refreshScores(post, newScore);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -254,15 +365,14 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
      * if the user hasn't downvoted a post, give it a downvote. Otherwise,
      * remove this user's downvote.
      */
-    public void downvote(final Post post) throws DataSourceException {
+    public void downvote(final long postId) throws DataSourceException {
         try {
-            if (!getPostVote(post).isDownvote()) {
-                dataSource.downvote(post);
+            Boolean vote = getPostVote(postId);
+            if (vote == null || vote) {
+                dataSource.downvote(postId);
             } else {
-                dataSource.removeUserVote(post);
+                dataSource.removeUserVote(postId);
             }
-            final long newScore = dataSource.getScore(post);
-            view.refreshScores(post, newScore);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -271,20 +381,9 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     }
 
-    public PostVote getPostVote(final Post post) throws DataSourceException {
+    public Boolean getPostVote(final long postId) throws DataSourceException {
         try {
-            return dataSource.getPostVote(post);
-        } catch (final DataSourceException e) {
-            log.error(e);
-            e.printStackTrace();
-            throw e;
-        }
-
-    }
-
-    public long getScore(final Post post) throws DataSourceException {
-        try {
-            return dataSource.getScore(post);
+            return dataSource.getPostVote(postId);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -299,96 +398,20 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         }
     }
 
-    public boolean userMayReply() {
-        return currentThread != null
-                && authorizationService.mayReplyInThread(currentThread.getId());
-    }
-
-    public final boolean userMayAddFiles() {
-        boolean mayAddFiles;
-        if (currentThread == null) {
-            mayAddFiles = authorizationService
-                    .mayAddFilesInCategory(categoryWhileCreatingNewThread
-                            .getId());
-        } else {
-            mayAddFiles = authorizationService
-                    .mayAddFilesInCategory(currentThread.getCategory().getId());
-        }
-        return mayAddFiles;
-    }
-
-    public final int getMaxFileSize() {
-        return dataSource.getAttachmentMaxFileSize();
-    }
-
-    public final void resetInput() {
-        attachments.clear();
-        view.updateAttachmentList(attachments);
-    }
-
-    public final void addAttachment(final String fileName, final byte[] data) {
-        attachments.put(fileName, data);
-        view.updateAttachmentList(attachments);
-    }
-
-    public final void removeAttachment(final String fileName) {
-        attachments.remove(fileName);
-        view.updateAttachmentList(attachments);
-    }
-
-    public void sendReply(final String rawBody) throws DataSourceException {
-        if (userMayReply()) {
-            try {
-                final Post post = new Post();
-                post.setAuthor(null);
-                post.setBodyRaw(rawBody);
-                post.setThread(currentThread);
-                post.setTime(new Date());
-
-                final Post updatedPost = dataSource.saveAsCurrentUser(post,
-                        attachments);
-                dataSource.markRead(updatedPost.getThread());
-                messaging.sendUserAuthored(updatedPost.getId(),
-                        currentThread.getId());
-                resetInput();
-
-                view.confirmReplyPostedAndShowIt(updatedPost);
-            } catch (final DataSourceException e) {
-                log.error(e);
-                e.printStackTrace();
-                throw e;
-            }
-        } else {
-            view.displayUserCanNotReply();
-        }
-    }
-
-    /**
-     * @throws DataSourceException
-     * @throws IllegalStateException
-     *             if {@link #currentThread} is <code>null</code>.
-     */
-    public void resetView() throws DataSourceException {
+    public void sendReply(final String rawBody, Map<String, byte[]> attachments) {
         try {
-            /*
-             * findbugs doesn't understand the nullcheck for field references,
-             * so making it a local field instead. Probably because of possible
-             * multithread stuff.
-             */
-            final DiscussionThread thread = currentThread;
+            final Post updatedPost = dataSource.saveReply(rawBody, attachments,
+                    currentThread.getId());
+            dataSource.markRead(updatedPost.getThread());
+            messaging.sendUserAuthored(updatedPost.getId(),
+                    currentThread.getId());
 
-            if (thread != null) {
-                view.displayPosts(dataSource.getPosts(thread), null);
-            } else {
-                throw new IllegalStateException(
-                        "This method may not be called while currentThread is null");
-            }
+            view.confirmReplyPostedAndShowIt(updatedPost);
         } catch (final DataSourceException e) {
+            view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
             log.error(e);
             e.printStackTrace();
-            throw e;
         }
-
     }
 
     public String stripTags(final String html) {
@@ -398,57 +421,25 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     public void handleArguments(final String[] arguments)
             throws NoSuchThreadException, DataSourceException {
         if (arguments.length > 0) {
-            if (!arguments[0].equals(NEW_THREAD_ARGUMENT)) {
-                String postId = null;
-                if (arguments.length > 1) {
-                    postId = arguments[1];
-                }
-                setCurrentThreadById(arguments[0], postId);
-                return;
-            } else if (arguments.length > 1) {
-                try {
-                    final Category category = dataSource.getCategory(Long
-                            .parseLong(arguments[1]));
-
-                    if (category != null) {
-                        categoryWhileCreatingNewThread = category;
-
-                        view.displayNewThreadFormFor(category);
-                        return;
-                    }
-                } catch (final NumberFormatException IGNORE) {
-                }
+            String postId = null;
+            if (arguments.length > 1) {
+                postId = arguments[1];
             }
+            setCurrentThreadById(arguments[0], postId);
         } else {
             log.info("Tried to visit a thread without arguments");
+            view.redirectToDashboard();
         }
-
-        /*
-         * if some error occurred that really shouldn't have, just redirect back
-         * to dashboard.
-         */
-        view.redirectToDashboard();
-
     }
 
-    public DiscussionThread createNewThread(final Category category,
-            final String topic, final String rawBody)
+    public long createNewThread(final Category category, final String topic,
+            final String rawBody, Map<String, byte[]> attachments)
             throws DataSourceException {
         try {
-            final DiscussionThread thread = new DiscussionThread(topic);
-            thread.setCategory(category);
-
-            final Post post = new Post();
-            post.setBodyRaw(rawBody);
-            post.setTime(new Date());
-
-            thread.setPosts(Arrays.asList(post));
-            post.setThread(thread);
-
-            DiscussionThread discussionThread = dataSource.saveNewThread(
-                    thread, attachments, post);
-            messaging.sendUserAuthored(post.getId(), discussionThread.getId());
-            return discussionThread;
+            Post post = dataSource.saveNewThread(topic, rawBody, attachments,
+                    category.getId());
+            messaging.sendUserAuthored(post.getId(), post.getThread().getId());
+            return post.getThread().getId();
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -457,28 +448,26 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     }
 
-    public Category getCurrentCategory() {
-        if (currentThread != null) {
-            return currentThread.getCategory();
-        } else {
-            return categoryWhileCreatingNewThread;
+    public void quotePost(long postId) {
+        try {
+            Post post = dataSource.getPost(postId);
+            final String quote = postFormatter.getQuote(post);
+            view.appendToReply(quote + "\n\n ");
+        } catch (DataSourceException e) {
+            view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
+            e.printStackTrace();
         }
+
     }
 
-    public void quotePost(final Post post) {
-        final String quote = postFormatter.getQuote(post);
-        view.appendToReply(quote + "\n\n ");
-    }
-
-    public void saveEdited(final Post post, final String newBody)
-            throws DataSourceException {
-        if (authorizationService.mayEdit(post)) {
-            // FIXME: umm, maybe we should clone this first?
-            post.setBodyRaw(newBody);
-            dataSource.save(post);
-            view.refresh(post);
-        } else {
-            view.displayUserCanNotEdit();
+    public void saveEdited(final long postId, final String newBody) {
+        if (authorizationService.mayEditPost(postId)) {
+            try {
+                dataSource.savePost(postId, newBody);
+            } catch (DataSourceException e) {
+                view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
+                e.printStackTrace();
+            }
         }
     }
 
@@ -508,7 +497,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         try {
             handleArguments(args);
         } catch (final NoSuchThreadException e) {
-            view.displayThreadNotFoundError(String.valueOf(e.getThreadId()));
+            view.showError("Thread not found");
         } catch (final DataSourceException e) {
             view.panic();
         }
@@ -536,5 +525,11 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
                 e.printStackTrace();
             }
         }
+    }
+
+    public void handlePostReport(PostData post, Reason reason,
+            String additionalInfo, String postUrl) {
+        dataSource.reportPost(post.getId(), reason, additionalInfo, postUrl);
+        view.showNotification("Post reported");
     }
 }

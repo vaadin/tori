@@ -40,16 +40,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.vaadin.tori.Configuration;
 import org.vaadin.tori.PortletRequestAware;
-import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.data.entity.Attachment;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.EntityFactoryUtil;
 import org.vaadin.tori.data.entity.Post;
-import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
-import org.vaadin.tori.service.post.PostReport;
+import org.vaadin.tori.service.post.PostReport.Reason;
 
 import com.liferay.portal.kernel.exception.NestableException;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -90,6 +88,7 @@ import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadServiceUtil;
 import com.liferay.portlet.messageboards.util.comparator.MessageCreateDateComparator;
 import com.liferay.portlet.ratings.NoSuchEntryException;
+import com.liferay.portlet.ratings.model.RatingsEntry;
 import com.liferay.portlet.ratings.model.RatingsStats;
 import com.liferay.portlet.ratings.service.RatingsEntryLocalServiceUtil;
 import com.liferay.portlet.ratings.service.RatingsEntryServiceUtil;
@@ -469,14 +468,12 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public List<Post> getPosts(final DiscussionThread thread)
-            throws DataSourceException {
-        ToriUtil.checkForNull(thread, "DiscussionThread must not be null.");
+    public List<Post> getPosts(long threadId) throws DataSourceException {
         try {
-            final List<MBMessage> messages = getLiferayPostsForThread(thread
-                    .getId());
+            final List<MBMessage> messages = getLiferayPostsForThread(threadId);
 
             final List<Post> result = new ArrayList<Post>(messages.size());
+            final DiscussionThread thread = getThread(threadId);
             for (final MBMessage message : messages) {
                 final User author = getUser(message.getUserId());
                 final List<Attachment> attachments = getAttachments(message);
@@ -490,15 +487,9 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                 result.add(post);
             }
             return result;
-        } catch (final PortalException e) {
-            log.error(
-                    String.format("Couldn't get posts for thread %d.",
-                            thread.getId()), e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error(
-                    String.format("Couldn't get posts for thread %d.",
-                            thread.getId()), e);
+        } catch (final NestableException e) {
+            log.error(String.format("Couldn't get posts for thread %d.",
+                    threadId), e);
             throw new DataSourceException(e);
         }
     }
@@ -617,11 +608,6 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public void save(final Iterable<Category> categoriesToSave) {
-        log.warn("Not yet implemented.");
-    }
-
-    @Override
     public void saveNewCategory(Long parentCategoryId, String name,
             String description) throws DataSourceException {
         try {
@@ -631,10 +617,10 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
             final String displayStyle = "default";
 
-            final MBCategory c = MBCategoryServiceUtil.addCategory(
-                    parentCategoryId, name, description, displayStyle, null,
-                    null, null, 0, false, null, null, 0, null, false, null, 0,
-                    false, null, null, false, false, mbCategoryServiceContext);
+            MBCategoryServiceUtil.addCategory(parentId, name, description,
+                    displayStyle, null, null, null, 0, false, null, null, 0,
+                    null, false, null, 0, false, null, null, false, false,
+                    mbCategoryServiceContext);
         } catch (final NestableException e) {
             log.error("Cannot persist category", e);
             throw new DataSourceException(e);
@@ -650,8 +636,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                     .getCategory(categoryId);
             category.setName(name);
             category.setDescription(description);
-            final MBCategory c = MBCategoryLocalServiceUtil
-                    .updateMBCategory(category);
+            MBCategoryLocalServiceUtil.updateMBCategory(category);
         } catch (NestableException e) {
             log.error(String.format("Cannot save category %d", categoryId), e);
             throw new DataSourceException(e);
@@ -669,7 +654,8 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public void reportPost(final PostReport report) {
+    public void reportPost(long postId, Reason reason, String additionalInfo,
+            String postUrl) {
         String reporterEmailAddress = "";
         try {
             reporterEmailAddress = getCurrentUser().getEmailAddress();
@@ -679,17 +665,23 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             log.error("Couldn't get the email address of current user.", e);
         }
 
-        final long reportedUserId = report.getPost().getAuthor().getId();
-        final String contentTitle = report.getPost().getThread().getTopic();
-        final String contentURL = report.getPostUrl();
-        String reason = report.getReason().toString();
-        if (report.getAdditionalInfo().length() > 0) {
-            reason += ": " + report.getAdditionalInfo();
+        try {
+            Post post = getPost(postId);
+            final long reportedUserId = post.getAuthor().getId();
+            final String contentTitle = post.getThread().getTopic();
+            final String contentURL = postUrl;
+            String reasonString = reason.toString();
+            if (additionalInfo != null && !additionalInfo.isEmpty()) {
+                reasonString += ": " + additionalInfo;
+            }
+
+            FlagsEntryServiceUtil.addEntry(MBMessage.class.getName(), postId,
+                    reporterEmailAddress, reportedUserId, contentTitle,
+                    contentURL, reasonString, flagsServiceContext);
+        } catch (DataSourceException e) {
+            e.printStackTrace();
         }
 
-        FlagsEntryServiceUtil.addEntry(MBMessage.class.getName(), report
-                .getPost().getId(), reporterEmailAddress, reportedUserId,
-                contentTitle, contentURL, reason, flagsServiceContext);
     }
 
     @Override
@@ -734,38 +726,31 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public void save(final Post post) {
+    public void savePost(long postId, String bodyRaw) {
         try {
             // Currently only editing of message body allowed
-            MBMessageLocalServiceUtil.updateMessage(post.getId(),
-                    post.getBodyRaw());
+            MBMessageLocalServiceUtil.updateMessage(postId, bodyRaw);
         } catch (final Exception e) {
             log.error("Editing message failed", e);
         }
     }
 
     @Override
-    public void ban(final User user) throws DataSourceException {
+    public void banUser(long userId) throws DataSourceException {
         try {
-            MBBanServiceUtil.addBan(user.getId(), mbBanServiceContext);
-        } catch (final PortalException e) {
-            log.error(String.format("Cannot ban user %d", user.getId()), e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error(String.format("Cannot ban user %d", user.getId()), e);
+            MBBanServiceUtil.addBan(userId, mbBanServiceContext);
+        } catch (NestableException e) {
+            log.error(String.format("Cannot ban user %d", userId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public void unban(final User user) throws DataSourceException {
+    public void unbanUser(long userId) throws DataSourceException {
         try {
-            MBBanServiceUtil.deleteBan(user.getId(), mbBanServiceContext);
-        } catch (final PortalException e) {
-            log.error(String.format("Cannot unban user %d", user.getId()), e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error(String.format("Cannot unban user %d", user.getId()), e);
+            MBBanServiceUtil.deleteBan(userId, mbBanServiceContext);
+        } catch (final NestableException e) {
+            log.error(String.format("Cannot unban user %d", userId), e);
             throw new DataSourceException(e);
         }
     }
@@ -851,107 +836,87 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public void delete(final Post post) throws DataSourceException {
+    public void deletePost(long postId) throws DataSourceException {
         try {
-            MBMessageServiceUtil.deleteMessage(post.getId());
-        } catch (final PortalException e) {
-            log.error(String.format("Couldn't delete post %d.", post.getId()),
-                    e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error(String.format("Couldn't delete post %d.", post.getId()),
-                    e);
+            MBMessageServiceUtil.deleteMessage(postId);
+        } catch (final NestableException e) {
+            log.error(String.format("Couldn't delete post %d.", postId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public PostVote getPostVote(final Post post) throws DataSourceException {
-        final PostVote vote = new PostVote();
+    public Boolean getPostVote(long postId) throws DataSourceException {
+        Boolean result = null;
         try {
-            return EntityFactoryUtil
-                    .createPostVote(RatingsEntryLocalServiceUtil.getEntry(
-                            currentUserId, MBMessage.class.getName(),
-                            post.getId()));
+            RatingsEntry entry = RatingsEntryLocalServiceUtil.getEntry(
+                    currentUserId, MBMessage.class.getName(), postId);
+            if (entry != null) {
+                result = entry.getScore() > 0;
+            }
         } catch (final NoSuchEntryException e) {
-            return vote;
-        } catch (final PortalException e) {
-            log.error(
-                    String.format("Couldn't get post vote for post %d.",
-                            post.getId()), e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error(
-                    String.format("Couldn't get post vote for post %d.",
-                            post.getId()), e);
+        } catch (final NestableException e) {
+            log.error(String.format("Couldn't get post vote for post %d.",
+                    postId), e);
             throw new DataSourceException(e);
         }
+        return result;
     }
 
     @Override
-    public void upvote(final Post post) throws DataSourceException {
-        ratePost(post, 1);
+    public void upvote(long postId) throws DataSourceException {
+        ratePost(postId, 1);
     }
 
     @Override
-    public void downvote(final Post post) throws DataSourceException {
-        ratePost(post, -1);
+    public void downvote(long postId) throws DataSourceException {
+        ratePost(postId, -1);
     }
 
-    private void ratePost(final Post post, final int score)
+    private void ratePost(long postId, final int score)
             throws DataSourceException {
-        ToriUtil.checkForNull(post, "Post must not be null.");
         try {
             RatingsEntryServiceUtil.updateEntry(MBMessage.class.getName(),
-                    post.getId(), score);
-        } catch (final PortalException e) {
-            log.error(String.format("Couldn't rate post %d.", post.getId()), e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error(
-                    String.format("Couldn't get post vote for post %d.",
-                            post.getId()), e);
+                    postId, score);
+        } catch (final NestableException e) {
+            log.error(String.format("Couldn't rate post %d.", postId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public void removeUserVote(final Post post) throws DataSourceException {
+    public void removeUserVote(long postId) throws DataSourceException {
         try {
             RatingsEntryServiceUtil.deleteEntry(MBMessage.class.getName(),
-                    post.getId());
-        } catch (final PortalException e) {
+                    postId);
+        } catch (final NestableException e) {
             log.error(String.format("Couldn't remove user vote for post %d.",
-                    post.getId()), e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
-            log.error(String.format("Couldn't remove user vote for post %d.",
-                    post.getId()), e);
+                    postId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public long getScore(final Post post) throws DataSourceException {
+    public long getPostScore(long postId) throws DataSourceException {
         try {
             final RatingsStats ratingsStats = RatingsStatsLocalServiceUtil
-                    .getStats(MBMessage.class.getName(), post.getId());
+                    .getStats(MBMessage.class.getName(), postId);
             return (long) (ratingsStats.getAverageScore() * ratingsStats
                     .getTotalEntries());
         } catch (final SystemException e) {
-            log.error(
-                    String.format("Couldn't get score for post %d.",
-                            post.getId()), e);
+            log.error(String.format("Couldn't get score for post %d.", postId),
+                    e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public Post saveAsCurrentUser(final Post post,
-            final Map<String, byte[]> files) throws DataSourceException {
+    public Post saveReply(String rawBody, Map<String, byte[]> attachments,
+            long threadId) throws DataSourceException {
         try {
-            final MBMessage newPost = internalSaveAsCurrentUser(post, files,
-                    getRootMessageId(post.getThread().getId()));
+            final MBMessage newPost = internalSaveAsCurrentUser(rawBody,
+                    attachments, getThread(threadId),
+                    getRootMessageId(threadId));
             final Post post2 = EntityFactoryUtil.createPost(newPost,
                     getUser(currentUserId), getThread(newPost.getThreadId()),
                     getAttachments(newPost));
@@ -960,25 +925,21 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
                 replaceMessageBoardsLinksMessages(post2);
             }
             return post2;
-        } catch (final PortalException e) {
-            log.error("Couldn't save post.", e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
+        } catch (final NestableException e) {
             log.error("Couldn't save post.", e);
             throw new DataSourceException(e);
         }
     }
 
-    private MBMessage internalSaveAsCurrentUser(final Post post,
-            final Map<String, byte[]> files, final long parentMessageId)
-            throws PortalException, SystemException {
-        final DiscussionThread thread = post.getThread();
+    private MBMessage internalSaveAsCurrentUser(final String rawBody,
+            final Map<String, byte[]> files, DiscussionThread thread,
+            final long parentMessageId) throws PortalException, SystemException {
         final long groupId = scopeGroupId;
         final long categoryId = thread.getCategory().getId();
 
         // trim because liferay seems to bug out otherwise
-        String subject = post.getThread().getTopic().trim();
-        final String body = post.getBodyRaw().trim();
+        String subject = thread.getTopic().trim();
+        final String body = rawBody.trim();
         final List<ObjectValuePair<String, InputStream>> attachments = new ArrayList<ObjectValuePair<String, InputStream>>();
 
         if (files != null) {
@@ -1204,26 +1165,25 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public DiscussionThread saveNewThread(final DiscussionThread newThread,
-            final Map<String, byte[]> files, final Post firstPost)
+    public Post saveNewThread(String topic, String rawBody,
+            Map<String, byte[]> attachments, long categoryId)
             throws DataSourceException {
+
         try {
-            firstPost.setThread(newThread);
+            final DiscussionThread thread = new DiscussionThread(topic);
+            thread.setCategory(getCategory(categoryId));
 
             final MBMessage savedRootMessage = internalSaveAsCurrentUser(
-                    firstPost, files,
+                    rawBody, attachments, thread,
                     MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID);
             if (savedRootMessage != null) {
                 final DiscussionThread savedThread = getThread(savedRootMessage
                         .getThreadId());
                 if (savedThread != null) {
-                    return savedThread;
+                    return savedThread.getLatestPost();
                 }
             }
-        } catch (final PortalException e) {
-            log.error("Couldn't save new thread.", e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
+        } catch (final NestableException e) {
             log.error("Couldn't save new thread.", e);
             throw new DataSourceException(e);
         }

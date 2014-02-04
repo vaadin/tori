@@ -49,7 +49,7 @@ public class IndexableThreadView extends IndexableView {
             }
 
             final List<Post> posts = application.getDataSource().getPosts(
-                    thread);
+                    thread.getId());
 
             final StringBuilder sb = new StringBuilder();
             sb.append(String.format("<a href='#%s'>Back to Category</a>",

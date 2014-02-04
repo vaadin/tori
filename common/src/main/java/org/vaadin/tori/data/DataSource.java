@@ -25,12 +25,11 @@ import org.vaadin.tori.Configuration;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
-import org.vaadin.tori.data.entity.PostVote;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.exception.NoSuchCategoryException;
 import org.vaadin.tori.exception.NoSuchThreadException;
-import org.vaadin.tori.service.post.PostReport;
+import org.vaadin.tori.service.post.PostReport.Reason;
 
 public interface DataSource {
 
@@ -133,15 +132,7 @@ public interface DataSource {
      * order (oldest, i.e. first, post first).
      */
 
-    List<Post> getPosts(DiscussionThread thread) throws DataSourceException;
-
-    /**
-     * Saves all changes made to the given {@link Category Categories}.
-     * 
-     * @param categoriesToSave
-     *            {@link Category Categories} to save.
-     */
-    void save(Iterable<Category> categoriesToSave) throws DataSourceException;
+    List<Post> getPosts(long threadId) throws DataSourceException;
 
     /**
      * Handles the reporting of a single {@link Post}.
@@ -149,13 +140,14 @@ public interface DataSource {
      * @param report
      *            The report in its entirety.
      */
-    void reportPost(PostReport report) throws DataSourceException;
+    void reportPost(long postId, Reason reason, String additionalInfo,
+            String postUrl);
 
-    void save(Post post) throws DataSourceException;
+    void savePost(long postId, String newBody) throws DataSourceException;
 
-    void ban(User user) throws DataSourceException;
+    void banUser(long userId) throws DataSourceException;
 
-    void unban(User user) throws DataSourceException;
+    void unbanUser(long userId) throws DataSourceException;
 
     void followThread(long threadId) throws DataSourceException;
 
@@ -163,15 +155,15 @@ public interface DataSource {
 
     boolean isFollowingThread(long threadId);
 
-    void delete(Post post) throws DataSourceException;
+    void deletePost(long postId) throws DataSourceException;
 
-    PostVote getPostVote(Post post) throws DataSourceException;
+    Boolean getPostVote(long postId) throws DataSourceException;
 
     /**
      * Deletes the current user's possible vote on the given {@link Post}. If no
      * such vote is given, this method does nothing.
      */
-    void removeUserVote(Post post) throws DataSourceException;
+    void removeUserVote(long postId) throws DataSourceException;
 
     /**
      * The current user upvotes the given {@link Post}.
@@ -179,7 +171,7 @@ public interface DataSource {
      * <em>Note:</em> This method must make sure that all previous votes on the
      * given {@link Post} are removed before the new vote is given.
      */
-    void upvote(Post post) throws DataSourceException;
+    void upvote(long postId) throws DataSourceException;
 
     /**
      * The current user downvotes the given {@link Post}
@@ -187,7 +179,7 @@ public interface DataSource {
      * <em>Note:</em> This method must make sure that all previous votes on the
      * given {@link Post} are removed before the new vote is given.
      */
-    void downvote(Post post) throws DataSourceException;
+    void downvote(long postId) throws DataSourceException;
 
     /**
      * Upvotes count as +1 points, downvotes count as -1 points.
@@ -196,18 +188,7 @@ public interface DataSource {
      * or this method might be split in three: <code>getUpvotes</code>,
      * <code>getDownvotes</code> and <code>getVoteCount</code>
      */
-    long getScore(Post post) throws DataSourceException;
-
-    /**
-     * Same as {@link #save(Post)}, but makes sure that the <code>post</code>'s
-     * author is the current user.
-     * 
-     * @param files
-     * 
-     * @return The properly updated {@link Post}
-     */
-    Post saveAsCurrentUser(Post post, Map<String, byte[]> files)
-            throws DataSourceException;
+    long getPostScore(long postId) throws DataSourceException;
 
     void moveThread(long threadId, long destinatinoCategoryId)
             throws DataSourceException;
@@ -242,12 +223,11 @@ public interface DataSource {
      * <p/>
      * This method requires that the thread and post are already interlinked.
      * 
-     * @return the newly created {@link DiscussionThread} that contains a proper
-     *         thread id.
+     * @return the newly created {@link DiscussionThread} first Post.
      */
 
-    DiscussionThread saveNewThread(DiscussionThread newThread,
-            final Map<String, byte[]> files, Post firstPost)
+    Post saveNewThread(String topic, String rawBody,
+            Map<String, byte[]> attachments, long categoryId)
             throws DataSourceException;
 
     /**
@@ -352,5 +332,8 @@ public interface DataSource {
      * categories.
      */
     void deleteCategory(long categoryId) throws DataSourceException;
+
+    Post saveReply(String rawBody, Map<String, byte[]> attachments,
+            long threadId) throws DataSourceException;
 
 }

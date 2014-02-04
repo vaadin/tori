@@ -51,7 +51,7 @@ public interface DebugAuthorizationService extends AuthorizationService {
     void setMayEditCategory(long categoryId, boolean b);
 
     /** @see AuthorizationService#mayEdit(Post) */
-    void setMayEdit(Post post, boolean b);
+    void setMayEditPost(long postId, boolean b);
 
     /** @see AuthorizationService#mayReplyIn(DiscussionThread) */
     void setMayReplyInThread(long threadId, boolean b);
@@ -66,7 +66,7 @@ public interface DebugAuthorizationService extends AuthorizationService {
     void setMayFollowThread(long threadId, boolean b);
 
     /** @see AuthorizationService#mayDelete(Post) */
-    void setMayDelete(Post post, boolean b);
+    void setMayDeletePost(long postId, boolean b);
 
     /** @see AuthorizationService#mayVote() */
     void setMayVote(boolean b);

@@ -1057,7 +1057,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public Post saveAsCurrentUser(final Post post,
+    public Post saveReply(final Post post,
             final Map<String, byte[]> files) throws DataSourceException {
         try {
             final MBMessage newPost = internalSaveAsCurrentUser(post, files,

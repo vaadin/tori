@@ -24,7 +24,6 @@ import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.data.entity.Category;
-import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.view.listing.ListingView;
@@ -49,7 +48,6 @@ public class Breadcrumbs extends CustomComponent {
     static final String STYLE_CRUMB = "crumb";
     static final String STYLE_THREAD = "thread";
     static final String STYLE_CATEGORY = "category";
-    static final String STYLE_UNCLICKABLE = "unclickable";
 
     private final HorizontalLayout layout;
     private final Label viewCaption;
@@ -66,11 +64,8 @@ public class Breadcrumbs extends CustomComponent {
         }
     };
 
-    private final ToriNavigator navigator;
-
     public Breadcrumbs(final ToriNavigator navigator) {
         setStyleName("breadcrumbs");
-        this.navigator = navigator;
         navigator.addViewChangeListener(viewListener);
 
         viewCaption = new Label("");
@@ -128,28 +123,28 @@ public class Breadcrumbs extends CustomComponent {
     }
 
     private void paint(final ThreadView threadView) {
-        final DiscussionThread currentThread = threadView.getCurrentThread();
-        final Category currentCategory = threadView.getCurrentCategory();
+        // final DiscussionThread currentThread = threadView.getCurrentThread();
+        // final Category currentCategory = threadView.getCurrentCategory();
 
-        if (currentThread != null) {
-            inputCategoryCrumb(currentCategory);
-
-            final Link threadCrumb = new Link(currentThread.getTopic(),
-                    new ExternalResource("#"
-                            + ToriNavigator.ApplicationView.THREADS.getUrl()
-                            + "/" + currentThread.getId()));
-            threadCrumb.addStyleName("threadcrumb");
-            threadCrumb.setWidth(100.0f, Unit.PERCENTAGE);
-            layout.addComponent(getSeparator());
-            layout.addComponent(threadCrumb);
-            layout.setComponentAlignment(threadCrumb, Alignment.MIDDLE_LEFT);
-            showViewCaption(currentThread.getTopic());
-        } else if (currentCategory != null) {
-            inputCategoryCrumb(currentCategory);
-            showViewCaption(currentCategory.getName());
-        } else {
-            hideViewCaption();
-        }
+        // if (currentThread != null) {
+        // inputCategoryCrumb(currentCategory);
+        //
+        // final Link threadCrumb = new Link(currentThread.getTopic(),
+        // new ExternalResource("#"
+        // + ToriNavigator.ApplicationView.THREADS.getUrl()
+        // + "/" + currentThread.getId()));
+        // threadCrumb.addStyleName("threadcrumb");
+        // threadCrumb.setWidth(100.0f, Unit.PERCENTAGE);
+        // layout.addComponent(getSeparator());
+        // layout.addComponent(threadCrumb);
+        // layout.setComponentAlignment(threadCrumb, Alignment.MIDDLE_LEFT);
+        // showViewCaption(currentThread.getTopic());
+        // } else if (currentCategory != null) {
+        // inputCategoryCrumb(currentCategory);
+        // showViewCaption(currentCategory.getName());
+        // } else {
+        // hideViewCaption();
+        // }
     }
 
     private void paint(final ListingView listingView) {
@@ -188,9 +183,7 @@ public class Breadcrumbs extends CustomComponent {
     }
 
     public void selectCategory(final Category selectedCategory) {
-        final String catIdAsString = String.valueOf(selectedCategory.getId());
-        navigator.navigateTo(ToriNavigator.ApplicationView.CATEGORIES
-                .getNavigatorUrl() + "/" + catIdAsString);
+        ToriNavigator.getCurrent().navigateToCategory(selectedCategory.getId());
     }
 
     private Component getCategoryPopup(final Category currentCategory,

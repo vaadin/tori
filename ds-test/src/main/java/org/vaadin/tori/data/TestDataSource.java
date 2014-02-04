@@ -20,7 +20,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +48,7 @@ import org.vaadin.tori.data.util.PersistenceUtil;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.exception.NoSuchCategoryException;
 import org.vaadin.tori.exception.NoSuchThreadException;
-import org.vaadin.tori.service.post.PostReport;
+import org.vaadin.tori.service.post.PostReport.Reason;
 
 public class TestDataSource implements DataSource {
 
@@ -268,8 +270,8 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public List<Post> getPosts(final DiscussionThread thread)
-            throws DataSourceException {
+    public List<Post> getPosts(long threadId) throws DataSourceException {
+        final DiscussionThread thread = getThread(threadId);
         return executeWithEntityManager(new Command<List<Post>>() {
             @Override
             public List<Post> execute(final EntityManager em) {
@@ -306,27 +308,6 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void save(final Iterable<Category> categoriesToSave)
-            throws DataSourceException {
-        executeWithEntityManager(new Command<Void>() {
-            @Override
-            public Void execute(final EntityManager em) {
-                final EntityTransaction transaction = em.getTransaction();
-                transaction.begin();
-                try {
-                    for (final Category categoryToSave : categoriesToSave) {
-                        em.merge(categoryToSave);
-                    }
-                    transaction.commit();
-                } catch (final Exception e) {
-                    transaction.rollback();
-                }
-                return null;
-            }
-        });
-    }
-
-    @Override
     public void deleteCategory(final long categoryId)
             throws DataSourceException {
         executeWithEntityManager(new Command<Void>() {
@@ -350,32 +331,20 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void reportPost(final PostReport report) {
-        System.out.println("TestDataSource.reportPost()");
-        System.out.println("Post: " + report.getPost());
-        System.out.println("Reason: " + report.getReason());
-        System.out.println("Info: " + report.getAdditionalInfo());
-    }
-
-    @Override
     public int getUnreadThreadCount(long categoryId) {
-        // TODO implement actual unread thread logic
         return 0;
     }
 
     @Override
-    public void save(final Post post) throws DataSourceException {
+    public void savePost(final long postId, final String rawBody)
+            throws DataSourceException {
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
-
-                final DiscussionThread thread = post.getThread();
-                thread.getPosts().add(post);
-
                 final EntityTransaction transaction = em.getTransaction();
                 transaction.begin();
-                // TODO: Handle attachments!
-                em.merge(thread);
+                Post post = em.find(Post.class, postId);
+                post.setBodyRaw(rawBody);
                 transaction.commit();
                 return null;
             }
@@ -384,14 +353,16 @@ public class TestDataSource implements DataSource {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void ban(final User user) throws DataSourceException {
+    public void banUser(long userId) throws DataSourceException {
+        User user = getUser(userId);
         user.setBanned(true);
         save(user);
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    public void unban(final User user) throws DataSourceException {
+    public void unbanUser(long userId) throws DataSourceException {
+        User user = getUser(userId);
         user.setBanned(false);
         save(user);
     }
@@ -485,7 +456,8 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void delete(final Post post) throws DataSourceException {
+    public void deletePost(long postId) throws DataSourceException {
+        final Post post = getPost(postId);
         executeWithEntityManager(new Command<Void>() {
             @Override
             public Void execute(final EntityManager em) {
@@ -511,7 +483,20 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public PostVote getPostVote(final Post post) throws DataSourceException {
+    public Boolean getPostVote(long postId) throws DataSourceException {
+        Boolean result = null;
+        PostVote vote = getPostVoteInternal(postId);
+        if (vote.isDownvote()) {
+            result = false;
+        } else if (vote.isUpvote()) {
+            result = true;
+        }
+        return result;
+    }
+
+    private PostVote getPostVoteInternal(long postId)
+            throws DataSourceException {
+        final Post post = getPost(postId);
         return executeWithEntityManager(new Command<PostVote>() {
             @Override
             public PostVote execute(final EntityManager em) {
@@ -533,15 +518,15 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void upvote(final Post post) throws DataSourceException {
-        final PostVote vote = getPostVote(post);
+    public void upvote(long postId) throws DataSourceException {
+        final PostVote vote = getPostVoteInternal(postId);
         vote.setUpvote();
         save(vote);
     }
 
     @Override
-    public void downvote(final Post post) throws DataSourceException {
-        final PostVote vote = getPostVote(post);
+    public void downvote(long postId) throws DataSourceException {
+        final PostVote vote = getPostVoteInternal(postId);
         vote.setDownvote();
         save(vote);
     }
@@ -560,8 +545,8 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void removeUserVote(final Post post) throws DataSourceException {
-        delete(getPostVote(post));
+    public void removeUserVote(long postId) throws DataSourceException {
+        delete(getPostVoteInternal(postId));
     }
 
     private void delete(final PostVote postVote) throws DataSourceException {
@@ -587,7 +572,8 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public long getScore(final Post post) throws DataSourceException {
+    public long getPostScore(long postId) throws DataSourceException {
+        final Post post = getPost(postId);
         return executeWithEntityManager(new Command<Long>() {
             @Override
             public Long execute(final EntityManager em) {
@@ -607,28 +593,33 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public Post saveAsCurrentUser(final Post post,
-            final Map<String, byte[]> files) throws DataSourceException {
-        post.setAuthor(currentUser);
+    public Post saveReply(final String rawBody,
+            final Map<String, byte[]> attachments, final long threadId)
+            throws DataSourceException {
 
-        executeWithEntityManager(new Command<Void>() {
+        return executeWithEntityManager(new Command<Post>() {
             @Override
-            public Void execute(final EntityManager em) {
+            public Post execute(final EntityManager em) {
                 em.getTransaction().begin();
 
+                final Post post = new Post();
+                post.setBodyRaw(rawBody);
+                post.setAuthor(currentUser);
+                post.setTime(new Date());
+
                 final DiscussionThread thread = em.find(DiscussionThread.class,
-                        post.getThread().getId());
+                        threadId);
                 thread.getPosts().add(post);
                 em.persist(post);
+                post.setThread(thread);
 
-                persistPostAttachments(post, files, em);
+                persistPostAttachments(post, attachments, em);
 
                 em.getTransaction().commit();
-                return null;
+                return post;
             }
         });
 
-        return post;
     }
 
     private void persistPostAttachments(final Post post,
@@ -747,7 +738,7 @@ public class TestDataSource implements DataSource {
 
                 try {
                     // remove all votes for posts inside thread.
-                    for (final Post post : getPosts(thread)) {
+                    for (final Post post : getPosts(thread.getId())) {
                         // "in" is not supported :(
                         final Query postDelete = em
                                 .createQuery("delete from PostVote where post = :post");
@@ -766,13 +757,24 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public DiscussionThread saveNewThread(final DiscussionThread newThread,
-            final Map<String, byte[]> files, final Post firstPost)
+    public Post saveNewThread(final String topic, final String rawBody,
+            final Map<String, byte[]> attachments, long categoryId)
             throws DataSourceException {
-        return executeWithEntityManager(new Command<DiscussionThread>() {
+        final Category category = categoryId == 0 ? null
+                : getCategory(categoryId);
+        return executeWithEntityManager(new Command<Post>() {
             @Override
-            public DiscussionThread execute(final EntityManager em) {
+            public Post execute(final EntityManager em) {
+                DiscussionThread newThread = new DiscussionThread();
+                newThread.setCategory(category);
+                newThread.setTopic(topic);
+
+                Post firstPost = new Post();
                 firstPost.setAuthor(currentUser);
+                firstPost.setBodyRaw(rawBody);
+                firstPost.setTime(new Date());
+
+                newThread.setPosts(Arrays.asList(firstPost));
 
                 final EntityTransaction transaction = em.getTransaction();
                 transaction.begin();
@@ -780,11 +782,11 @@ public class TestDataSource implements DataSource {
                 firstPost.setThread(mergedThread);
                 final Post post = em.merge(firstPost);
 
-                persistPostAttachments(post, files, em);
+                persistPostAttachments(post, attachments, em);
 
                 transaction.commit();
 
-                return mergedThread;
+                return post;
             }
         });
     }
@@ -811,7 +813,6 @@ public class TestDataSource implements DataSource {
 
     @Override
     public boolean isThreadRead(long threadId) {
-        // TODO actual implementation
         return new Random().nextBoolean();
     }
 
@@ -1011,5 +1012,14 @@ public class TestDataSource implements DataSource {
                 return null;
             }
         });
+    }
+
+    @Override
+    public void reportPost(long postId, Reason reason, String additionalInfo,
+            String postUrl) {
+        System.out.println("TestDataSource.reportPost()");
+        System.out.println("Post: " + postId);
+        System.out.println("Reason: " + reason);
+        System.out.println("Info: " + additionalInfo);
     }
 }

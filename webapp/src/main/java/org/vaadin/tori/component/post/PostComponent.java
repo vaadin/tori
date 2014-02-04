@@ -21,28 +21,20 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUI;
-import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.component.ConfirmationDialog;
 import org.vaadin.tori.component.ConfirmationDialog.ConfirmationListener;
 import org.vaadin.tori.component.ContextMenu;
 import org.vaadin.tori.component.MenuPopup.ContextAction;
 import org.vaadin.tori.component.MenuPopup.ContextComponentSwapper;
 import org.vaadin.tori.component.post.EditComponent.EditListener;
-import org.vaadin.tori.data.entity.Attachment;
-import org.vaadin.tori.data.entity.Post;
-import org.vaadin.tori.data.entity.PostVote;
-import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
-import org.vaadin.tori.util.UserBadgeProvider;
 import org.vaadin.tori.view.thread.ThreadPresenter;
+import org.vaadin.tori.view.thread.ThreadView.PostData;
 import org.vaadin.tori.widgetset.client.ui.post.PostComponentRpc;
 import org.vaadin.tori.widgetset.client.ui.post.PostComponentState;
 
@@ -64,12 +56,6 @@ public class PostComponent extends AbstractComponentContainer implements
     private static final String BAN_CAPTION = "Ban Author";
     private static final String BAN_ICON = "icon-ban";
 
-    private static final String UNFOLLOW_CAPTION = "Unfollow Thread";
-    private static final String UNFOLLOW_ICON = "icon-unfollow";
-
-    private static final String FOLLOW_CAPTION = "Follow Thread";
-    private static final String FOLLOW_ICON = "icon-follow";
-
     private static final String UNBAN_CAPTION = "Unban Author";
     private static final String UNBAN_ICON = "icon-unban";
 
@@ -79,16 +65,14 @@ public class PostComponent extends AbstractComponentContainer implements
     private final DateFormat dateFormat = new SimpleDateFormat(
             "MM/dd/yyyy kk:mm");
 
-    private final Post post;
+    private final PostData post;
 
     private ReportComponent reportComponent;
     private final ContextMenu contextMenu = new ContextMenu();
     private final ThreadPresenter presenter;
 
-    private boolean followingEnabled = false;
-    private boolean unfollowingEnabled = false;
     private EditComponent editComponent;
-    private final boolean allowHtml;
+
     private boolean banEnabled;
     private boolean unbanEnabled;
 
@@ -97,20 +81,19 @@ public class PostComponent extends AbstractComponentContainer implements
         return (PostComponentState) super.getState();
     }
 
-    // trying a new pattern here by grouping auxiliary methods in an inner class
+    // TODO: REMOVE
     private static class Util {
         private static Component newConfirmBanComponent(
-                final ThreadPresenter presenter, final User user,
+                final ThreadPresenter presenter, final PostData post,
                 final ContextMenu menu) {
-            final String title = String.format("Ban %s?",
-                    user.getDisplayedName());
+            final String title = String.format("Ban %s?", post.getAuthorName());
             final String confirmCaption = "Yes, Ban";
             final String cancelCaption = "No, Cancel!";
             final ConfirmationListener listener = new ConfirmationListener() {
 
                 @Override
                 public void onConfirmed() throws DataSourceException {
-                    presenter.ban(user);
+                    presenter.ban(post.getAuthorId());
                     menu.close();
                 }
 
@@ -124,7 +107,7 @@ public class PostComponent extends AbstractComponentContainer implements
         }
 
         public static Component newConfirmDeleteComponent(
-                final ThreadPresenter presenter, final Post post,
+                final ThreadPresenter presenter, final PostData post,
                 final ContextMenu menu) {
             final String title = String.format("Delete Post?");
             final String confirmCaption = "Yes, Delete";
@@ -133,7 +116,7 @@ public class PostComponent extends AbstractComponentContainer implements
 
                 @Override
                 public void onConfirmed() throws DataSourceException {
-                    presenter.delete(post);
+                    presenter.delete(post.getId());
                     menu.close();
                 }
 
@@ -147,51 +130,65 @@ public class PostComponent extends AbstractComponentContainer implements
         }
     }
 
+    /**
+     * @throws IllegalArgumentException
+     *             if any argument is <code>null</code>.
+     */
+    public PostComponent(final PostData post, final ThreadPresenter presenter,
+            final boolean allowHtml) {
+        this.presenter = presenter;
+        this.post = post;
+
+        registerRpc(this);
+        setStyleName("post");
+
+        PostComponentState state = getState();
+        state.setAuthorName(post.getAuthorName());
+        state.setAllowHTML(allowHtml);
+        state.setPrettyTime(prettyTime.format(post.getTime()));
+        state.setTimeStamp(dateFormat.format(post.getTime()));
+        state.setPermaLink(getPermaLinkUrl(post));
+        state.setBadgeHTML(post.getBadgeHTML());
+        state.setPostBody(post.getFormattedBody(allowHtml));
+        state.setAttachments(state.getAttachments());
+        refreshScores();
+        setAvatarImageResource(post);
+
+        if (post.isAuthorBanned()) {
+            setUserIsBanned();
+        }
+        state.setReportingEnabled(post.userMayReportPosts());
+        state.setEditingEnabled(post.userMayEdit());
+        state.setQuotingEnabled(post.userMayQuote());
+        state.setVotingEnabled(post.userMayVote());
+
+        // context menu permissions
+
+        if (post.userMayBanAuthor()) {
+            if (!post.isAuthorBanned()) {
+                enableBanning();
+            } else {
+                enableUnbanning();
+            }
+        }
+
+        if (post.userMayDelete()) {
+            enableDeleting();
+        }
+    }
+
     private final EditListener editListener = new EditListener() {
         @Override
         public void postEdited(final String newPostBody) {
-            try {
-                presenter.saveEdited(post, newPostBody);
-                ToriUI.getCurrent().trackAction("edit-post");
-                // this component will be replaced with a new one. So no need to
-                // change the state.
-            } catch (final DataSourceException e) {
-                final Notification n = new Notification(
-                        DataSourceException.GENERIC_ERROR_MESSAGE,
-                        Notification.Type.ERROR_MESSAGE);
-                n.show(getUI().getPage());
-            }
-        }
-    };
-
-    private final ContextAction followAction = new ContextAction() {
-        @Override
-        public void contextClicked() {
-            try {
-                presenter.followThread();
-            } catch (final DataSourceException e) {
-                Notification.show(DataSourceException.GENERIC_ERROR_MESSAGE);
-            }
-        }
-    };
-
-    private final ContextAction unfollowAction = new ContextAction() {
-        @Override
-        public void contextClicked() {
-            try {
-                presenter.unFollowThread();
-            } catch (final DataSourceException e) {
-                Notification.show(DataSourceException.GENERIC_ERROR_MESSAGE);
-            }
-
+            presenter.saveEdited(post.getId(), newPostBody);
+            ToriUI.getCurrent().trackAction("edit-post");
         }
     };
 
     private final ContextComponentSwapper banActionSwapper = new ContextComponentSwapper() {
         @Override
         public Component swapContextComponent() {
-            return Util.newConfirmBanComponent(presenter, post.getAuthor(),
-                    contextMenu);
+            return Util.newConfirmBanComponent(presenter, post, contextMenu);
         }
     };
 
@@ -199,114 +196,29 @@ public class PostComponent extends AbstractComponentContainer implements
         @Override
         public void contextClicked() {
             try {
-                presenter.unban(post.getAuthor());
+                presenter.unban(post.getAuthorId());
             } catch (final DataSourceException e) {
                 Notification.show(DataSourceException.GENERIC_ERROR_MESSAGE);
             }
         }
     };
 
-    /**
-     * @throws IllegalArgumentException
-     *             if any argument is <code>null</code>.
-     */
-    public PostComponent(final Post post, final ThreadPresenter presenter,
-            final boolean allowHtml) {
-        registerRpc(this);
-
-        ToriUtil.checkForNull(post, "post may not be null");
-        ToriUtil.checkForNull(presenter, "presenter may not be null");
-
-        this.presenter = presenter;
-        this.post = post;
-        this.allowHtml = allowHtml;
-
-        setStyleName("post");
-
-        getState().setAuthorName(post.getAuthor().getDisplayedName());
-        getState().setAllowHTML(allowHtml);
-        getState().setPrettyTime(prettyTime.format(post.getTime()));
-        getState().setTimeStamp(dateFormat.format(post.getTime()));
-        getState().setPermaLink(getPermaLinkUrl(post));
-        setAvatarImageResource(post);
-
-        try {
-            refreshScores(presenter.getScore(post));
-        } catch (final DataSourceException e) {
-            // NOP - logged, just showing a score of OVER 9000!!!!
-            refreshScores(9001);
-        }
-
-        addBadgePossibly(post.getAuthor());
-
-        final String rawSignature = post.getAuthor().getSignatureRaw();
-        if (rawSignature != null && !rawSignature.isEmpty()) {
-            final String formattedSignature = ToriApiLoader.getCurrent()
-                    .getSignatureFormatter().format(rawSignature);
-            getState().setSignature(formattedSignature);
-        }
-
-        refreshBody(post);
-
-        getState().setAttachments(getAttachments(post));
+    private void refreshScores() {
+        getState().setScore(post.getScore());
+        getState().setUpVoted(post.getUpVoted());
     }
 
-    /**
-     * Adds a badge to the customlayout if there is a {@link UserBadgeProvider}
-     * set up.
-     */
-    private void addBadgePossibly(final User user) {
-        final UserBadgeProvider badgeProvider = ToriApiLoader.getCurrent()
-                .getUserBadgeProvider();
-        if (badgeProvider == null) {
-            return;
-        }
-
-        final String badgeHtml = badgeProvider.getHtmlBadgeFor(user);
-        getState().setBadgeHTML(badgeHtml);
-    }
-
-    public void enableReporting() {
-        getState().setReportingEnabled(true);
-    }
-
-    public void enableEditing() {
-        getState().setEditingEnabled(true);
-    }
-
-    public void enableQuoting() {
-        getState().setQuotingEnabled(true);
-    }
-
-    public void enableThreadFollowing() {
-        contextMenu.add(FOLLOW_ICON, FOLLOW_CAPTION, followAction);
-        followingEnabled = true;
-        unfollowingEnabled = false;
-        getState().setSettingsEnabled(true);
-    }
-
-    public void enableThreadUnFollowing() {
-        contextMenu.add(UNFOLLOW_ICON, UNFOLLOW_CAPTION, unfollowAction);
-        followingEnabled = false;
-        unfollowingEnabled = true;
-        getState().setSettingsEnabled(true);
-    }
-
-    public void enableBanning() {
+    private void enableBanning() {
         contextMenu.add(BAN_ICON, BAN_CAPTION, banActionSwapper);
-        banEnabled = true;
-        unbanEnabled = false;
         getState().setSettingsEnabled(true);
     }
 
-    public void enableUnbanning() {
+    private void enableUnbanning() {
         contextMenu.add(UNBAN_ICON, UNBAN_CAPTION, unbanAction);
-        banEnabled = false;
-        unbanEnabled = true;
         getState().setSettingsEnabled(true);
     }
 
-    public void enableDeleting() {
+    private void enableDeleting() {
         contextMenu.add(DELETE_ICON, DELETE_CAPTION,
                 new ContextComponentSwapper() {
                     @Override
@@ -318,13 +230,9 @@ public class PostComponent extends AbstractComponentContainer implements
         getState().setSettingsEnabled(true);
     }
 
-    public void enableUpDownVoting(final PostVote postVote) {
-        getState().setVotingEnabled(true);
-    }
-
     public void setUserIsBanned() {
         addStyleName(STYLE_BANNED);
-        setDescription(post.getAuthor().getDisplayedName() + " is banned.");
+        setDescription(post.getAuthorName() + " is banned.");
     }
 
     public void setUserIsUnbanned() {
@@ -332,26 +240,12 @@ public class PostComponent extends AbstractComponentContainer implements
         setDescription(null);
     }
 
-    private Map<String, String> getAttachments(final Post post) {
-        Map<String, String> attachments = new HashMap<String, String>();
-        if (post.hasAttachments()) {
-            // create a Link for each attachment
-            for (final Attachment attachment : post.getAttachments()) {
-                final String linkCaption = String.format("%s (%s KB)",
-                        attachment.getFilename(),
-                        attachment.getFileSize() / 1024);
-                attachments.put(attachment.getDownloadUrl(), linkCaption);
-            }
-        }
-        return attachments;
-    }
-
-    private static String getPermaLinkUrl(final Post post) {
+    private static String getPermaLinkUrl(final PostData post) {
         // @formatter:off
         final String linkUrl = String.format(
                 "#%s/%s/%s",
                 ToriNavigator.ApplicationView.THREADS.getUrl(), 
-                post.getThread().getId(),
+                post.getThreadId(),
                 post.getId()
                 );
         // @formatter:on
@@ -359,8 +253,8 @@ public class PostComponent extends AbstractComponentContainer implements
         return linkUrl;
     }
 
-    private void setAvatarImageResource(final Post post) {
-        String avatarUrl = post.getAuthor().getAvatarUrl();
+    private void setAvatarImageResource(final PostData post) {
+        String avatarUrl = post.getAuthorAvatarUrl();
 
         final Resource imageResource;
         if (avatarUrl != null) {
@@ -370,39 +264,6 @@ public class PostComponent extends AbstractComponentContainer implements
                     "images/icon-placeholder-avatar.gif");
         }
         setResource("avatar", imageResource);
-    }
-
-    public void refreshScores(final long newScore) {
-        getState().setScore(newScore);
-        try {
-            PostVote postVote = presenter.getPostVote(post);
-            Boolean upVoted = null;
-            if (postVote.isUpvote()) {
-                upVoted = true;
-            } else if (postVote.isDownvote()) {
-                upVoted = false;
-            }
-            getState().setUpVoted(upVoted);
-
-        } catch (final DataSourceException e) {
-            Notification.show(DataSourceException.GENERIC_ERROR_MESSAGE);
-        }
-    }
-
-    public void swapFollowingMenu() {
-        if (followingEnabled || unfollowingEnabled) {
-
-            if (followingEnabled) {
-                contextMenu.swap(followAction, UNFOLLOW_ICON, UNFOLLOW_CAPTION,
-                        unfollowAction);
-            } else {
-                contextMenu.swap(unfollowAction, FOLLOW_ICON, FOLLOW_CAPTION,
-                        followAction);
-            }
-
-            followingEnabled = !followingEnabled;
-            unfollowingEnabled = !unfollowingEnabled;
-        }
     }
 
     public void swapBannedMenu() {
@@ -418,15 +279,6 @@ public class PostComponent extends AbstractComponentContainer implements
             banEnabled = !banEnabled;
             unbanEnabled = !unbanEnabled;
         }
-    }
-
-    public final void refreshBody(final Post post) {
-        String formattedPost = ToriApiLoader.getCurrent().getPostFormatter()
-                .format(post.getBodyRaw());
-        if (!allowHtml) {
-            formattedPost = presenter.stripTags(formattedPost);
-        }
-        getState().setPostBody(formattedPost);
     }
 
     @Override
@@ -461,10 +313,11 @@ public class PostComponent extends AbstractComponentContainer implements
         if (getState().isVotingEnabled()) {
             try {
                 if (up) {
-                    presenter.upvote(post);
+                    presenter.upvote(post.getId());
                 } else {
-                    presenter.downvote(post);
+                    presenter.downvote(post.getId());
                 }
+                refreshScores();
             } catch (final DataSourceException e) {
                 Notification.show(DataSourceException.GENERIC_ERROR_MESSAGE);
             }
@@ -473,7 +326,7 @@ public class PostComponent extends AbstractComponentContainer implements
 
     @Override
     public void quoteForReply() {
-        presenter.quotePost(post);
+        presenter.quotePost(post.getId());
     }
 
     @Override
@@ -490,7 +343,7 @@ public class PostComponent extends AbstractComponentContainer implements
     public void editClicked() {
         if (getState().isEditingEnabled()) {
             if (editComponent == null) {
-                editComponent = new EditComponent(post.getBodyRaw(),
+                editComponent = new EditComponent(post.getRawBody(),
                         editListener);
                 addComponent(editComponent);
                 getState().setEdit(editComponent);

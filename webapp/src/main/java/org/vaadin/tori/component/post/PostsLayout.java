@@ -16,8 +16,12 @@
 
 package org.vaadin.tori.component.post;
 
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.vaadin.tori.view.thread.ThreadPresenter;
+import org.vaadin.tori.view.thread.ThreadView.PostData;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -30,8 +34,10 @@ public class PostsLayout extends CssLayout {
 
     private static final int RENDER_BATCH_SIZE = 30;
     private Component scrollToComponent;
+    private final ThreadPresenter presenter;
 
-    public PostsLayout() {
+    public PostsLayout(ThreadPresenter presenter) {
+        this.presenter = presenter;
         JavaScript.getCurrent().addFunction(
                 "org.vaadin.tori.lazyverticallayout.rendered",
                 new JavaScriptFunction() {
@@ -87,5 +93,18 @@ public class PostsLayout extends CssLayout {
 
     public void setScrollToComponent(Component component) {
         this.scrollToComponent = component;
+    }
+
+    public void setPosts(List<PostData> posts) {
+        removeAllComponents();
+        for (PostData post : posts) {
+            PostComponent postComponent = new PostComponent(post, presenter,
+                    true);
+            addComponent(postComponent);
+            if (post.isSelected()) {
+                setScrollToComponent(postComponent);
+            }
+        }
+
     }
 }

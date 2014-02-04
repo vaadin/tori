@@ -18,7 +18,8 @@ package org.vaadin.tori.component;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
@@ -42,33 +43,24 @@ import com.vaadin.ui.themes.Reindeer;
 @SuppressWarnings("serial")
 public class AuthoringComponent extends CustomComponent {
     public interface AuthoringListener {
-        void submit(String rawBody);
-
-        void addAttachment(String attachmentFileName, byte[] data);
-
-        void resetInput();
-
-        void removeAttachment(String fileName);
+        void submit(String rawBody, Map<String, byte[]> attachments);
     }
 
     private final ClickListener POST_LISTENER = new Button.ClickListener() {
         @Override
         public void buttonClick(final ClickEvent event) {
-            listener.submit(input.getValue());
-            resetInput();
+            listener.submit(input.getValue(), attachments);
+            input.setValue("");
         }
     };
 
+    private final Map<String, byte[]> attachments = new HashMap<String, byte[]>();
     private final VerticalLayout layout = new VerticalLayout();
     private final AuthoringListener listener;
     private final Field<String> input;
     private final VerticalLayout attachmentsLayout;
     private String attachmentFileName;
     private ByteArrayOutputStream attachmentData;
-
-    private String italicSyntax;
-
-    private String boldSyntax;
     private int maxFileSize = 307200;
 
     private Upload attach;
@@ -108,12 +100,14 @@ public class AuthoringComponent extends CustomComponent {
         attach.setButtonCaption("Attach file");
         attach.setImmediate(true);
         attach.addSucceededListener(new Upload.SucceededListener() {
+
             @Override
             public void uploadSucceeded(final SucceededEvent event) {
-                listener.addAttachment(attachmentFileName,
+                attachments.put(attachmentFileName,
                         attachmentData.toByteArray());
                 attachmentFileName = null;
                 attachmentData = null;
+                updateAttachmentList();
             }
         });
 
@@ -129,9 +123,6 @@ public class AuthoringComponent extends CustomComponent {
         });
         buttonsLayout.addComponent(attach);
 
-        // buttonsLayout.addComponent(new NativeButton("Clear",
-        // CLEAR_LISTENER));
-
         layout.addComponent(buttonsLayout);
 
         attachmentsLayout = new VerticalLayout();
@@ -143,11 +134,6 @@ public class AuthoringComponent extends CustomComponent {
 
     public Field<String> getInput() {
         return input;
-    }
-
-    private void resetInput() {
-        input.setValue("");
-        listener.resetInput();
     }
 
     public void insertIntoMessage(final String unformattedText) {
@@ -164,8 +150,7 @@ public class AuthoringComponent extends CustomComponent {
         this.maxFileSize = maxFileSize;
     }
 
-    public void updateAttachmentList(
-            final LinkedHashMap<String, byte[]> attachments) {
+    private void updateAttachmentList() {
         attachmentsLayout.removeAllComponents();
         attachmentsLayout.setVisible(!attachments.isEmpty());
         for (final Entry<String, byte[]> entry : attachments.entrySet()) {
@@ -200,7 +185,7 @@ public class AuthoringComponent extends CustomComponent {
                 @Override
                 public void layoutClick(final LayoutClickEvent event) {
                     if (event.getChildComponent() == deleteLabel) {
-                        listener.removeAttachment(fileName);
+                        attachments.remove(entry.getKey());
                     }
                 }
             });
