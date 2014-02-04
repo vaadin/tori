@@ -42,13 +42,13 @@ public interface DebugAuthorizationService extends AuthorizationService {
     void setMayReportPosts(boolean b);
 
     /** @see AuthorizationService#mayFollow(Category) */
-    void setMayFollowCategory(long categoryId, boolean b);
+    void setMayFollowCategory(Long categoryId, boolean b);
 
     /** @see AuthorizationService#mayDelete(org.vaadin.tori.data.entity.Category) */
-    void setMayDeleteCategory(long categoryId, boolean b);
+    void setMayDeleteCategory(Long categoryId, boolean b);
 
     /** @see AuthorizationService#mayEdit(Category) */
-    void setMayEditCategory(long categoryId, boolean b);
+    void setMayEditCategory(Long categoryId, boolean b);
 
     /** @see AuthorizationService#mayEdit(Post) */
     void setMayEditPost(long postId, boolean b);
@@ -57,7 +57,7 @@ public interface DebugAuthorizationService extends AuthorizationService {
     void setMayReplyInThread(long threadId, boolean b);
 
     /** @see AuthorizationService#mayAddFiles(DiscussionThread) */
-    void setMayAddFilesInCategory(long categoryId, boolean b);
+    void setMayAddFilesInCategory(Long categoryId, boolean b);
 
     /** @see AuthorizationService#mayBan() */
     void setMayBan(boolean b);
@@ -72,21 +72,21 @@ public interface DebugAuthorizationService extends AuthorizationService {
     void setMayVote(boolean b);
 
     /** @see AuthorizationService#mayMove(DiscussionThread) */
-    void setMayMoveThreadInCategory(long categoryId, boolean b);
+    void setMayMoveThreadInCategory(Long categoryId, boolean b);
 
     /** @see AuthorizationService#maySticky(DiscussionThread) */
-    void setMayStickyThreadInCategory(long categoryId, boolean b);
+    void setMayStickyThreadInCategory(Long categoryId, boolean b);
 
     /** @see AuthorizationService#mayLock(DiscussionThread) */
-    void setMayLockThreadInCategory(long categoryId, boolean b);
+    void setMayLockThreadInCategory(Long categoryId, boolean b);
 
     /** @see AuthorizationService#mayLock(DiscussionThread) */
     void setMayDeleteThread(long threadId, boolean b);
 
     /** @see AuthorizationService#mayCreateThreadIn(Category) */
-    void setMayCreateThreadInCategory(long categoryId, boolean b);
+    void setMayCreateThreadInCategory(Long categoryId, boolean b);
 
     /** @see AuthorizationService#mayView(Category) */
-    void setMayViewCategory(long categoryId, boolean b);
+    void setMayViewCategory(Long categoryId, boolean b);
 
 }

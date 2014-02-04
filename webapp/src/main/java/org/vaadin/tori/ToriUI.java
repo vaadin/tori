@@ -39,7 +39,6 @@ public class ToriUI extends UI {
 
     public static final int DEFAULT_POLL_INTERVAL = 1000 * 10;
 
-    private ToriNavigator navigator;
     private VerticalLayout mainLayout;
 
     private GoogleAnalyticsTracker analytics;
@@ -63,8 +62,8 @@ public class ToriUI extends UI {
         setContent(mainLayout);
 
         VerticalLayout navigatorContent = new VerticalLayout();
-        navigator = new ToriNavigator(this, navigatorContent);
-        final Breadcrumbs breadcrumbs = new Breadcrumbs(navigator);
+        setNavigator(new ToriNavigator(navigatorContent));
+        final Breadcrumbs breadcrumbs = new Breadcrumbs();
 
         addControlPanelIfInDevelopment();
         mainLayout.addComponent(breadcrumbs);
@@ -92,10 +91,8 @@ public class ToriUI extends UI {
         final AuthorizationService authorizationService = ToriApiLoader
                 .getCurrent().getAuthorizationService();
         if (authorizationService instanceof DebugAuthorizationService) {
-            mainLayout
-                    .addComponent(new DebugControlPanel(
-                            (DebugAuthorizationService) authorizationService,
-                            navigator));
+            mainLayout.addComponent(new DebugControlPanel(
+                    (DebugAuthorizationService) authorizationService));
         }
     }
 

@@ -64,17 +64,17 @@ public class LiferayAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayFollowCategory(long categoryId) {
+    public boolean mayFollowCategory(Long categoryId) {
         return hasCategoryPermission(CategoryAction.SUBSCRIBE, categoryId);
     }
 
     @Override
-    public boolean mayDeleteCategory(long categoryId) {
+    public boolean mayDeleteCategory(Long categoryId) {
         return hasCategoryPermission(CategoryAction.DELETE, categoryId);
     }
 
     @Override
-    public boolean mayEditCategory(long categoryId) {
+    public boolean mayEditCategory(Long categoryId) {
         return hasCategoryPermission(CategoryAction.UPDATE, categoryId);
     }
 
@@ -98,7 +98,7 @@ public class LiferayAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayAddFilesInCategory(long categoryId) {
+    public boolean mayAddFilesInCategory(Long categoryId) {
         return hasCategoryPermission(CategoryAction.ADD_FILE, categoryId);
     }
 
@@ -129,18 +129,18 @@ public class LiferayAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayMoveThreadInCategory(long categoryId) {
+    public boolean mayMoveThreadInCategory(Long categoryId) {
         return hasCategoryPermission(CategoryAction.MOVE_THREAD, categoryId);
     }
 
     @Override
-    public boolean mayStickyThreadInCategory(long categoryId) {
+    public boolean mayStickyThreadInCategory(Long categoryId) {
         return hasCategoryPermission(CategoryAction.UPDATE_THREAD_PRIORITY,
                 categoryId);
     }
 
     @Override
-    public boolean mayLockThreadInCategory(long categoryId) {
+    public boolean mayLockThreadInCategory(Long categoryId) {
         return hasCategoryPermission(CategoryAction.LOCK_THREAD, categoryId);
     }
 
@@ -156,7 +156,7 @@ public class LiferayAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayCreateThreadInCategory(long categoryId) {
+    public boolean mayCreateThreadInCategory(Long categoryId) {
         return hasCategoryPermission(CategoryAction.ADD_MESSAGE, categoryId);
     }
 
@@ -171,7 +171,7 @@ public class LiferayAuthorizationService implements AuthorizationService,
     }
 
     private boolean hasCategoryPermission(final CategoryAction action,
-            final long categoryId) {
+            final Long categoryId) {
         if (isBanned()) {
             return false;
         }
@@ -266,7 +266,7 @@ public class LiferayAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayViewCategory(long categoryId) {
+    public boolean mayViewCategory(Long categoryId) {
         return hasCategoryPermission(CategoryAction.VIEW, categoryId);
     }
 

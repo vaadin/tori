@@ -85,7 +85,7 @@ public interface DataSource {
      * @see #getThreads()
      */
 
-    List<DiscussionThread> getThreads(long categoryId, int startIndex,
+    List<DiscussionThread> getThreads(Long categoryId, int startIndex,
             int endIndex) throws DataSourceException;
 
     /**
@@ -93,7 +93,7 @@ public interface DataSource {
      * such Category exist.
      */
 
-    Category getCategory(long categoryId) throws DataSourceException;
+    Category getCategory(Long categoryId) throws DataSourceException;
 
     /**
      * Returns the number {@link DiscussionThread DiscussionThreads} in the
@@ -101,7 +101,7 @@ public interface DataSource {
      * 
      * @return number of DiscussionThreads
      */
-    int getThreadCountRecursively(long categoryId) throws DataSourceException;
+    int getThreadCountRecursively(Long categoryId) throws DataSourceException;
 
     /**
      * Returns the number {@link DiscussionThread DiscussionThreads} in the
@@ -109,7 +109,7 @@ public interface DataSource {
      * 
      * @return number of DiscussionThreads
      */
-    int getThreadCount(long categoryId) throws DataSourceException;
+    int getThreadCount(Long categoryId) throws DataSourceException;
 
     /**
      * Returns the number of {@link DiscussionThread DiscussionThreads} in the
@@ -190,7 +190,7 @@ public interface DataSource {
      */
     long getPostScore(long postId) throws DataSourceException;
 
-    void moveThread(long threadId, long destinatinoCategoryId)
+    void moveThread(long threadId, Long destinatinoCategoryId)
             throws DataSourceException;
 
     void stickyThread(long threadId) throws DataSourceException;
@@ -227,7 +227,7 @@ public interface DataSource {
      */
 
     Post saveNewThread(String topic, String rawBody,
-            Map<String, byte[]> attachments, long categoryId)
+            Map<String, byte[]> attachments, Long categoryId)
             throws DataSourceException;
 
     /**

@@ -28,11 +28,11 @@ public interface AuthorizationService {
 
     boolean mayReportPosts();
 
-    boolean mayFollowCategory(long categoryId);
+    boolean mayFollowCategory(Long categoryId);
 
-    boolean mayDeleteCategory(long categoryId);
+    boolean mayDeleteCategory(Long categoryId);
 
-    boolean mayEditCategory(long categoryId);
+    boolean mayEditCategory(Long categoryId);
 
     boolean mayEditPost(long postId);;
 
@@ -46,18 +46,18 @@ public interface AuthorizationService {
 
     boolean mayVote();
 
-    boolean mayMoveThreadInCategory(long categoryId);
+    boolean mayMoveThreadInCategory(Long categoryId);
 
-    boolean mayStickyThreadInCategory(long categoryId);
+    boolean mayStickyThreadInCategory(Long categoryId);
 
-    boolean mayLockThreadInCategory(long categoryId);
+    boolean mayLockThreadInCategory(Long categoryId);
 
     boolean mayDeleteThread(long threadId);
 
-    boolean mayCreateThreadInCategory(long categoryId);
+    boolean mayCreateThreadInCategory(Long categoryId);
 
-    boolean mayAddFilesInCategory(long categoryId);
+    boolean mayAddFilesInCategory(Long categoryId);
 
-    boolean mayViewCategory(long categoryId);
+    boolean mayViewCategory(Long categoryId);
 
 }

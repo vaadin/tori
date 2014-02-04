@@ -43,10 +43,10 @@ public interface ThreadListingView extends View {
 
     void setMayCreateThreads(boolean mayCreateThreads);
 
-    void showThreadMovePopup(long threadId, long threadCategoryId,
+    void showThreadMovePopup(long threadId, Long threadCategoryId,
             List<Category> allCategories);
 
-    void navigateToNewThreadView(long categoryId);
+    void navigateToNewThreadView(Long categoryId);
 
     public interface ThreadProvider {
         int getThreadCount();

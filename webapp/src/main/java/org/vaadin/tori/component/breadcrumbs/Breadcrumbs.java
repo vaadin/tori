@@ -64,9 +64,9 @@ public class Breadcrumbs extends CustomComponent {
         }
     };
 
-    public Breadcrumbs(final ToriNavigator navigator) {
+    public Breadcrumbs() {
         setStyleName("breadcrumbs");
-        navigator.addViewChangeListener(viewListener);
+        ToriNavigator.getCurrent().addViewChangeListener(viewListener);
 
         viewCaption = new Label("");
         viewCaption.addStyleName("viewcaption");

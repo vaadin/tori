@@ -38,8 +38,8 @@ public class ToriNavigator extends Navigator {
     private final boolean updatePateTitle = ToriApiLoader.getCurrent()
             .getDataSource().getUpdatePageTitle();
 
-    public ToriNavigator(UI ui, ComponentContainer container) {
-        super(ui, container);
+    public ToriNavigator(ComponentContainer container) {
+        super(UI.getCurrent(), container);
         for (ApplicationView view : ApplicationView.values()) {
             addView(view.getNavigatorUrl(), view.getViewClass());
         }
@@ -122,10 +122,14 @@ public class ToriNavigator extends Navigator {
         navigateTo(ApplicationView.THREADS.getNavigatorUrl() + "/" + threadId);
     }
 
-    public void navigateToNewThread(long categoryId) {
+    public void navigateToNewThread(Long categoryId) {
+        String suffix = "";
+        if (categoryId != null) {
+            suffix = String.valueOf(categoryId);
+        }
         navigateTo(String.format("%s/%s",
                 ToriNavigator.ApplicationView.NEWTHREAD.getNavigatorUrl(),
-                categoryId));
+                suffix));
     }
 
     /**

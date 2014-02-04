@@ -31,7 +31,7 @@ import org.vaadin.tori.view.listing.thread.ThreadListingView.ThreadProvider;
 
 public class ThreadListingPresenter extends Presenter<ThreadListingView> {
 
-    private long categoryId;
+    private Long categoryId;
 
     public ThreadListingPresenter(ThreadListingView view) {
         super(view);
@@ -45,7 +45,7 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
         } else if (category == SpecialCategory.MY_POSTS.getInstance()) {
             threadProvider = getMyThreadsProvider();
         } else {
-            long categoryId = category != null ? category.getId() : 0;
+            Long categoryId = category != null ? category.getId() : null;
             threadProvider = getDefaultThreadProvider(categoryId);
             this.categoryId = categoryId;
             view.setMayCreateThreads(authorizationService
@@ -142,8 +142,8 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
 
     public void moveRequested(long threadId) {
         try {
-            long threadCategoryId = dataSource.getThread(threadId)
-                    .getCategory().getId();
+            Category category = dataSource.getThread(threadId).getCategory();
+            Long threadCategoryId = category != null ? category.getId() : null;
             List<Category> allCategories = getSubCategoriesRecursively(null);
             view.showThreadMovePopup(threadId, threadCategoryId, allCategories);
         } catch (DataSourceException e) {
@@ -151,7 +151,7 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
         }
     }
 
-    public void move(long threadId, long categoryId) {
+    public void move(long threadId, Long categoryId) {
         try {
             dataSource.moveThread(threadId, categoryId);
             view.showNotification("Thread moved");
@@ -178,7 +178,8 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
 
     private ThreadData getThreadData(final DiscussionThread thread) {
         final long threadId = thread.getId();
-        final long categoryId = thread.getCategory().getId();
+        final Long categoryId = thread.getCategory() != null ? thread
+                .getCategory().getId() : null;
         return new ThreadData() {
 
             @Override
@@ -265,7 +266,7 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
         };
     }
 
-    private ThreadProvider getDefaultThreadProvider(final long categoryId) {
+    private ThreadProvider getDefaultThreadProvider(final Long categoryId) {
         return new AbstractThreadProvider() {
             @Override
             protected List<DiscussionThread> getThreadsBetweenInternal(

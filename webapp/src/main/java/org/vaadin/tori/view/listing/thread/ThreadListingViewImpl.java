@@ -104,7 +104,7 @@ public class ThreadListingViewImpl extends
     }
 
     @Override
-    public void showThreadMovePopup(long threadId, final long threadCategoryId,
+    public void showThreadMovePopup(long threadId, final Long threadCategoryId,
             List<Category> allCategories) {
         final Window window = new ThreadMoveComponent(threadId,
                 threadCategoryId, allCategories,
@@ -145,7 +145,7 @@ public class ThreadListingViewImpl extends
     }
 
     @Override
-    public void navigateToNewThreadView(long categoryId) {
+    public void navigateToNewThreadView(Long categoryId) {
         ToriNavigator.getCurrent().navigateToNewThread(categoryId);
     }
 

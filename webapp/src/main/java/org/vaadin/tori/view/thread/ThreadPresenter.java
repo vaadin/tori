@@ -225,9 +225,10 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
                     view.setViewPermissions(new ViewPermissions() {
                         @Override
                         public boolean mayAddFiles() {
+                            Category category = currentThread.getCategory();
                             return authorizationService
-                                    .mayAddFilesInCategory(currentThread
-                                            .getCategory().getId());
+                                    .mayAddFilesInCategory(category != null ? category
+                                            .getId() : null);
                         }
 
                         @Override
@@ -430,22 +431,6 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             log.info("Tried to visit a thread without arguments");
             view.redirectToDashboard();
         }
-    }
-
-    public long createNewThread(final Category category, final String topic,
-            final String rawBody, Map<String, byte[]> attachments)
-            throws DataSourceException {
-        try {
-            Post post = dataSource.saveNewThread(topic, rawBody, attachments,
-                    category.getId());
-            messaging.sendUserAuthored(post.getId(), post.getThread().getId());
-            return post.getThread().getId();
-        } catch (final DataSourceException e) {
-            log.error(e);
-            e.printStackTrace();
-            throw e;
-        }
-
     }
 
     public void quotePost(long postId) {

@@ -25,7 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
@@ -106,6 +105,7 @@ public class DebugControlPanel extends CustomComponent implements
             final boolean newValue = ((CheckBox) event.getProperty())
                     .getValue();
             callSetter(newValue);
+            ToriNavigator navigator = ToriNavigator.getCurrent();
             navigator.navigateTo(navigator.getState());
         }
 
@@ -158,6 +158,7 @@ public class DebugControlPanel extends CustomComponent implements
             final boolean newValue = ((CheckBox) event.getProperty())
                     .getValue();
             callSetter(newValue);
+            ToriNavigator navigator = ToriNavigator.getCurrent();
             navigator.navigateTo(navigator.getState());
         }
 
@@ -172,29 +173,26 @@ public class DebugControlPanel extends CustomComponent implements
     }
 
     private final DebugAuthorizationService authorizationService;
-    private final ToriNavigator navigator;
 
     private ContextData data;
 
-    private final Logger log = Logger.getLogger(getClass());
     protected com.vaadin.navigator.View currentView;
 
     public DebugControlPanel(
-            final DebugAuthorizationService authorizationService,
-            final ToriNavigator navigator) {
+            final DebugAuthorizationService authorizationService) {
         this.authorizationService = authorizationService;
-        this.navigator = navigator;
-        navigator.addViewChangeListener(new ViewChangeListener() {
-            @Override
-            public void afterViewChange(ViewChangeEvent event) {
-                currentView = event.getNewView();
-            }
+        ToriNavigator.getCurrent().addViewChangeListener(
+                new ViewChangeListener() {
+                    @Override
+                    public void afterViewChange(ViewChangeEvent event) {
+                        currentView = event.getNewView();
+                    }
 
-            @Override
-            public boolean beforeViewChange(ViewChangeEvent event) {
-                return true;
-            }
-        });
+                    @Override
+                    public boolean beforeViewChange(ViewChangeEvent event) {
+                        return true;
+                    }
+                });
 
         final PopupButton popupButton = new PopupButton("Debug Control Panel");
         popupButton.setIcon(new ThemeResource("images/icon-settings.png"));

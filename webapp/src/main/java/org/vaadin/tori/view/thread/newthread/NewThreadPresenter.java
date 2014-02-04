@@ -25,7 +25,7 @@ import org.vaadin.tori.view.thread.newthread.NewThreadView.ViewPermissions;
 
 public class NewThreadPresenter extends Presenter<NewThreadView> {
 
-    private long categoryId;
+    private Long categoryId;
 
     public NewThreadPresenter(NewThreadView view) {
         super(view);
@@ -62,25 +62,23 @@ public class NewThreadPresenter extends Presenter<NewThreadView> {
 
     @Override
     public void navigationTo(String[] args) {
-        if (args.length > 0) {
-            try {
-                categoryId = Long.parseLong(args[0]);
-                view.setViewPermissions(new ViewPermissions() {
-                    @Override
-                    public boolean mayAddFiles() {
-                        return authorizationService
-                                .mayAddFilesInCategory(categoryId);
-                    }
+        try {
+            String categoryString = args[0];
+            categoryId = categoryString.isEmpty() ? null : Long
+                    .parseLong(categoryString);
+            view.setViewPermissions(new ViewPermissions() {
+                @Override
+                public boolean mayAddFiles() {
+                    return authorizationService
+                            .mayAddFilesInCategory(categoryId);
+                }
 
-                    @Override
-                    public int getMaxFileSize() {
-                        return dataSource.getAttachmentMaxFileSize();
-                    }
-                });
-            } catch (final NumberFormatException IGNORE) {
-                categoryNotFound();
-            }
-        } else {
+                @Override
+                public int getMaxFileSize() {
+                    return dataSource.getAttachmentMaxFileSize();
+                }
+            });
+        } catch (final NumberFormatException IGNORE) {
             categoryNotFound();
         }
     }

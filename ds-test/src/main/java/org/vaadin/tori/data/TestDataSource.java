@@ -153,22 +153,20 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public List<DiscussionThread> getThreads(long categoryId,
+    public List<DiscussionThread> getThreads(Long categoryId,
             final int startIndex, final int endIndex)
             throws DataSourceException {
-        Category category = null;
-        try {
-            category = getCategory(categoryId);
-        } catch (NoSuchCategoryException e) {
-        }
-        final Category theCategory = category;
+        final Category category = getCategory(categoryId);
         return executeWithEntityManager(new Command<List<DiscussionThread>>() {
             @Override
             public final List<DiscussionThread> execute(final EntityManager em) {
                 final TypedQuery<DiscussionThread> threadQuery = em
                         .createQuery(
                                 "select t from DiscussionThread t "
-                                        + "where t.category = :category order by t.sticky desc, t.id desc",
+                                        + "where t.category "
+                                        + (category != null ? "= :category"
+                                                : "is null")
+                                        + " order by t.sticky desc, t.id desc",
                                 DiscussionThread.class);
                 if (startIndex >= 0 && endIndex >= 0) {
                     threadQuery.setFirstResult(startIndex);
@@ -177,7 +175,9 @@ public class TestDataSource implements DataSource {
                             + " to " + endIndex + ", max results "
                             + (endIndex - startIndex + 1) + ".");
                 }
-                threadQuery.setParameter("category", theCategory);
+                if (category != null) {
+                    threadQuery.setParameter("category", category);
+                }
 
                 return threadQuery.getResultList();
             }
@@ -191,24 +191,25 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public Category getCategory(final long categoryId)
+    public Category getCategory(final Long categoryId)
             throws DataSourceException {
-        Category category = executeWithEntityManager(new Command<Category>() {
-            @Override
-            public final Category execute(final EntityManager em) {
-                return em.find(Category.class, categoryId);
-            }
-        });
-        if (category == null) {
-            throw new NoSuchCategoryException(categoryId, null);
+        Category category = null;
+        if (categoryId != null) {
+            category = executeWithEntityManager(new Command<Category>() {
+                @Override
+                public final Category execute(final EntityManager em) {
+                    return em.find(Category.class, categoryId);
+                }
+            });
         }
         return category;
     }
 
     @Override
-    public int getThreadCountRecursively(long categoryId)
+    public int getThreadCountRecursively(Long categoryId)
             throws DataSourceException {
         final Category category = getCategory(categoryId);
+        final long threadCount = getThreadCount(categoryId);
         return executeWithEntityManager(new Command<Integer>() {
             @Override
             public Integer execute(final EntityManager em) {
@@ -218,40 +219,45 @@ public class TestDataSource implements DataSource {
                                 Long.class);
                 query.setParameter("category", category);
 
-                long threadCount = query.getSingleResult();
-
                 // recursively add thread count of all sub categories
+                Long theThreadCount = threadCount;
                 try {
                     final List<Category> subCategories = getSubCategories(category
                             .getId());
                     for (final Category subCategory : subCategories) {
-                        threadCount += getThreadCountRecursively(subCategory
+                        theThreadCount += getThreadCountRecursively(subCategory
                                 .getId());
                     }
                 } catch (final DataSourceException e) {
                     throw new RuntimeException(e);
                 }
-                return new Long(threadCount).intValue();
+                return new Long(theThreadCount).intValue();
             }
         });
     }
 
     @Override
-    public int getThreadCount(long categoryId) throws DataSourceException {
+    public int getThreadCount(Long categoryId) throws DataSourceException {
         Category category = null;
-        try {
+        if (categoryId != null) {
             category = getCategory(categoryId);
-        } catch (NoSuchCategoryException e) {
         }
         final Category theCategory = category;
         long result = executeWithEntityManager(new Command<Long>() {
             @Override
             public Long execute(final EntityManager em) {
-                final TypedQuery<Long> q = em
-                        .createQuery(
-                                "select count(t) from DiscussionThread t where t.category = :category",
-                                Long.class);
-                q.setParameter("category", theCategory);
+                StringBuilder sb = new StringBuilder(
+                        "select count(t) from DiscussionThread t where t.category");
+                if (theCategory == null) {
+                    sb.append(" IS NULL");
+                } else {
+                    sb.append(" = :category");
+                }
+                TypedQuery<Long> q = em.createQuery(sb.toString(), Long.class);
+
+                if (theCategory != null) {
+                    q.setParameter("category", theCategory);
+                }
                 return q.getSingleResult();
             }
         });
@@ -660,7 +666,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void moveThread(long threadId, final long destinationCategoryId)
+    public void moveThread(long threadId, final Long destinationCategoryId)
             throws DataSourceException {
         final DiscussionThread thread = getThread(threadId);
         final Category destinationCategory = getCategory(destinationCategoryId);
@@ -758,9 +764,9 @@ public class TestDataSource implements DataSource {
 
     @Override
     public Post saveNewThread(final String topic, final String rawBody,
-            final Map<String, byte[]> attachments, long categoryId)
+            final Map<String, byte[]> attachments, Long categoryId)
             throws DataSourceException {
-        final Category category = categoryId == 0 ? null
+        final Category category = categoryId == null ? null
                 : getCategory(categoryId);
         return executeWithEntityManager(new Command<Post>() {
             @Override

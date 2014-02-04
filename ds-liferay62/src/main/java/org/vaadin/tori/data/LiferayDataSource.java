@@ -175,7 +175,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public List<DiscussionThread> getThreads(final long categoryId,
+    public List<DiscussionThread> getThreads(final Long categoryId,
             final int startIndex, int endIndex) throws DataSourceException {
         try {
             if (endIndex != QUERY_ALL) {
@@ -361,7 +361,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public Category getCategory(final long categoryId)
+    public Category getCategory(final Long categoryId)
             throws DataSourceException {
         try {
             return EntityFactoryUtil.createCategory(MBCategoryLocalServiceUtil
@@ -381,7 +381,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public int getThreadCountRecursively(long categoryId)
+    public int getThreadCountRecursively(Long categoryId)
             throws DataSourceException {
         try {
             int count = MBThreadLocalServiceUtil
@@ -403,7 +403,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public int getThreadCount(long categoryId) throws DataSourceException {
+    public int getThreadCount(Long categoryId) throws DataSourceException {
         try {
             return MBThreadLocalServiceUtil
                     .getCategoryThreadsCount(scopeGroupId, categoryId,
@@ -978,7 +978,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public void moveThread(final long threadId, long destinationCategoryId)
+    public void moveThread(final long threadId, Long destinationCategoryId)
             throws DataSourceException {
         try {
             MBThreadLocalServiceUtil.moveThread(scopeGroupId,
@@ -1166,12 +1166,14 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
 
     @Override
     public Post saveNewThread(String topic, String rawBody,
-            Map<String, byte[]> attachments, long categoryId)
+            Map<String, byte[]> attachments, Long categoryId)
             throws DataSourceException {
 
         try {
             final DiscussionThread thread = new DiscussionThread(topic);
-            thread.setCategory(getCategory(categoryId));
+            if (categoryId != null) {
+                thread.setCategory(getCategory(categoryId));
+            }
 
             final MBMessage savedRootMessage = internalSaveAsCurrentUser(
                     rawBody, attachments, thread,
