@@ -280,43 +280,7 @@ public class ThreadListingWidget extends Widget {
 
     public ThreadListingWidget() {
         setElement(DOM.createDiv());
-        getElement().appendChild(createHeaders());
         setStyleName("threadlisting");
-    }
-
-    private Element createHeaders() {
-        final Element titleDiv = DOM.createDiv();
-        titleDiv.setClassName("header");
-
-        {
-            final Element topic = DOM.createDiv();
-            topic.setInnerText("Topic");
-            topic.setClassName("header-topic");
-            titleDiv.appendChild(topic);
-        }
-
-        {
-            final Element startedby = DOM.createDiv();
-            startedby.setInnerText("Started by");
-            startedby.setClassName("header-startedby");
-            titleDiv.appendChild(startedby);
-        }
-
-        {
-            final Element posts = DOM.createDiv();
-            posts.setInnerText("Posts");
-            posts.setClassName("header-posts");
-            titleDiv.appendChild(posts);
-        }
-
-        {
-            final Element latestPost = DOM.createDiv();
-            latestPost.setInnerText("Latest post");
-            latestPost.setClassName("header-latestpost");
-            titleDiv.appendChild(latestPost);
-        }
-
-        return titleDiv;
     }
 
     public void init(final int rows, final List<RowInfo> preloadedRows,
@@ -528,8 +492,7 @@ public class ThreadListingWidget extends Widget {
     private int getRowIndexOf(final Element popupRow) {
         final NodeList<Node> childNodes = getElement().getChildNodes();
 
-        // we skip the first, due to header element.
-        for (int i = 1; i < childNodes.getLength(); i++) {
+        for (int i = 0; i < childNodes.getLength(); i++) {
             final Node node = childNodes.getItem(i);
             if (node.equals(popupRow)) {
                 return i - 1;
@@ -647,11 +610,7 @@ public class ThreadListingWidget extends Widget {
         final long startTime = System.currentTimeMillis();
         boolean shownItemsHaveBeenFound = false;
 
-        /*
-         * starting index is 1, since the first element is the header - so we
-         * ignore it.
-         */
-        for (int i = 1; i < getElement().getChildCount(); i++) {
+        for (int i = 0; i < getElement().getChildCount(); i++) {
             final Node child = getElement().getChild(i);
 
             if (child instanceof Element) {
@@ -674,8 +633,7 @@ public class ThreadListingWidget extends Widget {
                 shownItemsHaveBeenFound = beingShown;
 
                 if (isAPlaceholderWidget && beingShown) {
-                    // again, substracting the position of the header element.
-                    componentsToLoad.add(i - 1);
+                    componentsToLoad.add(i);
                 }
             }
         }

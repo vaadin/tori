@@ -236,6 +236,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
                             return dataSource.getAttachmentMaxFileSize();
                         }
                     });
+                    view.setThread(currentThread);
 
                 } else {
                     log.error("requestedthread was null, but no exception was thrown.");

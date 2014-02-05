@@ -40,6 +40,8 @@ public class ListingViewImpl extends
     private String categoryName;
     private CategoryListingViewImpl categoryListingView;
 
+    private Long categoryId;
+
     @Override
     protected ListingPresenter createPresenter() {
         return new ListingPresenter(this);
@@ -81,16 +83,6 @@ public class ListingViewImpl extends
         layout.addComponent(new PanicComponent());
     }
 
-    @Override
-    public void setCategory(Category category) {
-        categoryName = category != null ? category.getName() : null;
-    }
-
-    @Override
-    public String getTitle() {
-        return categoryName;
-    }
-
     public static HorizontalLayout buildHeaderLayout(String titleString) {
         HorizontalLayout result = new HorizontalLayout();
         result.setWidth(100.0f, Unit.PERCENTAGE);
@@ -106,5 +98,21 @@ public class ListingViewImpl extends
     @Override
     public void showError(String message) {
         Notification.show(message, Type.ERROR_MESSAGE);
+    }
+
+    @Override
+    public void setCategory(Category category) {
+        categoryName = category != null ? category.getName() : null;
+        categoryId = category != null ? category.getId() : null;
+    }
+
+    @Override
+    public Long getUrlParameterId() {
+        return categoryId;
+    }
+
+    @Override
+    public String getTitle() {
+        return categoryName;
     }
 }

@@ -39,6 +39,7 @@ import com.vaadin.client.ui.customcomponent.CustomComponentConnector;
 import com.vaadin.client.ui.image.ImageConnector;
 import com.vaadin.client.ui.label.LabelConnector;
 import com.vaadin.client.ui.link.LinkConnector;
+import com.vaadin.client.ui.menubar.MenuBarConnector;
 import com.vaadin.client.ui.optiongroup.OptionGroupConnector;
 import com.vaadin.client.ui.orderedlayout.HorizontalLayoutConnector;
 import com.vaadin.client.ui.orderedlayout.VerticalLayoutConnector;
@@ -71,6 +72,7 @@ public class ToriConnectorBundleLoaderFactory extends
 
         addConnector(WindowConnector.class, true);
         addConnector(TreeConnector.class, true);
+        addConnector(MenuBarConnector.class, true);
         addConnector(PanelConnector.class, true);
         addConnector(LabelConnector.class, true);
         addConnector(PopupButtonConnector.class, true);

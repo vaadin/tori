@@ -18,15 +18,14 @@ package org.vaadin.tori.component.post;
 
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
+import org.vaadin.tori.ToriScheduler;
+import org.vaadin.tori.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.view.thread.ThreadPresenter;
 import org.vaadin.tori.view.thread.ThreadView.PostData;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.JavaScript;
-import com.vaadin.ui.JavaScriptFunction;
 import com.vaadin.ui.UI;
 
 @SuppressWarnings("serial")
@@ -38,15 +37,6 @@ public class PostsLayout extends CssLayout {
 
     public PostsLayout(ThreadPresenter presenter) {
         this.presenter = presenter;
-        JavaScript.getCurrent().addFunction(
-                "org.vaadin.tori.lazyverticallayout.rendered",
-                new JavaScriptFunction() {
-                    @Override
-                    public void call(final JSONArray arguments)
-                            throws JSONException {
-                        renderBatch();
-                    }
-                });
     }
 
     private void renderBatch() {
@@ -69,6 +59,9 @@ public class PostsLayout extends CssLayout {
                 break;
             }
         }
+        if (rendered == 0) {
+            ToriScheduler.get().executeManualCommands();
+        }
     }
 
     @Override
@@ -81,7 +74,12 @@ public class PostsLayout extends CssLayout {
 
     @Override
     public void beforeClientResponse(boolean initial) {
-        JavaScript.eval("org.vaadin.tori.lazyverticallayout.rendered()");
+        ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override
+            public void execute() {
+                renderBatch();
+            }
+        });
         if (initial && scrollToComponent == null) {
             // First render & no scroll to component specified -> scroll to
             // beginning

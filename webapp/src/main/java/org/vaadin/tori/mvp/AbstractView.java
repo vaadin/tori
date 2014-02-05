@@ -84,4 +84,8 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
      * are valid return values.
      */
     public abstract String getTitle();
+
+    public Long getUrlParameterId() {
+        return null;
+    }
 }

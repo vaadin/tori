@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.ToriScheduler;
+import org.vaadin.tori.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.ConfirmationDialog;
 import org.vaadin.tori.component.ConfirmationDialog.ConfirmationListener;
@@ -142,39 +144,45 @@ public class PostComponent extends AbstractComponentContainer implements
         registerRpc(this);
         setStyleName("post");
 
-        PostComponentState state = getState();
+        final PostComponentState state = getState();
         state.setAuthorName(post.getAuthorName());
         state.setAllowHTML(allowHtml);
         state.setPrettyTime(prettyTime.format(post.getTime()));
         state.setTimeStamp(dateFormat.format(post.getTime()));
         state.setPermaLink(getPermaLinkUrl(post));
-        state.setBadgeHTML(post.getBadgeHTML());
         state.setPostBody(post.getFormattedBody(allowHtml));
-        state.setAttachments(state.getAttachments());
-        refreshScores();
+        state.setAttachments(post.getAttachments());
         setAvatarImageResource(post);
-
         if (post.isAuthorBanned()) {
             setUserIsBanned();
         }
-        state.setReportingEnabled(post.userMayReportPosts());
-        state.setEditingEnabled(post.userMayEdit());
-        state.setQuotingEnabled(post.userMayQuote());
-        state.setVotingEnabled(post.userMayVote());
 
-        // context menu permissions
+        ToriScheduler.get().scheduleManual(new ScheduledCommand() {
+            @Override
+            public void execute() {
+                refreshScores();
+                state.setBadgeHTML(post.getBadgeHTML());
+                state.setReportingEnabled(post.userMayReportPosts());
+                state.setEditingEnabled(post.userMayEdit());
+                state.setQuotingEnabled(post.userMayQuote());
+                state.setVotingEnabled(post.userMayVote());
 
-        if (post.userMayBanAuthor()) {
-            if (!post.isAuthorBanned()) {
-                enableBanning();
-            } else {
-                enableUnbanning();
+                // context menu permissions
+
+                if (post.userMayBanAuthor()) {
+                    if (!post.isAuthorBanned()) {
+                        enableBanning();
+                    } else {
+                        enableUnbanning();
+                    }
+                }
+
+                if (post.userMayDelete()) {
+                    enableDeleting();
+                }
             }
-        }
+        });
 
-        if (post.userMayDelete()) {
-            enableDeleting();
-        }
     }
 
     private final EditListener editListener = new EditListener() {

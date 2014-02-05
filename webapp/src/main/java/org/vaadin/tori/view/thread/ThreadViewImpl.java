@@ -27,6 +27,7 @@ import org.vaadin.tori.component.AuthoringComponent.AuthoringListener;
 import org.vaadin.tori.component.BBCodeWysiwygEditor;
 import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.component.post.PostsLayout;
+import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.AbstractView;
@@ -54,6 +55,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     private PostsLayout postsLayout;
     private AuthoringComponent reply;
     private String threadTopic;
+
+    private long threadId;
 
     @Override
     protected Component createCompositionRoot() {
@@ -157,11 +160,6 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public String getTitle() {
-        return threadTopic;
-    }
-
-    @Override
     public void otherUserAuthored(final Post post) {
         getUI().access(new Runnable() {
             @Override
@@ -200,5 +198,21 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     public void setViewPermissions(ViewPermissions viewPermissions) {
         reply.setUserMayAddFiles(viewPermissions.mayAddFiles());
         reply.setMaxFileSize(viewPermissions.getMaxFileSize());
+    }
+
+    @Override
+    public String getTitle() {
+        return threadTopic;
+    }
+
+    @Override
+    public Long getUrlParameterId() {
+        return threadId;
+    }
+
+    @Override
+    public void setThread(DiscussionThread currentThread) {
+        threadTopic = currentThread.getTopic();
+        threadId = currentThread.getId();
     }
 }

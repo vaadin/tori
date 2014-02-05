@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.View;
@@ -50,6 +51,8 @@ public interface ThreadView extends View {
     void otherUserAuthored(Post post);
 
     void otherUserTyping(User user);
+
+    void setThread(DiscussionThread currentThread);
 
     void setViewPermissions(ViewPermissions viewPermissions);
 

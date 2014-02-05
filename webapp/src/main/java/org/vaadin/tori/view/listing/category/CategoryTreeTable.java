@@ -19,6 +19,8 @@ package org.vaadin.tori.view.listing.category;
 import java.util.List;
 
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.ToriScheduler;
+import org.vaadin.tori.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.component.ConfirmationDialog;
 import org.vaadin.tori.component.ConfirmationDialog.ConfirmationListener;
 import org.vaadin.tori.component.ContextMenu;
@@ -26,7 +28,8 @@ import org.vaadin.tori.component.MenuPopup.ContextComponentSwapper;
 import org.vaadin.tori.view.listing.category.CategoryListingView.CategoryData;
 import org.vaadin.tori.view.listing.category.EditCategoryForm.EditCategoryListener;
 
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -44,45 +47,35 @@ public class CategoryTreeTable extends TreeTable {
 
     private final CategoryListingPresenter presenter;
 
+    @Override
+    protected String formatPropertyValue(Object rowId, Object colId,
+            Property<?> property) {
+        String result = super.formatPropertyValue(rowId, colId, property);
+        if (rowId != getCurrentPageFirstItemId()) {
+            if (PROPERTY_ID_THREADS.equals(colId)
+                    || PROPERTY_ID_UNREAD.equals(colId)) {
+                if ("0".equals(result)) {
+                    result = "";
+                }
+            }
+        }
+        return result;
+    }
+
     public CategoryTreeTable(CategoryListingPresenter presenter) {
         this.presenter = presenter;
         setStyleName("categoryTree");
 
-        setContainerDataSource(new BeanItemContainer<CategoryData>(
-                CategoryData.class));
+        getContainerDataSource().addContainerProperty(PROPERTY_ID_THREADS,
+                Integer.class, 0);
+        getContainerDataSource().addContainerProperty(PROPERTY_ID_UNREAD,
+                Integer.class, 0);
 
         addGeneratedColumn(PROPERTY_ID_CATEGORY, new ColumnGenerator() {
             @Override
             public Object generateCell(Table source, Object itemId,
                     Object columnId) {
                 return new CategoryLayout((CategoryData) itemId);
-            }
-        });
-
-        addGeneratedColumn(PROPERTY_ID_UNREAD, new ColumnGenerator() {
-            @Override
-            public Object generateCell(Table source, Object itemId,
-                    Object columnId) {
-                Object result = null;
-                int count = ((CategoryData) itemId).getUnreadThreadCount();
-                if (count > 0 || source.getCurrentPageFirstItemId() == itemId) {
-                    result = count;
-                }
-                return result;
-
-            }
-        });
-
-        addGeneratedColumn(PROPERTY_ID_THREADS, new ColumnGenerator() {
-            @Override
-            public Object generateCell(Table source, Object itemId,
-                    Object columnId) {
-                Object result = null;
-                int count = ((CategoryData) itemId).getThreadCount();
-                if (count > 0 || source.getCurrentPageFirstItemId() == itemId) {
-                    result = count;
-                }
-                return result;
             }
         });
 
@@ -103,11 +96,6 @@ public class CategoryTreeTable extends TreeTable {
         setColumnHeaderMode(ColumnHeaderMode.HIDDEN);
     }
 
-    /**
-     * Simple layout displaying the category name as a link and the category
-     * description. If the {@code CategoryListing} mode is
-     * {@link Mode#SINGLE_COLUMN}, this layout also includes additional details.
-     */
     private class CategoryLayout extends CssLayout {
 
         private final String CATEGORY_URL = "#"
@@ -121,7 +109,13 @@ public class CategoryTreeTable extends TreeTable {
             setStyleName("category");
             addComponent(createCategoryLink(id, name));
             addComponent(createDescriptionLabel(description));
-            addComponent(createSettingsMenu(category));
+            ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
+                @Override
+                public void execute() {
+                    addComponent(createSettingsMenu(category));
+                }
+            });
+
         }
 
         private Component createDescriptionLabel(
@@ -215,24 +209,31 @@ public class CategoryTreeTable extends TreeTable {
 
     private void addCategory(final CategoryData category,
             final CategoryData parent) {
-        addItem(category);
+        final Item item = addItem(category);
+        setChildrenAllowed(category, false);
         if (parent != null) {
+            setChildrenAllowed(parent, true);
             setParent(category, parent);
         }
 
-        List<CategoryData> subCategories = category.getSubCategories();
+        ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override
+            public void execute() {
+                item.getItemProperty(PROPERTY_ID_THREADS).setValue(
+                        category.getThreadCount());
+                item.getItemProperty(PROPERTY_ID_UNREAD).setValue(
+                        category.getUnreadThreadCount());
 
-        if (subCategories.isEmpty()) {
-            setChildrenAllowed(category, false);
-        } else {
-            // all categories are collapsed by default
-            setCollapsed(category, true);
-
-            // recursively add all sub categories
-            for (final CategoryData subCategory : subCategories) {
-                addCategory(subCategory, category);
+                List<CategoryData> subCategories = category.getSubCategories();
+                if (!subCategories.isEmpty()) {
+                    // recursively add all sub categories
+                    for (final CategoryData subCategory : subCategories) {
+                        addCategory(subCategory, category);
+                    }
+                }
             }
-        }
+        });
+
     }
 
 }
