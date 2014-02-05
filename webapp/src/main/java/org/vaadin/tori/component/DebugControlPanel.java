@@ -30,12 +30,12 @@ import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.data.entity.AbstractEntity;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.service.DebugAuthorizationService;
 import org.vaadin.tori.view.listing.ListingView;
 import org.vaadin.tori.view.thread.ThreadView;
@@ -164,7 +164,7 @@ public class DebugControlPanel extends CustomComponent implements
 
         private void callSetter(final boolean newValue) {
             try {
-                setter.invoke(authorizationService, post, newValue);
+                setter.invoke(authorizationService, post.getId(), newValue);
             } catch (final Exception e) {
                 Notification.show(e.getClass().getSimpleName());
                 e.printStackTrace();
@@ -211,36 +211,31 @@ public class DebugControlPanel extends CustomComponent implements
 
     private ContextData getContextData() {
         final ContextData data = new ContextData();
-        if (currentView instanceof ListingView) {
-            String state = ToriUI.getCurrent().getNavigator().getState();
-
-            if (state.startsWith(ToriNavigator.ApplicationView.CATEGORIES
-                    .getNavigatorUrl())) {
-                String sid = state.substring(state.lastIndexOf("/") + 1);
-                long categoryId = Long.parseLong(sid);
-                try {
-                    data.setCategory(ToriApiLoader.getCurrent().getDataSource()
-                            .getCategory(categoryId));
-                } catch (DataSourceException e) {
-                    e.printStackTrace();
+        if (currentView instanceof AbstractView) {
+            String viewTitle = ((AbstractView) currentView).getTitle();
+            final Long urlParameterId = ((AbstractView) currentView)
+                    .getUrlParameterId();
+            if (urlParameterId != null) {
+                if (currentView instanceof ListingView) {
+                    try {
+                        data.setCategory(ToriApiLoader.getCurrent()
+                                .getDataSource().getCategory(urlParameterId));
+                    } catch (DataSourceException e) {
+                        e.printStackTrace();
+                    }
+                } else if (currentView instanceof ThreadView) {
+                    try {
+                        DiscussionThread thread = ToriApiLoader.getCurrent()
+                                .getDataSource().getThread(urlParameterId);
+                        data.setThread(thread);
+                        data.setCategory(thread.getCategory());
+                        data.setPosts(thread.getPosts());
+                    } catch (DataSourceException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-            // final ListingView listingView = (ListingView) currentView;
-            // data.setCategory(listingView.getCurrentCategory());
-        } else if (currentView instanceof ThreadView) {
-            // final ThreadView threadView = (ThreadView) currentView;
-            // final DiscussionThread currentThread = threadView
-            // .getCurrentThread();
-            //
-            // if (currentThread != null) {
-            // data.setCategory(currentThread.getCategory());
-            // data.setThread(currentThread);
-            // data.setPosts(currentThread.getPosts());
-            // } else {
-            // log.warn("currentThread was null");
-            // }
         }
-
         return data;
     }
 
@@ -301,7 +296,7 @@ public class DebugControlPanel extends CustomComponent implements
                 for (final Post post : posts) {
                     final Method getter = getGetterFrom(setter);
                     final boolean getterValue = (Boolean) getter.invoke(
-                            authorizationService, post);
+                            authorizationService, post.getId());
 
                     final String authorName = post.getAuthor()
                             .getDisplayedName();
@@ -361,7 +356,7 @@ public class DebugControlPanel extends CustomComponent implements
     }
 
     private static boolean isForPosts(final Method setter) {
-        return setter.getParameterTypes()[0] == Post.class;
+        return setter.getName().endsWith("Post");
     }
 
     private boolean callGetter(final Method getter)
@@ -392,6 +387,8 @@ public class DebugControlPanel extends CustomComponent implements
             result = Category.class;
         } else if (name.endsWith("Thread")) {
             result = DiscussionThread.class;
+        } else if (name.endsWith("Post")) {
+            result = List.class;
         }
         return result;
     }
@@ -476,8 +473,8 @@ public class DebugControlPanel extends CustomComponent implements
         if (methodHasArguments(method, 1)) {
             return parameterTypes[0] == boolean.class;
         } else if (methodHasArguments(method, 2)) {
-            return (AbstractEntity.class.isAssignableFrom(parameterTypes[0]) || parameterTypes[0]
-                    .toString().equals("long"))
+            return (AbstractEntity.class.isAssignableFrom(parameterTypes[0])
+                    || parameterTypes[0].toString().equals("long") || parameterTypes[0] == Long.class)
                     && parameterTypes[1] == boolean.class;
         } else {
             throw new IllegalArgumentException(
