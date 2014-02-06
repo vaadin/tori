@@ -21,7 +21,6 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 import org.vaadin.tori.data.DataSource;
-import org.vaadin.tori.util.SignatureFormatter;
 
 @Entity
 public class User extends AbstractEntity {
@@ -34,9 +33,6 @@ public class User extends AbstractEntity {
 
     @Column(nullable = true)
     private String avatarUrl;
-
-    @Column(nullable = true)
-    private String rawSignature;
 
     @Column(nullable = false)
     private boolean banned;
@@ -70,25 +66,6 @@ public class User extends AbstractEntity {
      */
     public boolean isAnonymous() {
         return false;
-    }
-
-    /**
-     * Get the unformatted signature for this user. <code>null</code> means that
-     * the user has no signature.
-     * 
-     * @see SignatureFormatter#format(String)
-     */
-
-    public String getSignatureRaw() {
-        return rawSignature;
-    }
-
-    /**
-     * Set the unformatted signature for this user. <code>null</code> clears the
-     * user's signature.
-     */
-    public void setRawSignature(final String rawSignature) {
-        this.rawSignature = rawSignature;
     }
 
     public boolean isBanned() {

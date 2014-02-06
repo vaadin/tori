@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Vaadin Ltd.
+ * Copyright 2014 Vaadin Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -28,7 +28,6 @@ import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.spi.ServiceProvider;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
-import org.vaadin.tori.util.SignatureFormatter;
 import org.vaadin.tori.util.ToriActivityMessaging;
 import org.vaadin.tori.util.UrlConverter;
 import org.vaadin.tori.util.UserBadgeProvider;
@@ -42,7 +41,6 @@ public class ToriApiLoader implements Serializable {
     private final ServiceProvider spi;
     private final DataSource ds;
     private final PostFormatter postFormatter;
-    private final SignatureFormatter signatureFormatter;
     private final AuthorizationService authorizationService;
 
     private final UserBadgeProvider userBadgeProvider;
@@ -54,7 +52,6 @@ public class ToriApiLoader implements Serializable {
         spi = newServiceProvider();
         ds = createDataSource();
         postFormatter = createPostFormatter();
-        signatureFormatter = createSignatureFormatter();
         authorizationService = createAuthorizationService();
         toriActivityMessaging = createToriActivityMessaging();
         userBadgeProvider = createService(UserBadgeProvider.class);
@@ -141,16 +138,6 @@ public class ToriApiLoader implements Serializable {
         return postFormatter;
     }
 
-    private SignatureFormatter createSignatureFormatter() {
-        final SignatureFormatter signatureFormatter = spi
-                .createSignatureFormatter();
-        getLogger().debug(
-                String.format("Using %s implementation: %s",
-                        SignatureFormatter.class.getSimpleName(),
-                        signatureFormatter.getClass().getName()));
-        return signatureFormatter;
-    }
-
     private AuthorizationService createAuthorizationService() {
         final AuthorizationService authorizationService = spi
                 .createAuthorizationService();
@@ -181,10 +168,6 @@ public class ToriApiLoader implements Serializable {
 
     public PostFormatter getPostFormatter() {
         return postFormatter;
-    }
-
-    public SignatureFormatter getSignatureFormatter() {
-        return signatureFormatter;
     }
 
     public AuthorizationService getAuthorizationService() {

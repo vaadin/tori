@@ -125,8 +125,8 @@ insert into DISCUSSIONTHREAD set ID=109, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC="
 insert into DISCUSSIONTHREAD set ID=110, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC="Thread 102";
 
 ## Users
-insert into `USER` set ID = 1, DISPLAYEDNAME = "John Doe", RAWSIGNATURE = "I'm Doe. John Doe", banned=FALSE;
-insert into `USER` set ID = 2, DISPLAYEDNAME = "Molly Townsend", RAWSIGNATURE = "[b]bold[/b]", banned=FALSE;
+insert into `USER` set ID = 1, DISPLAYEDNAME = "John Doe", banned=FALSE;
+insert into `USER` set ID = 2, DISPLAYEDNAME = "Molly Townsend", banned=FALSE;
 insert into `USER` set ID = 3, DISPLAYEDNAME = "Current User", banned=FALSE;
 insert into `USER` set ID = 4, DISPLAYEDNAME = "Timothy Test Guy", banned=FALSE;
 
