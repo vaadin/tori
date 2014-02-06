@@ -65,9 +65,7 @@ public class ReportComponent extends CustomComponent {
         this.presenter = presenter;
         this.postPermalink = postFragmentPermalink;
 
-        reportPopup = new PopupButton();
-        reportPopup.setWidth("0");
-        reportPopup.setHeight("0");
+        reportPopup = new PopupButton("Flag post...");
         root.addComponent(reportPopup);
     }
 

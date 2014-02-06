@@ -235,6 +235,12 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
                         public int getMaxFileSize() {
                             return dataSource.getAttachmentMaxFileSize();
                         }
+
+                        @Override
+                        public boolean mayReplyInThread() {
+                            return authorizationService
+                                    .mayReplyInThread(threadId);
+                        }
                     });
                     view.setThread(currentThread);
 
@@ -288,25 +294,27 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         return currentThread;
     }
 
-    public void ban(final long userId) throws DataSourceException {
+    public void ban(final long userId) {
         try {
             dataSource.banUser(userId);
             view.showNotification("User banned");
+            displayPosts(currentThread.getId(), null);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
-            throw e;
+            view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
         }
     }
 
-    public void unban(final long userId) throws DataSourceException {
+    public void unban(final long userId) {
         try {
             dataSource.unbanUser(userId);
             view.showNotification("User unbanned");
+            displayPosts(currentThread.getId(), null);
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
-            throw e;
+            view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
         }
     }
 
@@ -331,14 +339,15 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     }
 
-    public void delete(long postId) throws DataSourceException {
+    public void delete(long postId) {
         try {
             dataSource.deletePost(postId);
             view.showNotification("Post deleted");
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
-            throw e;
+            view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
+            displayPosts(currentThread.getId(), postId);
         }
 
     }
@@ -438,7 +447,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         try {
             Post post = dataSource.getPost(postId);
             final String quote = postFormatter.getQuote(post);
-            view.appendToReply(quote + "\n\n ");
+            view.appendQuote(quote);
         } catch (DataSourceException e) {
             view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
             e.printStackTrace();

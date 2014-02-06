@@ -4,8 +4,8 @@
     width: 100%;
     margin-top: 50px;
     display: table;
-    border-bottom: 1px solid $grid-border-color;
     table-layout: fixed;
+    position: relative;
     
     &.banned-author {
         /* These two first rules are for IE */
@@ -13,6 +13,11 @@
         filter: alpha(opacity=50);
         
         opacity: 0.5;
+    }
+    
+    .settings {
+    	position: absolute;
+    	right: 20px;
     }
     
     .author {
@@ -25,6 +30,7 @@
         .avatar {
             margin-bottom: 0.5em;
             width: 90px;
+            height: 90px;
             margin-right: 63px;
         }
     
@@ -111,9 +117,7 @@
     }
     
     .toolbar {
-        background: $header-background-color;
-        border: $grid-border;
-        border-bottom: none;
+    	border-bottom: 1px solid $grid-border-color;
         padding: 7px 0;
         margin-left: 153px;
         height: 18px;
@@ -171,11 +175,6 @@
             outline: none;
             display: inline-block;
             vertical-align: middle;
-            
-            * {
-                position: absolute;
-                visibility: hidden;
-            }
         }
         
         .report {
@@ -196,7 +195,6 @@
             text-shadow: none;
         }
         
-        .settings:before,
         .edit:before,
         .report:before,
         .quote:before {
@@ -206,53 +204,30 @@
             vertical-align: middle;
         }
         
-        .settings:before { content: "\e005"; }
         .edit:before { content: "\e00e"; }
         .edit:after { content: "Edit Post"; }
         .report:before { content: "\e014"; }
         .quote:before { content: "\e007"; }
     }
     
-    &.summary {
-        padding: 0;
-        margin-top: 0;
-        border: none;
-        
-        table.container {
-            margin: 0;    
-        }
-        
-        .permalink,
-        .postedtime,
-        .score,
-        .toolbar {
-            display: none;
-        }
-        
-        .author {
-            width: 151px;
-            min-width: 151px;
-            padding: 11px 0 0 5px;
-            
-            .avatar {
-                width: 23px;
-                float: left;
-                height: auto !important;
-                margin-right: 0;
-            }
-
-            .authorname {
-                margin-left: 10px;
-                width: 100px;
-                float: left;
-                white-space: normal;    
-            }
-        }
-        
-        .body {
-            padding: 9px 4px;
-        }
+    .scorecomponent,
+    .actions,
+    .settings,
+    .avatar,
+    .badge,
+    .postedtime,
+    .permalink {
+    	visibility: hidden;
+    	opacity: 0;
+    	transition: opacity 200ms, visibility 200ms;
+		-webkit-transition: opacity 200ms, visibility 200ms;
+    	
+    	.ready & {
+	    	visibility: visible;
+			opacity: 1;
+	    }
     }
+    
 }    
 
 .threadview .spacer {

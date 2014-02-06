@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Vaadin Ltd.
+ * Copyright 2014 Vaadin Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,236 +16,199 @@
 
 package org.vaadin.tori.component.post;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriScheduler;
 import org.vaadin.tori.ToriScheduler.ScheduledCommand;
-import org.vaadin.tori.ToriUI;
-import org.vaadin.tori.component.ConfirmationDialog;
-import org.vaadin.tori.component.ConfirmationDialog.ConfirmationListener;
-import org.vaadin.tori.component.ContextMenu;
-import org.vaadin.tori.component.MenuPopup.ContextAction;
-import org.vaadin.tori.component.MenuPopup.ContextComponentSwapper;
-import org.vaadin.tori.component.post.EditComponent.EditListener;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.view.thread.ThreadPresenter;
 import org.vaadin.tori.view.thread.ThreadView.PostData;
+import org.vaadin.tori.widgetset.client.ui.post.PostComponentClientRpc;
 import org.vaadin.tori.widgetset.client.ui.post.PostComponentRpc;
-import org.vaadin.tori.widgetset.client.ui.post.PostComponentState;
+import org.vaadin.tori.widgetset.client.ui.post.PostData.PostAdditionalData;
+import org.vaadin.tori.widgetset.client.ui.post.PostData.PostPrimaryData;
 
 import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.Connector;
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 
 @SuppressWarnings("serial")
 public class PostComponent extends AbstractComponentContainer implements
         PostComponentRpc {
 
     private static final String DELETE_CAPTION = "Delete Post";
-    private static final String DELETE_ICON = "icon-delete";
-
+    private static final String EDIT_CAPTION = "Edit Post";
     private static final String BAN_CAPTION = "Ban Author";
-    private static final String BAN_ICON = "icon-ban";
-
     private static final String UNBAN_CAPTION = "Unban Author";
-    private static final String UNBAN_ICON = "icon-unban";
-
     private static final String STYLE_BANNED = "banned-author";
 
     private final PrettyTime prettyTime = new PrettyTime();
-    private final DateFormat dateFormat = new SimpleDateFormat(
-            "MM/dd/yyyy kk:mm");
-
     private final PostData post;
 
     private ReportComponent reportComponent;
-    private final ContextMenu contextMenu = new ContextMenu();
+    private MenuBar settings;
     private final ThreadPresenter presenter;
 
-    private EditComponent editComponent;
-
-    private boolean banEnabled;
-    private boolean unbanEnabled;
-
-    @Override
-    protected PostComponentState getState() {
-        return (PostComponentState) super.getState();
-    }
-
-    // TODO: REMOVE
-    private static class Util {
-        private static Component newConfirmBanComponent(
-                final ThreadPresenter presenter, final PostData post,
-                final ContextMenu menu) {
-            final String title = String.format("Ban %s?", post.getAuthorName());
-            final String confirmCaption = "Yes, Ban";
-            final String cancelCaption = "No, Cancel!";
-            final ConfirmationListener listener = new ConfirmationListener() {
-
-                @Override
-                public void onConfirmed() throws DataSourceException {
-                    presenter.ban(post.getAuthorId());
-                    menu.close();
-                }
-
-                @Override
-                public void onCancel() {
-                    menu.close();
-                }
-            };
-            return new ConfirmationDialog(title, confirmCaption, cancelCaption,
-                    listener);
-        }
-
-        public static Component newConfirmDeleteComponent(
-                final ThreadPresenter presenter, final PostData post,
-                final ContextMenu menu) {
-            final String title = String.format("Delete Post?");
-            final String confirmCaption = "Yes, Delete";
-            final String cancelCaption = "No, Cancel!";
-            final ConfirmationListener listener = new ConfirmationListener() {
-
-                @Override
-                public void onConfirmed() throws DataSourceException {
-                    presenter.delete(post.getId());
-                    menu.close();
-                }
-
-                @Override
-                public void onCancel() {
-                    menu.close();
-                }
-            };
-            return new ConfirmationDialog(title, confirmCaption, cancelCaption,
-                    listener);
-        }
-    }
-
-    /**
-     * @throws IllegalArgumentException
-     *             if any argument is <code>null</code>.
-     */
-    public PostComponent(final PostData post, final ThreadPresenter presenter,
-            final boolean allowHtml) {
+    public PostComponent(final PostData post, final ThreadPresenter presenter) {
         this.presenter = presenter;
         this.post = post;
 
         registerRpc(this);
         setStyleName("post");
 
-        final PostComponentState state = getState();
-        state.setAuthorName(post.getAuthorName());
-        state.setAllowHTML(allowHtml);
-        state.setPrettyTime(prettyTime.format(post.getTime()));
-        state.setTimeStamp(dateFormat.format(post.getTime()));
-        state.setPermaLink(getPermaLinkUrl(post));
-        state.setPostBody(post.getFormattedBody(allowHtml));
-        state.setAttachments(post.getAttachments());
-        setAvatarImageResource(post);
-        if (post.isAuthorBanned()) {
-            setUserIsBanned();
-        }
+        updatePrimaryData();
 
         ToriScheduler.get().scheduleManual(new ScheduledCommand() {
             @Override
             public void execute() {
-                refreshScores();
-                state.setBadgeHTML(post.getBadgeHTML());
-                state.setReportingEnabled(post.userMayReportPosts());
-                state.setEditingEnabled(post.userMayEdit());
-                state.setQuotingEnabled(post.userMayQuote());
-                state.setVotingEnabled(post.userMayVote());
-
-                // context menu permissions
-
-                if (post.userMayBanAuthor()) {
-                    if (!post.isAuthorBanned()) {
-                        enableBanning();
-                    } else {
-                        enableUnbanning();
-                    }
-                }
-
-                if (post.userMayDelete()) {
-                    enableDeleting();
-                }
+                updateAdditionalData();
             }
         });
 
     }
 
-    private final EditListener editListener = new EditListener() {
-        @Override
-        public void postEdited(final String newPostBody) {
-            presenter.saveEdited(post.getId(), newPostBody);
-            ToriUI.getCurrent().trackAction("edit-post");
-        }
-    };
+    private void updatePrimaryData() {
+        removeAllComponents();
+        PostPrimaryData data = new PostPrimaryData();
+        data.setAllowHTML(true);
+        data.setAttachments(post.getAttachments());
+        data.setAuthorName(post.getAuthorName());
+        data.setPostBody(post.getFormattedBody(true));
+        getRpcProxy(PostComponentClientRpc.class).setPostPrimaryData(data);
+    }
 
-    private final ContextComponentSwapper banActionSwapper = new ContextComponentSwapper() {
-        @Override
-        public Component swapContextComponent() {
-            return Util.newConfirmBanComponent(presenter, post, contextMenu);
-        }
-    };
+    private void updateAdditionalData() {
+        removeAllComponents();
+        PostAdditionalData data = new PostAdditionalData();
+        data.setPrettyTime(prettyTime.format(post.getTime()));
+        data.setPermaLink(getPermaLinkUrl(post));
+        setAvatarImageResource(post);
+        setUserIsBanned(post.isAuthorBanned());
+        data.setBadgeHTML(post.getBadgeHTML());
+        data.setQuotingEnabled(post.userMayQuote());
+        data.setVotingEnabled(post.userMayVote());
+        data.setScore(post.getScore());
+        data.setUpVoted(post.getUpVoted());
+        data.setReport(buildReportComponent());
+        data.setSettings(buildSettingsComponent());
+        getRpcProxy(PostComponentClientRpc.class).setPostAdditionalData(data);
+    }
 
-    private final ContextAction unbanAction = new ContextAction() {
-        @Override
-        public void contextClicked() {
-            try {
-                presenter.unban(post.getAuthorId());
-            } catch (final DataSourceException e) {
-                Notification.show(DataSourceException.GENERIC_ERROR_MESSAGE);
+    private Connector buildSettingsComponent() {
+        settings = null;
+
+        MenuBar settingsMenuBar = new MenuBar();
+        MenuItem root = settingsMenuBar.addItem("", null);
+        Command command = new Command() {
+            @Override
+            public void menuSelected(MenuItem selectedItem) {
+                if (EDIT_CAPTION.equals(selectedItem.getText())) {
+                    editPost();
+                } else if (DELETE_CAPTION.equals(selectedItem.getText())) {
+                    confirmDelete();
+                } else if (UNBAN_CAPTION.equals(selectedItem.getText())) {
+                    presenter.unban(post.getAuthorId());
+                } else if (BAN_CAPTION.equals(selectedItem.getText())) {
+                    presenter.ban(post.getAuthorId());
+                }
+            }
+        };
+
+        if (post.userMayEdit()) {
+            root.addItem(EDIT_CAPTION, command);
+        }
+        if (post.userMayDelete()) {
+            root.addItem(DELETE_CAPTION, command);
+        }
+        if (post.userMayBanAuthor()) {
+            if (root.hasChildren()) {
+                root.addSeparator();
+            }
+            if (post.isAuthorBanned()) {
+                root.addItem(UNBAN_CAPTION, command);
+            } else {
+                root.addItem(BAN_CAPTION, command);
             }
         }
-    };
 
-    private void refreshScores() {
-        getState().setScore(post.getScore());
-        getState().setUpVoted(post.getUpVoted());
+        if (root.hasChildren()) {
+            settings = settingsMenuBar;
+            addComponent(settings);
+        }
+        return settings;
     }
 
-    private void enableBanning() {
-        contextMenu.add(BAN_ICON, BAN_CAPTION, banActionSwapper);
-        getState().setSettingsEnabled(true);
+    private Connector buildReportComponent() {
+        reportComponent = null;
+        if (post.userMayReportPosts()) {
+            reportComponent = new ReportComponent(post, presenter,
+                    getPermaLinkUrl(post));
+            addComponent(reportComponent);
+        }
+        return reportComponent;
     }
 
-    private void enableUnbanning() {
-        contextMenu.add(UNBAN_ICON, UNBAN_CAPTION, unbanAction);
-        getState().setSettingsEnabled(true);
-    }
-
-    private void enableDeleting() {
-        contextMenu.add(DELETE_ICON, DELETE_CAPTION,
-                new ContextComponentSwapper() {
+    private void confirmDelete() {
+        ConfirmDialog.show(UI.getCurrent(), "Delete post?",
+                new ConfirmDialog.Listener() {
                     @Override
-                    public Component swapContextComponent() {
-                        return Util.newConfirmDeleteComponent(presenter, post,
-                                contextMenu);
+                    public void onClose(ConfirmDialog arg0) {
+                        if (arg0.isConfirmed()) {
+                            ((ComponentContainer) getParent())
+                                    .removeComponent(PostComponent.this);
+                            presenter.delete(post.getId());
+                        }
                     }
                 });
-        getState().setSettingsEnabled(true);
     }
 
-    public void setUserIsBanned() {
-        addStyleName(STYLE_BANNED);
-        setDescription(post.getAuthorName() + " is banned.");
+    @Override
+    public void postVoted(boolean up) {
+        try {
+            if (up) {
+                presenter.upvote(post.getId());
+            } else {
+                presenter.downvote(post.getId());
+            }
+            updateAdditionalData();
+        } catch (final DataSourceException e) {
+            Notification.show(DataSourceException.GENERIC_ERROR_MESSAGE);
+        }
     }
 
-    public void setUserIsUnbanned() {
-        removeStyleName(STYLE_BANNED);
-        setDescription(null);
+    @Override
+    public void quoteForReply() {
+        presenter.quotePost(post.getId());
+    }
+
+    private void editPost() {
+
+    }
+
+    private void setUserIsBanned(boolean banned) {
+        if (banned) {
+            addStyleName(STYLE_BANNED);
+            setDescription(post.getAuthorName() + " is banned.");
+        } else {
+            removeStyleName(STYLE_BANNED);
+            setDescription(null);
+        }
     }
 
     private static String getPermaLinkUrl(final PostData post) {
@@ -274,21 +237,6 @@ public class PostComponent extends AbstractComponentContainer implements
         setResource("avatar", imageResource);
     }
 
-    public void swapBannedMenu() {
-        if (banEnabled || unbanEnabled) {
-            if (banEnabled) {
-                contextMenu.swap(banActionSwapper, UNBAN_ICON, UNBAN_CAPTION,
-                        unbanAction);
-            } else {
-                contextMenu.swap(unbanAction, BAN_ICON, BAN_CAPTION,
-                        banActionSwapper);
-            }
-
-            banEnabled = !banEnabled;
-            unbanEnabled = !unbanEnabled;
-        }
-    }
-
     @Override
     public void replaceComponent(Component oldComponent, Component newComponent) {
 
@@ -308,69 +256,9 @@ public class PostComponent extends AbstractComponentContainer implements
     @Override
     public Iterator<Component> iterator() {
         List<Component> components = new ArrayList<Component>(Arrays.asList(
-                editComponent, contextMenu, reportComponent));
+                settings, reportComponent));
         components.removeAll(Collections.singleton(null));
-        if (contextMenu.getParent() == null) {
-            components.remove(contextMenu);
-        }
         return components.iterator();
-    }
-
-    @Override
-    public void postVoted(boolean up) {
-        if (getState().isVotingEnabled()) {
-            try {
-                if (up) {
-                    presenter.upvote(post.getId());
-                } else {
-                    presenter.downvote(post.getId());
-                }
-                refreshScores();
-            } catch (final DataSourceException e) {
-                Notification.show(DataSourceException.GENERIC_ERROR_MESSAGE);
-            }
-        }
-    }
-
-    @Override
-    public void quoteForReply() {
-        presenter.quotePost(post.getId());
-    }
-
-    @Override
-    public void settingsClicked() {
-        if (contextMenu.getParent() == null) {
-            addComponent(contextMenu);
-            contextMenu.setSettingsIconVisible(false);
-            getState().setSettings(contextMenu);
-        }
-        contextMenu.open();
-    }
-
-    @Override
-    public void editClicked() {
-        if (getState().isEditingEnabled()) {
-            if (editComponent == null) {
-                editComponent = new EditComponent(post.getRawBody(),
-                        editListener);
-                addComponent(editComponent);
-                getState().setEdit(editComponent);
-            }
-            editComponent.open();
-        }
-    }
-
-    @Override
-    public void reportClicked() {
-        if (getState().isReportingEnabled()) {
-            if (reportComponent == null) {
-                reportComponent = new ReportComponent(post, presenter,
-                        getPermaLinkUrl(post));
-                addComponent(reportComponent);
-                getState().setReport(reportComponent);
-            }
-            reportComponent.open();
-        }
     }
 
 }

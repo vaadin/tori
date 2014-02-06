@@ -2,6 +2,7 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<g:HTMLPanel>
+		<g:FocusPanel styleName="settings" ui:field="settings" />
 		<div class="author">
 			<img class="avatar" ui:field='avatar' />
 			<div class="authorname" ui:field='authorName' />
@@ -10,14 +11,13 @@
 				<span class='prettytime' ui:field='prettyTime' />
 				<span class='timestamp' ui:field='timeStamp' />
 			</div>
+			<a class="permalink" ui:field='permaLink'>Permalink</a>
 		</div>
 		<div class="body">
 			<div class="bodytext" ui:field='bodyText' />
-			<g:Label styleName="signature" ui:field='signature' />
 			<g:FlowPanel styleName="attachments" ui:field='attachments' />
 		</div>
 		<div class="footer">
-			<a class="permalink" ui:field='permaLink'>Permalink</a>
 			<div class="toolbar">
 				<div class="score scorecomponent">
 					<g:Button ui:field='upVote' tabIndex="0" />
@@ -25,9 +25,7 @@
 					<div ui:field='score' />
 				</div>
 				<div class="actions">
-					<g:FocusPanel styleName="settings" ui:field="settings" />
-					<g:FocusPanel styleName="report" ui:field="report" />
-					<g:FocusPanel styleName="edit" ui:field="edit" />
+					<g:FocusPanel styleName="flag" ui:field="flag" />
 					<g:Label styleName="quote" ui:field='quote'>Quote for Reply</g:Label>
 				</div>
 			</div>

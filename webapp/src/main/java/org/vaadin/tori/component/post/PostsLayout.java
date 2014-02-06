@@ -34,6 +34,7 @@ public class PostsLayout extends CssLayout {
     private static final int RENDER_BATCH_SIZE = 30;
     private Component scrollToComponent;
     private final ThreadPresenter presenter;
+    private static final String STYLE_READY = "ready";
 
     public PostsLayout(ThreadPresenter presenter) {
         this.presenter = presenter;
@@ -59,8 +60,10 @@ public class PostsLayout extends CssLayout {
                 break;
             }
         }
-        if (rendered == 0) {
+        List<String> styles = getState(false).styles;
+        if ((styles == null || !styles.contains(STYLE_READY)) && rendered == 0) {
             ToriScheduler.get().executeManualCommands();
+            addStyleName(STYLE_READY);
         }
     }
 
@@ -95,9 +98,9 @@ public class PostsLayout extends CssLayout {
 
     public void setPosts(List<PostData> posts) {
         removeAllComponents();
+        removeStyleName(STYLE_READY);
         for (PostData post : posts) {
-            PostComponent postComponent = new PostComponent(post, presenter,
-                    true);
+            PostComponent postComponent = new PostComponent(post, presenter);
             addComponent(postComponent);
             if (post.isSelected()) {
                 setScrollToComponent(postComponent);

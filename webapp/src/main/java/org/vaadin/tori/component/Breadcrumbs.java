@@ -171,8 +171,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
 
     private Component getSiblingMenuBar(final Category category) {
         final MenuBar menuBar = new MenuBar();
-        menuBar.setWidth(30.0f, Unit.PIXELS);
-        final MenuItem topItem = menuBar.addItem(">", null);
+        final MenuItem topItem = menuBar.addItem("", null);
         // Lazily populate the menubar
         ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override

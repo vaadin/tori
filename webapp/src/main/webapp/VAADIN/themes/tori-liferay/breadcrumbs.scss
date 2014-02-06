@@ -3,8 +3,12 @@
 .breadcrumbs {
     margin-top: 10px;
     
-    .breadcrumbs-layout a {
-        padding-left: 12px;
+    .breadcrumbs-layout {
+    	height: 32px;
+    	
+    	a {
+    		padding-left: 12px;
+    	}
     }
     
     .breadcrumbs-wrapper .v-widget {

@@ -3,6 +3,9 @@ package org.vaadin.tori.widgetset.client.ui.post;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.vaadin.tori.widgetset.client.ui.post.PostData.PostAdditionalData;
+import org.vaadin.tori.widgetset.client.ui.post.PostData.PostPrimaryData;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.DivElement;
@@ -39,8 +42,6 @@ public class PostWidget extends Composite {
     @UiField
     public DivElement bodyText;
     @UiField
-    public Label signature;
-    @UiField
     public FlowPanel attachments;
     @UiField
     public AnchorElement permaLink;
@@ -56,9 +57,7 @@ public class PostWidget extends Composite {
     @UiField
     public FocusPanel settings;
     @UiField
-    public FocusPanel report;
-    @UiField
-    public FocusPanel edit;
+    public FocusPanel flag;
 
     private static PostWidgetUiBinder uiBinder = GWT
             .create(PostWidgetUiBinder.class);
@@ -86,85 +85,19 @@ public class PostWidget extends Composite {
         listener.postVoted(false);
     }
 
-    @UiHandler("settings")
-    void settingsClick(ClickEvent e) {
-        listener.settingsClicked();
-    }
-
-    @UiHandler("edit")
-    void editClick(ClickEvent e) {
-        listener.editClicked();
-    }
-
-    @UiHandler("report")
-    void reportClick(ClickEvent e) {
-        listener.reportClicked();
-    }
-
     public void setListener(PostWidgetListener listener) {
         this.listener = listener;
     }
 
-    public void updatePostData(PostComponentState state, String avatarUrl) {
-        avatar.setSrc(avatarUrl);
-        authorName.setInnerText(state.getAuthorName());
-        prettyTime.setInnerText(state.getPrettyTime());
-        timeStamp.setInnerText(state.getTimeStamp());
-        badge.setInnerHTML(state.getBadgeHTML());
-
-        quote.setVisible(state.isQuotingEnabled());
-
-        if (state.isAllowHTML()) {
-            bodyText.setInnerHTML(state.getPostBody());
+    public void updatePostData(PostPrimaryData data) {
+        authorName.setInnerText(data.getAuthorName());
+        if (data.isAllowHTML()) {
+            bodyText.setInnerHTML(data.getPostBody());
         } else {
-            bodyText.setInnerText(state.getPostBody());
-        }
-        permaLink.setHref(state.getPermaLink());
-
-        signature.setVisible(state.getSignature() != null
-                && !state.getSignature().trim().isEmpty());
-        signature.setText(state.getSignature());
-
-        upVote.setVisible(state.isVotingEnabled());
-        downVote.setVisible(state.isVotingEnabled());
-        upVote.setStyleName("upvote vote");
-        downVote.setStyleName("downvote vote");
-        if (state.getUpVoted() != null) {
-            if (state.getUpVoted()) {
-                upVote.addStyleName("done");
-            } else {
-                downVote.addStyleName("done");
-            }
+            bodyText.setInnerText(data.getPostBody());
         }
 
-        long newScore = state.getScore();
-        score.setInnerText((newScore > 0 ? "+" : "") + String.valueOf(newScore));
-
-        String scoreStyle = "zero";
-        if (newScore > 0) {
-            scoreStyle = "positive";
-        } else if (newScore < 0) {
-            scoreStyle = "negative";
-        }
-        score.setClassName(scoreStyle);
-
-        edit.setVisible(state.isEditingEnabled());
-        if (state.getEdit() != null) {
-            edit.setWidget(((AbstractComponentConnector) state.getEdit())
-                    .getWidget());
-        }
-        report.setVisible(state.isReportingEnabled());
-        if (state.getReport() != null) {
-            report.setWidget(((AbstractComponentConnector) state.getReport())
-                    .getWidget());
-        }
-        settings.setVisible(state.isSettingsEnabled());
-        if (state.getSettings() != null) {
-            settings.setWidget(((AbstractComponentConnector) state
-                    .getSettings()).getWidget());
-        }
-
-        Map<String, String> attachmentMap = state.getAttachments();
+        Map<String, String> attachmentMap = data.getAttachments();
         attachments.setVisible(attachmentMap != null
                 && !attachmentMap.isEmpty());
 
@@ -176,7 +109,53 @@ public class PostWidget extends Composite {
                 attachments.add(link);
             }
         }
-
         setVisible(true);
+    }
+
+    public void updatePostData(PostAdditionalData data, String avatarUrl) {
+        prettyTime.setInnerText(data.getPrettyTime());
+        // timeStamp.setInnerText(state.getTimeStamp());
+        badge.setInnerHTML(data.getBadgeHTML());
+        avatar.setSrc(avatarUrl);
+        quote.setVisible(data.isQuotingEnabled());
+        permaLink.setHref(data.getPermaLink());
+
+        upVote.setVisible(data.isVotingEnabled());
+        downVote.setVisible(data.isVotingEnabled());
+        upVote.setStyleName("upvote vote");
+        downVote.setStyleName("downvote vote");
+        if (data.getUpVoted() != null) {
+            if (data.getUpVoted()) {
+                upVote.addStyleName("done");
+            } else {
+                downVote.addStyleName("done");
+            }
+        }
+
+        long newScore = data.getScore();
+        score.setInnerText((newScore > 0 ? "+" : "") + String.valueOf(newScore));
+        String scoreStyle = "zero";
+        if (newScore > 0) {
+            scoreStyle = "positive";
+        } else if (newScore < 0) {
+            scoreStyle = "negative";
+        }
+        score.setClassName(scoreStyle);
+
+        flag.setWidget(null);
+        if (data.getReport() != null) {
+            flag.setWidget(((AbstractComponentConnector) data.getReport())
+                    .getWidget());
+        }
+
+        settings.setWidget(null);
+        if (data.getReport() != null) {
+            settings.setWidget(((AbstractComponentConnector) data.getSettings())
+                    .getWidget());
+        }
+    }
+
+    public void editPost(Widget widget) {
+
     }
 }

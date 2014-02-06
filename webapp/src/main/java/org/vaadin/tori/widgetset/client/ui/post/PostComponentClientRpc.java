@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Vaadin Ltd.
+ * Copyright 2014 Vaadin Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,10 +16,16 @@
 
 package org.vaadin.tori.widgetset.client.ui.post;
 
-public interface PostWidgetListener {
+import org.vaadin.tori.widgetset.client.ui.post.PostData.PostAdditionalData;
+import org.vaadin.tori.widgetset.client.ui.post.PostData.PostPrimaryData;
 
-    void postVoted(boolean up);
+import com.vaadin.shared.Connector;
+import com.vaadin.shared.communication.ClientRpc;
 
-    void quoteForReply();
+public interface PostComponentClientRpc extends ClientRpc {
+    public void setPostPrimaryData(PostPrimaryData data);
 
+    public void setPostAdditionalData(PostAdditionalData data);
+
+    public void editPost(Connector editor);
 }

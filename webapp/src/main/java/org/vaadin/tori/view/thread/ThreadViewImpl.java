@@ -41,6 +41,7 @@ import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
@@ -52,6 +53,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     private CssLayout layout;
 
     private final static String INPUT_CACHE_NAME = "inputcache";
+    private final static String REPLY_ID = "threadreply";
     private PostsLayout postsLayout;
     private AuthoringComponent reply;
     private String threadTopic;
@@ -91,6 +93,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             }
         };
         reply = new AuthoringComponent(replyListener, "Post body", true);
+        reply.setId(REPLY_ID);
         reply.getInput().setValue(getInputCache().get(threadTopic));
         reply.getInput().addValueChangeListener(new ValueChangeListener() {
             @Override
@@ -155,8 +158,12 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void appendToReply(final String textToAppend) {
-        reply.insertIntoMessage(textToAppend);
+    public void appendQuote(final String textToAppend) {
+        reply.insertIntoMessage(textToAppend + "\n\n ");
+        // Scroll to reply component
+        UI.getCurrent().scrollIntoView(reply);
+        JavaScript.eval("document.getElementById('" + REPLY_ID
+                + "').scrollIntoView()");
     }
 
     @Override
@@ -198,6 +205,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     public void setViewPermissions(ViewPermissions viewPermissions) {
         reply.setUserMayAddFiles(viewPermissions.mayAddFiles());
         reply.setMaxFileSize(viewPermissions.getMaxFileSize());
+        reply.setVisible(viewPermissions.mayReplyInThread());
     }
 
     @Override

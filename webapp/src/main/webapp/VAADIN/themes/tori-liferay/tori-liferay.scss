@@ -87,4 +87,36 @@
         margin-top: 0 !important;
     }
     
+    .v-menubar {
+    	border: 1px solid #c4c4c4;
+    	border-radius: 10px;
+    	line-height: 0;
+    	
+    	.v-menubar-menuitem {
+    		width: 16px;
+    		height: 16px;
+    		position: relative;
+    		cursor: pointer;
+    		background: #fff;
+    		
+    		&:AFTER {
+    			content: "";
+    			border: 4px solid transparent;
+    			border-top-color: #14aaea;
+    			height: 0;
+    			width: 0;
+    			position: absolute;
+    			top: 7px;
+				left: 4px;
+    		}
+    	}
+    }
+    
+    .v-menubar-popup {
+    	.v-menubar-menuitem-selected {
+    		background: #2AAAE6;
+    		color: #fff;
+    	}
+    }
+    
 }

@@ -46,7 +46,7 @@ public interface ThreadView extends View {
     /** For those occasions when a regular error message simply doesn't suffice. */
     void panic();
 
-    void appendToReply(String textToAppend);
+    void appendQuote(String textToAppend);
 
     void otherUserAuthored(Post post);
 
@@ -106,6 +106,8 @@ public interface ThreadView extends View {
         boolean mayAddFiles();
 
         int getMaxFileSize();
+
+        boolean mayReplyInThread();
     }
 
 }
