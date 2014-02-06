@@ -22,14 +22,15 @@ import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.AuthoringComponent;
 import org.vaadin.tori.component.AuthoringComponent.AuthoringListener;
-import org.vaadin.tori.component.HeadingLabel;
-import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
+import org.vaadin.tori.component.ComponentUtil;
+import org.vaadin.tori.component.ComponentUtil.HeadingLevel;
 import org.vaadin.tori.mvp.AbstractView;
 
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
@@ -77,8 +78,8 @@ public class NewThreadViewImpl extends
     private Component buildTopicLayout() {
         VerticalLayout result = new VerticalLayout();
 
-        final HeadingLabel heading = new HeadingLabel("Start a New Thread",
-                HeadingLevel.H2);
+        final Label heading = ComponentUtil.getHeadingLabel(
+                "Start a New Thread", HeadingLevel.H2);
         result.addComponent(heading);
 
         final HorizontalLayout topicLayout = new HorizontalLayout();
@@ -87,7 +88,7 @@ public class NewThreadViewImpl extends
         topicLayout.setMargin(new MarginInfo(true, false, false, false));
         topicLayout.setStyleName("newthread");
 
-        final HeadingLabel topicLabel = new HeadingLabel("Topic",
+        final Label topicLabel = ComponentUtil.getHeadingLabel("Topic",
                 HeadingLevel.H3);
         topicLabel.addStyleName("topiclabel");
         topicLabel.setWidth("153px");

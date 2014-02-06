@@ -16,17 +16,15 @@
 
 package org.vaadin.tori.view.listing;
 
-import org.vaadin.tori.component.HeadingLabel;
-import org.vaadin.tori.component.HeadingLabel.HeadingLevel;
+import org.vaadin.tori.component.ComponentUtil;
+import org.vaadin.tori.component.ComponentUtil.HeadingLevel;
 import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.view.listing.category.CategoryListingViewImpl;
 import org.vaadin.tori.view.listing.thread.ThreadListingViewImpl;
 
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
@@ -72,27 +70,16 @@ public class ListingViewImpl extends
     @Override
     public void displayCategoryNotFoundError(final String requestedCategoryId) {
         layout.removeAllComponents();
-        layout.addComponent(new HeadingLabel(
-                "No such category found. You probably followed a broken link...",
-                HeadingLevel.H1));
+        layout.addComponent(ComponentUtil
+                .getHeadingLabel(
+                        "No such category found. You probably followed a broken link...",
+                        HeadingLevel.H1));
     }
 
     @Override
     public void panic() {
         layout.removeAllComponents();
         layout.addComponent(new PanicComponent());
-    }
-
-    public static HorizontalLayout buildHeaderLayout(String titleString) {
-        HorizontalLayout result = new HorizontalLayout();
-        result.setWidth(100.0f, Unit.PERCENTAGE);
-        result.setSpacing(true);
-        result.setMargin(true);
-        result.addStyleName("headerlayout");
-        Component title = new HeadingLabel(titleString, HeadingLevel.H2);
-        result.addComponent(title);
-        result.setComponentAlignment(title, Alignment.MIDDLE_LEFT);
-        return result;
     }
 
     @Override

@@ -46,7 +46,6 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
 
 @SuppressWarnings("serial")
 public class PostComponent extends AbstractComponentContainer implements
@@ -165,7 +164,8 @@ public class PostComponent extends AbstractComponentContainer implements
     }
 
     private void confirmDelete() {
-        ConfirmDialog.show(UI.getCurrent(), "Delete post?",
+        ConfirmDialog.show(getUI(),
+                "Are you sure you want to delete the post?",
                 new ConfirmDialog.Listener() {
                     @Override
                     public void onClose(ConfirmDialog arg0) {

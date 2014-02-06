@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Vaadin Ltd.
+ * Copyright 2014 Vaadin Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,9 +18,8 @@ package org.vaadin.tori.view.listing.category;
 
 import java.util.List;
 
-import org.vaadin.hene.popupbutton.PopupButton;
+import org.vaadin.tori.component.ComponentUtil;
 import org.vaadin.tori.mvp.AbstractView;
-import org.vaadin.tori.view.listing.ListingViewImpl;
 import org.vaadin.tori.view.listing.category.EditCategoryForm.EditCategoryListener;
 
 import com.vaadin.ui.Alignment;
@@ -29,6 +28,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.PopupView;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -41,9 +41,8 @@ public class CategoryListingViewImpl extends
 
     private CategoryTreeTable categoryTree;
     private VerticalLayout layout;
-    private PopupButton createCategoryButton;
+    private PopupView createCategoryButton;
     private Label noCategoriesLabel;
-    private EditCategoryForm createCategoryForm;
 
     @Override
     protected Component createCompositionRoot() {
@@ -65,47 +64,36 @@ public class CategoryListingViewImpl extends
     }
 
     private Component buildCategoryHeader() {
-        HorizontalLayout result = ListingViewImpl
-                .buildHeaderLayout("Categories");
+        HorizontalLayout result = ComponentUtil.getHeaderLayout("Categories");
         noCategoriesLabel = new Label("No categories");
         noCategoriesLabel.setVisible(false);
         noCategoriesLabel.setSizeUndefined();
         result.addComponent(noCategoriesLabel);
         result.setComponentAlignment(noCategoriesLabel, Alignment.MIDDLE_CENTER);
 
-        createCategoryButton = new PopupButton("Create Category");
-        createCategoryForm = new EditCategoryForm(new EditCategoryListener() {
-            @Override
-            public void cancel() {
-                createCategoryButton.setPopupVisible(false);
-            }
+        createCategoryButton = new PopupView("Create Category",
+                new EditCategoryForm(new EditCategoryListener() {
+                    @Override
+                    public void cancel() {
+                        createCategoryButton.setPopupVisible(false);
+                    }
 
-            @Override
-            public void commit(String name, String description) {
-                getPresenter().saveNewCategory(name, description);
-                createCategoryButton.setPopupVisible(false);
-            }
-        });
-        createCategoryButton.setContent(createCategoryForm);
+                    @Override
+                    public void commit(String name, String description) {
+                        getPresenter().saveNewCategory(name, description);
+                        createCategoryButton.setPopupVisible(false);
+                    }
+                }));
+        createCategoryButton.setHideOnMouseOut(false);
         Component buttonWrapper = new HorizontalLayout(createCategoryButton);
         result.addComponent(buttonWrapper);
         result.setComponentAlignment(buttonWrapper, Alignment.MIDDLE_RIGHT);
         return result;
     }
 
-    // @Override
-    // public void setCreateVisible(final boolean visible) {
-    // createCategoryButton.setVisible(visible);
-    // }
-
     @Override
     protected CategoryListingPresenter createPresenter() {
         return new CategoryListingPresenter(this);
-    }
-
-    @Override
-    public String getTitle() {
-        return null;
     }
 
     @Override

@@ -119,4 +119,19 @@
     	}
     }
     
+    .v-ui .headerlayout {
+		background: #F7F7F7;
+		background-image: -o-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
+		background-image: -moz-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
+		background-image: -webkit-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
+		background-image: -ms-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
+		background-image: linear-gradient(-90deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
+		margin-top: 30px;
+		
+		.v-popup-indicator {
+			display: none;
+		}
+	}
+}
+    
 }

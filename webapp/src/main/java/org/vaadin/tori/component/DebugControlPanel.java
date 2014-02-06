@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.vaadin.hene.popupbutton.PopupButton;
-import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
-import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.data.entity.AbstractEntity;
@@ -43,13 +41,15 @@ import org.vaadin.tori.view.thread.ThreadView;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.PopupView;
+import com.vaadin.ui.PopupView.PopupVisibilityEvent;
+import com.vaadin.ui.PopupView.PopupVisibilityListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -194,19 +194,11 @@ public class DebugControlPanel extends CustomComponent implements
                     }
                 });
 
-        final PopupButton popupButton = new PopupButton("Debug Control Panel");
-        popupButton.setIcon(new ThemeResource("images/icon-settings.png"));
+        final PopupView popupButton = new PopupView("Debug Control Panel",
+                new CssLayout());
+        popupButton.setHideOnMouseOut(false);
         popupButton.addPopupVisibilityListener(this);
         setCompositionRoot(popupButton);
-    }
-
-    @Override
-    public void popupVisibilityChange(final PopupVisibilityEvent event) {
-        final ContextData data = getContextData();
-        if (event.isPopupVisible()) {
-            final PopupButton popupButton = event.getPopupButton();
-            popupButton.setContent(createControlPanel(data));
-        }
     }
 
     private ContextData getContextData() {
@@ -501,5 +493,17 @@ public class DebugControlPanel extends CustomComponent implements
         throw new RuntimeException(ContextData.class.getName()
                 + " does not have a no-arg method that "
                 + "would return the data type " + paramClass);
+    }
+
+    @Override
+    public void popupVisibilityChange(PopupVisibilityEvent event) {
+        final ContextData data = getContextData();
+        if (event.isPopupVisible()) {
+            final PopupView popup = event.getPopupView();
+            CssLayout contentLayout = (CssLayout) popup.getContent()
+                    .getPopupComponent();
+            contentLayout.removeAllComponents();
+            contentLayout.addComponent(createControlPanel(data));
+        }
     }
 }

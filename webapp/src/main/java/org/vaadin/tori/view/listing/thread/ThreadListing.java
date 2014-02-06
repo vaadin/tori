@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.view.listing.thread.ThreadListingView.ThreadData;
@@ -77,7 +78,17 @@ public class ThreadListing extends AbstractComponent {
                 presenter.unsticky(threadId);
                 break;
             case DELETE:
-                presenter.delete(threadId);
+                ConfirmDialog.show(getUI(),
+                        "Are you sure you want to delete the thread?",
+                        new ConfirmDialog.Listener() {
+                            @Override
+                            public void onClose(ConfirmDialog arg0) {
+                                if (arg0.isConfirmed()) {
+                                    removeThreadRow(threadId);
+                                    presenter.delete(threadId);
+                                }
+                            }
+                        });
                 break;
             case LOCK:
                 presenter.lock(threadId);
@@ -92,10 +103,6 @@ public class ThreadListing extends AbstractComponent {
                 throw new IllegalArgumentException(
                         "Unrecognized/unsupported action " + action
                                 + " for thread.");
-            }
-
-            if (action == Action.DELETE) {
-                removeThreadRow(threadId);
             }
         }
     };

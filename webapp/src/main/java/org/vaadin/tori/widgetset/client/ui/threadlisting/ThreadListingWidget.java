@@ -477,11 +477,6 @@ public class ThreadListingWidget extends Widget {
         final Action action = popupControls.get(e);
         if (action != null) {
             if (popupThreadId != POPUPTHREADID_CLEARED_VALUE) {
-                if (action == Action.DELETE
-                        && !Window
-                                .confirm("Are you sure you want to delete the thread?")) {
-                    return;
-                }
                 rowActionHandler.handle(action, popupThreadId);
             } else {
                 VConsole.error("ThreadListingWidget tries to make an action, but popupThreadId is uninitialized");

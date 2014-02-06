@@ -19,10 +19,10 @@ package org.vaadin.tori.view.listing.thread;
 import java.util.List;
 
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.component.ComponentUtil;
 import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.AbstractView;
-import org.vaadin.tori.view.listing.ListingViewImpl;
 import org.vaadin.tori.view.listing.thread.ThreadMoveComponent.ThreadMoveComponentListener;
 
 import com.vaadin.ui.Alignment;
@@ -65,7 +65,7 @@ public class ThreadListingViewImpl extends
     }
 
     private Component buildTopicHeader() {
-        HorizontalLayout result = ListingViewImpl.buildHeaderLayout("Topics");
+        HorizontalLayout result = ComponentUtil.getHeaderLayout("Topics");
         noTopicsLabel = new Label("No topics in this category");
         noTopicsLabel.setSizeUndefined();
         result.addComponent(noTopicsLabel);
@@ -117,11 +117,6 @@ public class ThreadListingViewImpl extends
                 });
         window.center();
         getUI().addWindow(window);
-    }
-
-    @Override
-    public String getTitle() {
-        return null;
     }
 
     @Override

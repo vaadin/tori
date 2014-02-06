@@ -67,13 +67,6 @@ public class EditCategoryForm extends CustomComponent {
                     public void buttonClick(final ClickEvent event) {
                         listener.commit(nameField.getValue(),
                                 descriptionField.getValue());
-
-                        /*
-                         * exceptions would be thrown by now. If everything went
-                         * okay, clear the inputs.
-                         */
-                        nameField.setValue("");
-                        descriptionField.setValue("");
                     }
                 });
         final Button cancelButton = new Button(("cancel"),
@@ -81,8 +74,10 @@ public class EditCategoryForm extends CustomComponent {
                     @Override
                     public void buttonClick(final ClickEvent event) {
                         listener.cancel();
-                        nameField.setValue("");
-                        descriptionField.setValue("");
+                        nameField.setValue(categoryToEdit == null ? ""
+                                : categoryToEdit.getName());
+                        descriptionField.setValue(categoryToEdit == null ? ""
+                                : categoryToEdit.getDescription());
                     }
                 });
 

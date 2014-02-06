@@ -18,13 +18,10 @@ package org.vaadin.tori.view.listing.category;
 
 import java.util.List;
 
+import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriScheduler;
 import org.vaadin.tori.ToriScheduler.ScheduledCommand;
-import org.vaadin.tori.component.ConfirmationDialog;
-import org.vaadin.tori.component.ConfirmationDialog.ConfirmationListener;
-import org.vaadin.tori.component.ContextMenu;
-import org.vaadin.tori.component.MenuPopup.ContextComponentSwapper;
 import org.vaadin.tori.view.listing.category.CategoryListingView.CategoryData;
 import org.vaadin.tori.view.listing.category.EditCategoryForm.EditCategoryListener;
 
@@ -35,6 +32,11 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.PopupView;
+import com.vaadin.ui.PopupView.Content;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TreeTable;
 
@@ -44,6 +46,8 @@ public class CategoryTreeTable extends TreeTable {
     private static final String PROPERTY_ID_THREADS = "Threads";
     private static final String PROPERTY_ID_UNREAD = "Unread Threads";
     private static final String PROPERTY_ID_CATEGORY = "Category";
+    private static final String EDIT_CAPTION = "Edit Category";
+    private static final String DELETE_CAPTION = "Delete Category";
 
     private final CategoryListingPresenter presenter;
 
@@ -136,68 +140,86 @@ public class CategoryTreeTable extends TreeTable {
         }
 
         private Component createSettingsMenu(final CategoryData categoryData) {
-            final ContextMenu contextMenu = new ContextMenu();
-            if (categoryData.mayEditCategory()) {
-                contextMenu.add("icon-edit", "Edit category",
-                        new ContextComponentSwapper() {
-                            @Override
-                            public Component swapContextComponent() {
-                                final EditCategoryListener listener = new EditCategoryListener() {
-                                    @Override
-                                    public void cancel() {
-                                        contextMenu.close();
-                                    }
+            CssLayout result = new CssLayout();
+            MenuBar settingsMenuBar = new MenuBar();
+            MenuItem root = settingsMenuBar.addItem("", null);
+            final PopupView editPopup = createEditPopup(categoryData);
 
-                                    @Override
-                                    public void commit(String name,
-                                            String description) {
-                                        categoryData.setName(name);
-                                        categoryData
-                                                .setDescription(description);
-                                        CategoryTreeTable.this
-                                                .markAsDirtyRecursive();
-                                        presenter.updateCategory(
-                                                categoryData.getId(), name,
-                                                description);
-                                    }
-                                };
-                                return new EditCategoryForm(listener,
-                                        categoryData);
-                            }
-                        });
+            Command command = new Command() {
+                @Override
+                public void menuSelected(MenuItem selectedItem) {
+                    if (EDIT_CAPTION.equals(selectedItem.getText())) {
+                        editPopup.setPopupVisible(true);
+                    } else if (DELETE_CAPTION.equals(selectedItem.getText())) {
+                        confirmDelete(categoryData);
+                    }
+                }
+            };
+
+            if (categoryData.mayEditCategory()) {
+                root.addItem(EDIT_CAPTION, command);
             }
             if (categoryData.mayDeleteCategory()) {
-                contextMenu.add("icon-delete", "Delete category",
-                        new ContextComponentSwapper() {
-                            @Override
-                            public Component swapContextComponent() {
-                                final String title = String.format(String
-                                        .format("Really delete category \"%s\" and all of its contents?",
-                                                categoryData.getName()));
-                                final String confirmCaption = "Yes, Delete";
-                                final String cancelCaption = "No, Cancel!";
-                                final ConfirmationListener listener = new ConfirmationListener() {
-
-                                    @Override
-                                    public void onConfirmed() {
-                                        presenter.deleteCategory(categoryData
-                                                .getId());
-                                        contextMenu.close();
-                                    }
-
-                                    @Override
-                                    public void onCancel() {
-                                        contextMenu.close();
-                                    }
-                                };
-                                return new ConfirmationDialog(title,
-                                        confirmCaption, cancelCaption, listener);
-
-                            }
-                        });
+                root.addItem(DELETE_CAPTION, command);
             }
-            return contextMenu;
+
+            if (root.hasChildren()) {
+                result.addComponent(settingsMenuBar);
+                result.addComponent(editPopup);
+            }
+            return result;
         }
+
+    }
+
+    protected void confirmDelete(final CategoryData categoryData) {
+        final String title = String.format(String.format(
+                "Really delete category \"%s\" and all of its contents?",
+                categoryData.getName()));
+        ConfirmDialog.show(getUI(), title, new ConfirmDialog.Listener() {
+            @Override
+            public void onClose(ConfirmDialog arg0) {
+                if (arg0.isConfirmed()) {
+                    presenter.deleteCategory(categoryData.getId());
+                }
+            }
+        });
+    }
+
+    public PopupView createEditPopup(final CategoryData categoryData) {
+        final PopupView editPopup = new PopupView("", new Label());
+        editPopup.setHideOnMouseOut(false);
+        final EditCategoryListener listener = new EditCategoryListener() {
+            @Override
+            public void cancel() {
+                editPopup.setPopupVisible(false);
+            }
+
+            @Override
+            public void commit(String name, String description) {
+                editPopup.setPopupVisible(false);
+                categoryData.setName(name);
+                categoryData.setDescription(description);
+                CategoryTreeTable.this.markAsDirtyRecursive();
+                presenter.updateCategory(categoryData.getId(), name,
+                        description);
+            }
+        };
+        final EditCategoryForm editCategoryForm = new EditCategoryForm(
+                listener, categoryData);
+        editPopup.setContent(new Content() {
+            @Override
+            public Component getPopupComponent() {
+                return editCategoryForm;
+            }
+
+            @Override
+            public String getMinimizedValueAsHTML() {
+                return "";
+            }
+        });
+
+        return editPopup;
     }
 
     public void setCategories(List<CategoryData> categories) {
