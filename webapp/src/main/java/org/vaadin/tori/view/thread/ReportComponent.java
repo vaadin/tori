@@ -14,13 +14,12 @@
  * the License.
  */
 
-package org.vaadin.tori.component.post;
+package org.vaadin.tori.view.thread;
 
 import java.net.URI;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.tori.service.post.PostReport.Reason;
-import org.vaadin.tori.view.thread.ThreadPresenter;
 import org.vaadin.tori.view.thread.ThreadView.PostData;
 
 import com.vaadin.data.Property.ValueChangeEvent;

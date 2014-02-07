@@ -14,13 +14,12 @@
  * the License.
  */
 
-package org.vaadin.tori.component.post;
+package org.vaadin.tori.view.thread;
 
 import java.util.List;
 
 import org.vaadin.tori.ToriScheduler;
 import org.vaadin.tori.ToriScheduler.ScheduledCommand;
-import org.vaadin.tori.view.thread.ThreadPresenter;
 import org.vaadin.tori.view.thread.ThreadView.PostData;
 
 import com.vaadin.ui.Component;

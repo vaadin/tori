@@ -102,6 +102,8 @@ public interface ThreadView extends View {
 
         String getAuthorLink();
 
+        void refresh();
+
     }
 
     interface ViewPermissions {

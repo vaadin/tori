@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.vaadin.tori.component.post;
+package org.vaadin.tori.view.thread;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +28,7 @@ import org.vaadin.tori.ToriScheduler;
 import org.vaadin.tori.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.component.ComponentUtil;
 import org.vaadin.tori.exception.DataSourceException;
-import org.vaadin.tori.view.thread.ThreadPresenter;
+import org.vaadin.tori.view.thread.PostEditor.PostEditorListener;
 import org.vaadin.tori.view.thread.ThreadView.PostData;
 import org.vaadin.tori.widgetset.client.ui.post.PostComponentClientRpc;
 import org.vaadin.tori.widgetset.client.ui.post.PostComponentRpc;
@@ -36,12 +36,11 @@ import org.vaadin.tori.widgetset.client.ui.post.PostData.PostAdditionalData;
 import org.vaadin.tori.widgetset.client.ui.post.PostData.PostPrimaryData;
 
 import com.ocpsoft.pretty.time.PrettyTime;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.server.Resource;
 import com.vaadin.shared.Connector;
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -49,7 +48,7 @@ import com.vaadin.ui.Notification;
 
 @SuppressWarnings("serial")
 public class PostComponent extends AbstractComponentContainer implements
-        PostComponentRpc {
+        PostComponentRpc, PostEditorListener {
 
     private static final String DELETE_CAPTION = "Delete Post";
     private static final String EDIT_CAPTION = "Edit Post";
@@ -63,12 +62,13 @@ public class PostComponent extends AbstractComponentContainer implements
     private ReportComponent reportComponent;
     private MenuBar settings;
     private final ThreadPresenter presenter;
+    private Component editorComponent;
 
     public PostComponent(final PostData post, final ThreadPresenter presenter) {
         this.presenter = presenter;
         this.post = post;
 
-        registerRpc(this);
+        registerRpc(this, PostComponentRpc.class);
         setStyleName("post");
 
         updatePrimaryData();
@@ -83,7 +83,6 @@ public class PostComponent extends AbstractComponentContainer implements
     }
 
     private void updatePrimaryData() {
-        removeAllComponents();
         PostPrimaryData data = new PostPrimaryData();
         data.setAllowHTML(true);
         data.setAttachments(post.getAttachments());
@@ -98,7 +97,7 @@ public class PostComponent extends AbstractComponentContainer implements
         PostAdditionalData data = new PostAdditionalData();
         data.setPrettyTime(prettyTime.format(post.getTime()));
         data.setPermaLink(getPermaLinkUrl(post));
-        setAvatarImageResource(post);
+        data.setAuthorAvatarUrl(post.getAuthorAvatarUrl());
         setUserIsBanned(post.isAuthorBanned());
         data.setBadgeHTML(post.getBadgeHTML());
         data.setQuotingEnabled(post.userMayQuote());
@@ -199,7 +198,18 @@ public class PostComponent extends AbstractComponentContainer implements
     }
 
     private void editPost() {
-
+        final CssLayout editorWrapper = new CssLayout();
+        editorWrapper.setSizeFull();
+        ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override
+            public void execute() {
+                editorWrapper.addComponent(new PostEditor(post.getRawBody(),
+                        PostComponent.this));
+            }
+        });
+        getRpcProxy(PostComponentClientRpc.class).editPost(editorWrapper);
+        editorComponent = editorWrapper;
+        addComponent(editorComponent);
     }
 
     private void setUserIsBanned(boolean banned) {
@@ -225,14 +235,6 @@ public class PostComponent extends AbstractComponentContainer implements
         return linkUrl;
     }
 
-    private void setAvatarImageResource(final PostData post) {
-        String avatarUrl = post.getAuthorAvatarUrl();
-        if (avatarUrl != null) {
-            Resource imageResource = new ExternalResource(avatarUrl);
-            setResource("avatar", imageResource);
-        }
-    }
-
     @Override
     public void replaceComponent(Component oldComponent, Component newComponent) {
 
@@ -252,9 +254,27 @@ public class PostComponent extends AbstractComponentContainer implements
     @Override
     public Iterator<Component> iterator() {
         List<Component> components = new ArrayList<Component>(Arrays.asList(
-                settings, reportComponent));
+                editorComponent, settings, reportComponent));
         components.removeAll(Collections.singleton(null));
         return components.iterator();
+    }
+
+    @Override
+    public void submitEdit(String rawBody) {
+        presenter.saveEdited(post.getId(), rawBody);
+        post.refresh();
+        closeEditor();
+    }
+
+    @Override
+    public void cancelEdit() {
+        closeEditor();
+    }
+
+    private void closeEditor() {
+        removeComponent(editorComponent);
+        editorComponent = null;
+        updatePrimaryData();
     }
 
 }

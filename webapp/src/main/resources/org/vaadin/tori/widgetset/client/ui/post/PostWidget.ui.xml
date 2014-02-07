@@ -2,7 +2,6 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<g:HTMLPanel>
-		<g:FocusPanel styleName="settings" ui:field="settings" />
 		<div class="author">
 			<a class="avatar" ui:field='avatar' />
 			<a class="authorname" ui:field='authorName' />
@@ -10,22 +9,20 @@
 			<div class='prettytime' ui:field='prettyTime' />
 			<a class="permalink" ui:field='permaLink'>Permalink</a>
 		</div>
-		<div class="body">
+		<div class="body" ui:field="body">
 			<div class="bodytext" ui:field='bodyText' />
 			<g:FlowPanel styleName="attachments" ui:field='attachments' />
-		</div>
-		<div class="footer">
-			<div class="toolbar">
-				<div class="score scorecomponent">
-					<g:Button ui:field='upVote' tabIndex="0" />
-					<g:Button ui:field='downVote' tabIndex="0" />
-					<div ui:field='score' />
-				</div>
-				<div class="actions">
-					<g:FocusPanel styleName="flag" ui:field="flag" />
-					<g:Label styleName="quote" ui:field='quote'>Quote for Reply</g:Label>
-				</div>
+
+			<div class="footer">
+				<g:Button ui:field='upVote' tabIndex="0" />
+				<g:Button ui:field='downVote' tabIndex="0" />
+				<span class="score" ui:field='score' />
+
+				<g:Label styleName="quoteforreply" ui:field='quote'>Quote for Reply</g:Label>
+				<g:FocusPanel styleName="flagpost" ui:field="flag" />
 			</div>
+			<g:FocusPanel styleName="settings" ui:field="settings" />
+			<g:FocusPanel styleName="posteditorplaceholder" ui:field="postEditorPlaceholder" visible="false" />
 		</div>
 	</g:HTMLPanel>
 </ui:UiBinder> 

@@ -37,6 +37,10 @@ public class PostWidget extends Composite {
     @UiField
     public DivElement prettyTime;
     @UiField
+    public FocusPanel postEditorPlaceholder;
+    @UiField
+    public DivElement body;
+    @UiField
     public DivElement bodyText;
     @UiField
     public FlowPanel attachments;
@@ -48,7 +52,7 @@ public class PostWidget extends Composite {
     @UiField
     public Button downVote;
     @UiField
-    public DivElement score;
+    public SpanElement score;
     @UiField
     public Label quote;
     @UiField
@@ -87,6 +91,8 @@ public class PostWidget extends Composite {
     }
 
     public void updatePostData(PostPrimaryData data) {
+        postEditorPlaceholder.setVisible(false);
+
         authorName.setInnerText(data.getAuthorName());
         authorName.setHref(data.getAuthorLink());
         avatar.setHref(data.getAuthorLink());
@@ -115,18 +121,18 @@ public class PostWidget extends Composite {
         setVisible(true);
     }
 
-    public void updatePostData(PostAdditionalData data, String avatarUrl) {
+    public void updatePostData(PostAdditionalData data) {
         prettyTime.setInnerText(data.getPrettyTime());
-        // timeStamp.setInnerText(state.getTimeStamp());
         badge.setInnerHTML(data.getBadgeHTML());
-        if (avatarUrl != null) {
-            avatar.getStyle().setBackgroundImage("url(" + avatarUrl + ")");
+        if (data.getAuthorAvatarUrl() != null) {
+            avatar.getStyle().setBackgroundImage(
+                    "url(" + data.getAuthorAvatarUrl() + ")");
         } else {
             avatar.addClassName("anonymous");
         }
         quote.setVisible(data.isQuotingEnabled());
         permaLink.setHref(data.getPermaLink());
-
+        //
         upVote.setVisible(data.isVotingEnabled());
         downVote.setVisible(data.isVotingEnabled());
         upVote.setStyleName("upvote vote");
@@ -163,6 +169,7 @@ public class PostWidget extends Composite {
     }
 
     public void editPost(Widget widget) {
-
+        postEditorPlaceholder.setWidget(widget);
+        postEditorPlaceholder.setVisible(true);
     }
 }

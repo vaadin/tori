@@ -16,7 +16,7 @@
 
 package org.vaadin.tori.widgetset.client.ui.post;
 
-import org.vaadin.tori.component.post.PostComponent;
+import org.vaadin.tori.view.thread.PostComponent;
 import org.vaadin.tori.widgetset.client.ui.post.PostData.PostAdditionalData;
 import org.vaadin.tori.widgetset.client.ui.post.PostData.PostPrimaryData;
 
@@ -48,7 +48,7 @@ public final class PostComponentConnector extends
 
             @Override
             public void setPostAdditionalData(PostAdditionalData data) {
-                getWidget().updatePostData(data, getResourceUrl("avatar"));
+                getWidget().updatePostData(data);
             }
 
             @Override

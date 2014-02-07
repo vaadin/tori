@@ -28,7 +28,6 @@ import org.vaadin.tori.component.AuthoringComponent;
 import org.vaadin.tori.component.AuthoringComponent.AuthoringListener;
 import org.vaadin.tori.component.BBCodeWysiwygEditor;
 import org.vaadin.tori.component.PanicComponent;
-import org.vaadin.tori.component.post.PostsLayout;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;

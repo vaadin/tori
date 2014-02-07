@@ -75,6 +75,7 @@ public class PostData {
         // private String timeStamp;
         private String prettyTime;
         private String permaLink;
+        private String authorAvatarUrl;
         private Boolean upVoted;
         private long score;
         private boolean quotingEnabled;
@@ -83,6 +84,14 @@ public class PostData {
 
         private Connector settings;
         private Connector report;
+
+        public String getAuthorAvatarUrl() {
+            return authorAvatarUrl;
+        }
+
+        public void setAuthorAvatarUrl(String authorAvatarUrl) {
+            this.authorAvatarUrl = authorAvatarUrl;
+        }
 
         public String getPrettyTime() {
             return prettyTime;

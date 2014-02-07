@@ -16,17 +16,12 @@
 	        opacity: 0.5;
 	    }
 	    
-	    .settings {
-	    	position: absolute;
-	    	right: 10px;
-	    	top: 0;
-	    }
-	    
 	    .author {
 	        width: 153px;
 	        min-width: 153px;
 	        float: left;
 	        text-align: center;
+	        margin-top: 45px;
 	        
 	        .avatar {
 	        	color: $post-anonymous-avatar-color;
@@ -83,11 +78,45 @@
 	    }
 	    
 	    .body {
-	        padding: 5px;
+	        padding-top: 1px;
 	        margin-left: 153px;
+	        position: relative;
+	        border-bottom: $post-separator-border;
 	        
+	        .settings {
+		    	position: absolute;
+				right: 17px;
+				top: 33px;;
+		    }
+		    
+	        .posteditorplaceholder {
+	        	position: absolute;
+	        	top: 0;
+	        	width: 100%;
+	        	height: 100%;
+	        }
+	        
+	        .posteditor {
+        		background-color: #fff;
+        		
+        		.wysiwyg-editor > div {
+        			border: none;
+        		}
+        		
+        		.cke_top {
+        			border: 1px solid #b6b6b6;
+        		}
+        		
+        		.buttonslayout {
+        			background-color: #F7F7F7;
+        			padding: 8px 11px 7px;
+        		}
+	        }
+	        	
 	        .bodytext {
-	        	line-height: 22px;
+	        	margin-top: 50px;
+				line-height: 22px;
+				padding: 0 8px;
 	        }
 	        
 	        .attachments {
@@ -113,9 +142,18 @@
 	            }
 	        }
 	        
+	        .vote {
+	            margin-right: 11px;
+	            padding: 0;
+	            border: none;
+	            float: left;
+	            -moz-box-shadow: none;
+	            -webkit-box-shadow: none;
+	            box-shadow: none;
+	            cursor: pointer;
+	            outline: none;
+	        }
 	        
-	        
-	
 	        
 	        .quote-title {
 	            font-weight: bold;
@@ -132,55 +170,25 @@
 	            background: transparent url(images/quoteright.png) right bottom no-repeat;
 	            padding: 5px 30px 10px 30px;
 	        }
+	        
+	         .footer {
+		        width: 100%;
+		        height: 40px;
+		        margin-top: 50px;
+		    }
+		    
+		    .vote, .score {
+		    	float: left;
+		    }
+		    
+		    .quoteforreply, .flagpost {
+		    	float: right;
+		    }
+		    
 	    }
 	    
-	    .footer {
-	        float: left;
-	        width: 100%;
-	        clear: both;
-	    }
 	    
-	    .toolbar {
-	    	border-bottom: $post-separator-border;
-	        padding: 7px 0;
-	        margin-left: 153px;
-	        height: 18px;
-	        min-width: 370px;
-	    }
-	    
-	    .scorecomponent {
-	        white-space: nowrap;
-	        font-size: 13px;
-	        font-weight: bold;
-	        margin-left: 15px;
-	        position: relative;
-	        top: 1px;
-	        float: left;
-	        
-	        .vote {
-	            margin-right: 11px;
-	            padding: 0;
-	            border: none;
-	            height: 16px;
-	            width: 10px;
-	            float: left;
-	            background: url(images/sprite-votearrows.png) top left no-repeat;
-	            -moz-box-shadow: none;
-	            -webkit-box-shadow: none;
-	            box-shadow: none;
-	            cursor: pointer;
-	            outline: none;
-	        }
-	        
-	        .upvote { background-position: 0px 0px; }
-	        .done.upvote { background-position: 0px -16px; }
-	        .downvote { background-position: -13px 0px; }
-	        .done.downvote { background-position: -13px -16px; }
-	        
-	        .positive { color: #1B699F; }
-	        .negative { color: #EE7C08; }
-	        .zero { visibility: hidden; }
-	    }
+        
 	    
 	    .actions {
 	        padding-right: 16px;
@@ -228,7 +236,7 @@
 	        .quote:before { content: "\e007"; }
 	    }
 	    
-	    .scorecomponent, .actions, .settings, .avatar, .badge, .postedtime {
+	    .vote, .actions, .settings, .avatar, .badge, .postedtime {
 	    	visibility: hidden;
 	    	opacity: 0;
 	    	transition: opacity 500ms;
@@ -239,7 +247,7 @@
 	}
 	
 	.ready .post {
-		.scorecomponent, .actions, .settings, .avatar, .badge, .postedtime {
+		.vote, .actions, .settings, .avatar, .badge, .postedtime {
 	    	visibility: visible;
 	    	opacity: 1;
 	    }

@@ -18,6 +18,8 @@ package org.vaadin.tori.component;
 
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -55,5 +57,12 @@ public class ComponentUtil {
         result.setMoreMenuItem(rootItem);
         result.addStyleName("dropdown");
         return result;
+    }
+
+    public static Button getSecondaryButton(String caption,
+            ClickListener clickListener) {
+        Button button = new Button(caption, clickListener);
+        button.addStyleName("secondarybutton");
+        return button;
     }
 }

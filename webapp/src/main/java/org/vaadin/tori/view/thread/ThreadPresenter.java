@@ -54,12 +54,21 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         super(view);
     }
 
-    public PostData getPostData(final Post post, final Long selectedPostId) {
-        final long postId = post.getId();
-        final long selectedId = selectedPostId != null ? selectedPostId : 0;
-        final User author = post.getAuthor();
-        final String bodyRaw = post.getBodyRaw();
+    public PostData getPostData(final Post _post, final boolean selected) {
         return new PostData() {
+            private Post post = _post;
+            final User author = _post.getAuthor();
+            final long postId = _post.getId();
+
+            @Override
+            public void refresh() {
+                try {
+                    post = dataSource.getPost(postId);
+                } catch (DataSourceException e) {
+                    e.printStackTrace();
+                    view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
+                }
+            }
 
             @Override
             public long getId() {
@@ -110,7 +119,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
             @Override
             public String getFormattedBody(boolean allowHtml) {
-                String formattedPost = postFormatter.format(bodyRaw);
+                String formattedPost = postFormatter.format(post.getBodyRaw());
                 if (!allowHtml) {
                     formattedPost = stripTags(formattedPost);
                 }
@@ -119,12 +128,12 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
             @Override
             public boolean isSelected() {
-                return postId == selectedId;
+                return selected;
             }
 
             @Override
             public String getRawBody() {
-                return bodyRaw;
+                return post.getBodyRaw();
             }
 
             @Override
@@ -283,7 +292,8 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         List<PostData> posts = new ArrayList<PostData>();
         try {
             for (Post post : dataSource.getPosts(threadId)) {
-                posts.add(getPostData(post, selectedPostId));
+                posts.add(getPostData(post, selectedPostId != null
+                        && selectedPostId == post.getId()));
             }
         } catch (DataSourceException e) {
             e.printStackTrace();
