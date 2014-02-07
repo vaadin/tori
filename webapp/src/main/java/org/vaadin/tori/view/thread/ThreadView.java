@@ -100,6 +100,8 @@ public interface ThreadView extends View {
 
         boolean userMayDelete();
 
+        String getAuthorLink();
+
     }
 
     interface ViewPermissions {

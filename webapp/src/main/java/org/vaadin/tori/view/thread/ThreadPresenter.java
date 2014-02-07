@@ -77,6 +77,11 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             }
 
             @Override
+            public String getAuthorLink() {
+                return author.getUserLink();
+            }
+
+            @Override
             public boolean userMayBanAuthor() {
                 return authorizationService.mayBan();
             }

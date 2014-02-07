@@ -29,15 +29,13 @@ public class PostWidget extends Composite {
     private PostWidgetListener listener;
 
     @UiField
-    public DivElement avatar;
+    public AnchorElement avatar;
     @UiField
-    public DivElement authorName;
+    public AnchorElement authorName;
     @UiField
-    public DivElement badge;
+    public SpanElement badge;
     @UiField
-    public SpanElement prettyTime;
-    @UiField
-    public SpanElement timeStamp;
+    public DivElement prettyTime;
     @UiField
     public DivElement bodyText;
     @UiField
@@ -90,6 +88,12 @@ public class PostWidget extends Composite {
 
     public void updatePostData(PostPrimaryData data) {
         authorName.setInnerText(data.getAuthorName());
+        authorName.setHref(data.getAuthorLink());
+        avatar.setHref(data.getAuthorLink());
+        if (data.getAuthorLink() == null) {
+            authorName.addClassName("nolink");
+        }
+
         if (data.isAllowHTML()) {
             bodyText.setInnerHTML(data.getPostBody());
         } else {

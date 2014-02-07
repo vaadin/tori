@@ -4,13 +4,10 @@
 	<g:HTMLPanel>
 		<g:FocusPanel styleName="settings" ui:field="settings" />
 		<div class="author">
-			<div class="avatar" ui:field='avatar' />
-			<div class="authorname" ui:field='authorName' />
-			<div class="badge" ui:field='badge' />
-			<div class="postedtime">
-				<span class='prettytime' ui:field='prettyTime' />
-				<span class='timestamp' ui:field='timeStamp' />
-			</div>
+			<a class="avatar" ui:field='avatar' />
+			<a class="authorname" ui:field='authorName' />
+			<span class="badge" ui:field='badge' />
+			<div class='prettytime' ui:field='prettyTime' />
 			<a class="permalink" ui:field='permaLink'>Permalink</a>
 		</div>
 		<div class="body">

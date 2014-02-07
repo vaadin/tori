@@ -24,6 +24,7 @@ public class PostData {
 
     public static class PostPrimaryData {
         private String authorName;
+        private String authorLink;
         private String postBody;
         private Map<String, String> attachments;
         private boolean allowHTML;
@@ -34,6 +35,14 @@ public class PostData {
 
         public void setAuthorName(String authorName) {
             this.authorName = authorName;
+        }
+
+        public String getAuthorLink() {
+            return authorLink;
+        }
+
+        public void setAuthorLink(String authorLink) {
+            this.authorLink = authorLink;
         }
 
         public String getPostBody() {

@@ -37,6 +37,8 @@ public class User extends AbstractEntity {
     @Column(nullable = false)
     private boolean banned;
 
+    private String userLink;
+
     public void setDisplayedName(final String displayedName) {
         this.displayedName = displayedName;
     }
@@ -94,4 +96,13 @@ public class User extends AbstractEntity {
     public void setOriginalUserObject(final Object originalUserObject) {
         this.originalUserObject = originalUserObject;
     }
+
+    public String getUserLink() {
+        return userLink;
+    }
+
+    public void setUserLink(String userLink) {
+        this.userLink = userLink;
+    }
+
 }

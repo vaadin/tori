@@ -15,3 +15,9 @@ $dropdown-button-border: 1px solid #C1C1C1;
 $dropdown-popup-border: $popup-border-width $popup-border-style $popup-border-color;
 
 // Post
+$post-avatar-border-color: #D7D7D7;
+$post-avatar-border: 2px solid $post-avatar-border-color;
+$post-anonymous-avatar-color: #fff;
+$post-anonymous-avatar-background-color: $post-avatar-border-color;
+$post-permalink-color: #AAA;
+$post-separator-border: 1px solid #E8E8E8;

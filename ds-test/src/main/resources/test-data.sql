@@ -125,8 +125,8 @@ insert into DISCUSSIONTHREAD set ID=109, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC="
 insert into DISCUSSIONTHREAD set ID=110, VIEWCOUNT = 0, CATEGORY_ID = 4, TOPIC="Thread 102";
 
 ## Users
-insert into `USER` set ID = 1, DISPLAYEDNAME = "John Doe", banned=FALSE;
-insert into `USER` set ID = 2, DISPLAYEDNAME = "Molly Townsend", banned=FALSE;
+insert into `USER` set ID = 1, DISPLAYEDNAME = "John Doe", banned=FALSE, avatarUrl = "https://vaadin.com/vaadin-theme/images/company/personnel/virkki.png";
+insert into `USER` set ID = 2, DISPLAYEDNAME = "Molly Townsend", banned=FALSE, userLink = "http://vaadin.com";
 insert into `USER` set ID = 3, DISPLAYEDNAME = "Current User", banned=FALSE;
 insert into `USER` set ID = 4, DISPLAYEDNAME = "Timothy Test Guy", banned=FALSE;
 

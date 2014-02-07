@@ -88,6 +88,7 @@ public class PostComponent extends AbstractComponentContainer implements
         data.setAllowHTML(true);
         data.setAttachments(post.getAttachments());
         data.setAuthorName(post.getAuthorName());
+        data.setAuthorLink(post.getAuthorLink());
         data.setPostBody(post.getFormattedBody(true));
         getRpcProxy(PostComponentClientRpc.class).setPostPrimaryData(data);
     }

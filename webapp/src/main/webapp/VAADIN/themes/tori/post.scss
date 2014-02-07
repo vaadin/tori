@@ -1,0 +1,247 @@
+@mixin post {
+	.post {
+	    width: 100%;
+	    margin-top: 50px;
+	    display: table;
+	    table-layout: fixed;
+	    position: relative;
+	    
+	    .dropdown {
+	    	font-size: 20px;
+	    }
+	    
+	    &.banned-author {
+	        zoom: 1;
+	        filter: alpha(opacity=50);
+	        opacity: 0.5;
+	    }
+	    
+	    .settings {
+	    	position: absolute;
+	    	right: 10px;
+	    	top: 0;
+	    }
+	    
+	    .author {
+	        width: 153px;
+	        min-width: 153px;
+	        float: left;
+	        text-align: center;
+	        
+	        .avatar {
+	        	color: $post-anonymous-avatar-color;
+	            margin-bottom: 9px;
+	            display: block;
+	            width: 62px;
+	            height: 62px;
+	            background-size: 62px auto;
+	            border-radius: 50%;
+	            border: $post-avatar-border;
+	            overflow: hidden;
+	            display: inline-block;
+	            background-color: $post-anonymous-avatar-background-color;
+	            -moz-box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.07);
+				-webkit-box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.07);
+				box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.07);
+	            
+	            &.anonymous:before {
+	            	font-family: "Tori-Icons";
+	            	content: "\e001";
+	            	font-size: 88px;
+	            }
+	        }
+	    
+	        .authorname {
+	        	display: block;
+		        font-size: 15px;
+				line-height: 22px;
+				margin-bottom: 10px;
+				overflow: hidden;
+	        	text-overflow: ellipsis;
+				
+				&.nolink {
+					color: #555;
+					
+					&:HOVER{
+						text-decoration: none;
+					}
+				}
+	        }
+	        
+	        .prettytime {
+				font-size: 13px;
+				color: #888;
+				line-height: 22px;
+				height: 22px;
+	        }
+	        
+	        .permalink {
+				font-size: 11px;
+				color: $post-permalink-color;
+				line-height: 12px;
+		    }
+	    }
+	    
+	    .body {
+	        padding: 5px;
+	        margin-left: 153px;
+	        
+	        .bodytext {
+	        	line-height: 22px;
+	        }
+	        
+	        .attachments {
+	            border-top: 1px solid $post-separator-border;
+	            margin-top: 50px;
+	            margin-bottom: 20px;
+	            float: left;
+	            padding-left: 105px;
+	            position: relative;
+	            padding-top: 5px;
+	            width: 100%;
+	        
+	            &:before {
+	                font-weight: bold;
+	                content: "Attachments";
+	                position: absolute;
+	                left: 0;
+	            }
+	            
+	            a {
+	                float: left;
+	                clear: both;
+	            }
+	        }
+	        
+	        
+	        
+	
+	        
+	        .quote-title {
+	            font-weight: bold;
+	            padding: 5px 0 5px 0;
+	        }
+	        
+	        .quote {
+	            background: white url(images/quoteleft.png) left top no-repeat;
+	            border: 1px solid #777;
+	            padding: 5px 0 0 5px;
+	        }
+	        
+	        .quote-content {
+	            background: transparent url(images/quoteright.png) right bottom no-repeat;
+	            padding: 5px 30px 10px 30px;
+	        }
+	    }
+	    
+	    .footer {
+	        float: left;
+	        width: 100%;
+	        clear: both;
+	    }
+	    
+	    .toolbar {
+	    	border-bottom: $post-separator-border;
+	        padding: 7px 0;
+	        margin-left: 153px;
+	        height: 18px;
+	        min-width: 370px;
+	    }
+	    
+	    .scorecomponent {
+	        white-space: nowrap;
+	        font-size: 13px;
+	        font-weight: bold;
+	        margin-left: 15px;
+	        position: relative;
+	        top: 1px;
+	        float: left;
+	        
+	        .vote {
+	            margin-right: 11px;
+	            padding: 0;
+	            border: none;
+	            height: 16px;
+	            width: 10px;
+	            float: left;
+	            background: url(images/sprite-votearrows.png) top left no-repeat;
+	            -moz-box-shadow: none;
+	            -webkit-box-shadow: none;
+	            box-shadow: none;
+	            cursor: pointer;
+	            outline: none;
+	        }
+	        
+	        .upvote { background-position: 0px 0px; }
+	        .done.upvote { background-position: 0px -16px; }
+	        .downvote { background-position: -13px 0px; }
+	        .done.downvote { background-position: -13px -16px; }
+	        
+	        .positive { color: #1B699F; }
+	        .negative { color: #EE7C08; }
+	        .zero { visibility: hidden; }
+	    }
+	    
+	    .actions {
+	        padding-right: 16px;
+	        float: right;
+	        font-size: 14px;
+	        
+	        & > div {
+	            cursor: pointer;
+	            padding: 0 5px;
+	            outline: none;
+	            display: inline-block;
+	            vertical-align: middle;
+	        }
+	        
+	        .report {
+	            padding-right: 25px;
+	        }
+	        
+	        .quote:HOVER,
+	        div:HOVER:BEFORE,
+	        div:HOVER:AFTER {
+	            color: $link-color;
+	        }
+	        
+	        .edit:AFTER {
+	            vertical-align: middle;
+	            line-height: inherit;
+	            font-weight: normal;
+	            font-size: 12px;
+	            text-shadow: none;
+	        }
+	        
+	        .edit:before,
+	        .report:before,
+	        .quote:before {
+	            font-family: "Tori-Icons";
+	            font-size: 14px;
+	            padding-right: 2px;
+	            vertical-align: middle;
+	        }
+	        
+	        .edit:before { content: "\e00e"; }
+	        .edit:after { content: "Edit Post"; }
+	        .report:before { content: "\e014"; }
+	        .quote:before { content: "\e007"; }
+	    }
+	    
+	    .scorecomponent, .actions, .settings, .avatar, .badge, .postedtime {
+	    	visibility: hidden;
+	    	opacity: 0;
+	    	transition: opacity 500ms;
+			-webkit-transition: opacity 500ms;
+	    }
+	    
+	    
+	}
+	
+	.ready .post {
+		.scorecomponent, .actions, .settings, .avatar, .badge, .postedtime {
+	    	visibility: visible;
+	    	opacity: 1;
+	    }
+	}
+}
