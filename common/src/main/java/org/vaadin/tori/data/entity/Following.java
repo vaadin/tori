@@ -19,6 +19,7 @@ package org.vaadin.tori.data.entity;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 /**
  * @deprecated This class is not originally designed to be used in the
@@ -34,6 +35,7 @@ public class Following {
 
     @Id
     @JoinColumn(nullable = false)
+    @ManyToOne
     private DiscussionThread thread;
 
     public User getFollower() {

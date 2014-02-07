@@ -9,7 +9,6 @@ import org.vaadin.tori.widgetset.client.ui.post.PostData.PostPrimaryData;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
@@ -30,7 +29,7 @@ public class PostWidget extends Composite {
     private PostWidgetListener listener;
 
     @UiField
-    public ImageElement avatar;
+    public DivElement avatar;
     @UiField
     public DivElement authorName;
     @UiField
@@ -116,7 +115,11 @@ public class PostWidget extends Composite {
         prettyTime.setInnerText(data.getPrettyTime());
         // timeStamp.setInnerText(state.getTimeStamp());
         badge.setInnerHTML(data.getBadgeHTML());
-        avatar.setSrc(avatarUrl);
+        if (avatarUrl != null) {
+            avatar.getStyle().setBackgroundImage("url(" + avatarUrl + ")");
+        } else {
+            avatar.addClassName("anonymous");
+        }
         quote.setVisible(data.isQuotingEnabled());
         permaLink.setHref(data.getPermaLink());
 

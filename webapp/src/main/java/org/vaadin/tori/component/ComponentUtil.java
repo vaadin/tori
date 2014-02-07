@@ -21,6 +21,8 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
 
 public class ComponentUtil {
 
@@ -30,13 +32,13 @@ public class ComponentUtil {
 
     public static Label getHeadingLabel(final String content,
             final HeadingLevel level) {
-        Label label = new Label(content);
+        final Label label = new Label(content);
         label.addStyleName(level.name().toLowerCase());
         return label;
     }
 
     public static HorizontalLayout getHeaderLayout(String titleString) {
-        HorizontalLayout result = new HorizontalLayout();
+        final HorizontalLayout result = new HorizontalLayout();
         result.setWidth(100.0f, Unit.PERCENTAGE);
         result.setSpacing(true);
         result.setMargin(true);
@@ -44,6 +46,14 @@ public class ComponentUtil {
         Component title = getHeadingLabel(titleString, HeadingLevel.H2);
         result.addComponent(title);
         result.setComponentAlignment(title, Alignment.MIDDLE_LEFT);
+        return result;
+    }
+
+    public static MenuBar getDropdownMenu() {
+        final MenuBar result = new MenuBar();
+        MenuItem rootItem = result.addItem("", null);
+        result.setMoreMenuItem(rootItem);
+        result.addStyleName("dropdown");
         return result;
     }
 }

@@ -16,6 +16,7 @@
 
 package org.vaadin.tori.component;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -32,10 +33,12 @@ import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.view.listing.ListingView;
 import org.vaadin.tori.view.thread.ThreadView;
+import org.vaadin.tori.view.thread.newthread.NewThreadView;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
@@ -98,14 +101,17 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
         final View view = event.getNewView();
 
         if (view instanceof AbstractView) {
-            String viewTitle = ((AbstractView) view).getTitle();
-            final Long urlParameterId = ((AbstractView) view)
+            String viewTitle = ((AbstractView<?, ?>) view).getTitle();
+            final Long urlParameterId = ((AbstractView<?, ?>) view)
                     .getUrlParameterId();
-            if (urlParameterId == null) {
+            viewCaption.setValue(viewTitle);
+            if (view instanceof NewThreadView) {
+                crumbsLayout.removeAllComponents();
+                prependLink(null);
+            } else if (urlParameterId == null) {
                 crumbsLayout.removeAllComponents();
                 viewCaption.setValue(getDashboardTitle());
             } else {
-                viewCaption.setValue(viewTitle);
                 ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
                     @Override
                     public void execute() {
@@ -139,6 +145,11 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
         }
 
         prependLink(parentCategory);
+
+        for (Iterator<Component> iter = crumbsLayout.iterator(); iter.hasNext();) {
+            crumbsLayout.setComponentAlignment(iter.next(),
+                    Alignment.MIDDLE_CENTER);
+        }
     }
 
     private void prependLink(Category category) {
@@ -161,17 +172,20 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
 
     private Component getCategoryLink(final Category category) {
         HorizontalLayout result = new HorizontalLayout();
+        result.addStyleName("categorylink");
         final Link crumb = new Link(category.getName(), new ExternalResource(
                 "#" + ToriNavigator.ApplicationView.CATEGORIES.getUrl() + "/"
                         + category.getId()));
         result.addComponent(crumb);
-        result.addComponent(getSiblingMenuBar(category));
+        Component siblingMenu = getSiblingMenuBar(category);
+        result.addComponent(siblingMenu);
+        result.setComponentAlignment(siblingMenu, Alignment.MIDDLE_CENTER);
         return result;
     }
 
     private Component getSiblingMenuBar(final Category category) {
-        final MenuBar menuBar = new MenuBar();
-        final MenuItem topItem = menuBar.addItem("", null);
+        final MenuBar menuBar = ComponentUtil.getDropdownMenu();
+        final MenuItem topItem = menuBar.getMoreMenuItem();
         // Lazily populate the menubar
         ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override

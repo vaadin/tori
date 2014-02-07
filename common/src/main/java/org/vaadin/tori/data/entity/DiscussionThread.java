@@ -37,6 +37,9 @@ public class DiscussionThread extends AbstractEntity {
     @JoinColumn(nullable = false)
     private List<Post> posts;
 
+    @OneToMany(mappedBy = "thread", cascade = { CascadeType.REMOVE }, orphanRemoval = true)
+    private List<Following> followings;
+
     @Transient
     private int postCount = -1;
 

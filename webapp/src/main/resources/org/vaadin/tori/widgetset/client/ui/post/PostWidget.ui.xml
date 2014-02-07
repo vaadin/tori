@@ -4,7 +4,7 @@
 	<g:HTMLPanel>
 		<g:FocusPanel styleName="settings" ui:field="settings" />
 		<div class="author">
-			<img class="avatar" ui:field='avatar' />
+			<div class="avatar" ui:field='avatar' />
 			<div class="authorname" ui:field='authorName' />
 			<div class="badge" ui:field='badge' />
 			<div class="postedtime">

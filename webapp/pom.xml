@@ -12,7 +12,7 @@
 	<properties>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<productionMode>false</productionMode>
-		<tori.theme>tori-liferay</tori.theme>
+		<tori.theme>tori</tori.theme>
 	</properties>
 
 
@@ -61,7 +61,7 @@
 			<properties>
 				<liferay.versions>6.0.6</liferay.versions>
 				<productionMode>true</productionMode>
-				<tori.theme>tori</tori.theme>
+				<tori.theme>tori-vaadin</tori.theme>
 			</properties>
 			<dependencies>
 				<dependency>
@@ -79,7 +79,7 @@
 				</dependency>
 			</dependencies>
 			<build>
-				<finalName>tori-liferay</finalName>
+				<finalName>tori-portlet-6.0.${version}</finalName>
 			</build>
 		</profile>
 	</profiles>

@@ -1,0 +1,173 @@
+.threadview .spacer {
+    margin-bottom: 105px;
+    margin-top: 50px;
+    
+    .eof {
+        display: none;
+    }
+}
+
+
+
+.v-floatingbar {
+    background: $header-background-color;
+
+    &.threadSummaryBar {
+        top: -999px;
+        font-size: 15px;
+        
+        .post .body {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    
+        .threadSummary {
+            overflow: hidden;
+            
+            .topRow {
+                cursor: pointer;
+                display: inline-block;
+                color: white;
+                white-space: nowrap;
+                padding: 0 8px;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                
+                .v-label {
+                    cursor: pointer;
+                    white-space: nowrap;
+                    line-height: 1.5;
+                }
+                
+                .topiclabel {
+                    float: left;
+                }
+            }
+            
+            .summary {
+                background: #fff;
+                border-top: 1px solid $grid-border-color;
+                font-size: 14px;
+            }
+        }
+    }
+    
+    &.quickReply{
+        bottom: -99px;
+        
+        .v-ios & {
+            display: none;
+        }
+        
+        .authoring {
+            position: relative;
+            padding: 0 9px 9px 0;
+            background: #fff;
+            border-bottom: 1px solid $grid-border-color;
+            
+            .previewcaption {
+                color: #fff;
+                font-size: 13px;
+                font-weight: bold;
+                float: left;
+                margin-left: 9px;
+            }
+        }
+        
+        .showorhidelayout {
+            padding: 0 9px;
+        
+            .show-or-hide {
+                line-height: 1.5;
+            }
+        }
+        
+        
+    }
+    
+    .show-or-hide {
+        float: right;
+        padding-left: 16px;
+        position: relative;
+        vertical-align: middle;
+        
+        &:BEFORE {
+            content: "";
+            width: 0;
+            height: 0;
+            border: 5px solid transparent;
+            position: absolute;
+            left: 0;
+            top: 3px;
+            border-bottom-color: #555;
+        }
+        
+        &.collapsed:BEFORE {
+            top: 9px;
+            border-bottom-color: transparent;
+            border-top-color: #555;
+        }
+    }
+    
+    &.alignment-bottom {
+        .show-or-hide:BEFORE {
+            top: 9px;
+            border-bottom-color: transparent;
+            border-top-color: #555;
+        }
+    
+        .collapsed .show-or-hide:BEFORE {
+            top: 3px;
+            border-bottom-color: #555;
+            border-top-color: transparent;
+        }
+    }
+     
+}
+
+.authoring {
+    & > .v-verticallayout {
+        padding-left: 150px;
+    }
+    
+    .filerow {
+        .v-textfield.v-widget{
+            padding-left: 20px;
+            background: url(images/icon-attachment.png) no-repeat left center;
+        }
+        
+        .deleteattachment {
+                background: url(images/icon-delete-attachment.png) no-repeat right center;
+            cursor: pointer;
+        }
+    }
+}
+
+
+
+.newthread {
+     .topiclabel.v-widget {
+        font-size: 16px;
+        width: 144px !important;
+        padding-left: 24px;
+    }
+    
+    .topicfield {
+        font-size: 16px;
+        line-height: 20px;
+        height: 30px;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        text-indent: 0.5em;
+        font-weight: bold;
+    }
+}
+
+.v-caption-wysiwyg-editor {
+    padding-bottom: 5px;
+    padding-top: 10px;
+}
+
+
+

@@ -22,6 +22,7 @@ import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriScheduler;
 import org.vaadin.tori.ToriScheduler.ScheduledCommand;
+import org.vaadin.tori.component.ComponentUtil;
 import org.vaadin.tori.view.listing.category.CategoryListingView.CategoryData;
 import org.vaadin.tori.view.listing.category.EditCategoryForm.EditCategoryListener;
 
@@ -141,8 +142,9 @@ public class CategoryTreeTable extends TreeTable {
 
         private Component createSettingsMenu(final CategoryData categoryData) {
             CssLayout result = new CssLayout();
-            MenuBar settingsMenuBar = new MenuBar();
-            MenuItem root = settingsMenuBar.addItem("", null);
+            result.addStyleName("settingsmenu");
+            MenuBar settingsMenuBar = ComponentUtil.getDropdownMenu();
+            MenuItem root = settingsMenuBar.getMoreMenuItem();
             final PopupView editPopup = createEditPopup(categoryData);
 
             Command command = new Command() {

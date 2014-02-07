@@ -26,6 +26,7 @@ import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriScheduler;
 import org.vaadin.tori.ToriScheduler.ScheduledCommand;
+import org.vaadin.tori.component.ComponentUtil;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.view.thread.ThreadPresenter;
 import org.vaadin.tori.view.thread.ThreadView.PostData;
@@ -37,7 +38,6 @@ import org.vaadin.tori.widgetset.client.ui.post.PostData.PostPrimaryData;
 import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.Connector;
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
@@ -112,8 +112,8 @@ public class PostComponent extends AbstractComponentContainer implements
     private Connector buildSettingsComponent() {
         settings = null;
 
-        MenuBar settingsMenuBar = new MenuBar();
-        MenuItem root = settingsMenuBar.addItem("", null);
+        final MenuBar settingsMenuBar = ComponentUtil.getDropdownMenu();
+        MenuItem root = settingsMenuBar.getMoreMenuItem();
         Command command = new Command() {
             @Override
             public void menuSelected(MenuItem selectedItem) {
@@ -226,15 +226,10 @@ public class PostComponent extends AbstractComponentContainer implements
 
     private void setAvatarImageResource(final PostData post) {
         String avatarUrl = post.getAuthorAvatarUrl();
-
-        final Resource imageResource;
         if (avatarUrl != null) {
-            imageResource = new ExternalResource(avatarUrl);
-        } else {
-            imageResource = new ThemeResource(
-                    "images/icon-placeholder-avatar.gif");
+            Resource imageResource = new ExternalResource(avatarUrl);
+            setResource("avatar", imageResource);
         }
-        setResource("avatar", imageResource);
     }
 
     @Override

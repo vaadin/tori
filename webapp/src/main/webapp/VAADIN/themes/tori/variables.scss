@@ -1,0 +1,17 @@
+$header-background-color: #f0efef;
+
+// Primary variables
+$popup-border-width: 2px;
+$popup-border-style: solid;
+$popup-border-color: #d1d1d1;
+
+$highlight-color: #2AAAE6;
+
+$link-color: $highlight-color; 
+
+// Dropdown
+$dropdown-highlight-color: $highlight-color;
+$dropdown-button-border: 1px solid #C1C1C1;
+$dropdown-popup-border: $popup-border-width $popup-border-style $popup-border-color;
+
+// Post

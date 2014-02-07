@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.ToriScheduler;
+import org.vaadin.tori.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.AuthoringComponent;
 import org.vaadin.tori.component.AuthoringComponent.AuthoringListener;
@@ -70,7 +72,13 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         setStyleName("threadview");
         layout.setWidth("100%");
         layout.addComponent(buildPostsLayout());
-        layout.addComponent(buildReply());
+        buildReply();
+        ToriScheduler.get().scheduleManual(new ScheduledCommand() {
+            @Override
+            public void execute() {
+                layout.addComponent(reply);
+            }
+        });
     }
 
     private Component buildPostsLayout() {
