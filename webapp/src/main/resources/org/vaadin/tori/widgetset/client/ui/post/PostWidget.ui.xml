@@ -10,6 +10,8 @@
 			<a class="permalink" ui:field='permaLink'>Permalink</a>
 		</div>
 		<div class="body" ui:field="body">
+			<g:FocusPanel styleName="posteditorplaceholder" ui:field="postEditorPlaceholder" />
+			<g:FocusPanel styleName="settings" ui:field="settings" />
 			<div class="bodytext" ui:field='bodyText' />
 			<g:FlowPanel styleName="attachments" ui:field='attachments' />
 
@@ -21,8 +23,6 @@
 				<g:Label styleName="quoteforreply" ui:field='quote'>Quote for Reply</g:Label>
 				<g:FocusPanel styleName="flagpost" ui:field="flag" />
 			</div>
-			<g:FocusPanel styleName="settings" ui:field="settings" />
-			<g:FocusPanel styleName="posteditorplaceholder" ui:field="postEditorPlaceholder" visible="false" />
 		</div>
 	</g:HTMLPanel>
 </ui:UiBinder> 

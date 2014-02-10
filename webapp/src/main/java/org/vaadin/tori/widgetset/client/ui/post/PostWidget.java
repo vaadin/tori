@@ -91,8 +91,6 @@ public class PostWidget extends Composite {
     }
 
     public void updatePostData(PostPrimaryData data) {
-        postEditorPlaceholder.setVisible(false);
-
         authorName.setInnerText(data.getAuthorName());
         authorName.setHref(data.getAuthorLink());
         avatar.setHref(data.getAuthorLink());
@@ -132,7 +130,7 @@ public class PostWidget extends Composite {
         }
         quote.setVisible(data.isQuotingEnabled());
         permaLink.setHref(data.getPermaLink());
-        //
+
         upVote.setVisible(data.isVotingEnabled());
         downVote.setVisible(data.isVotingEnabled());
         upVote.setStyleName("upvote vote");
@@ -168,8 +166,7 @@ public class PostWidget extends Composite {
         }
     }
 
-    public void editPost(Widget widget) {
+    public void addEditPostComponent(Widget widget) {
         postEditorPlaceholder.setWidget(widget);
-        postEditorPlaceholder.setVisible(true);
     }
 }

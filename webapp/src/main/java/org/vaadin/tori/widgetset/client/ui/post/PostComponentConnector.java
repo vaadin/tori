@@ -53,7 +53,7 @@ public final class PostComponentConnector extends
 
             @Override
             public void editPost(Connector editor) {
-                getWidget().editPost(
+                getWidget().addEditPostComponent(
                         ((AbstractComponentConnector) editor).getWidget());
             }
 

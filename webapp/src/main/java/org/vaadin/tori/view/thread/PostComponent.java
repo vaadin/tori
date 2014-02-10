@@ -203,11 +203,16 @@ public class PostComponent extends AbstractComponentContainer implements
         ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
-                editorWrapper.addComponent(new PostEditor(post.getRawBody(),
-                        PostComponent.this));
+                PostEditor postEditor = new PostEditor(post.getRawBody(),
+                        PostComponent.this);
+                editorWrapper.addComponent(postEditor);
+                addStyleName("editing");
             }
         });
         getRpcProxy(PostComponentClientRpc.class).editPost(editorWrapper);
+        if (editorComponent != null) {
+            removeComponent(editorComponent);
+        }
         editorComponent = editorWrapper;
         addComponent(editorComponent);
     }
@@ -272,9 +277,7 @@ public class PostComponent extends AbstractComponentContainer implements
     }
 
     private void closeEditor() {
-        removeComponent(editorComponent);
-        editorComponent = null;
+        removeStyleName("editing");
         updatePrimaryData();
     }
-
 }

@@ -1,7 +1,6 @@
 @mixin post {
 	.post {
 	    width: 100%;
-	    margin-top: 50px;
 	    display: table;
 	    table-layout: fixed;
 	    position: relative;
@@ -22,227 +21,199 @@
 	        float: left;
 	        text-align: center;
 	        margin-top: 45px;
-	        
-	        .avatar {
-	        	color: $post-anonymous-avatar-color;
-	            margin-bottom: 9px;
-	            display: block;
-	            width: 62px;
-	            height: 62px;
-	            background-size: 62px auto;
-	            border-radius: 50%;
-	            border: $post-avatar-border;
-	            overflow: hidden;
-	            display: inline-block;
-	            background-color: $post-anonymous-avatar-background-color;
-	            -moz-box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.07);
-				-webkit-box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.07);
-				box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.07);
-	            
-	            &.anonymous:before {
-	            	font-family: "Tori-Icons";
-	            	content: "\e001";
-	            	font-size: 88px;
-	            }
-	        }
-	    
-	        .authorname {
-	        	display: block;
-		        font-size: 15px;
-				line-height: 22px;
-				margin-bottom: 10px;
-				overflow: hidden;
-	        	text-overflow: ellipsis;
+	    }
+        .avatar {
+        	color: $post-anonymous-avatar-color;
+            margin-bottom: 9px;
+            display: block;
+            width: 62px;
+            height: 62px;
+            background-size: 62px auto;
+            border-radius: 50%;
+            border: $post-avatar-border;
+            overflow: hidden;
+            display: inline-block;
+            background-color: $post-anonymous-avatar-background-color;
+            -moz-box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.07);
+			-webkit-box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.07);
+			box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.07);
+            
+            &.anonymous:before {
+            	font-family: "Tori-Icons";
+            	content: "\e001";
+            	font-size: 88px;
+            }
+        }
+    
+        .authorname {
+        	display: block;
+	        font-size: 15px;
+			line-height: 22px;
+			margin-bottom: 10px;
+			overflow: hidden;
+        	text-overflow: ellipsis;
+			
+			&.nolink {
+				color: #555;
 				
-				&.nolink {
-					color: #555;
-					
-					&:HOVER{
-						text-decoration: none;
-					}
+				&:HOVER{
+					text-decoration: none;
 				}
-	        }
-	        
-	        .prettytime {
-				font-size: 13px;
-				color: #888;
-				line-height: 22px;
-				height: 22px;
-	        }
-	        
-	        .permalink {
-				font-size: 11px;
-				color: $post-permalink-color;
-				line-height: 12px;
-		    }
+			}
+        }
+        
+        .prettytime {
+			font-size: 13px;
+			color: #888;
+			line-height: 22px;
+			height: 22px;
+        }
+        
+        .permalink {
+			font-size: 11px;
+			color: $post-permalink-color;
+			line-height: 12px;
 	    }
 	    
+	    &.editing {
+	        .posteditorplaceholder {
+	        	visibility: visible;
+	        	opacity: 1;
+	        }
+	        
+	        .bodytext {
+	        	visibility: hidden;
+	        }
+	        
+	        div.settings {
+	        	opacity: 0;
+	        }
+        }
+        
+	    .posteditorplaceholder {
+        	position: absolute;
+        	top: 0;
+        	width: 100%;
+        	height: 100%;
+        	visibility: hidden;
+        	opacity: 0;
+        	transition: all 500ms;
+			-webkit-transition: all 500ms;
+        }
+        
 	    .body {
 	        padding-top: 1px;
 	        margin-left: 153px;
 	        position: relative;
 	        border-bottom: $post-separator-border;
-	        
-	        .settings {
-		    	position: absolute;
-				right: 17px;
-				top: 33px;;
-		    }
-		    
-	        .posteditorplaceholder {
-	        	position: absolute;
-	        	top: 0;
-	        	width: 100%;
-	        	height: 100%;
-	        }
-	        
-	        .posteditor {
-        		background-color: #fff;
-        		
-        		.wysiwyg-editor > div {
-        			border: none;
-        		}
-        		
-        		.cke_top {
-        			border: 1px solid #b6b6b6;
-        		}
-        		
-        		.buttonslayout {
-        			background-color: #F7F7F7;
-        			padding: 8px 11px 7px;
-        		}
-	        }
-	        	
-	        .bodytext {
-	        	margin-top: 50px;
-				line-height: 22px;
-				padding: 0 8px;
-	        }
-	        
-	        .attachments {
-	            border-top: 1px solid $post-separator-border;
-	            margin-top: 50px;
-	            margin-bottom: 20px;
-	            float: left;
-	            padding-left: 105px;
-	            position: relative;
-	            padding-top: 5px;
-	            width: 100%;
-	        
-	            &:before {
-	                font-weight: bold;
-	                content: "Attachments";
-	                position: absolute;
-	                left: 0;
-	            }
-	            
-	            a {
-	                float: left;
-	                clear: both;
-	            }
-	        }
-	        
-	        .vote {
-	            margin-right: 11px;
-	            padding: 0;
-	            border: none;
-	            float: left;
-	            -moz-box-shadow: none;
-	            -webkit-box-shadow: none;
-	            box-shadow: none;
-	            cursor: pointer;
-	            outline: none;
-	        }
-	        
-	        
-	        .quote-title {
-	            font-weight: bold;
-	            padding: 5px 0 5px 0;
-	        }
-	        
-	        .quote {
-	            background: white url(images/quoteleft.png) left top no-repeat;
-	            border: 1px solid #777;
-	            padding: 5px 0 0 5px;
-	        }
-	        
-	        .quote-content {
-	            background: transparent url(images/quoteright.png) right bottom no-repeat;
-	            padding: 5px 30px 10px 30px;
-	        }
-	        
-	         .footer {
-		        width: 100%;
-		        height: 40px;
-		        margin-top: 50px;
-		    }
-		    
-		    .vote, .score {
-		    	float: left;
-		    }
-		    
-		    .quoteforreply, .flagpost {
-		    	float: right;
-		    }
-		    
 	    }
 	    
+        .settings {
+	    	position: absolute;
+			right: 17px;
+			top: 11px;
+	    }
 	    
         
-	    
-	    .actions {
-	        padding-right: 16px;
-	        float: right;
-	        font-size: 14px;
-	        
-	        & > div {
-	            cursor: pointer;
-	            padding: 0 5px;
-	            outline: none;
-	            display: inline-block;
-	            vertical-align: middle;
-	        }
-	        
-	        .report {
-	            padding-right: 25px;
-	        }
-	        
-	        .quote:HOVER,
-	        div:HOVER:BEFORE,
-	        div:HOVER:AFTER {
-	            color: $link-color;
-	        }
-	        
-	        .edit:AFTER {
-	            vertical-align: middle;
-	            line-height: inherit;
-	            font-weight: normal;
-	            font-size: 12px;
-	            text-shadow: none;
-	        }
-	        
-	        .edit:before,
-	        .report:before,
-	        .quote:before {
-	            font-family: "Tori-Icons";
-	            font-size: 14px;
-	            padding-right: 2px;
-	            vertical-align: middle;
-	        }
-	        
-	        .edit:before { content: "\e00e"; }
-	        .edit:after { content: "Edit Post"; }
-	        .report:before { content: "\e014"; }
-	        .quote:before { content: "\e007"; }
+        
+        .posteditor {
+    		background-color: #fff;
+    		
+    		.wysiwyg-editor > div {
+    			border: none;
+    		}
+    		
+    		.cke_top {
+    			border: 1px solid #b6b6b6;
+    		}
+    		
+    		.buttonslayout {
+    			background-color: #F7F7F7;
+    			padding: 8px 11px 7px;
+    		}
+        }
+        	
+        .bodytext {
+        	margin-top: 50px;
+			line-height: 22px;
+			padding: 0 8px;
+			position: relative;
+			transition: visibility 500ms;
+			-webkit-transition: visibility 500ms;
+        }
+        
+        .attachments {
+            border-top: 1px solid $post-separator-border;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            float: left;
+            padding-left: 105px;
+            position: relative;
+            padding-top: 5px;
+            width: 100%;
+        
+            &:before {
+                font-weight: bold;
+                content: "Attachments";
+                position: absolute;
+                left: 0;
+            }
+            
+            a {
+                float: left;
+                clear: both;
+            }
+        }
+        
+        .vote {
+            margin-right: 11px;
+            padding: 0;
+            border: none;
+            float: left;
+            -moz-box-shadow: none;
+            -webkit-box-shadow: none;
+            box-shadow: none;
+            cursor: pointer;
+            outline: none;
+        }
+        
+        
+        .quote-title {
+            font-weight: bold;
+            padding: 5px 0 5px 0;
+        }
+        
+        .quote {
+            background: white url(images/quoteleft.png) left top no-repeat;
+            border: 1px solid #777;
+            padding: 5px 0 0 5px;
+        }
+        
+        .quote-content {
+            background: transparent url(images/quoteright.png) right bottom no-repeat;
+            padding: 5px 30px 10px 30px;
+        }
+        
+         .footer {
+	        width: 100%;
+	        height: 40px;
+	        margin-top: 50px;
 	    }
 	    
+	    .vote, .score {
+	    	float: left;
+	    }
+	    
+	    .quoteforreply, .flagpost {
+	    	float: right;
+	    }
+		    
 	    .vote, .actions, .settings, .avatar, .badge, .postedtime {
 	    	visibility: hidden;
 	    	opacity: 0;
 	    	transition: opacity 500ms;
 			-webkit-transition: opacity 500ms;
 	    }
-	    
 	    
 	}
 	

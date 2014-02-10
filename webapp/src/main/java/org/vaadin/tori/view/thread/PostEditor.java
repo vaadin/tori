@@ -31,6 +31,7 @@ public class PostEditor extends VerticalLayout {
 
     private BBCodeWysiwygEditor editor;
     private final PostEditorListener listener;
+    private Button cancelButton;
 
     public PostEditor(String rawBody, PostEditorListener listener) {
         this.listener = listener;
@@ -48,20 +49,23 @@ public class PostEditor extends VerticalLayout {
         result.setWidth(100.0f, Unit.PERCENTAGE);
         result.setSpacing(true);
         result.setMargin(true);
+        final Button cancelButton = ComponentUtil.getSecondaryButton(
+                "Discard Changes", new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(ClickEvent event) {
+                        event.getButton().removeClickShortcut();
+                        listener.cancelEdit();
+                    }
+                });
         result.addComponent(new Button("Confirm Edit",
                 new Button.ClickListener() {
                     @Override
                     public void buttonClick(ClickEvent event) {
+                        cancelButton.removeClickShortcut();
                         listener.submitEdit(editor.getValue());
                     }
                 }));
-        Button cancelButton = ComponentUtil.getSecondaryButton(
-                "Discard Changes", new Button.ClickListener() {
-                    @Override
-                    public void buttonClick(ClickEvent event) {
-                        listener.cancelEdit();
-                    }
-                });
+
         cancelButton.setClickShortcut(KeyCode.ESCAPE);
         result.addComponent(cancelButton);
         result.setExpandRatio(cancelButton, 1.0f);
