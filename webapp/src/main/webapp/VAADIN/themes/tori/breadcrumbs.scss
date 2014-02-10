@@ -4,7 +4,7 @@
     margin-top: 10px;
     
     .dropdown .v-menubar-menuitem {
-    	margin-top: 5px;
+    	margin-top: 7px;
 		margin-left: 4px;
 		font-size: 16px;
     }
@@ -35,7 +35,8 @@
         text-overflow: ellipsis;
         
         span {
-            line-height: 32px;
+			font-size: 12px;
+			line-height: 14px;
         }
     }
     
@@ -60,6 +61,8 @@
     }
     
     .v-label.viewcaption {
+    	font-family: HelveticaNeue-Light;
+    	color: #222;
         font-size: 24px;
     }
     

@@ -73,10 +73,17 @@
         outline: none;
         cursor: pointer;
         background: #fff;
-        color: #6ec5ef;
-        border: 2px solid #6ec5ef;
-        border-radius: 4px;
+        color: $button-color;
+        border: $button-border;
+        border-radius: $button-border-radius;
+        
+        &.secondarybutton {
+        	color: $secondary-button-color;
+        	border: $secondary-button-border;
+        }
     }
+    
+    
     
     .v-floatingbar {
         position: fixed !important;
@@ -89,17 +96,26 @@
         margin-top: 0 !important;
     }
     
-    .v-ui .headerlayout {
+    .headerlayout {
 		background: #F7F7F7;
 		background-image: -o-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
 		background-image: -moz-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
 		background-image: -webkit-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
 		background-image: -ms-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
-		background-image: linear-gradient(-90deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
+		background-image: linear-gradient(-270deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
 		margin-top: 30px;
 		
-		.v-popup-indicator {
-			display: none;
+		.v-label {
+			font-family: HelveticaNeue-Light;
+			font-size: 15px;
+			color: #888;
+			line-height: 18px;
+			
+			&.h2 {
+				font-size: 18px;
+				color: #555;
+				line-height: 22px;
+			}
 		}
 	}
 	

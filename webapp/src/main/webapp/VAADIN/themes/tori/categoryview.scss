@@ -1,8 +1,8 @@
 @import "variables.scss";
 
 .categoryview.v-customcomponent {
-		overflow: visible;
-	}
+	overflow: visible;
+}
 
 .categoryTree.v-treetable {
     margin-bottom: 20px;
@@ -17,8 +17,9 @@
     
         .categoryLink,
         .categoryLink span {
-            font-weight: bold;
             display: block;
+            font-family: HelveticaNeue-Light;
+            font-size: 18px;
         }
         
         .settingsmenu {
@@ -27,42 +28,10 @@
             right: 0;
         }
     
-        .v-customcomponent-contextmenu {
-            visibility: hidden;
-            position: absolute;
-            top: 10px;
-            right: 100px;
-            
-            .v-touch & {
-                display: none;
-            }
-            
-            .v-icon {
-                display: none;
-            }
-            
-            .v-button {
-                position: absolute;
-                background: transparent;
-                border: none;
-                line-height: 0;
-                
-                &:before {
-                    font-family: "Tori-Icons";
-                    content: "\e005";
-                    height: 30px;
-                    width: 30px;
-                }
-            }
-            
-            .v-popup-indicator {
-                background: none;
-            }
-        }
-        
-        &:hover .contextmenu {
-            visibility: visible;
-        }
+    	.description {
+			font-family: HelveticaNeue-Light;
+			color: #474747;
+    	}
     }
     
     .v-table-header-wrap {
@@ -90,16 +59,29 @@
     .v-table-body {
         border: none;
         
+        .v-table-cell-wrapper {
+        	color: #222;
+        	font-size: 16px;
+        }
+        
         .v-table-row:FIRST-CHILD .v-table-cell-content:nth-child(2) .v-table-cell-wrapper:before{
         	content: "UNREAD";
         	margin-right: 10px;
+        	font-size: 12px;
+        	color: #555; 
         }
         
         .v-table-row:FIRST-CHILD .v-table-cell-content:nth-child(3) .v-table-cell-wrapper:before{
         	content: "TOPICS";
         	margin-right: 10px;
+        	font-size: 12px;
+        	color: #555; 
         }
     
+  		.settingsmenu {
+        	visibility: hidden;
+        }
+                
         .v-table-row,
         .v-table-row-odd {
             font-size: 15px;
@@ -108,14 +90,17 @@
             .v-table-cell-content {
                 padding: 10px;
                 border-right: none;
+                font-family: HelveticaNeue-Light;
             }
             
             &:nth-child(n+2) .v-table-cell-content {
-                border-top: $grid-border;
+                border-top: 1px solid #F2F2F2;
             }
             
             &:hover {
-                background: #edf8fd;
+                .settingsmenu {
+                	visibility: visible;
+                }
             }
         }
         

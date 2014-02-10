@@ -7,125 +7,6 @@
     }
 }
 
-
-
-.v-floatingbar {
-    background: $header-background-color;
-
-    &.threadSummaryBar {
-        top: -999px;
-        font-size: 15px;
-        
-        .post .body {
-            max-height: 200px;
-            overflow-y: auto;
-        }
-    
-        .threadSummary {
-            overflow: hidden;
-            
-            .topRow {
-                cursor: pointer;
-                display: inline-block;
-                color: white;
-                white-space: nowrap;
-                padding: 0 8px;
-                -webkit-user-select: none;
-                -moz-user-select: none;
-                -ms-user-select: none;
-                
-                .v-label {
-                    cursor: pointer;
-                    white-space: nowrap;
-                    line-height: 1.5;
-                }
-                
-                .topiclabel {
-                    float: left;
-                }
-            }
-            
-            .summary {
-                background: #fff;
-                border-top: 1px solid $grid-border-color;
-                font-size: 14px;
-            }
-        }
-    }
-    
-    &.quickReply{
-        bottom: -99px;
-        
-        .v-ios & {
-            display: none;
-        }
-        
-        .authoring {
-            position: relative;
-            padding: 0 9px 9px 0;
-            background: #fff;
-            border-bottom: 1px solid $grid-border-color;
-            
-            .previewcaption {
-                color: #fff;
-                font-size: 13px;
-                font-weight: bold;
-                float: left;
-                margin-left: 9px;
-            }
-        }
-        
-        .showorhidelayout {
-            padding: 0 9px;
-        
-            .show-or-hide {
-                line-height: 1.5;
-            }
-        }
-        
-        
-    }
-    
-    .show-or-hide {
-        float: right;
-        padding-left: 16px;
-        position: relative;
-        vertical-align: middle;
-        
-        &:BEFORE {
-            content: "";
-            width: 0;
-            height: 0;
-            border: 5px solid transparent;
-            position: absolute;
-            left: 0;
-            top: 3px;
-            border-bottom-color: #555;
-        }
-        
-        &.collapsed:BEFORE {
-            top: 9px;
-            border-bottom-color: transparent;
-            border-top-color: #555;
-        }
-    }
-    
-    &.alignment-bottom {
-        .show-or-hide:BEFORE {
-            top: 9px;
-            border-bottom-color: transparent;
-            border-top-color: #555;
-        }
-    
-        .collapsed .show-or-hide:BEFORE {
-            top: 3px;
-            border-bottom-color: #555;
-            border-top-color: transparent;
-        }
-    }
-     
-}
-
 .authoring {
     & > .v-verticallayout {
         padding-left: 150px;
@@ -143,8 +24,6 @@
         }
     }
 }
-
-
 
 .newthread {
      .topiclabel.v-widget {

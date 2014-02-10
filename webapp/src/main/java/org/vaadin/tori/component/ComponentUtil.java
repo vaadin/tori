@@ -42,6 +42,7 @@ public class ComponentUtil {
     public static HorizontalLayout getHeaderLayout(String titleString) {
         final HorizontalLayout result = new HorizontalLayout();
         result.setWidth(100.0f, Unit.PERCENTAGE);
+        result.setHeight(56.0f, Unit.PIXELS);
         result.setSpacing(true);
         result.setMargin(true);
         result.addStyleName("headerlayout");

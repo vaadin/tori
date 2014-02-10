@@ -31,7 +31,6 @@ public class PostEditor extends VerticalLayout {
 
     private BBCodeWysiwygEditor editor;
     private final PostEditorListener listener;
-    private Button cancelButton;
 
     public PostEditor(String rawBody, PostEditorListener listener) {
         this.listener = listener;

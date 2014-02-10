@@ -90,6 +90,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
 
     private Component buildCrumbsLayout() {
         crumbsLayout = new HorizontalLayout();
+        crumbsLayout.setHeight(30.0f, Unit.PIXELS);
         crumbsLayout.setStyleName("breadcrumbs-layout");
         return crumbsLayout;
     }
@@ -177,6 +178,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
                 "#" + ToriNavigator.ApplicationView.CATEGORIES.getUrl() + "/"
                         + category.getId()));
         result.addComponent(crumb);
+        result.setComponentAlignment(crumb, Alignment.MIDDLE_CENTER);
         Component siblingMenu = getSiblingMenuBar(category);
         result.addComponent(siblingMenu);
         result.setComponentAlignment(siblingMenu, Alignment.MIDDLE_CENTER);
