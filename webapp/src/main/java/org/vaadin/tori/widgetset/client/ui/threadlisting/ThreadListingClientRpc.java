@@ -1,18 +1,15 @@
 package org.vaadin.tori.widgetset.client.ui.threadlisting;
 
-import java.util.Map;
+import java.util.List;
 
-import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.ControlInfo;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.RowInfo;
 
 import com.vaadin.shared.communication.ClientRpc;
 
 public interface ThreadListingClientRpc extends ClientRpc {
-    void sendComponents(Map<Integer, RowInfo> rows);
+    void sendRows(List<RowInfo> rows, int placeholders);
 
-    void sendControls(ControlInfo controlInfo);
+    void refreshRow(RowInfo rowInfo);
 
-    void refreshSelectedRowAs(RowInfo rowInfo);
-
-    void removeSelectedRow();
+    void removeRow(int index);
 }

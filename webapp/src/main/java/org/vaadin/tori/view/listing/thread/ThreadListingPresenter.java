@@ -330,7 +330,9 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
             try {
                 for (DiscussionThread thread : getThreadsBetweenInternal(from,
                         to)) {
-                    result.add(getThreadData(thread));
+                    if (thread.getOriginalPoster() != null) {
+                        result.add(getThreadData(thread));
+                    }
                 }
             } catch (DataSourceException e) {
                 displayError(e);

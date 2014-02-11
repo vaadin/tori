@@ -26,6 +26,7 @@ import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriScheduler;
 import org.vaadin.tori.ToriScheduler.ScheduledCommand;
+import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.ComponentUtil;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.view.thread.PostEditor.PostEditorListener;
@@ -267,6 +268,8 @@ public class PostComponent extends AbstractComponentContainer implements
     @Override
     public void submitEdit(String rawBody) {
         presenter.saveEdited(post.getId(), rawBody);
+        ToriUI.getCurrent().trackAction("edit-post");
+
         post.refresh();
         closeEditor();
     }

@@ -2,172 +2,125 @@
 
 .threadlisting {
     width: 100%;
+    display: block !important;
 
 	.threadlistingrow {
-	    display: block;
-	    position: relative;
-	    
-	    & > div {
-		    display: block;
-		    position: absolute;
-		    color: #464440;
-		    white-space: nowrap;
-		    overflow: hidden;
-	    }
-	    
-	    &.following {
-	    	background: url(images/following-badge.png) #fff top left no-repeat;
-	    }
-	    
+		height: 40px;
+		white-space: nowrap;
+		-webkit-transform: translatez(0);
+		position: relative;
+		box-sizing: border-box;
+		padding-right: 320px;
+		padding-left: 20px;
+		
 	    &.unread .topic {
-	    	font-weight: bold;
+	    	font-weight: 500;
 	    }
 	    
-	    &:hover .contextmenu {
-		    visibility: visible;    
-		}
+	    & > * {
+	    	display: inline-block;
+	    	vertical-align: middle;
+	    	line-height: 1;
+	    }
 	    
-	    .topic {
-		    padding-left: 25px;
-		    color: #2aaae6;
-		}
-
-	    .contextmenu {
-		    margin-right: 16px;
-		    float: right;
-		    visibility: hidden;
-		    height: 16px;
-		    width: 16px;
-		    position: absolute;
-		    right: 350px;
-		    top: 12px;
-		    
-		    &:before {
-		        font-family: "Tori-Icons";
-		        content: "\e005";
-		        height: 30px;
-		        width: 30px;
-		    }
+	    &:before {
+	    	content: "";
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			height: 1px;
+			width: 100%;
+			background: #e8e8e8;
+	    }
+	    
+	    &:hover {
+	    	&:after{
+		    	height: 2px;
+				width: 100%;
+				transition: all 300ms 100ms;
+			}
+			
+			.topic {
+				-webkit-transform: translatex(4px);
+				transition: all 120ms 80ms;
+			}
+			
+			.dropdown {
+				visibility: visible;
+			}
+	    }
+	    
+	    &:after {
+	    	width: 0;
+			transition: all 460ms;
+			content: "";
+			position: absolute;
+			left: 0;
+			bottom: 0;
+			height: 1px;
+			background: #96cdf0;
+	    }
+	    
+	    &:first-child .latesttime:before {
+	 		content: "LATEST";
+        	margin-right: 10px;
+        	font-size: 12px;
+        	color: #555; 
+	 	}
+	 	
+	 	&:first-child .postcount:before {
+			content: "POSTS";
+        	margin-right: 10px;
+        	font-size: 12px;
+        	color: #555; 
 		}
 	}
 	
-	.startedby,
-	.latestpost,
-	.fixed-column-headers .startedby,
-	.fixed-column-headers .latestpost {
-	    width: 140px;
-	}
+	.topic {
+		transition: all 320ms;
+		-webkit-transform: translatez(0);
+    	font-size: 15px;
+		font-weight: 300;
+		line-height: 40px;
+		color: #2698E0;
+		width: 78%;
+		margin: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		text-align: left;
+		vertical-align: middle;
+    }
+    
+    .startedby {
+    	width: 22%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		font-size: 13px;
+    }
 	
-	.posts {
-		width: 50px;
-	}
+	 .postcount {
+	 	text-align: right;
+		width: 65px;
+		margin-left: 0;
+	 }
+	 
+	 .latesttime {
+	 	width: 130px;
+		padding-left: 30px;
+		overflow: hidden;
+		font-size: 12px;
+		text-align: right;
+	 }
+	 
+	 .dropdown {
+	 	vertical-align: middle !important;
+	 	margin-top: 6px;
+	 	visibility: hidden;
+	 	padding-left: 30px;
+	 }
+	 
+	 .threadlisting-placeholder {
+	 	height: 40px;
+	 }
 }
 
-
-.threadlistingrow .locked,
-.threadlistingrow .sticky {
-    height: 8px;
-    width: 8px;
-    margin:0;
-    padding:0;
-    top: 15px; /* center */
-}
-
-.threadlistingrow .locked {
-    background-image: url("images/icon-small-locked.png");
-    left: 4px;
-}
-.threadlistingrow .sticky {
-    background-image: url("images/icon-small-sticky.png");
-    left: 14px;
-}
-
-.threadlistingrow .topic,
-.threadlistingrow .startedby,
-.threadlistingrow .postcount {
-    padding-top: 11px; /* center */
-}
-
-.threadlistingrow .startedby {
-    overflow: hidden;
-    white-space: nowrap;
-}
-
-.threadlistingrow, 
-.threadlisting-placeholder {
-    text-decoration: none;
-    height: 40px;
-}
-
-.threadlistingrow .topic, 
-.threadlisting .header-topic {
-    left: 0;
-    right: 356px;
-}
-
-.threadlistingrow .startedby,
-.threadlisting .header-startedby {
-    right: 190px;
-    width: 150px;
-}
-
-.threadlistingrow .postcount,
-.threadlisting .header-posts {
-    width: 50px;
-    padding-right: 10px;
-    text-align: right;
-    right: 140px;
-}
-.threadlistingrow .latestpost,
-.threadlisting .header-latestpost {
-    width: 140px;
-    right: 0;
-}
-
-.threadlistingrow .latestpost {
-    padding-top: 3px;
-}
-
-.threadlistingrow .latesttime {
-    height: 1.3em;
-    overflow: hidden;
-    position: relative;
-}
-
-.threadlistingrow .latesttime .stamp,
-.threadlistingrow .latesttime .pretty {
-    position: absolute;
-    white-space: nowrap;
-    -moz-transition: all 0.2s ease-in-out;
-    -webkit-transition: all 0.2s ease-in-out;
-    -o-transition: all 0.2s ease-in-out;
-    transition: all 0.2s ease-in-out;
-}
-
-.threadlistingrow .latestpost .stamp { top: 1.5em; }
-.threadlistingrow .latestpost:hover .stamp { top: 0em; }
-.threadlistingrow .latestpost .pretty { top: 0em; }
-.threadlistingrow .latestpost:hover .pretty { top: -1.5em; }
-
-.threadlistingrow .latestauthor {
-    font-size: smaller;
-}
-
-.threadlistingrow,
-.threadlisting-placeholder {
-    border-bottom: 1px solid $grid-border-color;
-    width: 100%;
-    border-width: 0 0 1px 0;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
-
-.threadlisting-placeholder {
-    background: url("images/loadingthread-bg.png") left center no-repeat transparent;
-}
-
-.v-touch .threadlistingrow .contextmenu {
-    display: none;
-    visibility: hidden;
-}
