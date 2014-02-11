@@ -180,6 +180,7 @@ public class DebugControlPanel extends CustomComponent implements
 
     public DebugControlPanel(
             final DebugAuthorizationService authorizationService) {
+        addStyleName("debugcontrolpanel");
         this.authorizationService = authorizationService;
         ToriNavigator.getCurrent().addViewChangeListener(
                 new ViewChangeListener() {

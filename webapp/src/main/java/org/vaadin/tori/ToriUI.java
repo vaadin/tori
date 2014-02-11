@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.vaadin.googleanalytics.tracking.GoogleAnalyticsTracker;
 import org.vaadin.tori.component.Breadcrumbs;
 import org.vaadin.tori.component.DebugControlPanel;
+import org.vaadin.tori.component.RecentBar;
 import org.vaadin.tori.edit.EditViewImpl;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
@@ -66,6 +67,7 @@ public class ToriUI extends UI {
         final Breadcrumbs breadcrumbs = new Breadcrumbs();
 
         addControlPanelIfInDevelopment();
+        mainLayout.addComponent(new RecentBar());
         mainLayout.addComponent(breadcrumbs);
         mainLayout.addComponent(navigatorContent);
 

@@ -28,7 +28,6 @@ import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.exception.DataSourceException;
-import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.view.listing.ListingView;
@@ -131,10 +130,10 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
             try {
                 DiscussionThread thread = dataSource.getThread(urlParameterId);
                 parentCategory = thread.getCategory();
-            } catch (NoSuchThreadException e) {
+            } catch (Exception e) {
+                ((ThreadView) view).showError("No thread found");
                 e.printStackTrace();
-            } catch (DataSourceException e) {
-                e.printStackTrace();
+                ToriNavigator.getCurrent().navigateToDashboard();
             }
         } else if (view instanceof ListingView) {
             try {

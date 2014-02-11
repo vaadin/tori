@@ -1,0 +1,62 @@
+@mixin recentbar {
+	.v-slot-recentbar {
+		background-image: -o-linear-gradient(-90deg, rgba(255,255,255,0.00) 72%, #F5F5F5 100%);
+		background-image: -moz-linear-gradient(-90deg, rgba(255,255,255,0.00) 72%, #F5F5F5 100%);
+		background-image: -webkit-linear-gradient(-90deg, rgba(255,255,255,0.00) 72%, #F5F5F5 100%);
+		background-image: -ms-linear-gradient(-90deg, rgba(255,255,255,0.00) 72%, #F5F5F5 100%);
+		background-image: linear-gradient(-180deg, rgba(255,255,255,0.00) 72%, #F5F5F5 100%);
+	}
+
+	.recentbar {
+		border-bottom: 1px solid #e8e8e8;
+		background-image: -o-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 7%, rgba(255,255,255,0.00) 93%, #FFFFFF 100%);
+		background-image: -moz-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 7%, rgba(255,255,255,0.00) 93%, #FFFFFF 100%);
+		background-image: -webkit-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 7%, rgba(255,255,255,0.00) 93%, #FFFFFF 100%);
+		background-image: -ms-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 7%, rgba(255,255,255,0.00) 93%, #FFFFFF 100%);
+		background-image: linear-gradient(-90deg, #FFFFFF 0%, rgba(255,255,255,0.00) 7%, rgba(255,255,255,0.00) 93%, #FFFFFF 100%);
+		
+		.h4 {
+			font-size: 11px;
+			color: #8A8A8A;
+			line-height: 12px;
+			letter-spacing: 0px;
+		}
+		
+		.notificationslayout {
+			position: relative;
+		}
+		
+		.postnotification {
+			position: absolute;
+			transition: all 1s;
+			-webkit-transition: all 1s;
+			transition-delay: 300ms;
+			left: 0%;
+			top: 0%;
+			
+			&.previous {
+				left: 100%;
+				transition-delay: 0ms;
+			}
+			
+			&.next {
+				top: 100%;
+			}
+			
+			.v-label {
+				font-size: 12px;
+				color: #888;
+				line-height: 14px;
+			}
+		}
+		
+		.v-link {
+			font-size: 12px;
+			line-height: 14px;
+		}
+		
+		.recentlink {
+			padding-left: 20px; 
+		}
+	}
+}

@@ -6,6 +6,7 @@
 @import "threadlisting.scss";
 @import "threadview.scss";
 @import "floatingbar.scss";
+@import "recentbar.scss";
 
 @font-face {
     font-family: 'Tori-Icons';
@@ -22,6 +23,11 @@
     @include base;
     @include dropdown;
     @include post;
+    @include recentbar;
+    
+   	.debugcontrolpanel {
+   		margin-bottom: 50px;
+   	}
     
     .portlet-body & .v-ui{
     	overflow: visible;
