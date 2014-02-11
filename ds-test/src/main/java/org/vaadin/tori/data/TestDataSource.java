@@ -54,7 +54,7 @@ public class TestDataSource implements DataSource {
 
     private static final String CONTEXT = "/webapp";
     private static final String ATTACHMENT_PREFIX = CONTEXT + "/attachments/";
-    private static final long CURRENT_USER_ID = 3;
+    public static final long CURRENT_USER_ID = 3;
     private final User currentUser;
 
     public TestDataSource() throws DataSourceException {
