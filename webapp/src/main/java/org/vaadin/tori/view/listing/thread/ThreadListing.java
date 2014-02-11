@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.component.ComponentUtil;
 import org.vaadin.tori.view.listing.thread.ThreadListingView.ThreadData;
@@ -22,8 +23,18 @@ import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 
+@SuppressWarnings("serial")
 public class ThreadListing extends AbstractComponentContainer implements
         ThreadListingServerRpc {
+
+    private static final String FOLLOW_CAPTION = "Follow Topic";
+    private static final String UNFOLLOW_CAPTION = "Unfollow Topic";
+    private static final String STICKY_CAPTION = "Pin Topic";
+    private static final String UNSTICKY_CAPTION = "Unpin Topic";
+    private static final String LOCK_CAPTION = "Lock Topic";
+    private static final String UNLOCK_CAPTION = "Unlock Topic";
+    private static final String MOVE_CAPTION = "Move Topic";
+    private static final String DELETE_CAPTION = "Delete Topic";
 
     private static final int PRELOAD_AMOUNT = 50;
     private int fetchedRows = 0;
@@ -37,81 +48,12 @@ public class ThreadListing extends AbstractComponentContainer implements
         registerRpc(this);
     }
 
-    // @Override
-    // public void handle(final Action action, final long threadId) {
-    // switch (action) {
-    // case FOLLOW:
-    // presenter.follow(threadId);
-    // break;
-    // case UNFOLLOW:
-    // presenter.unfollow(threadId);
-    // break;
-    // case STICKY:
-    // presenter.sticky(threadId);
-    // break;
-    // case UNSTICKY:
-    // presenter.unsticky(threadId);
-    // break;
-    // case DELETE:
-    // ConfirmDialog.show(getUI(),
-    // "Are you sure you want to delete the thread?",
-    // new ConfirmDialog.Listener() {
-    // @Override
-    // public void onClose(ConfirmDialog arg0) {
-    // if (arg0.isConfirmed()) {
-    // removeThreadRow(threadId);
-    // presenter.delete(threadId);
-    // }
-    // }
-    // });
-    // break;
-    // case LOCK:
-    // presenter.lock(threadId);
-    // break;
-    // case UNLOCK:
-    // presenter.unlock(threadId);
-    // break;
-    // case MOVE:
-    // presenter.moveRequested(threadId);
-    // return;
-    // default:
-    // throw new IllegalArgumentException(
-    // "Unrecognized/unsupported action " + action
-    // + " for thread.");
-    // }
-    // }
-    // };
-
     private ThreadProvider threadProvider;
-
     private final ThreadListingPresenter presenter;
-
-    // private ControlInfo getControlInfo(final ThreadData thread) {
-    // final ControlInfo i = new ControlInfo();
-    // long threadId = thread.getId();
-    // i.threadId = threadId;
-    // List<Action> actions = i.actions;
-    //
-    // if (thread.mayFollow()) {
-    // actions.add(thread.isFollowing() ? Action.UNFOLLOW : Action.FOLLOW);
-    // }
-    // if (thread.mayLock()) {
-    // actions.add(thread.isLocked() ? Action.UNLOCK : Action.LOCK);
-    // }
-    // if (thread.maySticky()) {
-    // actions.add(thread.isSticky() ? Action.UNSTICKY : Action.STICKY);
-    // }
-    // if (thread.mayDelete()) {
-    // actions.add(Action.DELETE);
-    // }
-    // if (thread.mayMove()) {
-    // actions.add(Action.MOVE);
-    // }
-    // return i;
-    // }
 
     private RowInfo getRowInfo(final ThreadData thread) {
         final RowInfo row = new RowInfo();
+        row.threadId = thread.getId();
         row.author = thread.getAuthor();
         row.isLocked = thread.isLocked();
         row.isSticky = thread.isSticky();
@@ -128,14 +70,71 @@ public class ThreadListing extends AbstractComponentContainer implements
         return row;
     }
 
-    private Component buildSettings(ThreadData thread) {
-        MenuBar dropdownMenu = ComponentUtil.getDropdownMenu();
-        dropdownMenu.getMoreMenuItem().addItem("test", new Command() {
+    private Command getSettingsCommand(final long threadId) {
+        return new Command() {
             @Override
             public void menuSelected(MenuItem selectedItem) {
-                System.out.println("fdfw");
+                if (FOLLOW_CAPTION.equals(selectedItem.getText())) {
+                    presenter.follow(threadId);
+                } else if (UNFOLLOW_CAPTION.equals(selectedItem.getText())) {
+                    presenter.unfollow(threadId);
+                } else if (STICKY_CAPTION.equals(selectedItem.getText())) {
+                    presenter.sticky(threadId);
+                } else if (UNSTICKY_CAPTION.equals(selectedItem.getText())) {
+                    presenter.unsticky(threadId);
+                } else if (LOCK_CAPTION.equals(selectedItem.getText())) {
+                    presenter.lock(threadId);
+                } else if (UNLOCK_CAPTION.equals(selectedItem.getText())) {
+                    presenter.unlock(threadId);
+                } else if (MOVE_CAPTION.equals(selectedItem.getText())) {
+                    presenter.moveRequested(threadId);
+                } else if (DELETE_CAPTION.equals(selectedItem.getText())) {
+                    ConfirmDialog.show(getUI(),
+                            "Are you sure you want to delete the thread?",
+                            new ConfirmDialog.Listener() {
+                                @Override
+                                public void onClose(ConfirmDialog arg0) {
+                                    if (arg0.isConfirmed()) {
+                                        removeThreadRow(threadId);
+                                        presenter.delete(threadId);
+                                    }
+                                }
+                            });
+                }
             }
-        });
+        };
+    }
+
+    private Component buildSettings(ThreadData thread) {
+        Command settingsCommand = getSettingsCommand(thread.getId());
+        MenuBar dropdownMenu = ComponentUtil.getDropdownMenu();
+        MenuItem rootItem = dropdownMenu.getMoreMenuItem();
+        if (thread.mayFollow()) {
+            rootItem.addItem(thread.isFollowing() ? UNFOLLOW_CAPTION
+                    : FOLLOW_CAPTION, settingsCommand);
+        }
+        MenuItem separator = null;
+        if (rootItem.hasChildren()) {
+            separator = rootItem.addSeparator();
+        }
+        if (thread.mayLock()) {
+            rootItem.addItem(thread.isLocked() ? UNLOCK_CAPTION : LOCK_CAPTION,
+                    settingsCommand);
+        }
+        if (thread.maySticky()) {
+            rootItem.addItem(thread.isSticky() ? UNSTICKY_CAPTION
+                    : STICKY_CAPTION, settingsCommand);
+        }
+        if (thread.mayDelete()) {
+            rootItem.addItem(DELETE_CAPTION, settingsCommand);
+        }
+        if (thread.mayMove()) {
+            rootItem.addItem(MOVE_CAPTION, settingsCommand);
+        }
+        if (separator != null && rootItem.getChildren().size() == 2) {
+            rootItem.removeChild(separator);
+        }
+
         components.add(dropdownMenu);
         addComponent(dropdownMenu);
         return dropdownMenu;
@@ -147,41 +146,18 @@ public class ThreadListing extends AbstractComponentContainer implements
         fetchRows();
     }
 
-    private static List<int[]> groupToRanges(final List<Integer> orderedNumbers) {
-        final List<int[]> ranges = new ArrayList<int[]>();
-
-        if (!orderedNumbers.isEmpty()) {
-            int start = orderedNumbers.get(0);
-            int previous = start;
-
-            for (final int num : orderedNumbers) {
-                if (num > previous + 1) {
-                    ranges.add(new int[] { start, previous });
-                    start = num;
-                }
-                previous = num;
-            }
-            ranges.add(new int[] { start, previous });
-        }
-
-        return ranges;
-    }
-
     @Override
     protected ThreadListingState getState() {
         return (ThreadListingState) super.getState();
     }
 
     public void updateThreadRow(ThreadData thread) {
-        // replace the row with new metadata
-        getRpcProxy(ThreadListingClientRpc.class)
-                .refreshRow(getRowInfo(thread));
+        getRpcProxy(ThreadListingClientRpc.class).refreshThreadRow(
+                getRowInfo(thread));
     }
 
     public void removeThreadRow(long threadId) {
-        // remove all information about the row
-        // final Integer rowIndex = threadIdToRowIndex.remove(threadId);
-        // getRpcProxy(ThreadListingClientRpc.class).removeRow(rowIndex);
+        getRpcProxy(ThreadListingClientRpc.class).removeThreadRow(threadId);
     }
 
     @Override

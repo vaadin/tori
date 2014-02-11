@@ -12,6 +12,7 @@ public class ThreadListingState extends AbstractComponentState {
     public int loadedRows;
 
     public static class RowInfo {
+        public long threadId;
         public boolean isSticky;
         public boolean isLocked;
         public boolean isFollowed;

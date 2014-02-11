@@ -31,13 +31,13 @@ public class ThreadListingConnector extends AbstractComponentConnector {
 
         registerRpc(ThreadListingClientRpc.class, new ThreadListingClientRpc() {
             @Override
-            public void refreshRow(final RowInfo rowInfo) {
-                getWidget().replaceOpenedThreadListingRowWith(rowInfo);
+            public void refreshThreadRow(final RowInfo rowInfo) {
+                getWidget().refreshRow(rowInfo);
             }
 
             @Override
-            public void removeRow(int index) {
-                getWidget().removeSelectedRow();
+            public void removeThreadRow(long threadId) {
+                getWidget().removeThreadRow(threadId);
             }
 
             @Override

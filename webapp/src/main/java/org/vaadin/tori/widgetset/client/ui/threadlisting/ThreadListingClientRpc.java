@@ -9,7 +9,7 @@ import com.vaadin.shared.communication.ClientRpc;
 public interface ThreadListingClientRpc extends ClientRpc {
     void sendRows(List<RowInfo> rows, int placeholders);
 
-    void refreshRow(RowInfo rowInfo);
+    void refreshThreadRow(RowInfo rowInfo);
 
-    void removeRow(int index);
+    void removeThreadRow(long threadId);
 }

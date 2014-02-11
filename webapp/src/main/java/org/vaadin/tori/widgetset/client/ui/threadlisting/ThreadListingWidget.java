@@ -1,6 +1,8 @@
 package org.vaadin.tori.widgetset.client.ui.threadlisting;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.RowInfo;
 
@@ -24,6 +26,7 @@ public class ThreadListingWidget extends FlowPanel {
     private HandlerRegistration scrollHandlerRegistrationWin;
 
     private final FlowPanel placeHolders = new FlowPanel();
+    private final Map<Long, FlowPanel> threadRows = new HashMap<Long, FlowPanel>();
 
     public interface Fetcher {
         void fetchRows();
@@ -49,7 +52,9 @@ public class ThreadListingWidget extends FlowPanel {
 
         remove(placeHolders);
         for (RowInfo rowInfo : rows) {
-            add(createRow(rowInfo));
+            FlowPanel newRow = createRow(rowInfo);
+            add(newRow);
+            threadRows.put(rowInfo.threadId, newRow);
         }
         while (placeHolders.getWidgetCount() > 0
                 && placeHolders.getWidgetCount() > placeholders) {
@@ -64,48 +69,9 @@ public class ThreadListingWidget extends FlowPanel {
         fetching = false;
     }
 
-    private Widget createRow(final RowInfo rowInfo) {
+    private FlowPanel createRow(final RowInfo rowInfo) {
         FlowPanel panel = new FlowPanel();
-        panel.setWidth("100%");
-        panel.addStyleName(ROW_CLASS_NAME);
-
-        if (rowInfo.isLocked) {
-            panel.addStyleName("locked");
-        }
-        if (rowInfo.isSticky) {
-            panel.addStyleName("sticky");
-        }
-        if (rowInfo.isFollowed) {
-            panel.addStyleName("following");
-        }
-        if (!rowInfo.isRead) {
-            panel.addStyleName("unread");
-        }
-
-        Anchor anchor = new Anchor(rowInfo.topic, rowInfo.url);
-        anchor.addStyleName("topic");
-        panel.add(anchor);
-
-        Label startedBy = new Label(rowInfo.author);
-        startedBy.addStyleName("startedby");
-        panel.add(startedBy);
-
-        String postCount = rowInfo.postCount != 0 ? String
-                .valueOf(rowInfo.postCount) : "";
-        Label postCountWidget = new Label(postCount);
-        postCountWidget.addStyleName("postcount");
-        panel.add(postCountWidget);
-
-        Label latest = new Label(rowInfo.latestPostPretty);
-        latest.addStyleName("latesttime");
-        panel.add(latest);
-
-        if (rowInfo.settings != null) {
-            Widget settings = ((AbstractComponentConnector) rowInfo.settings)
-                    .getWidget();
-            panel.add(settings);
-        }
-
+        populateRow(panel, rowInfo);
         return panel;
     }
 
@@ -162,27 +128,57 @@ public class ThreadListingWidget extends FlowPanel {
         return (int) (pageHeight * distanceMultiplier);
     }
 
-    public void replaceOpenedThreadListingRowWith(final RowInfo rowInfo) {
-        Element e;
-
-        // if (openedThreadListingRow != null) {
-        // final FlowPanel newRow = createRow(rowInfo);
-        // add
-        // openedThreadListingRow.getParentNode().replaceChild(newRow,
-        // openedThreadListingRow);
-        // openedThreadListingRow = null;
-        // } else {
-        // VConsole.error("Illegally trying to replace a thread listing row.");
-        // }
+    public void refreshRow(final RowInfo rowInfo) {
+        FlowPanel threadRow = threadRows.get(rowInfo.threadId);
+        threadRow.removeStyleName(threadRow.getStyleName());
+        threadRow.clear();
+        populateRow(threadRow, rowInfo);
     }
 
-    public void removeSelectedRow() {
-        // if (openedThreadListingRow != null) {
-        // openedThreadListingRow.removeFromParent();
-        // openedThreadListingRow = null;
-        // } else {
-        // VConsole.error("Illegally trying to remove a thread listing row.");
-        // }
+    private void populateRow(FlowPanel panel, RowInfo rowInfo) {
+        panel.setWidth("100%");
+        panel.addStyleName(ROW_CLASS_NAME);
+
+        if (rowInfo.isLocked) {
+            panel.addStyleName("locked");
+        }
+        if (rowInfo.isSticky) {
+            panel.addStyleName("sticky");
+        }
+        if (rowInfo.isFollowed) {
+            panel.addStyleName("following");
+        }
+        if (!rowInfo.isRead) {
+            panel.addStyleName("unread");
+        }
+
+        Anchor anchor = new Anchor(rowInfo.topic, rowInfo.url);
+        anchor.addStyleName("topic");
+        panel.add(anchor);
+
+        Label startedBy = new Label(rowInfo.author);
+        startedBy.addStyleName("startedby");
+        panel.add(startedBy);
+
+        String postCount = rowInfo.postCount != 0 ? String
+                .valueOf(rowInfo.postCount) : "";
+        Label postCountWidget = new Label(postCount);
+        postCountWidget.addStyleName("postcount");
+        panel.add(postCountWidget);
+
+        Label latest = new Label(rowInfo.latestPostPretty);
+        latest.addStyleName("latesttime");
+        panel.add(latest);
+
+        if (rowInfo.settings != null) {
+            Widget settings = ((AbstractComponentConnector) rowInfo.settings)
+                    .getWidget();
+            panel.add(settings);
+        }
+    }
+
+    public void removeThreadRow(long threadId) {
+        remove(threadRows.get(threadId));
     }
 
     private static native boolean isElementInViewport(Element el)
