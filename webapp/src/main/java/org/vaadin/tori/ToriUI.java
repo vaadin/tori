@@ -31,6 +31,7 @@ import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinPortletRequest;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -93,8 +94,11 @@ public class ToriUI extends UI {
         final AuthorizationService authorizationService = ToriApiLoader
                 .getCurrent().getAuthorizationService();
         if (authorizationService instanceof DebugAuthorizationService) {
-            mainLayout.addComponent(new DebugControlPanel(
-                    (DebugAuthorizationService) authorizationService));
+            DebugControlPanel debugControlPanel = new DebugControlPanel(
+                    (DebugAuthorizationService) authorizationService);
+            mainLayout.addComponent(debugControlPanel);
+            mainLayout.setComponentAlignment(debugControlPanel,
+                    Alignment.TOP_RIGHT);
         }
     }
 

@@ -5,8 +5,8 @@
 @import "breadcrumbs.scss";
 @import "threadlisting.scss";
 @import "threadview.scss";
-@import "floatingbar.scss";
 @import "recentbar.scss";
+@import "floatingcomponent.scss";
 
 @font-face {
     font-family: 'Tori-Icons';
@@ -24,7 +24,15 @@
     @include dropdown;
     @include post;
     @include recentbar;
+    @include floatingcomponent;
     
+    &.v-app,
+    .v-ui {
+	    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	    font-size: 14px;
+	    color: #555;
+    }
+        
    	.debugcontrolpanel {
    		margin-bottom: 50px;
    	}
@@ -33,11 +41,10 @@
     	overflow: visible;
     }
     
-    &,
     .v-widget {
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        font-size: 14px;
-        color: #555;
+        font-family: inherit;
+        font-size: inherit;
+        color: inherit;
     }
     
     .v-link span,
@@ -83,19 +90,6 @@
         	color: $secondary-button-color;
         	border: $secondary-button-border;
         }
-    }
-    
-    
-    
-    .v-floatingbar {
-        position: fixed !important;
-        padding: 0;
-        white-space: normal;
-        -moz-box-shadow: 0 0 10px rgba(60, 59, 53, 0.5);
-        -webkit-box-shadow: 0 0 10px rgba(60, 59, 53, 0.5);
-        box-shadow: 0 0 10px rgba(60, 59, 53, 0.5);
-        z-index: 99 !important;
-        margin-top: 0 !important;
     }
     
     .headerlayout {

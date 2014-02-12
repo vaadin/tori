@@ -24,6 +24,7 @@ import java.util.Map;
 import org.vaadin.hene.popupbutton.widgetset.client.ui.PopupButtonConnector;
 import org.vaadin.openesignforms.ckeditor.widgetset.client.ui.CKEditorConnector;
 import org.vaadin.tori.widgetset.client.ui.ToriUIConnector;
+import org.vaadin.tori.widgetset.client.ui.floatingcomponent.FloatingComponentConnector;
 import org.vaadin.tori.widgetset.client.ui.post.PostComponentConnector;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingConnector;
 
@@ -72,6 +73,7 @@ public class ToriConnectorBundleLoaderFactory extends
         addConnector(JavaScriptManagerConnector.class, false);
 
         addConnector(WindowConnector.class, true);
+        addConnector(FloatingComponentConnector.class, true);
         addConnector(TreeConnector.class, true);
         addConnector(MenuBarConnector.class, true);
         addConnector(PanelConnector.class, true);

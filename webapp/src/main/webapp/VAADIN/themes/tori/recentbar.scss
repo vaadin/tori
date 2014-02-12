@@ -33,9 +33,11 @@
 			transition-delay: 300ms;
 			left: 0%;
 			top: 0%;
+			margin-top: 9px;
 			
 			&.previous {
 				left: 100%;
+				opacity: 0;
 				transition-delay: 0ms;
 			}
 			
@@ -58,5 +60,37 @@
 		.recentlink {
 			padding-left: 20px;
 		}
+		
+		.floatingnotification {
+			margin-bottom: 3px;
+			background: rgba(255, 255, 255, 0.8);
+			border: 1px solid rgba(0, 0, 0, 0.1);
+			border-top: none;
+			color: #555;
+			font-size: 12px;
+			line-height: 31px;
+			padding: 0 1em;
+			border-radius: 0 0 4px 4px;
+			cursor: pointer;
+			box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+			transition: margin-bottom 1s;
+			-webkit-transition: margin-bottom 1s;
+			
+			.v-label, .v-link {
+				vertical-align: middle;
+			}
+			
+			.v-link {
+			    color: lighten(#2698E0, 10%);
+			    font-weight: 400;
+			    margin-left: 5px; 
+			}
+			
+			&.notify {
+				margin-bottom: -30px;
+			}
+			
+		}
 	}
+	
 }

@@ -44,9 +44,10 @@ import com.vaadin.ui.UIDetachedException;
 @SuppressWarnings("serial")
 public class RecentBar extends CustomComponent implements UserAuthoredListener {
 
-    private final HorizontalLayout layout = new HorizontalLayout();
     private PostNotification previous;
     private PostNotification current;
+    private final FloatingNotification floatingNotification = new FloatingNotification();
+    private final FloatingComponent floatingComponent = new FloatingComponent();
 
     private final DataSource dataSource = ToriApiLoader.getCurrent()
             .getDataSource();
@@ -57,15 +58,23 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
                 .addUserAuthoredListener(this);
         addStyleName("recentbar");
         setWidth(100.0f, Unit.PERCENTAGE);
-        setHeight(27.0f, Unit.PIXELS);
+        setHeight(35.0f, Unit.PIXELS);
 
-        setCompositionRoot(layout);
-        layout.setMargin(new MarginInfo(false, true, false, true));
+        CssLayout layout = new CssLayout();
         layout.setSizeFull();
+        setCompositionRoot(layout);
 
-        addTitleLabel();
-        addNotificationsLayout();
-        addLink();
+        HorizontalLayout barLayout = new HorizontalLayout();
+        barLayout.setMargin(new MarginInfo(false, true, false, true));
+        barLayout.setSizeFull();
+        addTitleLabel(barLayout);
+        addNotificationsLayout(barLayout);
+        addRecentLink(barLayout);
+        layout.addComponent(barLayout);
+
+        floatingComponent.extend(floatingNotification);
+        layout.addComponent(floatingNotification);
+        floatingNotification.setId("floatingnotification");
 
         ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
@@ -90,31 +99,31 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
         }
     }
 
-    private void addLink() {
+    private void addRecentLink(HorizontalLayout barLayout) {
         Link link = new Link("Recent Posts", new ExternalResource("#"
                 + ToriNavigator.ApplicationView.CATEGORIES.getUrl() + "/"
                 + SpecialCategory.RECENT_POSTS.getId().toLowerCase()));
         link.addStyleName("recentlink");
-        layout.addComponent(link);
-        layout.setComponentAlignment(link, Alignment.MIDDLE_RIGHT);
+        barLayout.addComponent(link);
+        barLayout.setComponentAlignment(link, Alignment.MIDDLE_RIGHT);
     }
 
-    private void addNotificationsLayout() {
+    private void addNotificationsLayout(HorizontalLayout barLayout) {
         notificationsLayout = new CssLayout();
-        notificationsLayout.setWidth(100.0f, Unit.PERCENTAGE);
-        notificationsLayout.setHeight(18.0f, Unit.PIXELS);
+        notificationsLayout.setSizeFull();
         notificationsLayout.addStyleName("notificationslayout");
-        layout.addComponent(notificationsLayout);
-        layout.setExpandRatio(notificationsLayout, 1.0f);
-        layout.setComponentAlignment(notificationsLayout, Alignment.MIDDLE_LEFT);
+        barLayout.addComponent(notificationsLayout);
+        barLayout.setExpandRatio(notificationsLayout, 1.0f);
+        barLayout.setComponentAlignment(notificationsLayout,
+                Alignment.MIDDLE_LEFT);
     }
 
-    private void addTitleLabel() {
+    private void addTitleLabel(HorizontalLayout barLayout) {
         Label headingLabel = ComponentUtil.getHeadingLabel("MOST RECENT",
                 HeadingLevel.H4);
         headingLabel.setWidth(110.0f, Unit.PIXELS);
-        layout.addComponent(headingLabel);
-        layout.setComponentAlignment(headingLabel, Alignment.MIDDLE_LEFT);
+        barLayout.addComponent(headingLabel);
+        barLayout.setComponentAlignment(headingLabel, Alignment.MIDDLE_LEFT);
     }
 
     @Override
@@ -142,6 +151,10 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
         previous = current;
         current = new PostNotification(post);
         notificationsLayout.addComponent(current);
+        floatingNotification.setLink(post.getThread().getTopic(),
+                PostNotification.getPermaLinkUrl(post));
+        floatingComponent.flashIfNotVisible(notificationsLayout);
+
         ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
@@ -185,6 +198,26 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
             // @formatter:on
 
             return linkUrl;
+        }
+    }
+
+    public static class FloatingNotification extends CssLayout {
+
+        private final Link link;
+
+        public FloatingNotification() {
+            addStyleName("floatingnotification");
+            Label label = new Label("New post in");
+            label.setSizeUndefined();
+            addComponent(label);
+
+            link = new Link();
+            addComponent(link);
+        }
+
+        public void setLink(String caption, String url) {
+            link.setCaption(caption);
+            link.setResource(new ExternalResource(url));
         }
     }
 

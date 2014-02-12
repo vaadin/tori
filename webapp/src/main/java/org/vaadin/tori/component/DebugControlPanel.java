@@ -197,6 +197,7 @@ public class DebugControlPanel extends CustomComponent implements
         final PopupButton popupButton = new PopupButton("Debug Control Panel");
         popupButton.addPopupVisibilityListener(this);
         setCompositionRoot(popupButton);
+        setSizeUndefined();
     }
 
     private ContextData getContextData() {
