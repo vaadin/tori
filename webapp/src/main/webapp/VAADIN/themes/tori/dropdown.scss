@@ -26,6 +26,11 @@
     			top: 0.4em;
     		}
     	}
+    	
+    	.v-menubar-menuitem-selected {
+    		visibility: visible !important;
+    		opacity: 1 !important;
+    	}
     }
     
     .v-menubar-submenu-dropdown {

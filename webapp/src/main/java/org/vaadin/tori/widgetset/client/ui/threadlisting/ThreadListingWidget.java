@@ -130,7 +130,7 @@ public class ThreadListingWidget extends FlowPanel {
 
     public void refreshRow(final RowInfo rowInfo) {
         FlowPanel threadRow = threadRows.get(rowInfo.threadId);
-        threadRow.removeStyleName(threadRow.getStyleName());
+        threadRow.setStyleName("");
         threadRow.clear();
         populateRow(threadRow, rowInfo);
     }

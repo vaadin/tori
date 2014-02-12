@@ -66,7 +66,7 @@ public class ThreadListingViewImpl extends
 
     private Component buildTopicHeader() {
         HorizontalLayout result = ComponentUtil.getHeaderLayout("Topics");
-        noTopicsLabel = new Label("No topics in this category");
+        noTopicsLabel = new Label("No topics");
         noTopicsLabel.setSizeUndefined();
         result.addComponent(noTopicsLabel);
         result.setComponentAlignment(noTopicsLabel, Alignment.MIDDLE_CENTER);

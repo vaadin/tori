@@ -32,6 +32,10 @@
 			font-family: HelveticaNeue-Light;
 			color: #474747;
     	}
+    	
+    	.v-popupbutton {
+    		visibility: hidden;
+    	}
     }
     
     .v-table-header-wrap {
@@ -85,7 +89,7 @@
         .v-table-row,
         .v-table-row-odd {
             font-size: 15px;
-            height: 57px;
+            height: 65px;
             
             .v-table-cell-content {
                 padding: 10px;

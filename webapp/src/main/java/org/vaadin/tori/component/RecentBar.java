@@ -50,7 +50,7 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
 
     private final DataSource dataSource = ToriApiLoader.getCurrent()
             .getDataSource();
-    private final CssLayout notificationsLayout;
+    private CssLayout notificationsLayout;
 
     public RecentBar() {
         ToriApiLoader.getCurrent().getToriActivityMessaging()
@@ -62,26 +62,20 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
         setCompositionRoot(layout);
         layout.setMargin(new MarginInfo(false, true, false, true));
         layout.setSizeFull();
-        Label headingLabel = ComponentUtil.getHeadingLabel("MOST RECENT",
-                HeadingLevel.H4);
-        headingLabel.setWidth(110.0f, Unit.PIXELS);
-        layout.addComponent(headingLabel);
-        layout.setComponentAlignment(headingLabel, Alignment.MIDDLE_LEFT);
-        notificationsLayout = new CssLayout();
-        notificationsLayout.setWidth(100.0f, Unit.PERCENTAGE);
-        notificationsLayout.setHeight(18.0f, Unit.PIXELS);
-        notificationsLayout.addStyleName("notificationslayout");
-        layout.addComponent(notificationsLayout);
-        layout.setExpandRatio(notificationsLayout, 1.0f);
-        layout.setComponentAlignment(notificationsLayout, Alignment.MIDDLE_LEFT);
 
-        Link link = new Link("Recent Posts", new ExternalResource("#"
-                + ToriNavigator.ApplicationView.CATEGORIES.getUrl() + "/"
-                + SpecialCategory.RECENT_POSTS.getId().toLowerCase()));
-        link.addStyleName("recentlink");
-        layout.addComponent(link);
-        layout.setComponentAlignment(link, Alignment.MIDDLE_RIGHT);
+        addTitleLabel();
+        addNotificationsLayout();
+        addLink();
 
+        ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override
+            public void execute() {
+                prePopulate();
+            }
+        });
+    }
+
+    private void prePopulate() {
         try {
             List<DiscussionThread> recentPosts = dataSource
                     .getRecentPosts(0, 1);
@@ -94,6 +88,33 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
         } catch (DataSourceException e) {
             e.printStackTrace();
         }
+    }
+
+    private void addLink() {
+        Link link = new Link("Recent Posts", new ExternalResource("#"
+                + ToriNavigator.ApplicationView.CATEGORIES.getUrl() + "/"
+                + SpecialCategory.RECENT_POSTS.getId().toLowerCase()));
+        link.addStyleName("recentlink");
+        layout.addComponent(link);
+        layout.setComponentAlignment(link, Alignment.MIDDLE_RIGHT);
+    }
+
+    private void addNotificationsLayout() {
+        notificationsLayout = new CssLayout();
+        notificationsLayout.setWidth(100.0f, Unit.PERCENTAGE);
+        notificationsLayout.setHeight(18.0f, Unit.PIXELS);
+        notificationsLayout.addStyleName("notificationslayout");
+        layout.addComponent(notificationsLayout);
+        layout.setExpandRatio(notificationsLayout, 1.0f);
+        layout.setComponentAlignment(notificationsLayout, Alignment.MIDDLE_LEFT);
+    }
+
+    private void addTitleLabel() {
+        Label headingLabel = ComponentUtil.getHeadingLabel("MOST RECENT",
+                HeadingLevel.H4);
+        headingLabel.setWidth(110.0f, Unit.PIXELS);
+        layout.addComponent(headingLabel);
+        layout.setComponentAlignment(headingLabel, Alignment.MIDDLE_LEFT);
     }
 
     @Override
@@ -139,7 +160,6 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
 
         public PostNotification(Post post) {
             setSpacing(true);
-            addStyleName("postnotification");
             Link link = new Link(post.getThread().getTopic(),
                     new ExternalResource(getPermaLinkUrl(post)));
             StringBuilder infoText = new StringBuilder("by ");
@@ -151,10 +171,7 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
         }
 
         public void setState(PostNotificationState state) {
-            for (PostNotificationState ps : PostNotificationState.values()) {
-                removeStyleName(ps.name().toLowerCase());
-            }
-            addStyleName(state.name().toLowerCase());
+            setStyleName("postnotification " + state.name().toLowerCase());
         }
 
         private static String getPermaLinkUrl(final Post post) {

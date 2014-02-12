@@ -31,13 +31,18 @@ import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.view.listing.ListingView;
+import org.vaadin.tori.view.listing.SpecialCategory;
 import org.vaadin.tori.view.thread.ThreadView;
 import org.vaadin.tori.view.thread.newthread.NewThreadView;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
@@ -46,6 +51,8 @@ import com.vaadin.ui.Link;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
@@ -64,11 +71,16 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
     private final AuthorizationService authorizationService = ToriApiLoader
             .getCurrent().getAuthorizationService();
 
+    private Link myPostsLink;
+    private Button followButton;
+    private long threadId;
+
     public Breadcrumbs() {
         setStyleName("breadcrumbs");
         ToriNavigator.getCurrent().addViewChangeListener(this);
 
         final VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setMargin(new MarginInfo(false, true, false, true));
         mainLayout.addComponent(buildCrumbsLayout());
         mainLayout.addComponent(buildCaptionLayout());
         setCompositionRoot(mainLayout);
@@ -84,7 +96,50 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
                 viewCaption, myPosts);
         captionLayout.setWidth(100.0f, Unit.PERCENTAGE);
         captionLayout.setExpandRatio(viewCaption, 1.0f);
+
+        myPostsLink = new Link("My Posts", new ExternalResource("#"
+                + ToriNavigator.ApplicationView.CATEGORIES.getUrl() + "/"
+                + SpecialCategory.MY_POSTS.getId().toLowerCase()));
+        myPostsLink.addStyleName("mypostslink");
+        captionLayout.addComponent(myPostsLink);
+
+        followButton = buildFollowButton();
+        captionLayout.addComponent(followButton);
+
         return captionLayout;
+    }
+
+    private Button buildFollowButton() {
+        Button result = new Button();
+        result.addClickListener(new ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                try {
+                    if (dataSource.isFollowingThread(threadId)) {
+                        dataSource.unfollowThread(threadId);
+                        Notification.show("Thread unfollowed");
+                    } else {
+                        dataSource.followThread(threadId);
+                        Notification.show("Following thread");
+                    }
+                    updateFollowButtonStyle();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Notification.show(
+                            DataSourceException.GENERIC_ERROR_MESSAGE,
+                            Type.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        return result;
+    }
+
+    private void updateFollowButtonStyle() {
+        followButton.setVisible(authorizationService.mayFollowThread(threadId));
+        followButton
+                .setStyleName(dataSource.isFollowingThread(threadId) ? "followed"
+                        : "notfollowed");
     }
 
     private Component buildCrumbsLayout() {
@@ -97,6 +152,8 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
     @Override
     public void afterViewChange(ViewChangeEvent event) {
         viewCaption.setValue(null);
+        myPostsLink.setVisible(false);
+        followButton.setVisible(false);
 
         final View view = event.getNewView();
 
@@ -111,6 +168,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
             } else if (urlParameterId == null) {
                 crumbsLayout.removeAllComponents();
                 viewCaption.setValue(getDashboardTitle());
+                myPostsLink.setVisible(true);
             } else {
                 ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
                     @Override
@@ -129,6 +187,9 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
         if (view instanceof ThreadView) {
             try {
                 DiscussionThread thread = dataSource.getThread(urlParameterId);
+                followButton.setVisible(true);
+                threadId = thread.getId();
+                updateFollowButtonStyle();
                 parentCategory = thread.getCategory();
             } catch (Exception e) {
                 ((ThreadView) view).showError("No thread found");
@@ -136,11 +197,13 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
                 ToriNavigator.getCurrent().navigateToDashboard();
             }
         } else if (view instanceof ListingView) {
-            try {
-                Category category = dataSource.getCategory(urlParameterId);
-                parentCategory = category.getParentCategory();
-            } catch (DataSourceException e) {
-                e.printStackTrace();
+            if (urlParameterId != 0) {
+                try {
+                    Category category = dataSource.getCategory(urlParameterId);
+                    parentCategory = category.getParentCategory();
+                } catch (DataSourceException e) {
+                    e.printStackTrace();
+                }
             }
         }
 

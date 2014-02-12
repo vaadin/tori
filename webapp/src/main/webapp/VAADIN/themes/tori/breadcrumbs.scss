@@ -19,6 +19,7 @@
 			font-size: 27px;
 			font-weight: 100;
 			left: 5px;
+			top: 2px;
 	    }
     }
     
@@ -64,6 +65,68 @@
     	font-family: HelveticaNeue-Light;
     	color: #222;
         font-size: 24px;
+    }
+    
+    .mypostslink:before {
+    	font-family: "Tori-Icons";
+    	content: "\e007";
+    	color: $link-color;
+    	vertical-align: middle;
+    }
+    
+    .v-button {
+    	width: 130px;
+    	height: 27px;
+    	padding: 2px 0 !important;
+    	transition: all 400ms;
+		-webkit-transition: all 400ms;
+    
+    	&:before {
+    		font-family: "Tori-Icons";
+    		content: "\e00c";
+    		vertical-align: middle;
+    		padding-right: 5px;
+    	}
+    	
+    	&:after {
+    		font-size: 13px; 
+    		vertical-align: middle;
+    	}
+    	
+    	&.followed {
+    		color: #fff;
+    		background: $button-color;
+    		border-color: $button-color;
+    	
+    		&:after {
+    			content: "Following Topic";
+    		}
+    		
+    		&:hover {
+    			background: #E6452A;
+    			border-color: #E6452A;
+    		
+	    		&:after{
+	    			content: "Unfollow";
+	    		}
+    		}
+    	}
+    	
+    	&.notfollowed {
+    		&:after {
+    			content: "Not following";
+    		}
+    		
+    		&:hover{
+    			background: #43B536;
+    			border-color: #43B536;
+    			color: #fff;
+    			
+    			&:after {
+    				content: "Follow";
+    			}
+    		}
+    	}
     }
     
 }

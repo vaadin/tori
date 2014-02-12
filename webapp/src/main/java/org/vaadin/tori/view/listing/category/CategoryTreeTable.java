@@ -19,6 +19,7 @@ package org.vaadin.tori.view.listing.category;
 import java.util.List;
 
 import org.vaadin.dialogs.ConfirmDialog;
+import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriScheduler;
 import org.vaadin.tori.ToriScheduler.ScheduledCommand;
@@ -36,8 +37,6 @@ import com.vaadin.ui.Link;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.PopupView;
-import com.vaadin.ui.PopupView.Content;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TreeTable;
 
@@ -145,7 +144,7 @@ public class CategoryTreeTable extends TreeTable {
             result.addStyleName("settingsmenu");
             MenuBar settingsMenuBar = ComponentUtil.getDropdownMenu();
             MenuItem root = settingsMenuBar.getMoreMenuItem();
-            final PopupView editPopup = createEditPopup(categoryData);
+            final PopupButton editPopup = createEditPopup(categoryData);
 
             Command command = new Command() {
                 @Override
@@ -188,9 +187,8 @@ public class CategoryTreeTable extends TreeTable {
         });
     }
 
-    public PopupView createEditPopup(final CategoryData categoryData) {
-        final PopupView editPopup = new PopupView("", new Label());
-        editPopup.setHideOnMouseOut(false);
+    public PopupButton createEditPopup(final CategoryData categoryData) {
+        final PopupButton editPopup = new PopupButton("");
         final EditCategoryListener listener = new EditCategoryListener() {
             @Override
             public void cancel() {
@@ -207,20 +205,7 @@ public class CategoryTreeTable extends TreeTable {
                         description);
             }
         };
-        final EditCategoryForm editCategoryForm = new EditCategoryForm(
-                listener, categoryData);
-        editPopup.setContent(new Content() {
-            @Override
-            public Component getPopupComponent() {
-                return editCategoryForm;
-            }
-
-            @Override
-            public String getMinimizedValueAsHTML() {
-                return "";
-            }
-        });
-
+        editPopup.setContent(new EditCategoryForm(listener, categoryData));
         return editPopup;
     }
 

@@ -44,10 +44,6 @@
     a {
         text-decoration: none;
         color: $link-color;
-        
-        &:HOVER {
-            text-decoration: underline;
-        }
     }
     
     .editview {
@@ -123,6 +119,13 @@
 				line-height: 22px;
 			}
 		}
+		
+		.v-button:before {
+			font-family: "Tori-Icons";
+			content: "\e008"; 
+			vertical-align: middle;
+			margin-right: 3px;
+		}
 	}
 	
 	.v-shadow {
@@ -132,4 +135,9 @@
 	.v-window-closebox {
 		display: none;
 	}
+	
+	.v-popup-indicator {
+		display: none !important;
+	}
+	
 }

@@ -19,6 +19,8 @@ package org.vaadin.tori.view.thread;
 import java.net.URI;
 
 import org.vaadin.hene.popupbutton.PopupButton;
+import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
+import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
 import org.vaadin.tori.service.post.PostReport.Reason;
 import org.vaadin.tori.view.thread.ThreadView.PostData;
 
@@ -41,7 +43,6 @@ public class ReportComponent extends CustomComponent {
     private final PostData post;
     private final ThreadPresenter presenter;
     private final PopupButton reportPopup;
-    private Component reportLayout;
 
     private Layout explanationLayout;
     private NativeButton reportButton;
@@ -57,15 +58,20 @@ public class ReportComponent extends CustomComponent {
     public ReportComponent(final PostData post,
             final ThreadPresenter presenter, final String postFragmentPermalink) {
 
-        final CssLayout root = new CssLayout();
-        setCompositionRoot(root);
-
         this.post = post;
         this.presenter = presenter;
         this.postPermalink = postFragmentPermalink;
 
         reportPopup = new PopupButton("Flag post...");
-        root.addComponent(reportPopup);
+        reportPopup.addPopupVisibilityListener(new PopupVisibilityListener() {
+            @Override
+            public void popupVisibilityChange(PopupVisibilityEvent event) {
+                if (reportPopup.getContent() == null) {
+                    reportPopup.setContent(newReportLayout());
+                }
+            }
+        });
+        setCompositionRoot(reportPopup);
     }
 
     private Component newReportLayout() {
@@ -131,7 +137,7 @@ public class ReportComponent extends CustomComponent {
         cancel.addClickListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
-                reportPopup.setVisible(false);
+                reportPopup.setPopupVisible(false);
             }
         });
         footer.addComponent(cancel);
@@ -146,15 +152,4 @@ public class ReportComponent extends CustomComponent {
         return area;
     }
 
-    public void open() {
-        try {
-            if (reportLayout == null) {
-                reportLayout = newReportLayout();
-                reportPopup.setComponent(reportLayout);
-            }
-            reportPopup.setPopupVisible(true);
-        } catch (final RuntimeException e) {
-            e.printStackTrace();
-        }
-    }
 }

@@ -16,8 +16,8 @@
 			<g:FlowPanel styleName="attachments" ui:field='attachments' />
 
 			<div class="footer">
-				<g:Button ui:field='upVote' tabIndex="0" />
-				<g:Button ui:field='downVote' tabIndex="0" />
+				<g:Label ui:field='upVote' />
+				<g:Label ui:field='downVote' />
 				<span class="score" ui:field='score' />
 
 				<g:Label styleName="quoteforreply" ui:field='quote'>Quote for Reply</g:Label>

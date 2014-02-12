@@ -11,7 +11,7 @@
 		position: relative;
 		box-sizing: border-box;
 		padding-right: 320px;
-		padding-left: 20px;
+		padding-left: 5px;
 		
 	    &.unread .topic {
 	    	font-weight: 500;
@@ -74,6 +74,26 @@
         	font-size: 12px;
         	color: #555; 
 		}
+		
+		&.following .topic:before {
+			font-family: "Tori-Icons";
+			content: "\e000";
+			position: absolute;
+			left: 0;
+			top: 2px;
+		}
+		
+		&.sticky .topic:after {
+			content: "\e00a";
+		}
+		&.locked .topic:after {
+			content: "\e00b";
+		}
+		
+		&.locked.sticky .topic:after {
+			content: "\e00a\e00b";
+		}
+		
 	}
 	
 	.topic {
@@ -81,6 +101,7 @@
 		-webkit-transform: translatez(0);
     	font-size: 15px;
 		font-weight: 300;
+		padding-left: 20px;
 		line-height: 40px;
 		color: #2698E0;
 		width: 78%;
@@ -89,6 +110,12 @@
 		text-overflow: ellipsis;
 		text-align: left;
 		vertical-align: middle;
+		
+		&:after {
+			font-family: "Tori-Icons";
+			vertical-align: middle;
+			padding-left: 5px;
+		}
     }
     
     .startedby {

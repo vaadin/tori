@@ -43,6 +43,7 @@ public class ThreadMoveComponent extends Window {
             final ThreadMoveComponentListener listener) {
         setClosable(false);
         setResizable(false);
+        setModal(true);
 
         setContent(layout);
         layout.setSizeFull();

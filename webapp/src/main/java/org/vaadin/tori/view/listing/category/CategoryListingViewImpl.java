@@ -18,6 +18,7 @@ package org.vaadin.tori.view.listing.category;
 
 import java.util.List;
 
+import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.tori.component.ComponentUtil;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.view.listing.category.EditCategoryForm.EditCategoryListener;
@@ -28,7 +29,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.PopupView;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -41,7 +41,7 @@ public class CategoryListingViewImpl extends
 
     private CategoryTreeTable categoryTree;
     private VerticalLayout layout;
-    private PopupView createCategoryButton;
+    private PopupButton createCategoryButton;
     private Label noCategoriesLabel;
 
     @Override
@@ -71,8 +71,9 @@ public class CategoryListingViewImpl extends
         result.addComponent(noCategoriesLabel);
         result.setComponentAlignment(noCategoriesLabel, Alignment.MIDDLE_CENTER);
 
-        createCategoryButton = new PopupView("Create Category",
-                new EditCategoryForm(new EditCategoryListener() {
+        createCategoryButton = new PopupButton("Create Category");
+        createCategoryButton.setContent(new EditCategoryForm(
+                new EditCategoryListener() {
                     @Override
                     public void cancel() {
                         createCategoryButton.setPopupVisible(false);
@@ -84,7 +85,6 @@ public class CategoryListingViewImpl extends
                         createCategoryButton.setPopupVisible(false);
                     }
                 }));
-        createCategoryButton.setHideOnMouseOut(false);
         Component buttonWrapper = new HorizontalLayout(createCategoryButton);
         result.addComponent(buttonWrapper);
         result.setComponentAlignment(buttonWrapper, Alignment.MIDDLE_RIGHT);

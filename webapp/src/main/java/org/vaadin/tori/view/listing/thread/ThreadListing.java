@@ -33,8 +33,8 @@ public class ThreadListing extends AbstractComponentContainer implements
     private static final String UNSTICKY_CAPTION = "Unpin Topic";
     private static final String LOCK_CAPTION = "Lock Topic";
     private static final String UNLOCK_CAPTION = "Unlock Topic";
-    private static final String MOVE_CAPTION = "Move Topic";
-    private static final String DELETE_CAPTION = "Delete Topic";
+    private static final String MOVE_CAPTION = "Move Topic...";
+    private static final String DELETE_CAPTION = "Delete Topic...";
 
     private static final int PRELOAD_AMOUNT = 50;
     private int fetchedRows = 0;
