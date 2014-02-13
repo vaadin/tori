@@ -55,14 +55,11 @@ public class TestDataSource implements DataSource {
     private static final String CONTEXT = "/webapp";
     private static final String ATTACHMENT_PREFIX = CONTEXT + "/attachments/";
     public static final long CURRENT_USER_ID = 3;
-    private final User currentUser;
 
     public TestDataSource() throws DataSourceException {
         if (isEmptyDatabase()) {
             initDatabaseWithTestData();
         }
-
-        currentUser = getUser(CURRENT_USER_ID);
     }
 
     private User getUser(final long userId) throws DataSourceException {
@@ -392,7 +389,7 @@ public class TestDataSource implements DataSource {
         DiscussionThread thread = getThread(threadId);
         if (!isFollowingThread(threadId)) {
             final org.vaadin.tori.data.entity.Following following = new org.vaadin.tori.data.entity.Following();
-            following.setFollower(currentUser);
+            following.setFollower(getCurrentUser());
             following.setThread(thread);
             save(following);
         }
@@ -425,7 +422,7 @@ public class TestDataSource implements DataSource {
                     final Query query = em
                             .createQuery("delete from Following f where f.thread = :thread and f.follower = :follower");
                     query.setParameter("thread", thread);
-                    query.setParameter("follower", currentUser);
+                    query.setParameter("follower", getCurrentUser());
                     query.executeUpdate();
                 } finally {
                     transaction.commit();
@@ -446,7 +443,7 @@ public class TestDataSource implements DataSource {
                             .createQuery(
                                     "select count(f) from Following f where f.follower = :follower AND f.thread = :thread",
                                     Long.class);
-                    query.setParameter("follower", currentUser);
+                    query.setParameter("follower", getCurrentUser());
                     query.setParameter("thread", thread);
                     final Long result = query.getSingleResult();
                     if (result != null) {
@@ -512,13 +509,13 @@ public class TestDataSource implements DataSource {
                     final TypedQuery<PostVote> query = em.createQuery(
                             "select v from PostVote v where v.voter = :voter "
                                     + "and v.post = :post", PostVote.class);
-                    query.setParameter("voter", currentUser);
+                    query.setParameter("voter", getCurrentUser());
                     query.setParameter("post", post);
                     return query.getSingleResult();
                 } catch (final NoResultException e) {
                     final PostVote vote = new PostVote();
                     vote.setPost(post);
-                    vote.setVoter(currentUser);
+                    vote.setVoter(getCurrentUser());
                     return vote;
                 }
             }
@@ -621,7 +618,7 @@ public class TestDataSource implements DataSource {
 
                 final Post post = new Post();
                 post.setBodyRaw(rawBody);
-                post.setAuthor(currentUser);
+                post.setAuthor(getCurrentUser());
                 post.setTime(new Date());
 
                 final DiscussionThread thread = em.find(DiscussionThread.class,
@@ -787,7 +784,7 @@ public class TestDataSource implements DataSource {
                 newThread.setTopic(topic);
 
                 Post firstPost = new Post();
-                firstPost.setAuthor(currentUser);
+                firstPost.setAuthor(getCurrentUser());
                 firstPost.setBodyRaw(rawBody);
                 firstPost.setTime(new Date());
 
@@ -1042,6 +1039,10 @@ public class TestDataSource implements DataSource {
 
     @Override
     public User getCurrentUser() {
-        return currentUser;
+        try {
+            return getUser(CURRENT_USER_ID);
+        } catch (DataSourceException e) {
+            return new User();
+        }
     }
 }

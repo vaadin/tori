@@ -43,6 +43,7 @@ import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Field;
@@ -69,6 +70,7 @@ public class AuthoringComponent extends PostComponent {
     private VerticalLayout editorLayout;
     private BBCodeWysiwygEditor editor;
     private Upload attach;
+    private CheckBox followCheckbox;
 
     public AuthoringComponent(final AuthoringListener listener) {
         super(null, null);
@@ -139,9 +141,11 @@ public class AuthoringComponent extends PostComponent {
         result.setMargin(true);
         result.addComponent(new Button("Post Reply",
                 new Button.ClickListener() {
+
                     @Override
                     public void buttonClick(ClickEvent event) {
-                        listener.submit(editor.getValue(), attachments);
+                        listener.submit(editor.getValue(), attachments,
+                                followCheckbox.getValue());
                         editor.setValue("");
                         attachments.clear();
                         updateAttachmentList();
@@ -150,6 +154,9 @@ public class AuthoringComponent extends PostComponent {
 
         attach = buildAttachUpload();
         result.addComponent(attach);
+        followCheckbox = new CheckBox("Follow topic after posting", true);
+        result.addComponent(followCheckbox);
+
         result.setExpandRatio(attach, 1.0f);
 
         return result;
@@ -284,7 +291,8 @@ public class AuthoringComponent extends PostComponent {
     }
 
     public interface AuthoringListener {
-        void submit(String rawBody, Map<String, byte[]> attachments);
+        void submit(String rawBody, Map<String, byte[]> attachments,
+                boolean follow);
 
         void inputValueChanged(String value);
     }

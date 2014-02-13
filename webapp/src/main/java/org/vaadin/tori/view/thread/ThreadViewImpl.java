@@ -84,10 +84,11 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     private Component buildReply() {
         AuthoringListener replyListener = new AuthoringListener() {
             @Override
-            public void submit(String rawBody, Map<String, byte[]> attachments) {
-                getInputCache().remove(viewData.getThreadTopic());
+            public void submit(String rawBody, Map<String, byte[]> attachments,
+                    boolean follow) {
                 if (!rawBody.trim().isEmpty()) {
-                    getPresenter().sendReply(rawBody, attachments);
+                    getPresenter().sendReply(rawBody, attachments, follow);
+                    getInputCache().remove(viewData.getThreadTopic());
                     ToriUI.getCurrent().trackAction("reply");
                     reply.addStyleName(STYLE_REPLY_HIDDEN);
                     ToriScheduler.get().scheduleDeferred(
@@ -199,7 +200,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public void setViewData(ViewData viewData) {
         reply.setViewData(viewData);
-        reply.setVisible(viewData.mayReplyInThread());
+        reply.setVisible(viewData.mayReplyInThread()
+                && !viewData.isUserBanned());
         reply.insertIntoMessage(getInputCache().get(viewData.getThreadTopic()));
         this.viewData = viewData;
     }

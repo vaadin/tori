@@ -110,6 +110,8 @@ public interface ThreadView extends View {
         String getThreadTopic();
 
         Long getThreadId();
+
+        boolean isUserBanned();
     }
 
 }

@@ -1417,11 +1417,11 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
     }
 
     @Override
-    public User getCurrentUser() throws DataSourceException {
+    public User getCurrentUser() {
         try {
             return getUser(currentUserId);
         } catch (NestableException e) {
-            throw new DataSourceException(e);
+            return EntityFactoryUtil.createAnonymousUser(imagePath);
         }
     }
 

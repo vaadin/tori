@@ -264,11 +264,8 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         }
     }
 
-    private ViewData getViewData(final DiscussionThread currentThread)
-            throws DataSourceException {
+    private ViewData getViewData(final DiscussionThread currentThread) {
         return new ViewData() {
-            private final User currentUser = dataSource.getCurrentUser();
-
             @Override
             public boolean mayAddFiles() {
                 Category category = currentThread.getCategory();
@@ -290,12 +287,12 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
             @Override
             public String getCurrentUserName() {
-                return currentUser.getDisplayedName();
+                return dataSource.getCurrentUser().getDisplayedName();
             }
 
             @Override
             public String getCurrentUserAvatarUrl() {
-                return currentUser.getAvatarUrl();
+                return dataSource.getCurrentUser().getAvatarUrl();
             }
 
             @Override
@@ -306,6 +303,11 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             @Override
             public Long getThreadId() {
                 return currentThread.getId();
+            }
+
+            @Override
+            public boolean isUserBanned() {
+                return dataSource.getCurrentUser().isBanned();
             }
         };
     }
@@ -446,14 +448,21 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         }
     }
 
-    public void sendReply(final String rawBody, Map<String, byte[]> attachments) {
+    public void sendReply(final String rawBody,
+            Map<String, byte[]> attachments, boolean follow) {
         try {
             final Post updatedPost = dataSource.saveReply(rawBody, attachments,
                     currentThread.getId());
+
+            if (follow && !dataSource.isFollowingThread(currentThread.getId())) {
+                dataSource.followThread(currentThread.getId());
+            } else if (!follow
+                    && dataSource.isFollowingThread(currentThread.getId())) {
+                dataSource.unfollowThread(currentThread.getId());
+            }
             dataSource.markRead(updatedPost.getThread());
             messaging.sendUserAuthored(updatedPost.getId(),
                     currentThread.getId());
-
             view.appendPosts(Arrays.asList(getPostData(updatedPost, false)));
         } catch (final DataSourceException e) {
             view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);

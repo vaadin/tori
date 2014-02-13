@@ -117,10 +117,10 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
                 try {
                     if (dataSource.isFollowingThread(threadId)) {
                         dataSource.unfollowThread(threadId);
-                        Notification.show("Thread unfollowed");
+                        Notification.show("Topic unfollowed");
                     } else {
                         dataSource.followThread(threadId);
-                        Notification.show("Following thread");
+                        Notification.show("Following topic");
                     }
                     updateFollowButtonStyle();
                 } catch (Exception e) {
@@ -192,7 +192,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
                 updateFollowButtonStyle();
                 parentCategory = thread.getCategory();
             } catch (Exception e) {
-                ((ThreadView) view).showError("No thread found");
+                ((ThreadView) view).showError("No topic found");
                 e.printStackTrace();
                 ToriNavigator.getCurrent().navigateToDashboard();
             }
@@ -225,7 +225,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
     }
 
     private Component getDashboardLink() {
-        return new Link("Dashboard", new ExternalResource("#"
+        return new Link(getDashboardTitle(), new ExternalResource("#"
                 + ToriNavigator.ApplicationView.DASHBOARD.getUrl()));
     }
 
