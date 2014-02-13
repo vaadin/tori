@@ -336,4 +336,6 @@ public interface DataSource {
     Post saveReply(String rawBody, Map<String, byte[]> attachments,
             long threadId) throws DataSourceException;
 
+    User getCurrentUser() throws DataSourceException;
+
 }

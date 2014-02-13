@@ -4,9 +4,9 @@
 @import "categoryview.scss";
 @import "breadcrumbs.scss";
 @import "threadlisting.scss";
-@import "threadview.scss";
 @import "recentbar.scss";
 @import "floatingcomponent.scss";
+@import "authoring.scss";
 
 @font-face {
     font-family: 'Tori-Icons';
@@ -25,6 +25,7 @@
     @include post;
     @include recentbar;
     @include floatingcomponent;
+    @include authoring;
     
     &.v-app,
     .v-ui {
@@ -36,10 +37,6 @@
    	.debugcontrolpanel {
    		margin-bottom: 50px;
    	}
-    
-    .portlet-body & .v-ui{
-    	overflow: visible;
-    }
     
     .v-widget {
         font-family: inherit;

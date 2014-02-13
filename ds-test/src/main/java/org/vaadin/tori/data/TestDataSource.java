@@ -310,7 +310,7 @@ public class TestDataSource implements DataSource {
     }
 
     private static interface Command<T> {
-        T execute(EntityManager em);
+        T execute(EntityManager em) throws DataSourceException;
     }
 
     @Override
@@ -466,7 +466,8 @@ public class TestDataSource implements DataSource {
         final Post post = getPost(postId);
         executeWithEntityManager(new Command<Void>() {
             @Override
-            public Void execute(final EntityManager em) {
+            public Void execute(final EntityManager em)
+                    throws DataSourceException {
                 final EntityTransaction transaction = em.getTransaction();
                 transaction.begin();
                 try {
@@ -482,6 +483,7 @@ public class TestDataSource implements DataSource {
                     if (transaction.isActive()) {
                         transaction.rollback();
                     }
+                    throw new DataSourceException(e);
                 }
                 return null;
             }
@@ -544,6 +546,15 @@ public class TestDataSource implements DataSource {
                 final EntityTransaction transaction = em.getTransaction();
                 transaction.begin();
                 em.merge(vote);
+
+                Post post = em.find(Post.class, vote.getPost().getId());
+                List<PostVote> postVotes = post.getPostVotes();
+                if (postVotes == null) {
+                    post.setPostVotes(new ArrayList<PostVote>());
+                    postVotes = post.getPostVotes();
+                }
+                postVotes.add(vote);
+
                 transaction.commit();
                 return null;
             }
@@ -1027,5 +1038,10 @@ public class TestDataSource implements DataSource {
         System.out.println("Post: " + postId);
         System.out.println("Reason: " + reason);
         System.out.println("Info: " + additionalInfo);
+    }
+
+    @Override
+    public User getCurrentUser() {
+        return currentUser;
     }
 }

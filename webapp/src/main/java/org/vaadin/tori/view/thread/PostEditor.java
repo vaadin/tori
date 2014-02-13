@@ -36,7 +36,8 @@ public class PostEditor extends VerticalLayout {
         this.listener = listener;
         addStyleName("posteditor");
         setSizeFull();
-        Component editor = buildEditor(rawBody);
+        editor = buildEditor();
+        editor.setValue(rawBody);
         addComponent(editor);
         setExpandRatio(editor, 1.0f);
         addComponent(buildButtons());
@@ -71,9 +72,8 @@ public class PostEditor extends VerticalLayout {
         return result;
     }
 
-    private Component buildEditor(String rawBody) {
-        editor = new BBCodeWysiwygEditor(null, false);
-        editor.setValue(rawBody);
+    private BBCodeWysiwygEditor buildEditor() {
+        editor = new BBCodeWysiwygEditor(false);
         editor.setSizeFull();
         return editor;
     }

@@ -81,6 +81,14 @@ public class Post extends AbstractEntity {
         this.bodyRaw = bodyRaw;
     }
 
+    public List<PostVote> getPostVotes() {
+        return postVotes;
+    }
+
+    public void setPostVotes(List<PostVote> postVotes) {
+        this.postVotes = postVotes;
+    }
+
     /** Gets the unformatted forum post. */
     public String getBodyRaw() {
         return bodyRaw;

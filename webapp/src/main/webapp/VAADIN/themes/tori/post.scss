@@ -1,8 +1,8 @@
 @mixin post {
 	.post {
 	    width: 100%;
-	    display: table;
-	    table-layout: fixed;
+	    /*display: table;
+	    table-layout: fixed;*/
 	    position: relative;
 	    
 	    .dropdown {
@@ -29,6 +29,7 @@
             width: 62px;
             height: 62px;
             background-size: 62px auto;
+            background-repeat: no-repeat;
             border-radius: 50%;
             border: $post-avatar-border;
             overflow: hidden;
@@ -229,6 +230,9 @@
 	        padding: 17px 10px 6px;
 			box-sizing: border-box;
 			display: inline-block;
+			font-size: 13px;
+    		font-family: HelveticaNeue-Light;
+    		color: #888;
 	    }
 	    
 	    .vote, .score {
@@ -236,10 +240,7 @@
 	    }
 	    
 	    .quoteforreply, .flagpost {
-	    	font-family: HelveticaNeue-Light;
-	    	font-size: 13px;
 	    	float: right;
-	    	color: #888;
 	    	cursor: pointer;
 	    	margin-left: 30px;
 	    }
@@ -253,10 +254,8 @@
 	    
 	    .flagpost .v-button {
     		padding: 0;
-    		font-size: 13px;
-    		font-family: HelveticaNeue-Light;
-    		color: #888;
     		border: none;
+    		color: #888;
     		
     		&:before {
 		    	font-family: "Tori-Icons";

@@ -51,7 +51,7 @@ import com.vaadin.ui.Notification;
 public class PostComponent extends AbstractComponentContainer implements
         PostComponentRpc, PostEditorListener {
 
-    private static final String DELETE_CAPTION = "Delete Post";
+    private static final String DELETE_CAPTION = "Delete Post...";
     private static final String EDIT_CAPTION = "Edit Post";
     private static final String BAN_CAPTION = "Ban Author";
     private static final String UNBAN_CAPTION = "Unban Author";
@@ -72,6 +72,10 @@ public class PostComponent extends AbstractComponentContainer implements
         registerRpc(this, PostComponentRpc.class);
         setStyleName("post");
 
+        initData();
+    }
+
+    protected void initData() {
         updatePrimaryData();
 
         ToriScheduler.get().scheduleManual(new ScheduledCommand() {
@@ -80,7 +84,6 @@ public class PostComponent extends AbstractComponentContainer implements
                 updateAdditionalData();
             }
         });
-
     }
 
     private void updatePrimaryData() {

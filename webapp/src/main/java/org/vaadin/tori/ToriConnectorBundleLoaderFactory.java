@@ -45,7 +45,6 @@ import com.vaadin.client.ui.optiongroup.OptionGroupConnector;
 import com.vaadin.client.ui.orderedlayout.HorizontalLayoutConnector;
 import com.vaadin.client.ui.orderedlayout.VerticalLayoutConnector;
 import com.vaadin.client.ui.panel.PanelConnector;
-import com.vaadin.client.ui.popupview.PopupViewConnector;
 import com.vaadin.client.ui.table.TableConnector;
 import com.vaadin.client.ui.textarea.TextAreaConnector;
 import com.vaadin.client.ui.textfield.TextFieldConnector;
@@ -79,7 +78,6 @@ public class ToriConnectorBundleLoaderFactory extends
         addConnector(PanelConnector.class, true);
         addConnector(LabelConnector.class, true);
         addConnector(PopupButtonConnector.class, true);
-        addConnector(PopupViewConnector.class, true);
         addConnector(CKEditorConnector.class, true);
         addConnector(TreeTableConnector.class, true);
         addConnector(ThreadListingConnector.class, true);

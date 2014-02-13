@@ -39,10 +39,11 @@
     	padding: 7px 0;
     	
     	.v-menubar-menuitem {
-    		line-height: 1.5;
+    		line-height: 22px;
     		padding-left: 17px;
     		cursor: pointer;
     		color: $dropdown-highlight-color;
+    		font-size: 13px;
     	}
     	
     	.v-menubar-menuitem-caption {

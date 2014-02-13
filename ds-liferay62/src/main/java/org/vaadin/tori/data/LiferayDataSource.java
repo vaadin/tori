@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Vaadin Ltd.
+ * Copyright 2014 Vaadin Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -658,7 +658,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             String postUrl) {
         String reporterEmailAddress = "";
         try {
-            reporterEmailAddress = getCurrentUser().getEmailAddress();
+            reporterEmailAddress = getCurrentLiferayUser().getEmailAddress();
         } catch (final PortalException e) {
             log.error("Couldn't get the email address of current user.", e);
         } catch (final SystemException e) {
@@ -783,7 +783,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         boolean result = false;
         if (currentUserId > 0) {
             try {
-                final com.liferay.portal.model.User user = getCurrentUser();
+                final com.liferay.portal.model.User user = getCurrentLiferayUser();
                 result = SubscriptionLocalServiceUtil.isSubscribed(
                         user.getCompanyId(), user.getUserId(),
                         MBThread.class.getName(), threadId);
@@ -1156,7 +1156,7 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
         return entityId;
     }
 
-    private com.liferay.portal.model.User getCurrentUser()
+    private com.liferay.portal.model.User getCurrentLiferayUser()
             throws PortalException, SystemException {
         if (currentUser == null && currentUserId > 0) {
             currentUser = UserLocalServiceUtil.getUser(currentUserId);
@@ -1414,6 +1414,15 @@ public class LiferayDataSource implements DataSource, PortletRequestAware {
             throw new DataSourceException(e);
         }
         return result;
+    }
+
+    @Override
+    public User getCurrentUser() throws DataSourceException {
+        try {
+            return getUser(currentUserId);
+        } catch (NestableException e) {
+            throw new DataSourceException(e);
+        }
     }
 
 }

@@ -64,15 +64,11 @@
 	    &:first-child .latesttime:before {
 	 		content: "LATEST";
         	margin-right: 10px;
-        	font-size: 12px;
-        	color: #555; 
 	 	}
 	 	
 	 	&:first-child .postcount:before {
 			content: "POSTS";
         	margin-right: 10px;
-        	font-size: 12px;
-        	color: #555; 
 		}
 		
 		&.following .topic:before {
@@ -129,6 +125,8 @@
 	 	text-align: right;
 		width: 65px;
 		margin-left: 0;
+		color: #888;
+		font-size: 12px;
 	 }
 	 
 	 .latesttime {
@@ -137,6 +135,7 @@
 		overflow: hidden;
 		font-size: 12px;
 		text-align: right;
+		color: #888;
 	 }
 	 
 	 .dropdown {

@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.View;
@@ -32,14 +31,7 @@ public interface ThreadView extends View {
 
     void showError(String message);
 
-    /**
-     * Acknowledge that the post was properly accepted and saved.
-     * 
-     * @param updatedPost
-     *            The new {@link Post} <strong>that should be added to the
-     *            thread visually (if applicable).</strong>
-     */
-    void confirmReplyPostedAndShowIt(Post updatedPost);
+    void appendPosts(List<PostData> postData);
 
     void redirectToDashboard();
 
@@ -52,9 +44,7 @@ public interface ThreadView extends View {
 
     void otherUserTyping(User user);
 
-    void setThread(DiscussionThread currentThread);
-
-    void setViewPermissions(ViewPermissions viewPermissions);
+    void setViewData(ViewData viewPermissions);
 
     public interface PostData {
 
@@ -106,12 +96,20 @@ public interface ThreadView extends View {
 
     }
 
-    interface ViewPermissions {
+    interface ViewData {
         boolean mayAddFiles();
 
         int getMaxFileSize();
 
         boolean mayReplyInThread();
+
+        String getCurrentUserName();
+
+        String getCurrentUserAvatarUrl();
+
+        String getThreadTopic();
+
+        Long getThreadId();
     }
 
 }

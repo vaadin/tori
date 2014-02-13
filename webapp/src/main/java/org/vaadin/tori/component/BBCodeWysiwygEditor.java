@@ -38,9 +38,8 @@ import com.vaadin.ui.UI;
 @SuppressWarnings("serial")
 public class BBCodeWysiwygEditor extends CKEditorTextField {
 
-    public BBCodeWysiwygEditor(final String captionText, boolean autoGrow) {
+    public BBCodeWysiwygEditor(boolean autoGrow) {
         addStyleName("wysiwyg-editor");
-        setCaption(captionText);
         setHeight(null);
         setImmediate(true);
 

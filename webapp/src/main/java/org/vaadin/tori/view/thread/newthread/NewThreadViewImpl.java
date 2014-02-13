@@ -16,12 +16,9 @@
 
 package org.vaadin.tori.view.thread.newthread;
 
-import java.util.Map;
-
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.AuthoringComponent;
-import org.vaadin.tori.component.AuthoringComponent.AuthoringListener;
 import org.vaadin.tori.component.ComponentUtil;
 import org.vaadin.tori.component.ComponentUtil.HeadingLevel;
 import org.vaadin.tori.mvp.AbstractView;
@@ -63,16 +60,17 @@ public class NewThreadViewImpl extends
     }
 
     private Component buildAuthoringComponent() {
-        AuthoringListener listener = new AuthoringListener() {
-            @Override
-            public void submit(String rawBody, Map<String, byte[]> attachments) {
-                final String topic = topicField.getValue();
-                getPresenter().createNewThread(topic, rawBody, attachments);
-            }
-
-        };
-        return newThreadComponent = new AuthoringComponent(listener,
-                "Post body", true);
+        // AuthoringListener listener = new AuthoringListener() {
+        // @Override
+        // public void submit(String rawBody, Map<String, byte[]> attachments) {
+        // final String topic = topicField.getValue();
+        // getPresenter().createNewThread(topic, rawBody, attachments);
+        // }
+        //
+        // };
+        // return newThreadComponent = new AuthoringComponent(listener,
+        // "Post body", true);
+        return null;
     }
 
     private Component buildTopicLayout() {
@@ -137,8 +135,8 @@ public class NewThreadViewImpl extends
 
     @Override
     public void setViewPermissions(ViewPermissions viewPermissions) {
-        newThreadComponent.setUserMayAddFiles(viewPermissions.mayAddFiles());
-        newThreadComponent.setMaxFileSize(viewPermissions.getMaxFileSize());
+        // newThreadComponent.setUserMayAddFiles(viewPermissions.mayAddFiles());
+        // newThreadComponent.setMaxFileSize(viewPermissions.getMaxFileSize());
     }
 
     @Override

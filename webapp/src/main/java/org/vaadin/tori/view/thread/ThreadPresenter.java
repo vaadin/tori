@@ -17,6 +17,7 @@
 package org.vaadin.tori.view.thread;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,19 +37,14 @@ import org.vaadin.tori.util.ToriActivityMessaging.UserAuthoredListener;
 import org.vaadin.tori.util.ToriActivityMessaging.UserTypingListener;
 import org.vaadin.tori.util.UserBadgeProvider;
 import org.vaadin.tori.view.thread.ThreadView.PostData;
-import org.vaadin.tori.view.thread.ThreadView.ViewPermissions;
+import org.vaadin.tori.view.thread.ThreadView.ViewData;
 
 public class ThreadPresenter extends Presenter<ThreadView> implements
         UserTypingListener, UserAuthoredListener {
 
-    public static final String NEW_THREAD_ARGUMENT = "new";
-
     /** This can be null if the user is visiting a non-existing thread. */
 
     private DiscussionThread currentThread;
-
-    // private final LinkedHashMap<String, byte[]> attachments = new
-    // LinkedHashMap<String, byte[]>();
 
     public ThreadPresenter(ThreadView view) {
         super(view);
@@ -236,28 +232,8 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
                     }
 
                     displayPosts(threadId, selectedPostId);
-                    view.setViewPermissions(new ViewPermissions() {
-                        @Override
-                        public boolean mayAddFiles() {
-                            Category category = currentThread.getCategory();
-                            return authorizationService
-                                    .mayAddFilesInCategory(category != null ? category
-                                            .getId() : null);
-                        }
 
-                        @Override
-                        public int getMaxFileSize() {
-                            return dataSource.getAttachmentMaxFileSize();
-                        }
-
-                        @Override
-                        public boolean mayReplyInThread() {
-                            return authorizationService
-                                    .mayReplyInThread(threadId);
-                        }
-                    });
-                    view.setThread(currentThread);
-
+                    view.setViewData(getViewData(currentThread));
                 } else {
                     log.error("requestedthread was null, but no exception was thrown.");
                 }
@@ -286,6 +262,52 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
                         + "mark thread as read.", e);
             }
         }
+    }
+
+    private ViewData getViewData(final DiscussionThread currentThread)
+            throws DataSourceException {
+        return new ViewData() {
+            private final User currentUser = dataSource.getCurrentUser();
+
+            @Override
+            public boolean mayAddFiles() {
+                Category category = currentThread.getCategory();
+                return authorizationService
+                        .mayAddFilesInCategory(category != null ? category
+                                .getId() : null);
+            }
+
+            @Override
+            public int getMaxFileSize() {
+                return dataSource.getAttachmentMaxFileSize();
+            }
+
+            @Override
+            public boolean mayReplyInThread() {
+                return authorizationService.mayReplyInThread(currentThread
+                        .getId());
+            }
+
+            @Override
+            public String getCurrentUserName() {
+                return currentUser.getDisplayedName();
+            }
+
+            @Override
+            public String getCurrentUserAvatarUrl() {
+                return currentUser.getAvatarUrl();
+            }
+
+            @Override
+            public String getThreadTopic() {
+                return currentThread.getTopic();
+            }
+
+            @Override
+            public Long getThreadId() {
+                return currentThread.getId();
+            }
+        };
     }
 
     private void displayPosts(long threadId, Long selectedPostId) {
@@ -432,7 +454,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             messaging.sendUserAuthored(updatedPost.getId(),
                     currentThread.getId());
 
-            view.confirmReplyPostedAndShowIt(updatedPost);
+            view.appendPosts(Arrays.asList(getPostData(updatedPost, false)));
         } catch (final DataSourceException e) {
             view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
             log.error(e);

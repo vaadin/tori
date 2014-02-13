@@ -26,19 +26,11 @@ import org.vaadin.tori.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.AuthoringComponent;
 import org.vaadin.tori.component.AuthoringComponent.AuthoringListener;
-import org.vaadin.tori.component.BBCodeWysiwygEditor;
 import org.vaadin.tori.component.PanicComponent;
-import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.AbstractView;
 
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.event.FieldEvents.BlurEvent;
-import com.vaadin.event.FieldEvents.BlurListener;
-import com.vaadin.event.FieldEvents.FocusEvent;
-import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -55,11 +47,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     private final static String INPUT_CACHE_NAME = "inputcache";
     private final static String REPLY_ID = "threadreply";
+    private final static String STYLE_REPLY_HIDDEN = "replyhidden";
     private PostsLayout postsLayout;
     private AuthoringComponent reply;
-    private String threadTopic;
-
-    private long threadId;
+    private ViewData viewData;
 
     @Override
     protected Component createCompositionRoot() {
@@ -71,7 +62,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         setStyleName("threadview");
         layout.setWidth("100%");
         layout.addComponent(buildPostsLayout());
-        buildReply();
+
+        final Component reply = buildReply();
         ToriScheduler.get().scheduleManual(new ScheduledCommand() {
             @Override
             public void execute() {
@@ -93,39 +85,31 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         AuthoringListener replyListener = new AuthoringListener() {
             @Override
             public void submit(String rawBody, Map<String, byte[]> attachments) {
+                getInputCache().remove(viewData.getThreadTopic());
                 if (!rawBody.trim().isEmpty()) {
                     getPresenter().sendReply(rawBody, attachments);
                     ToriUI.getCurrent().trackAction("reply");
+                    reply.addStyleName(STYLE_REPLY_HIDDEN);
+                    ToriScheduler.get().scheduleDeferred(
+                            new ScheduledCommand() {
+                                @Override
+                                public void execute() {
+                                    reply.removeStyleName(STYLE_REPLY_HIDDEN);
+                                }
+                            });
                 }
             }
-        };
-        reply = new AuthoringComponent(replyListener, "Post body", true);
-        reply.setId(REPLY_ID);
-        reply.getInput().setValue(getInputCache().get(threadTopic));
-        reply.getInput().addValueChangeListener(new ValueChangeListener() {
+
             @Override
-            public void valueChange(ValueChangeEvent event) {
-                getInputCache().put(threadTopic,
-                        (String) event.getProperty().getValue());
+            public void inputValueChanged(String value) {
+                if (viewData != null) {
+                    getInputCache().put(viewData.getThreadTopic(), value);
+                }
                 getPresenter().inputValueChanged();
             }
-        });
-
-        BBCodeWysiwygEditor editor = (BBCodeWysiwygEditor) reply.getInput();
-        editor.addBlurListener(new BlurListener() {
-            @Override
-            public void blur(BlurEvent event) {
-                UI.getCurrent().setPollInterval(ToriUI.DEFAULT_POLL_INTERVAL);
-            }
-        });
-
-        editor.addFocusListener(new FocusListener() {
-            @Override
-            public void focus(FocusEvent event) {
-                UI.getCurrent().setPollInterval(3000);
-            }
-        });
-
+        };
+        reply = new AuthoringComponent(replyListener);
+        reply.setId(REPLY_ID);
         return reply;
     }
 
@@ -145,8 +129,12 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void confirmReplyPostedAndShowIt(final Post newPost) {
-        // postsLayout.addComponent(newPostComponent(newPost));
+    public void appendPosts(final List<PostData> posts) {
+        for (PostData postData : posts) {
+            postsLayout
+                    .addComponent(new PostComponent(postData, getPresenter()));
+        }
+        ToriScheduler.get().executeManualCommands();
     }
 
     @Override
@@ -209,25 +197,21 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void setViewPermissions(ViewPermissions viewPermissions) {
-        reply.setUserMayAddFiles(viewPermissions.mayAddFiles());
-        reply.setMaxFileSize(viewPermissions.getMaxFileSize());
-        reply.setVisible(viewPermissions.mayReplyInThread());
+    public void setViewData(ViewData viewData) {
+        reply.setViewData(viewData);
+        reply.setVisible(viewData.mayReplyInThread());
+        reply.insertIntoMessage(getInputCache().get(viewData.getThreadTopic()));
+        this.viewData = viewData;
     }
 
     @Override
     public String getTitle() {
-        return threadTopic;
+        return viewData.getThreadTopic();
     }
 
     @Override
     public Long getUrlParameterId() {
-        return threadId;
+        return viewData.getThreadId();
     }
 
-    @Override
-    public void setThread(DiscussionThread currentThread) {
-        threadTopic = currentThread.getTopic();
-        threadId = currentThread.getId();
-    }
 }

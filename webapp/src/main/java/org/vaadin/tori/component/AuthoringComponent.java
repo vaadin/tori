@@ -18,73 +18,144 @@ package org.vaadin.tori.component;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.vaadin.tori.ToriScheduler;
+import org.vaadin.tori.ToriScheduler.ScheduledCommand;
+import org.vaadin.tori.ToriUI;
+import org.vaadin.tori.view.thread.PostComponent;
+import org.vaadin.tori.view.thread.ThreadView.ViewData;
+import org.vaadin.tori.widgetset.client.ui.post.PostComponentClientRpc;
+import org.vaadin.tori.widgetset.client.ui.post.PostData.PostAdditionalData;
+import org.vaadin.tori.widgetset.client.ui.post.PostData.PostPrimaryData;
+
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.event.FieldEvents.BlurEvent;
+import com.vaadin.event.FieldEvents.BlurListener;
+import com.vaadin.event.FieldEvents.FocusEvent;
+import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.Reindeer;
 
 @SuppressWarnings("serial")
-public class AuthoringComponent extends CustomComponent {
-    public interface AuthoringListener {
-        void submit(String rawBody, Map<String, byte[]> attachments);
-    }
-
-    private final ClickListener POST_LISTENER = new Button.ClickListener() {
-        @Override
-        public void buttonClick(final ClickEvent event) {
-            listener.submit(input.getValue(), attachments);
-            input.setValue("");
-        }
-    };
+public class AuthoringComponent extends PostComponent {
 
     private final Map<String, byte[]> attachments = new HashMap<String, byte[]>();
-    private final VerticalLayout layout = new VerticalLayout();
     private final AuthoringListener listener;
-    private final Field<String> input;
-    private final VerticalLayout attachmentsLayout;
+    private CssLayout attachmentsLayout;
     private String attachmentFileName;
     private ByteArrayOutputStream attachmentData;
     private int maxFileSize = 307200;
-
+    private VerticalLayout editorLayout;
+    private BBCodeWysiwygEditor editor;
     private Upload attach;
 
-    public AuthoringComponent(final AuthoringListener listener,
-            final String captionText, final boolean autoGrow) {
+    public AuthoringComponent(final AuthoringListener listener) {
+        super(null, null);
         this.listener = listener;
+        addStyleName("authoring");
+        addStyleName("editing");
 
-        setCompositionRoot(layout);
-        setStyleName("authoring");
-        layout.setWidth("100%");
-        layout.setSpacing(true);
-        setWidth("100%");
+        addComponent(buildEditorLayout());
+    }
 
-        input = new BBCodeWysiwygEditor(captionText, autoGrow);
-        layout.addComponent(input);
+    private Component buildEditorLayout() {
+        editorLayout = new VerticalLayout();
+        editorLayout.addStyleName("posteditor");
+        editor = buildEditor();
+        ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override
+            public void execute() {
+                ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        editorLayout.addComponent(editor, 0);
+                    }
+                });
+            }
+        });
 
-        HorizontalLayout buttonsLayout = new HorizontalLayout();
-        buttonsLayout.setSpacing(true);
+        attachmentsLayout = new CssLayout();
+        attachmentsLayout.setVisible(false);
+        attachmentsLayout.setStyleName("attachments");
+        editorLayout.addComponent(attachmentsLayout);
+        editorLayout.addComponent(buildButtons());
+        return editorLayout;
+    }
 
-        Button postButton = new Button("Post", POST_LISTENER);
-        postButton.addStyleName(Reindeer.BUTTON_DEFAULT);
-        buttonsLayout.addComponent(postButton);
+    private BBCodeWysiwygEditor buildEditor() {
+        final BBCodeWysiwygEditor editor = new BBCodeWysiwygEditor(true);
+        editor.setSizeFull();
 
+        editor.addValueChangeListener(new ValueChangeListener() {
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                listener.inputValueChanged(editor.getValue());
+            }
+        });
+
+        editor.addBlurListener(new BlurListener() {
+            @Override
+            public void blur(BlurEvent event) {
+                UI.getCurrent().setPollInterval(ToriUI.DEFAULT_POLL_INTERVAL);
+            }
+        });
+
+        editor.addFocusListener(new FocusListener() {
+            @Override
+            public void focus(FocusEvent event) {
+                UI.getCurrent().setPollInterval(3000);
+            }
+        });
+
+        return editor;
+    }
+
+    private Component buildButtons() {
+        HorizontalLayout result = new HorizontalLayout();
+        result.addStyleName("buttonslayout");
+        result.setWidth(100.0f, Unit.PERCENTAGE);
+        result.setSpacing(true);
+        result.setMargin(true);
+        result.addComponent(new Button("Post Reply",
+                new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(ClickEvent event) {
+                        listener.submit(editor.getValue(), attachments);
+                        editor.setValue("");
+                        attachments.clear();
+                        updateAttachmentList();
+                    }
+                }));
+
+        attach = buildAttachUpload();
+        result.addComponent(attach);
+        result.setExpandRatio(attach, 1.0f);
+
+        return result;
+    }
+
+    private Upload buildAttachUpload() {
         final Receiver receiver = new Receiver() {
 
             @Override
@@ -96,8 +167,8 @@ public class AuthoringComponent extends CustomComponent {
             }
         };
 
-        attach = new Upload(null, receiver);
-        attach.setButtonCaption("Attach file");
+        final Upload attach = new Upload(null, receiver);
+        attach.setButtonCaption("Add Attachment...");
         attach.setImmediate(true);
         attach.addSucceededListener(new Upload.SucceededListener() {
 
@@ -121,33 +192,23 @@ public class AuthoringComponent extends CustomComponent {
                 }
             }
         });
-        buttonsLayout.addComponent(attach);
+        return attach;
+    }
 
-        layout.addComponent(buttonsLayout);
-
-        attachmentsLayout = new VerticalLayout();
-        attachmentsLayout.setVisible(false);
-        attachmentsLayout.setCaption("Attachments");
-        attachmentsLayout.setStyleName("attachments");
-        layout.addComponent(attachmentsLayout);
+    @Override
+    protected void initData() {
     }
 
     public Field<String> getInput() {
-        return input;
+        return editor;
     }
 
     public void insertIntoMessage(final String unformattedText) {
-        final String text = input.getValue();
-        input.setValue(text + unformattedText);
-        input.focus();
-    }
-
-    public void setUserMayAddFiles(final boolean userMayAddFiles) {
-        attach.setVisible(userMayAddFiles);
-    }
-
-    public void setMaxFileSize(final int maxFileSize) {
-        this.maxFileSize = maxFileSize;
+        if (unformattedText != null) {
+            final String text = editor.getValue();
+            editor.setValue(text + unformattedText);
+        }
+        editor.focus();
     }
 
     private void updateAttachmentList() {
@@ -193,5 +254,38 @@ public class AuthoringComponent extends CustomComponent {
             attachmentsLayout.addComponent(wrapperLayout);
 
         }
+    }
+
+    @Override
+    public int getComponentCount() {
+        return 1;
+    }
+
+    @Override
+    public Iterator<Component> iterator() {
+        return Arrays.asList((Component) editorLayout).iterator();
+    }
+
+    public void setViewData(ViewData viewData) {
+        attach.setVisible(viewData.mayAddFiles());
+        maxFileSize = viewData.getMaxFileSize();
+
+        PostPrimaryData data = new PostPrimaryData();
+        data.setAuthorName(viewData.getCurrentUserName());
+        getRpcProxy(PostComponentClientRpc.class).setPostPrimaryData(data);
+
+        PostAdditionalData additionalData = new PostAdditionalData();
+        additionalData.setAuthorAvatarUrl(viewData.getCurrentUserAvatarUrl());
+        // data.setBadgeHTML(post.getBadgeHTML());
+        getRpcProxy(PostComponentClientRpc.class).setPostAdditionalData(
+                additionalData);
+
+        getRpcProxy(PostComponentClientRpc.class).editPost(editorLayout);
+    }
+
+    public interface AuthoringListener {
+        void submit(String rawBody, Map<String, byte[]> attachments);
+
+        void inputValueChanged(String value);
     }
 }

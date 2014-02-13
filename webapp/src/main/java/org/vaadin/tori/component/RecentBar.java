@@ -196,7 +196,6 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
                     post.getId()
                     );
             // @formatter:on
-
             return linkUrl;
         }
     }

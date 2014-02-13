@@ -1,0 +1,36 @@
+@mixin authoring {
+
+	.authoring {
+		transition: opacity 2000ms;
+		-webkit-transition: opacity 2000ms;
+	
+		.avatar {
+			opacity: 1;
+			visibility: visible;
+		}
+		
+		.permalink {
+			visibility: hidden;
+		}
+		
+		.posteditorplaceholder {
+			position: relative;
+		}
+		
+		.cke_inner {
+			min-height: 244px;
+		}
+		
+		.v-upload .v-button {
+			color: $secondary-button-color;
+        	border: $secondary-button-border;
+        	font-size: 14px;
+		}
+		
+		&.replyhidden {
+			transition: opacity 0ms;
+			-webkit-transition: opacity 0ms;
+			opacity: 0;
+		}
+	}
+}
