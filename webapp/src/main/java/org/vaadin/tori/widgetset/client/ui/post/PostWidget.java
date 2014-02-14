@@ -115,18 +115,20 @@ public class PostWidget extends Composite {
                 attachments.add(link);
             }
         }
-        setVisible(true);
-    }
 
-    public void updatePostData(PostAdditionalData data) {
-        prettyTime.setInnerText(data.getPrettyTime());
-        badge.setInnerHTML(data.getBadgeHTML());
         if (data.getAuthorAvatarUrl() != null) {
             avatar.getStyle().setBackgroundImage(
                     "url(" + data.getAuthorAvatarUrl() + ")");
         } else {
             avatar.addClassName("anonymous");
         }
+
+        setVisible(true);
+    }
+
+    public void updatePostData(PostAdditionalData data) {
+        prettyTime.setInnerText(data.getPrettyTime());
+        badge.setInnerHTML(data.getBadgeHTML());
         quote.setVisible(data.isQuotingEnabled());
         permaLink.setHref(data.getPermaLink());
 

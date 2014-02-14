@@ -265,7 +265,7 @@
 		    }
 	    }
 		    
-	    .vote, .settings .v-menubar-menuitem, .avatar, .badge, .postedtime, .quoteforreply, .flagpost {
+	    .vote, .settings .v-menubar-menuitem, .badge, .postedtime, .quoteforreply, .flagpost {
 	    	visibility: hidden;
 	    	opacity: 0;
 	    	transition: opacity 500ms, visibility 500ms;
@@ -277,7 +277,7 @@
 	}
 	
 	.ready .post {
-		.vote, .avatar, .badge, .postedtime, .quoteforreply, .flagpost {
+		.vote, .badge, .postedtime, .quoteforreply, .flagpost {
 	    	visibility: visible;
 	    	opacity: 1;
 	    }

@@ -831,11 +831,10 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void markRead(final DiscussionThread thread)
-            throws DataSourceException {
+    public void markThreadRead(long threadId) throws DataSourceException {
         System.out.println(String.format(
                 "Marking thread %d as read. Not actually implemented in "
-                        + getClass().getSimpleName() + ".", thread.getId()));
+                        + getClass().getSimpleName() + ".", threadId));
     }
 
     @Override

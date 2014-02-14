@@ -158,8 +158,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         reply.insertIntoMessage(textToAppend + "\n\n ");
         // Scroll to reply component
         UI.getCurrent().scrollIntoView(reply);
-        JavaScript.eval("document.getElementById('" + REPLY_ID
-                + "').scrollIntoView()");
+        JavaScript.eval("window.setTimeout(\"document.getElementById('"
+                + REPLY_ID + "').scrollIntoView()\",100)");
     }
 
     @Override

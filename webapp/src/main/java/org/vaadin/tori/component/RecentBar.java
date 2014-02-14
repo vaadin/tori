@@ -89,10 +89,13 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
             List<DiscussionThread> recentPosts = dataSource
                     .getRecentPosts(0, 1);
             if (!recentPosts.isEmpty()) {
-                current = new PostNotification(recentPosts.get(0)
-                        .getLatestPost());
-                current.setState(PostNotificationState.CURRENT);
-                notificationsLayout.addComponent(current);
+                Post latestPost = recentPosts.get(0).getLatestPost();
+                // TODO: Fix
+                if (latestPost != null && latestPost.getThread() != null) {
+                    current = new PostNotification(latestPost);
+                    current.setState(PostNotificationState.CURRENT);
+                    notificationsLayout.addComponent(current);
+                }
             }
         } catch (DataSourceException e) {
             e.printStackTrace();

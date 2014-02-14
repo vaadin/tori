@@ -11,7 +11,8 @@
 		<module>webapp</module>
 		<module>common</module>
 		<module>ds-test</module>
-<!-- 		<module>ds-liferay</module> -->
+		<module>ds-liferay-common</module>
+		<module>ds-liferay60</module>
 		<module>ds-liferay62</module>
 		<module>tori-services-vaadin</module>
 	</modules>
@@ -69,17 +70,22 @@
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
-				<artifactId>ds-liferay</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
 				<artifactId>ds-liferay62</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>tori-services-vaadin</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>ds-liferay60</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>ds-liferay-common</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>

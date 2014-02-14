@@ -147,6 +147,43 @@
 	 
 	 .threadlisting-placeholder {
 	 	height: 40px;
+	 	border-bottom: 1px solid #e8e8e8;
+	 
+	 	&:before {
+	 		padding-left: 26px;
+	 		content: "Loading Post...";
+	 		color: #888;
+	 		line-height: 40px;
+	 	}
+	 	
+	 	&.after {
+	        height: 1px;
+	        opacity: 1;
+	        -webkit-animation: loading 1000ms ease-in;
+	        -webkit-animation-iteration-count: infinite;
+	        animation: loading 1000ms ease-in;
+	        animation-iteration-count: infinite;
+	 	}
+		
 	 }
+}
+
+@keyframes loading {
+  0% {
+    width: 0%;
+    height: 2px;
+  }
+  30% {
+    width: 30%;
+    height: 1px;
+  }
+  70% {
+    width: 40%;
+    left: 60%;
+  }
+  100% {
+    width: 0%;
+    left: 100%;
+  }
 }
 

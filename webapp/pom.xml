@@ -61,12 +61,12 @@
 			<properties>
 				<liferay.versions>6.0.6</liferay.versions>
 				<productionMode>true</productionMode>
-				<tori.theme>tori-vaadin</tori.theme>
+				<tori.theme>tori</tori.theme>
 			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>${project.groupId}</groupId>
-					<artifactId>ds-liferay</artifactId>
+					<artifactId>ds-liferay60</artifactId>
 				</dependency>
 				<dependency>
 					<groupId>${project.groupId}</groupId>

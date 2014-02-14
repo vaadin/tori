@@ -250,11 +250,11 @@ public interface DataSource {
      * Marks the given thread as read. If no user is logged in, this method
      * doesn't do anything.
      * 
-     * @param thread
+     * @param threadId
      * @throws DataSourceException
      * @see {@link #isRead(DiscussionThread)}
      */
-    void markRead(DiscussionThread thread) throws DataSourceException;
+    void markThreadRead(long threadId) throws DataSourceException;
 
     List<DiscussionThread> getRecentPosts(int from, int to)
             throws DataSourceException;

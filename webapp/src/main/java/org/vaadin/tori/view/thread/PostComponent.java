@@ -91,6 +91,7 @@ public class PostComponent extends AbstractComponentContainer implements
         data.setAllowHTML(true);
         data.setAttachments(post.getAttachments());
         data.setAuthorName(post.getAuthorName());
+        data.setAuthorAvatarUrl(post.getAuthorAvatarUrl());
         data.setAuthorLink(post.getAuthorLink());
         data.setPostBody(post.getFormattedBody(true));
         getRpcProxy(PostComponentClientRpc.class).setPostPrimaryData(data);
@@ -101,7 +102,6 @@ public class PostComponent extends AbstractComponentContainer implements
         PostAdditionalData data = new PostAdditionalData();
         data.setPrettyTime(prettyTime.format(post.getTime()));
         data.setPermaLink(getPermaLinkUrl(post));
-        data.setAuthorAvatarUrl(post.getAuthorAvatarUrl());
         setUserIsBanned(post.isAuthorBanned());
         data.setBadgeHTML(post.getBadgeHTML());
         data.setQuotingEnabled(post.userMayQuote());

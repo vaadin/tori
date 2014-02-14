@@ -30,7 +30,6 @@ import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.view.thread.PostComponent;
 import org.vaadin.tori.view.thread.ThreadView.ViewData;
 import org.vaadin.tori.widgetset.client.ui.post.PostComponentClientRpc;
-import org.vaadin.tori.widgetset.client.ui.post.PostData.PostAdditionalData;
 import org.vaadin.tori.widgetset.client.ui.post.PostData.PostPrimaryData;
 
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -279,13 +278,13 @@ public class AuthoringComponent extends PostComponent {
 
         PostPrimaryData data = new PostPrimaryData();
         data.setAuthorName(viewData.getCurrentUserName());
+        data.setAuthorAvatarUrl(viewData.getCurrentUserAvatarUrl());
         getRpcProxy(PostComponentClientRpc.class).setPostPrimaryData(data);
 
-        PostAdditionalData additionalData = new PostAdditionalData();
-        additionalData.setAuthorAvatarUrl(viewData.getCurrentUserAvatarUrl());
+        // PostAdditionalData additionalData = new PostAdditionalData();
         // data.setBadgeHTML(post.getBadgeHTML());
-        getRpcProxy(PostComponentClientRpc.class).setPostAdditionalData(
-                additionalData);
+        // getRpcProxy(PostComponentClientRpc.class).setPostAdditionalData(
+        // additionalData);
 
         getRpcProxy(PostComponentClientRpc.class).editPost(editorLayout);
     }

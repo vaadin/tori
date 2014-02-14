@@ -52,7 +52,7 @@ public class PostsLayout extends CssLayout {
                 component.setId("scrollpostid");
                 UI.getCurrent().scrollIntoView(component);
                 JavaScript
-                        .eval("document.getElementById('scrollpostid').scrollIntoView()");
+                        .eval("window.setTimeout(\"document.getElementById('scrollpostid').scrollIntoView()\",100)");
                 scrollToComponent = null;
             }
             if (rendered > RENDER_BATCH_SIZE) {

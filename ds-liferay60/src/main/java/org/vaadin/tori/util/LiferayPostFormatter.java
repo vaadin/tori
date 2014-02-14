@@ -31,10 +31,10 @@ import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
 
-import com.liferay.portal.kernel.parsers.bbcode.BBCodeTranslatorUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.portlet.messageboards.util.BBCodeUtil;
 
 public class LiferayPostFormatter implements PostFormatter, PortletRequestAware {
 
@@ -57,10 +57,9 @@ public class LiferayPostFormatter implements PostFormatter, PortletRequestAware 
     @Override
     public String format(final String rawPostBody) {
         try {
-            String body = BBCodeTranslatorUtil.getHTML(rawPostBody.trim());
+            String body = BBCodeUtil.getHTML(rawPostBody.trim());
             body = StringUtil.replace(body, "@theme_images_path@/emoticons",
                     themeDisplay.getPathThemeImages() + "/emoticons");
-
             if (postReplacements != null) {
                 for (final Entry<String, String> entry : postReplacements
                         .entrySet()) {

@@ -26,6 +26,7 @@ public class PostData {
         private String authorName;
         private String authorLink;
         private String postBody;
+        private String authorAvatarUrl;
         private Map<String, String> attachments;
         private boolean allowHTML;
 
@@ -69,13 +70,19 @@ public class PostData {
             this.allowHTML = allowHTML;
         }
 
+        public String getAuthorAvatarUrl() {
+            return authorAvatarUrl;
+        }
+
+        public void setAuthorAvatarUrl(String authorAvatarUrl) {
+            this.authorAvatarUrl = authorAvatarUrl;
+        }
+
     }
 
     public static class PostAdditionalData {
-        // private String timeStamp;
         private String prettyTime;
         private String permaLink;
-        private String authorAvatarUrl;
         private Boolean upVoted;
         private long score;
         private boolean quotingEnabled;
@@ -84,14 +91,6 @@ public class PostData {
 
         private Connector settings;
         private Connector report;
-
-        public String getAuthorAvatarUrl() {
-            return authorAvatarUrl;
-        }
-
-        public void setAuthorAvatarUrl(String authorAvatarUrl) {
-            this.authorAvatarUrl = authorAvatarUrl;
-        }
 
         public String getPrettyTime() {
             return prettyTime;

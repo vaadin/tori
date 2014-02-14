@@ -254,7 +254,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         if (requestedThread != null) {
             try {
                 dataSource.incrementViewCount(requestedThread);
-                dataSource.markRead(requestedThread);
+                dataSource.markThreadRead(requestedThread.getId());
             } catch (final DataSourceException e) {
                 // Just log the exception, we don't want an exception in view
                 // count incrementing or marking as read to stop us here.
@@ -460,7 +460,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
                     && dataSource.isFollowingThread(currentThread.getId())) {
                 dataSource.unfollowThread(currentThread.getId());
             }
-            dataSource.markRead(updatedPost.getThread());
+            dataSource.markThreadRead(updatedPost.getThread().getId());
             messaging.sendUserAuthored(updatedPost.getId(),
                     currentThread.getId());
             view.appendPosts(Arrays.asList(getPostData(updatedPost, false)));
