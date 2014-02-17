@@ -18,11 +18,8 @@ package org.vaadin.tori.data;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -34,19 +31,26 @@ import org.vaadin.tori.data.entity.Attachment;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.exception.DataSourceException;
 
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.ProjectionFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.exception.NestableException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.ObjectValuePair;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.service.SubscriptionLocalServiceUtil;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBMessageConstants;
 import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.model.MBThreadConstants;
+import com.liferay.portlet.messageboards.model.MBThreadFlag;
 import com.liferay.portlet.messageboards.service.MBCategoryServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadFlagLocalServiceUtil;
@@ -70,44 +74,44 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     }
 
     @Override
-    public int getUnreadThreadCount(long categoryId) throws DataSourceException {
-        if (currentUserId <= 0) {
-            return 0;
-        }
+    public int getUnreadThreadCount(final long categoryId)
+            throws DataSourceException {
 
-        // FIXME Directly accessing Liferay's JDBC DataSource seems very
-        // fragile, but the most straightforward way to access the total unread
-        // count.
-        Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet result = null;
-        final long totalThreadCount = getThreadCountRecursively(categoryId);
-        try {
-            connection = LIferayCommonJdbcUtil.getJdbcConnection();
-            statement = connection
-                    .prepareStatement("select (? - count(MBThreadFlag.threadFlagId)) "
-                            + "from MBThreadFlag, MBThread "
-                            + "where MBThreadFlag.threadId = MBThread.threadId "
-                            + "and MBThread.categoryId = ? and MBThreadFlag.userId = ?");
+        int result = 0;
+        if (currentUserId > 0) {
+            // 0. All the category ids (recursively) including the parameter
+            @SuppressWarnings("rawtypes")
+            Collection categoryIds = getCategoryIdsRecursively(categoryId);
 
-            statement.setLong(1, totalThreadCount);
-            statement.setLong(2, categoryId);
-            statement.setLong(3, currentUserId);
+            // 1. Ids of all the threads user has read
+            DynamicQuery readThreadIds = DynamicQueryFactoryUtil
+                    .forClass(MBThreadFlag.class,
+                            PortalClassLoaderUtil.getClassLoader())
+                    .setProjection(ProjectionFactoryUtil.property("threadId"))
+                    .add(PropertyFactoryUtil.forName("userId")
+                            .eq(currentUserId));
 
-            result = statement.executeQuery();
-            if (result.next()) {
-                return result.getInt(1);
-            } else {
-                return 0;
+            // 2. Query the threads that are in one of the categories
+            // from 0. AND are not read 1. AND are approved by status.
+            DynamicQuery resultQuery = DynamicQueryFactoryUtil
+                    .forClass(MBThread.class,
+                            PortalClassLoaderUtil.getClassLoader())
+                    .add(PropertyFactoryUtil.forName("categoryId").in(
+                            categoryIds))
+                    .add(PropertyFactoryUtil.forName("threadId").notIn(
+                            readThreadIds))
+                    .add(PropertyFactoryUtil.forName("status").eq(
+                            WorkflowConstants.STATUS_APPROVED));
+
+            try {
+                result = new Long(
+                        MBThreadLocalServiceUtil.dynamicQueryCount(resultQuery))
+                        .intValue();
+            } catch (SystemException e) {
+                e.printStackTrace();
             }
-        } catch (final SQLException e) {
-            log.error(e);
-            throw new DataSourceException(e);
-        } finally {
-            LIferayCommonJdbcUtil.closeAndLogException(result);
-            LIferayCommonJdbcUtil.closeAndLogException(statement);
-            LIferayCommonJdbcUtil.closeAndLogException(connection);
         }
+        return result;
     }
 
     @Override

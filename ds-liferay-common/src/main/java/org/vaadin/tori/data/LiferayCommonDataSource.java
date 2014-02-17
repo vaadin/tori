@@ -17,6 +17,7 @@
 package org.vaadin.tori.data;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -126,24 +127,6 @@ public abstract class LiferayCommonDataSource implements DataSource,
     @Override
     public List<Category> getSubCategories(Long categoryId)
             throws DataSourceException {
-        return internalGetSubCategories(categoryId);
-    }
-
-    public static long getRootMessageId(final long threadId)
-            throws DataSourceException {
-        try {
-            final MBThread liferayThread = MBThreadLocalServiceUtil
-                    .getMBThread(threadId);
-            return liferayThread.getRootMessageId();
-        } catch (final NestableException e) {
-            log.error(String.format(
-                    "Couldn't get root message id for thread %d.", threadId), e);
-            throw new DataSourceException(e);
-        }
-    }
-
-    private List<Category> internalGetSubCategories(Long categoryId)
-            throws DataSourceException {
         final long parentCategoryId = normalizeCategoryId(categoryId);
 
         try {
@@ -159,6 +142,19 @@ public abstract class LiferayCommonDataSource implements DataSource,
             log.error(String.format(
                     "Couldn't get subcategories for parent category %d.",
                     parentCategoryId), e);
+            throw new DataSourceException(e);
+        }
+    }
+
+    public static long getRootMessageId(final long threadId)
+            throws DataSourceException {
+        try {
+            final MBThread liferayThread = MBThreadLocalServiceUtil
+                    .getMBThread(threadId);
+            return liferayThread.getRootMessageId();
+        } catch (final NestableException e) {
+            log.error(String.format(
+                    "Couldn't get root message id for thread %d.", threadId), e);
             throw new DataSourceException(e);
         }
     }
@@ -373,15 +369,35 @@ public abstract class LiferayCommonDataSource implements DataSource,
                     WorkflowConstants.STATUS_APPROVED);
 
             // recursively add thread count of all sub categories
-            final List<Category> subCategories = getSubCategories(categoryId);
-            for (final Category subCategory : subCategories) {
-                count += getThreadCountRecursively(subCategory.getId());
+            List<MBCategory> subCategories = MBCategoryLocalServiceUtil
+                    .getCategories(scopeGroupId, categoryId, QUERY_ALL,
+                            QUERY_ALL);
+            for (final MBCategory subCategory : subCategories) {
+                count += getThreadCountRecursively(subCategory.getCategoryId());
             }
             return count;
         } catch (final SystemException e) {
             log.error(String.format(
                     "Couldn't get recursive thread count for category %d.",
                     categoryId), e);
+            throw new DataSourceException(e);
+        }
+    }
+
+    protected Collection<Long> getCategoryIdsRecursively(Long rootCategoryId)
+            throws DataSourceException {
+        Collection<Long> categories = new ArrayList<Long>();
+        categories.add(rootCategoryId);
+        try {
+            List<MBCategory> subCategories = MBCategoryLocalServiceUtil
+                    .getCategories(scopeGroupId, rootCategoryId, QUERY_ALL,
+                            QUERY_ALL);
+            for (final MBCategory subCategory : subCategories) {
+                categories.addAll(getCategoryIdsRecursively(subCategory
+                        .getCategoryId()));
+            }
+            return categories;
+        } catch (final SystemException e) {
             throw new DataSourceException(e);
         }
     }
@@ -417,12 +433,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
         } catch (final NoSuchThreadException e) {
             throw new org.vaadin.tori.exception.NoSuchThreadException(threadId,
                     e);
-        } catch (final PortalException e) {
-            log.error(
-                    String.format("Couldn't get thread for id %d.", threadId),
-                    e);
-            throw new DataSourceException(e);
-        } catch (final SystemException e) {
+        } catch (final NestableException e) {
             log.error(
                     String.format("Couldn't get thread for id %d.", threadId),
                     e);

@@ -25,7 +25,6 @@ import com.liferay.portlet.expando.service.ExpandoValueLocalServiceUtil;
 import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBThread;
-import com.liferay.portlet.ratings.model.RatingsEntry;
 
 public class LiferayCommonEntityFactoryUtil {
 
@@ -35,15 +34,6 @@ public class LiferayCommonEntityFactoryUtil {
         entity.setName(liferayCategory.getName());
         entity.setDescription(liferayCategory.getDescription());
         return entity;
-    }
-
-    public static void copyFields(final Category from, final MBCategory to) {
-        to.setCategoryId(from.getId());
-        to.setName(from.getName());
-        to.setDescription(from.getDescription());
-        if (from.getParentCategory() != null) {
-            to.setParentCategoryId(from.getParentCategory().getId());
-        }
     }
 
     public static List<Category> createCategories(
@@ -142,18 +132,6 @@ public class LiferayCommonEntityFactoryUtil {
         entity.setDisplayedName("Anonymous");
         entity.setAvatarUrl(getAvatarUrl(0, imagePath, false));
         return entity;
-    }
-
-    public static PostVote createPostVote(final RatingsEntry entry) {
-        final PostVote vote = new PostVote();
-        if (entry != null) {
-            if (entry.getScore() > 0) {
-                vote.setUpvote();
-            } else {
-                vote.setDownvote();
-            }
-        }
-        return vote;
     }
 
     private static String getAvatarUrl(final long liferayPortraidId,
