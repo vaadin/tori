@@ -78,7 +78,7 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
     public void sticky(long threadId) {
         try {
             dataSource.stickyThread(threadId);
-            view.showNotification("Thread stickied");
+            view.showNotification("Thread pinned");
             updateThread(threadId);
         } catch (final DataSourceException e) {
             displayError(e);
@@ -88,7 +88,7 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
     public void unsticky(long threadId) {
         try {
             dataSource.unstickyThread(threadId);
-            view.showNotification("Thread unstickied");
+            view.showNotification("Thread unpinned");
             updateThread(threadId);
         } catch (final DataSourceException e) {
             displayError(e);

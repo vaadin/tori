@@ -1,0 +1,11 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<g:HTMLPanel>
+		<a class="topic" ui:field='topic' />
+		<div class="startedby" ui:field='startedBy' />
+		<div class="postcount" ui:field='postCount' />
+		<div class="latesttime" ui:field='latestTime' />
+		<g:FocusPanel styleName="settings" ui:field="settings" />
+	</g:HTMLPanel>
+</ui:UiBinder> 

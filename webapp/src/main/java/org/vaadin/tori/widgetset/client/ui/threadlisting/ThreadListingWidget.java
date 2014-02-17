@@ -11,11 +11,9 @@ import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.client.ui.AbstractComponentConnector;
 
 public class ThreadListingWidget extends FlowPanel {
 
@@ -26,7 +24,7 @@ public class ThreadListingWidget extends FlowPanel {
     private HandlerRegistration scrollHandlerRegistrationWin;
 
     private final FlowPanel placeHolders = new FlowPanel();
-    private final Map<Long, FlowPanel> threadRows = new HashMap<Long, FlowPanel>();
+    private final Map<Long, ThreadListingRow> threadRows = new HashMap<Long, ThreadListingRow>();
 
     public interface Fetcher {
         void fetchRows();
@@ -52,7 +50,7 @@ public class ThreadListingWidget extends FlowPanel {
 
         remove(placeHolders);
         for (RowInfo rowInfo : rows) {
-            FlowPanel newRow = createRow(rowInfo);
+            ThreadListingRow newRow = new ThreadListingRow(rowInfo);
             add(newRow);
             threadRows.put(rowInfo.threadId, newRow);
         }
@@ -67,12 +65,6 @@ public class ThreadListingWidget extends FlowPanel {
         }
         add(placeHolders);
         fetching = false;
-    }
-
-    private FlowPanel createRow(final RowInfo rowInfo) {
-        FlowPanel panel = new FlowPanel();
-        populateRow(panel, rowInfo);
-        return panel;
     }
 
     @Override
@@ -129,52 +121,7 @@ public class ThreadListingWidget extends FlowPanel {
     }
 
     public void refreshRow(final RowInfo rowInfo) {
-        FlowPanel threadRow = threadRows.get(rowInfo.threadId);
-        threadRow.setStyleName("");
-        threadRow.clear();
-        populateRow(threadRow, rowInfo);
-    }
-
-    private void populateRow(FlowPanel panel, RowInfo rowInfo) {
-        panel.setWidth("100%");
-        panel.addStyleName(ROW_CLASS_NAME);
-
-        if (rowInfo.isLocked) {
-            panel.addStyleName("locked");
-        }
-        if (rowInfo.isSticky) {
-            panel.addStyleName("sticky");
-        }
-        if (rowInfo.isFollowed) {
-            panel.addStyleName("following");
-        }
-        if (!rowInfo.isRead) {
-            panel.addStyleName("unread");
-        }
-
-        Anchor anchor = new Anchor(rowInfo.topic, rowInfo.url);
-        anchor.addStyleName("topic");
-        panel.add(anchor);
-
-        Label startedBy = new Label(rowInfo.author);
-        startedBy.addStyleName("startedby");
-        panel.add(startedBy);
-
-        String postCount = rowInfo.postCount != 0 ? String
-                .valueOf(rowInfo.postCount) : "";
-        Label postCountWidget = new Label(postCount);
-        postCountWidget.addStyleName("postcount");
-        panel.add(postCountWidget);
-
-        Label latest = new Label(rowInfo.latestPostPretty);
-        latest.addStyleName("latesttime");
-        panel.add(latest);
-
-        if (rowInfo.settings != null) {
-            Widget settings = ((AbstractComponentConnector) rowInfo.settings)
-                    .getWidget();
-            panel.add(settings);
-        }
+        threadRows.get(rowInfo.threadId).updateRowInfo(rowInfo);
     }
 
     public void removeThreadRow(long threadId) {
