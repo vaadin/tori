@@ -480,8 +480,10 @@ public abstract class LiferayCommonDataSource implements DataSource,
                 final Post post = LiferayCommonEntityFactoryUtil.createPost(
                         message, author, thread, attachments);
                 if (getReplaceMessageBoardsLinks()) {
-                    replaceMessageBoardsLinksCategories(post);
-                    replaceMessageBoardsLinksMessages(post);
+                    String bodyRaw = post.getBodyRaw();
+                    bodyRaw = replaceMessageBoardsLinksCategories(bodyRaw);
+                    bodyRaw = replaceMessageBoardsLinksMessages(bodyRaw);
+                    post.setBodyRaw(bodyRaw);
                 }
                 result.add(post);
             }
@@ -493,8 +495,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
         }
     }
 
-    private void replaceMessageBoardsLinksCategories(final Post post) {
-        String bodyRaw = post.getBodyRaw();
+    private String replaceMessageBoardsLinksCategories(String bodyRaw) {
         // Liferay 6.0 pattern
         final Pattern pattern = Pattern.compile(
                 "/-/message_boards\\?[_,\\d]+mbCategoryId=\\d+",
@@ -522,11 +523,10 @@ public abstract class LiferayCommonDataSource implements DataSource,
             bodyRaw = bodyRaw.replaceFirst(group, fragment);
         }
 
-        post.setBodyRaw(bodyRaw);
+        return bodyRaw;
     }
 
-    private void replaceMessageBoardsLinksMessages(final Post post) {
-        String bodyRaw = post.getBodyRaw();
+    private String replaceMessageBoardsLinksMessages(String bodyRaw) {
         final Pattern pattern = Pattern
                 .compile(
                         "/-/message_boards/(view_)?message/\\d+(#[_,\\d]+message_\\d+)?",
@@ -561,7 +561,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
             }
         }
 
-        post.setBodyRaw(bodyRaw);
+        return bodyRaw;
     }
 
     protected abstract List<Attachment> getAttachments(final MBMessage message)
@@ -572,15 +572,8 @@ public abstract class LiferayCommonDataSource implements DataSource,
         @SuppressWarnings("unchecked")
         final Comparator<MBMessage> comparator = new MessageCreateDateComparator(
                 true);
-
-        final List<MBMessage> liferayPosts = MBMessageLocalServiceUtil
-                .getThreadMessages(threadId, WorkflowConstants.STATUS_APPROVED,
-                        comparator);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Found %d messages for thread with id %d.",
-                    liferayPosts.size(), threadId));
-        }
-        return liferayPosts;
+        return MBMessageLocalServiceUtil.getThreadMessages(threadId,
+                WorkflowConstants.STATUS_APPROVED, comparator);
     }
 
     @Override
@@ -785,8 +778,10 @@ public abstract class LiferayCommonDataSource implements DataSource,
                     newPost, getUser(currentUserId),
                     getThread(newPost.getThreadId()), getAttachments(newPost));
             if (getReplaceMessageBoardsLinks()) {
-                replaceMessageBoardsLinksCategories(post2);
-                replaceMessageBoardsLinksMessages(post2);
+                String bodyRaw = post2.getBodyRaw();
+                bodyRaw = replaceMessageBoardsLinksCategories(bodyRaw);
+                bodyRaw = replaceMessageBoardsLinksMessages(bodyRaw);
+                post2.setBodyRaw(bodyRaw);
             }
             return post2;
         } catch (final NestableException e) {
@@ -1228,8 +1223,10 @@ public abstract class LiferayCommonDataSource implements DataSource,
             result = LiferayCommonEntityFactoryUtil.createPost(message, author,
                     thread, attachments);
             if (getReplaceMessageBoardsLinks()) {
-                replaceMessageBoardsLinksCategories(result);
-                replaceMessageBoardsLinksMessages(result);
+                String bodyRaw = result.getBodyRaw();
+                bodyRaw = replaceMessageBoardsLinksCategories(bodyRaw);
+                bodyRaw = replaceMessageBoardsLinksMessages(bodyRaw);
+                result.setBodyRaw(bodyRaw);
             }
         } catch (NestableException e) {
             throw new DataSourceException(e);

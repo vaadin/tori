@@ -355,7 +355,6 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void banUser(long userId) throws DataSourceException {
         User user = getUser(userId);
         user.setBanned(true);
@@ -363,7 +362,6 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void unbanUser(long userId) throws DataSourceException {
         User user = getUser(userId);
         user.setBanned(false);

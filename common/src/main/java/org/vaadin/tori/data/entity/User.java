@@ -20,8 +20,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import org.vaadin.tori.data.DataSource;
-
 @Entity
 public class User extends AbstractEntity {
 
@@ -74,12 +72,6 @@ public class User extends AbstractEntity {
         return banned;
     }
 
-    /**
-     * @deprecated Don't call this method directly, use
-     *             {@link DataSource#ban(User)} or
-     *             {@link DataSource#unban(User)} instead.
-     */
-    @Deprecated
     public void setBanned(final boolean banned) {
         this.banned = banned;
     }

@@ -105,9 +105,4 @@ public class Post extends AbstractEntity {
         }
         this.attachments = attachments;
     }
-
-    public boolean hasAttachments() {
-        return !attachments.isEmpty();
-    }
-
 }
