@@ -14,20 +14,15 @@
  * the License.
  */
 
-package org.vaadin.tori.view.thread.newthread;
+package org.vaadin.tori.view.thread;
 
-import org.vaadin.tori.mvp.View;
-import org.vaadin.tori.view.thread.AuthoringData;
+public interface AuthoringData {
 
-public interface NewThreadView extends View {
-    void showNotification(String message);
+    boolean mayAddFiles();
 
-    void showError(String message);
+    int getMaxFileSize();
 
-    void redirectToDashboard();
+    String getCurrentUserName();
 
-    void setViewData(AuthoringData authoringData);
-
-    void newThreadCreated(long threadId);
-
+    String getCurrentUserAvatarUrl();
 }

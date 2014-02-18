@@ -93,16 +93,6 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                     boolean follow) {
                 if (!rawBody.trim().isEmpty()) {
                     getPresenter().sendReply(rawBody, attachments, follow);
-                    getInputCache().remove(viewData.getThreadTopic());
-                    ToriUI.getCurrent().trackAction("reply");
-                    reply.addStyleName(STYLE_REPLY_HIDDEN);
-                    ToriScheduler.get().scheduleDeferred(
-                            new ScheduledCommand() {
-                                @Override
-                                public void execute() {
-                                    reply.removeStyleName(STYLE_REPLY_HIDDEN);
-                                }
-                            });
                 }
             }
 
@@ -178,8 +168,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void setViewData(ViewData viewData) {
-        reply.setViewData(viewData);
+    public void setViewData(ViewData viewData, AuthoringData authoringData) {
+        reply.setAuthoringData(authoringData);
         reply.setVisible(viewData.mayReplyInThread()
                 && !viewData.isUserBanned());
         reply.insertIntoMessage(getInputCache().get(viewData.getThreadTopic()));
@@ -215,6 +205,20 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public void updatePost(PostData postData) {
         postsLayout.updatePost(postData);
+    }
+
+    @Override
+    public void replySent() {
+        getInputCache().remove(viewData.getThreadTopic());
+        ToriUI.getCurrent().trackAction("reply");
+        reply.reset();
+        reply.addStyleName(STYLE_REPLY_HIDDEN);
+        ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override
+            public void execute() {
+                reply.removeStyleName(STYLE_REPLY_HIDDEN);
+            }
+        });
     }
 
 }

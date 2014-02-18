@@ -219,7 +219,8 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
                     displayPosts(threadId, selectedPostId);
 
-                    view.setViewData(getViewData(currentThread));
+                    view.setViewData(getViewData(currentThread),
+                            getAuthoringData());
                 } else {
                     log.error("requestedthread was null, but no exception was thrown.");
                 }
@@ -253,32 +254,9 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     private ViewData getViewData(final DiscussionThread currentThread) {
         return new ViewData() {
             @Override
-            public boolean mayAddFiles() {
-                Category category = currentThread.getCategory();
-                return authorizationService
-                        .mayAddFilesInCategory(category != null ? category
-                                .getId() : null);
-            }
-
-            @Override
-            public int getMaxFileSize() {
-                return dataSource.getAttachmentMaxFileSize();
-            }
-
-            @Override
             public boolean mayReplyInThread() {
                 return authorizationService.mayReplyInThread(currentThread
                         .getId());
-            }
-
-            @Override
-            public String getCurrentUserName() {
-                return dataSource.getCurrentUser().getDisplayedName();
-            }
-
-            @Override
-            public String getCurrentUserAvatarUrl() {
-                return dataSource.getCurrentUser().getAvatarUrl();
             }
 
             @Override
@@ -294,6 +272,33 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             @Override
             public boolean isUserBanned() {
                 return dataSource.getCurrentUser().isBanned();
+            }
+        };
+    }
+
+    private AuthoringData getAuthoringData() {
+        return new AuthoringData() {
+            @Override
+            public boolean mayAddFiles() {
+                Category category = currentThread.getCategory();
+                return authorizationService
+                        .mayAddFilesInCategory(category != null ? category
+                                .getId() : null);
+            }
+
+            @Override
+            public int getMaxFileSize() {
+                return dataSource.getAttachmentMaxFileSize();
+            }
+
+            @Override
+            public String getCurrentUserName() {
+                return dataSource.getCurrentUser().getDisplayedName();
+            }
+
+            @Override
+            public String getCurrentUserAvatarUrl() {
+                return dataSource.getCurrentUser().getAvatarUrl();
             }
         };
     }
@@ -427,9 +432,9 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
                     && dataSource.isFollowingThread(currentThread.getId())) {
                 dataSource.unfollowThread(currentThread.getId());
             }
-            dataSource.markThreadRead(updatedPost.getThread().getId());
             messaging.sendUserAuthored(updatedPost.getId(),
                     currentThread.getId());
+            view.replySent();
             view.appendPosts(Arrays.asList(getPostData(updatedPost, false)));
         } catch (final DataSourceException e) {
             view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);

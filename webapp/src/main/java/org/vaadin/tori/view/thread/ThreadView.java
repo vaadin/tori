@@ -41,7 +41,7 @@ public interface ThreadView extends View {
 
     void appendQuote(String textToAppend);
 
-    void setViewData(ViewData viewPermissions);
+    void setViewData(ViewData viewData, AuthoringData authoringData);
 
     void setThreadUpdates(int newPostsCount, Map<User, Date> pendingReplies);
 
@@ -92,15 +92,7 @@ public interface ThreadView extends View {
     }
 
     interface ViewData {
-        boolean mayAddFiles();
-
-        int getMaxFileSize();
-
         boolean mayReplyInThread();
-
-        String getCurrentUserName();
-
-        String getCurrentUserAvatarUrl();
 
         String getThreadTopic();
 
@@ -108,5 +100,7 @@ public interface ThreadView extends View {
 
         boolean isUserBanned();
     }
+
+    void replySent();
 
 }

@@ -21,7 +21,7 @@ import java.util.Map;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.Presenter;
-import org.vaadin.tori.view.thread.newthread.NewThreadView.ViewPermissions;
+import org.vaadin.tori.view.thread.AuthoringData;
 
 public class NewThreadPresenter extends Presenter<NewThreadView> {
 
@@ -31,21 +31,17 @@ public class NewThreadPresenter extends Presenter<NewThreadView> {
         super(view);
     }
 
-    public void createNewThread(final String topic, final String rawBody,
-            Map<String, byte[]> attachments) {
-        StringBuilder errorMessages = new StringBuilder();
-        if (topic.isEmpty()) {
-            errorMessages.append("You need a topic<br/>");
-        }
-        if (rawBody.isEmpty()) {
-            errorMessages.append("You need a thread body<br/>");
-        }
-
-        if (errorMessages.toString().isEmpty()) {
-
+    public void saveNewThread(final String topic, final String rawBody,
+            Map<String, byte[]> attachments, boolean follow) {
+        if (topic.isEmpty() || rawBody.isEmpty()) {
+            view.showError("Thread topic and body needed");
+        } else {
             try {
                 Post post = dataSource.saveNewThread(topic, rawBody,
                         attachments, categoryId);
+                if (follow) {
+                    dataSource.followThread(post.getThread().getId());
+                }
                 messaging.sendUserAuthored(post.getId(), post.getThread()
                         .getId());
                 view.newThreadCreated(post.getThread().getId());
@@ -54,10 +50,31 @@ public class NewThreadPresenter extends Presenter<NewThreadView> {
                 e.printStackTrace();
                 view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
             }
-        } else {
-            view.showError(errorMessages.toString());
         }
+    }
 
+    private AuthoringData getAuthoringData() {
+        return new AuthoringData() {
+            @Override
+            public boolean mayAddFiles() {
+                return authorizationService.mayAddFilesInCategory(categoryId);
+            }
+
+            @Override
+            public int getMaxFileSize() {
+                return dataSource.getAttachmentMaxFileSize();
+            }
+
+            @Override
+            public String getCurrentUserName() {
+                return dataSource.getCurrentUser().getDisplayedName();
+            }
+
+            @Override
+            public String getCurrentUserAvatarUrl() {
+                return dataSource.getCurrentUser().getAvatarUrl();
+            }
+        };
     }
 
     @Override
@@ -66,26 +83,11 @@ public class NewThreadPresenter extends Presenter<NewThreadView> {
             String categoryString = args[0];
             categoryId = categoryString.isEmpty() ? null : Long
                     .parseLong(categoryString);
-            view.setViewPermissions(new ViewPermissions() {
-                @Override
-                public boolean mayAddFiles() {
-                    return authorizationService
-                            .mayAddFilesInCategory(categoryId);
-                }
-
-                @Override
-                public int getMaxFileSize() {
-                    return dataSource.getAttachmentMaxFileSize();
-                }
-            });
-        } catch (final NumberFormatException IGNORE) {
-            categoryNotFound();
+            view.setViewData(getAuthoringData());
+        } catch (final NumberFormatException e) {
+            view.showError("Category not found");
+            view.redirectToDashboard();
         }
-    }
-
-    private void categoryNotFound() {
-        view.showError("Category not found");
-        view.redirectToDashboard();
     }
 
 }

@@ -145,6 +145,11 @@
 	.v-popupbutton-popup {
 		background-color: $popupbutton-background-color;
 		border: $popupbutton-border;
+		
+		.v-textarea,
+		.v-textfield {
+			border: $popupbutton-border;
+		}
 	}
 	
 	.v-window {

@@ -27,8 +27,8 @@ import java.util.Map.Entry;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.util.ToriScheduler;
 import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
+import org.vaadin.tori.view.thread.AuthoringData;
 import org.vaadin.tori.view.thread.PostComponent;
-import org.vaadin.tori.view.thread.ThreadView.ViewData;
 import org.vaadin.tori.widgetset.client.ui.post.PostComponentClientRpc;
 import org.vaadin.tori.widgetset.client.ui.post.PostData.PostPrimaryData;
 
@@ -45,7 +45,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -148,11 +147,6 @@ public class AuthoringComponent extends PostComponent {
                     public void buttonClick(ClickEvent event) {
                         listener.submit(editor.getValue(), attachments,
                                 followCheckbox.getValue());
-                        ignoreInputChanges = true;
-                        editor.setValue("");
-                        ignoreInputChanges = false;
-                        attachments.clear();
-                        updateAttachmentList();
                     }
                 }));
 
@@ -164,6 +158,14 @@ public class AuthoringComponent extends PostComponent {
         result.setExpandRatio(attach, 1.0f);
 
         return result;
+    }
+
+    public void reset() {
+        ignoreInputChanges = true;
+        editor.setValue("");
+        attachments.clear();
+        updateAttachmentList();
+        ignoreInputChanges = false;
     }
 
     private Upload buildAttachUpload() {
@@ -210,16 +212,14 @@ public class AuthoringComponent extends PostComponent {
     protected void initData() {
     }
 
-    public Field<String> getInput() {
-        return editor;
-    }
-
     public void insertIntoMessage(final String unformattedText) {
+        ignoreInputChanges = true;
         if (unformattedText != null) {
             final String text = editor.getValue();
             editor.setValue(text + unformattedText);
         }
         editor.focus();
+        ignoreInputChanges = false;
     }
 
     private void updateAttachmentList() {
@@ -277,13 +277,13 @@ public class AuthoringComponent extends PostComponent {
         return Arrays.asList((Component) editorLayout).iterator();
     }
 
-    public void setViewData(ViewData viewData) {
-        attach.setVisible(viewData.mayAddFiles());
-        maxFileSize = viewData.getMaxFileSize();
+    public void setAuthoringData(AuthoringData authoringData) {
+        attach.setVisible(authoringData.mayAddFiles());
+        maxFileSize = authoringData.getMaxFileSize();
 
         PostPrimaryData data = new PostPrimaryData();
-        data.setAuthorName(viewData.getCurrentUserName());
-        data.setAuthorAvatarUrl(viewData.getCurrentUserAvatarUrl());
+        data.setAuthorName(authoringData.getCurrentUserName());
+        data.setAuthorAvatarUrl(authoringData.getCurrentUserAvatarUrl());
         getRpcProxy(PostComponentClientRpc.class).setPostPrimaryData(data);
 
         // PostAdditionalData additionalData = new PostAdditionalData();

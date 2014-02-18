@@ -16,18 +16,17 @@
 
 package org.vaadin.tori.view.thread.newthread;
 
+import java.util.Map;
+
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.AuthoringComponent;
+import org.vaadin.tori.component.AuthoringComponent.AuthoringListener;
 import org.vaadin.tori.mvp.AbstractView;
-import org.vaadin.tori.util.ComponentUtil;
-import org.vaadin.tori.util.ComponentUtil.HeadingLevel;
+import org.vaadin.tori.view.thread.AuthoringData;
 
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
@@ -39,15 +38,17 @@ public class NewThreadViewImpl extends
         AbstractView<NewThreadView, NewThreadPresenter> implements
         NewThreadView {
 
-    private CssLayout layout;
+    private VerticalLayout layout;
 
-    private AuthoringComponent newThreadComponent;
+    private AuthoringComponent authoringComponent;
 
     private TextField topicField;
 
     @Override
     protected Component createCompositionRoot() {
-        return layout = new CssLayout();
+        layout = new VerticalLayout();
+        layout.setSpacing(true);
+        return layout;
     }
 
     @Override
@@ -60,41 +61,37 @@ public class NewThreadViewImpl extends
     }
 
     private Component buildAuthoringComponent() {
-        // AuthoringListener listener = new AuthoringListener() {
-        // @Override
-        // public void submit(String rawBody, Map<String, byte[]> attachments) {
-        // final String topic = topicField.getValue();
-        // getPresenter().createNewThread(topic, rawBody, attachments);
-        // }
-        //
-        // };
-        // return newThreadComponent = new AuthoringComponent(listener,
-        // "Post body", true);
-        return null;
+        AuthoringListener listener = new AuthoringListener() {
+
+            @Override
+            public void submit(String rawBody, Map<String, byte[]> attachments,
+                    boolean follow) {
+                String topic = topicField.getValue();
+                getPresenter().saveNewThread(topic, rawBody, attachments,
+                        follow);
+            }
+
+            @Override
+            public void inputValueChanged(String value) {
+                // Ignore
+            }
+        };
+
+        authoringComponent = new AuthoringComponent(listener);
+        return authoringComponent;
     }
 
     private Component buildTopicLayout() {
         VerticalLayout result = new VerticalLayout();
 
-        final Label heading = ComponentUtil.getHeadingLabel(
-                "Start a New Thread", HeadingLevel.H2);
-        result.addComponent(heading);
-
         final HorizontalLayout topicLayout = new HorizontalLayout();
-        topicLayout.setWidth(70.0f, Unit.PERCENTAGE);
-        topicLayout.setSpacing(true);
-        topicLayout.setMargin(new MarginInfo(true, false, false, false));
+        topicLayout.setWidth(100.0f, Unit.PERCENTAGE);
+        topicLayout.setMargin(true);
         topicLayout.setStyleName("newthread");
 
-        final Label topicLabel = ComponentUtil.getHeadingLabel("Topic",
-                HeadingLevel.H3);
-        topicLabel.addStyleName("topiclabel");
-        topicLabel.setWidth("153px");
-        topicLayout.addComponent(topicLabel);
-
-        topicField = new TextField();
+        topicField = new TextField("Topic");
         topicField.setStyleName("topicfield");
-        topicField.setWidth("100%");
+        topicField.setWidth("70%");
         topicLayout.addComponent(topicField);
         topicLayout.setExpandRatio(topicField, 1.0f);
         topicField.focus();
@@ -134,14 +131,13 @@ public class NewThreadViewImpl extends
     }
 
     @Override
-    public void setViewPermissions(ViewPermissions viewPermissions) {
-        // newThreadComponent.setUserMayAddFiles(viewPermissions.mayAddFiles());
-        // newThreadComponent.setMaxFileSize(viewPermissions.getMaxFileSize());
-    }
-
-    @Override
     public void newThreadCreated(long threadId) {
         ToriUI.getCurrent().trackAction("new-thread");
         ToriNavigator.getCurrent().navigateToThread(threadId);
+    }
+
+    @Override
+    public void setViewData(AuthoringData authoringData) {
+        authoringComponent.setAuthoringData(authoringData);
     }
 }
