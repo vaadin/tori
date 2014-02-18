@@ -16,7 +16,9 @@
 
 package org.vaadin.tori.view.thread;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.vaadin.tori.ToriScheduler;
 import org.vaadin.tori.ToriScheduler.ScheduledCommand;
@@ -34,6 +36,7 @@ public class PostsLayout extends CssLayout {
     private Component scrollToComponent;
     private final ThreadPresenter presenter;
     private static final String STYLE_READY = "ready";
+    private final Map<Long, PostComponent> postComponents = new HashMap<Long, PostComponent>();
 
     public PostsLayout(ThreadPresenter presenter) {
         this.presenter = presenter;
@@ -100,11 +103,16 @@ public class PostsLayout extends CssLayout {
         removeStyleName(STYLE_READY);
         for (PostData post : posts) {
             PostComponent postComponent = new PostComponent(post, presenter);
+            postComponents.put(post.getId(), postComponent);
             addComponent(postComponent);
             if (post.isSelected()) {
                 setScrollToComponent(postComponent);
             }
         }
 
+    }
+
+    public void updatePost(PostData postData) {
+        postComponents.get(postData.getId()).update(postData);
     }
 }

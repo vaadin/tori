@@ -53,19 +53,9 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     public PostData getPostData(final Post _post, final boolean selected) {
         return new PostData() {
-            private Post post = _post;
+            private final Post post = _post;
             final User author = _post.getAuthor();
             final long postId = _post.getId();
-
-            @Override
-            public void refresh() {
-                try {
-                    post = dataSource.getPost(postId);
-                } catch (DataSourceException e) {
-                    e.printStackTrace();
-                    view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
-                }
-            }
 
             @Override
             public long getId() {
@@ -482,6 +472,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         if (authorizationService.mayEditPost(postId)) {
             try {
                 dataSource.savePost(postId, newBody);
+                view.updatePost(getPostData(dataSource.getPost(postId), false));
             } catch (DataSourceException e) {
                 view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
                 e.printStackTrace();

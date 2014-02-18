@@ -26,6 +26,8 @@ import org.vaadin.tori.mvp.View;
 public interface ThreadView extends View {
     void setPosts(List<PostData> posts);
 
+    void updatePost(PostData postData);
+
     void showNotification(String message);
 
     void showError(String message);
@@ -86,8 +88,6 @@ public interface ThreadView extends View {
         boolean userMayDelete();
 
         String getAuthorLink();
-
-        void refresh();
 
     }
 

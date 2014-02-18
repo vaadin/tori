@@ -212,4 +212,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         }
     }
 
+    @Override
+    public void updatePost(PostData postData) {
+        postsLayout.updatePost(postData);
+    }
+
 }

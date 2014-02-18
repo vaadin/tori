@@ -58,7 +58,7 @@ public class PostComponent extends AbstractComponentContainer implements
     private static final String STYLE_BANNED = "banned-author";
 
     private final PrettyTime prettyTime = new PrettyTime();
-    private final PostData post;
+    private PostData post;
 
     private ReportComponent reportComponent;
     private MenuBar settings;
@@ -84,6 +84,11 @@ public class PostComponent extends AbstractComponentContainer implements
                 updateAdditionalData();
             }
         });
+    }
+
+    public void update(final PostData post) {
+        this.post = post;
+        initData();
     }
 
     private void updatePrimaryData() {
@@ -273,7 +278,6 @@ public class PostComponent extends AbstractComponentContainer implements
         presenter.saveEdited(post.getId(), rawBody);
         ToriUI.getCurrent().trackAction("edit-post");
 
-        post.refresh();
         closeEditor();
     }
 
