@@ -16,6 +16,7 @@
 
 package org.vaadin.tori.view.thread;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,6 @@ import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.AuthoringComponent;
 import org.vaadin.tori.component.AuthoringComponent.AuthoringListener;
 import org.vaadin.tori.component.PanicComponent;
-import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.AbstractView;
 
@@ -38,6 +38,7 @@ import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.UIDetachedException;
 
 @SuppressWarnings("serial")
 public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
@@ -51,6 +52,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     private PostsLayout postsLayout;
     private AuthoringComponent reply;
     private ViewData viewData;
+    private ThreadUpdatesComponent threadUpdatesComponent;
 
     @Override
     protected Component createCompositionRoot() {
@@ -67,6 +69,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         ToriScheduler.get().scheduleManual(new ScheduledCommand() {
             @Override
             public void execute() {
+                threadUpdatesComponent = new ThreadUpdatesComponent(
+                        getPresenter());
+                layout.addComponent(threadUpdatesComponent);
                 layout.addComponent(reply);
             }
         });
@@ -163,31 +168,6 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void otherUserAuthored(final Post post) {
-        getUI().access(new Runnable() {
-            @Override
-            public void run() {
-                // postsLayout.addComponent(newPostComponent(post));
-            }
-        });
-    }
-
-    @Override
-    public void otherUserTyping(final User user) {
-        getUI().access(new Runnable() {
-            @SuppressWarnings("deprecation")
-            @Override
-            public void run() {
-                String userName = "Anonymous user";
-                if (user != null) {
-                    userName = "User " + user.getDisplayedName();
-                }
-                getUI().showNotification(userName + " is typing to this thread");
-            }
-        });
-    }
-
-    @Override
     public void showNotification(String message) {
         Notification.show(message);
     }
@@ -214,6 +194,22 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public Long getUrlParameterId() {
         return viewData.getThreadId();
+    }
+
+    @Override
+    public void setThreadUpdates(final int newPostsCount,
+            final Map<User, Date> pendingReplies) {
+        try {
+            getUI().access(new Runnable() {
+                @Override
+                public void run() {
+                    threadUpdatesComponent.setNewPostsCount(newPostsCount);
+                    threadUpdatesComponent.setPendingReplies(pendingReplies);
+                }
+            });
+        } catch (UIDetachedException e) {
+            // Ignore
+        }
     }
 
 }

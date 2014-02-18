@@ -148,6 +148,7 @@
 	 .threadlisting-placeholder {
 	 	height: 40px;
 	 	border-bottom: 1px solid #e8e8e8;
+	 	position: relative;
 	 
 	 	&:before {
 	 		padding-left: 26px;
@@ -156,7 +157,12 @@
 	 		line-height: 40px;
 	 	}
 	 	
-	 	&.after {
+	 	&:after {
+	 		content: "";
+			position: absolute;
+			left: 0;
+			bottom: 0;
+			background: #96cdf0;
 	        height: 1px;
 	        opacity: 1;
 	        -webkit-animation: loading 1000ms ease-in;
@@ -168,22 +174,22 @@
 	 }
 }
 
-@keyframes loading {
-  0% {
-    width: 0%;
-    height: 2px;
-  }
-  30% {
-    width: 30%;
-    height: 1px;
-  }
-  70% {
-    width: 40%;
-    left: 60%;
-  }
-  100% {
-    width: 0%;
-    left: 100%;
-  }
+@-webkit-keyframes loading {
+	0% {
+	    width: 0%;
+	    height: 2px;
+	}
+	30% {
+	    width: 30%;
+	    height: 1px;
+	}
+	70% {
+	    width: 40%;
+	    left: 60%;
+	}
+	100% {
+	    width: 0%;
+	    left: 100%;
+	}
 }
 

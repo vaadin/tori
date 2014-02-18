@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.View;
 
@@ -40,11 +39,9 @@ public interface ThreadView extends View {
 
     void appendQuote(String textToAppend);
 
-    void otherUserAuthored(Post post);
-
-    void otherUserTyping(User user);
-
     void setViewData(ViewData viewPermissions);
+
+    void setThreadUpdates(int newPostsCount, Map<User, Date> pendingReplies);
 
     public interface PostData {
 
@@ -65,8 +62,6 @@ public interface ThreadView extends View {
         String getFormattedBody(boolean allowHtml);
 
         boolean isSelected();
-
-        boolean hasAttachments();
 
         Map<String, String> getAttachments();
 

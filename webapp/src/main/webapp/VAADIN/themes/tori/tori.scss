@@ -131,4 +131,11 @@
 		display: none !important;
 	}
 	
+	.v-tooltip .popupContent {
+		border: $dropdown-popup-border;
+		padding: 11px 12px;
+		font-size: 12px;
+		color: #888;
+	}
+	
 }

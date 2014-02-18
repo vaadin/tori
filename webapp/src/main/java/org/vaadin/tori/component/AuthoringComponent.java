@@ -70,6 +70,7 @@ public class AuthoringComponent extends PostComponent {
     private BBCodeWysiwygEditor editor;
     private Upload attach;
     private CheckBox followCheckbox;
+    private boolean ignoreInputChanges;
 
     public AuthoringComponent(final AuthoringListener listener) {
         super(null, null);
@@ -111,7 +112,9 @@ public class AuthoringComponent extends PostComponent {
         editor.addValueChangeListener(new ValueChangeListener() {
             @Override
             public void valueChange(ValueChangeEvent event) {
-                listener.inputValueChanged(editor.getValue());
+                if (!ignoreInputChanges) {
+                    listener.inputValueChanged(editor.getValue());
+                }
             }
         });
 
@@ -145,7 +148,9 @@ public class AuthoringComponent extends PostComponent {
                     public void buttonClick(ClickEvent event) {
                         listener.submit(editor.getValue(), attachments,
                                 followCheckbox.getValue());
+                        ignoreInputChanges = true;
                         editor.setValue("");
+                        ignoreInputChanges = false;
                         attachments.clear();
                         updateAttachmentList();
                     }

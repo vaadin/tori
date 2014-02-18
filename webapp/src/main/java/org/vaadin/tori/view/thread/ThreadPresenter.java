@@ -18,10 +18,13 @@ package org.vaadin.tori.view.thread;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.data.entity.Attachment;
@@ -41,8 +44,6 @@ import org.vaadin.tori.view.thread.ThreadView.ViewData;
 
 public class ThreadPresenter extends Presenter<ThreadView> implements
         UserTypingListener, UserAuthoredListener {
-
-    /** This can be null if the user is visiting a non-existing thread. */
 
     private DiscussionThread currentThread;
 
@@ -130,11 +131,6 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             @Override
             public String getRawBody() {
                 return post.getBodyRaw();
-            }
-
-            @Override
-            public boolean hasAttachments() {
-                return post.hasAttachments();
             }
 
             @Override
@@ -325,10 +321,6 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         view.setPosts(posts);
     }
 
-    /**
-     * @return <code>null</code> if the URL is invalid.
-     */
-
     public DiscussionThread getCurrentThread() {
         return currentThread;
     }
@@ -355,27 +347,6 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             e.printStackTrace();
             view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
         }
-    }
-
-    /**
-     * returns <code>true</code> iff the user doesn't currently follow this
-     * thread, and can follow threads.
-     */
-    public boolean userCanFollowThread() throws DataSourceException {
-        return currentThread != null
-                && authorizationService.mayFollowThread(currentThread.getId())
-                && !dataSource.isFollowingThread(currentThread.getId());
-    }
-
-    /**
-     * returns <code>true</code> iff the user currently follows this thread, and
-     * can follow threads.
-     */
-    public boolean userCanUnFollowThread() throws DataSourceException {
-        return currentThread != null
-                && authorizationService.mayFollowThread(currentThread.getId())
-                && dataSource.isFollowingThread(currentThread.getId());
-
     }
 
     public void delete(long postId) {
@@ -442,14 +413,20 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     }
 
+    private Date startedTyping;
+
     public void inputValueChanged() {
         if (messaging != null) {
-            messaging.sendUserTyping(currentThread.getId());
+            if (startedTyping == null) {
+                startedTyping = new Date();
+            }
+            messaging.sendUserTyping(currentThread.getId(), startedTyping);
         }
     }
 
     public void sendReply(final String rawBody,
             Map<String, byte[]> attachments, boolean follow) {
+        startedTyping = null;
         try {
             final Post updatedPost = dataSource.saveReply(rawBody, attachments,
                     currentThread.getId());
@@ -528,6 +505,12 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         }
     }
 
+    public void handlePostReport(PostData post, Reason reason,
+            String additionalInfo, String postUrl) {
+        dataSource.reportPost(post.getId(), reason, additionalInfo, postUrl);
+        view.showNotification("Post reported");
+    }
+
     @Override
     public void navigationTo(String[] args) {
         if (messaging != null) {
@@ -544,33 +527,64 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         }
     }
 
+    private final Map<Long, Date[]> pendingReplies = new HashMap<Long, Date[]>();
+    private final List<Long> newPosts = new ArrayList<Long>();
+
     @Override
-    public void userTyping(long userId, long threadId) {
+    public void userTyping(long userId, long threadId, Date startedTyping) {
         if (currentThread.getId() == threadId) {
-            try {
-                view.otherUserTyping(dataSource.getToriUser(userId));
-            } catch (DataSourceException e) {
-                log.error(e);
-                e.printStackTrace();
-            }
+            pendingReplies
+                    .put(userId, new Date[] { startedTyping, new Date() });
         }
+        refreshThreadUpdates();
     }
 
     @Override
     public void userAuthored(long postId, long threadId) {
         if (currentThread.getId() == threadId) {
+            newPosts.add(postId);
             try {
-                view.otherUserAuthored(dataSource.getPost(postId));
+                Post post = dataSource.getPost(postId);
+                pendingReplies.remove(post.getAuthor().getId());
             } catch (DataSourceException e) {
-                log.error(e);
                 e.printStackTrace();
             }
         }
+        refreshThreadUpdates();
     }
 
-    public void handlePostReport(PostData post, Reason reason,
-            String additionalInfo, String postUrl) {
-        dataSource.reportPost(post.getId(), reason, additionalInfo, postUrl);
-        view.showNotification("Post reported");
+    private void refreshThreadUpdates() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, -1);
+        // User name : user linkeg pairs
+        Map<User, Date> pendingReplies = new HashMap<User, Date>();
+        for (Entry<Long, Date[]> entry : this.pendingReplies.entrySet()) {
+            if (entry.getValue()[1].after(calendar.getTime())) {
+                try {
+                    User user = dataSource.getToriUser(entry.getKey());
+                    pendingReplies.put(user, entry.getValue()[0]);
+                } catch (DataSourceException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        view.setThreadUpdates(newPosts.size(), pendingReplies);
+    }
+
+    public void showNewPostsRequested() {
+        List<PostData> newPostsData = new ArrayList<ThreadView.PostData>();
+        for (Long postId : newPosts) {
+            try {
+                Post post = dataSource.getPost(postId);
+                newPostsData.add(getPostData(post, false));
+            } catch (DataSourceException e) {
+                e.printStackTrace();
+            }
+        }
+        view.appendPosts(newPostsData);
+
+        newPosts.clear();
+        refreshThreadUpdates();
     }
 }

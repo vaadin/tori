@@ -17,6 +17,7 @@
 package org.vaadin.tori.util;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,8 +33,8 @@ import com.liferay.portal.kernel.messaging.MessageBusUtil;
 import com.liferay.portal.kernel.messaging.MessageListener;
 import com.liferay.portal.kernel.messaging.ParallelDestination;
 
-public class LiferayCommonToriActivityMessaging implements ToriActivityMessaging,
-        PortletRequestAware {
+public class LiferayCommonToriActivityMessaging implements
+        ToriActivityMessaging, PortletRequestAware {
 
     private static final String TORIACTIVITYLISTENERS = "TORIACTIVITYLISTENERS";
 
@@ -44,6 +45,7 @@ public class LiferayCommonToriActivityMessaging implements ToriActivityMessaging
 
     private static final String USER_ID = "USER_ID";
     private static final String THREAD_ID = "THREAD_ID";
+    private static final String STARTED_TYPING = "STARTED_TYPING";
     private static final String POST_ID = "POST_ID";
 
     private PortletRequest request;
@@ -67,10 +69,11 @@ public class LiferayCommonToriActivityMessaging implements ToriActivityMessaging
     }
 
     @Override
-    public void sendUserTyping(long threadId) {
+    public void sendUserTyping(long threadId, Date startedTyping) {
         Message message = new Message();
         message.put(USER_ID, new Long(currentUserId));
         message.put(THREAD_ID, new Long(threadId));
+        message.put(STARTED_TYPING, startedTyping.getTime());
         sendMessage(message, USER_TYPING_DESTINATION);
     }
 
@@ -103,7 +106,8 @@ public class LiferayCommonToriActivityMessaging implements ToriActivityMessaging
             @Override
             protected void process(Message message) {
                 listener.userTyping(message.getLong(USER_ID),
-                        message.getLong(THREAD_ID));
+                        message.getLong(THREAD_ID),
+                        new Date(message.getLong(STARTED_TYPING)));
             }
         });
     }
@@ -192,4 +196,5 @@ public class LiferayCommonToriActivityMessaging implements ToriActivityMessaging
         protected abstract void process(Message message);
 
     }
+
 }

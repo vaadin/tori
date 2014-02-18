@@ -17,6 +17,7 @@
 package org.vaadin.tori.data;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,37 +31,48 @@ public class TestToriMessaging implements ToriActivityMessaging {
     private static Set<UserAuthoredListener> userAuthoredListeners = Collections
             .synchronizedSet(new HashSet<UserAuthoredListener>());
 
+    private final Set<Object> thisListeners = new HashSet<Object>();;
+
     @Override
     public void addUserTypingListener(UserTypingListener listener) {
         userTypingListeners.add(listener);
+        thisListeners.add(listener);
     }
 
     @Override
     public void addUserAuthoredListener(UserAuthoredListener listener) {
         userAuthoredListeners.add(listener);
+        thisListeners.add(listener);
     }
 
     @Override
     public void removeUserTypingListener(UserTypingListener listener) {
         userTypingListeners.remove(listener);
+        thisListeners.remove(listener);
     }
 
     @Override
     public void removeUserAuthoredListener(UserAuthoredListener listener) {
         userAuthoredListeners.remove(listener);
+        thisListeners.remove(listener);
     }
 
     @Override
-    public void sendUserTyping(long threadId) {
+    public void sendUserTyping(long threadId, Date startedTyping) {
         for (UserTypingListener listener : userTypingListeners) {
-            listener.userTyping(TestDataSource.CURRENT_USER_ID, threadId);
+            if (!thisListeners.contains(listener)) {
+                listener.userTyping(TestDataSource.CURRENT_USER_ID, threadId,
+                        startedTyping);
+            }
         }
     }
 
     @Override
     public void sendUserAuthored(long postId, long threadId) {
         for (UserAuthoredListener listener : userAuthoredListeners) {
-            listener.userAuthored(postId, threadId);
+            if (!thisListeners.contains(listener)) {
+                listener.userAuthored(postId, threadId);
+            }
         }
     }
 
