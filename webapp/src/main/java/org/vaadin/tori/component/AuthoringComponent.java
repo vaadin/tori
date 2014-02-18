@@ -24,9 +24,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.vaadin.tori.ToriScheduler;
-import org.vaadin.tori.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.ToriUI;
+import org.vaadin.tori.util.ToriScheduler;
+import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.view.thread.PostComponent;
 import org.vaadin.tori.view.thread.ThreadView.ViewData;
 import org.vaadin.tori.widgetset.client.ui.post.PostComponentClientRpc;

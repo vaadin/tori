@@ -19,8 +19,8 @@ package org.vaadin.tori.view.listing.category;
 import java.util.List;
 
 import org.vaadin.hene.popupbutton.PopupButton;
-import org.vaadin.tori.component.ComponentUtil;
 import org.vaadin.tori.mvp.AbstractView;
+import org.vaadin.tori.util.ComponentUtil;
 import org.vaadin.tori.view.listing.category.EditCategoryForm.EditCategoryListener;
 
 import com.vaadin.ui.Alignment;

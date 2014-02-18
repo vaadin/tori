@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.vaadin.tori.component;
+package org.vaadin.tori.util;
 
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Alignment;

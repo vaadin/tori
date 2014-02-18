@@ -21,9 +21,9 @@ import java.util.List;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.ToriScheduler;
-import org.vaadin.tori.ToriScheduler.ScheduledCommand;
-import org.vaadin.tori.component.ComponentUtil;
+import org.vaadin.tori.util.ComponentUtil;
+import org.vaadin.tori.util.ToriScheduler;
+import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.view.listing.category.CategoryListingView.CategoryData;
 import org.vaadin.tori.view.listing.category.EditCategoryForm.EditCategoryListener;
 

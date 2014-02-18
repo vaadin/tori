@@ -24,11 +24,11 @@ import java.util.List;
 
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.ToriScheduler;
-import org.vaadin.tori.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.ToriUI;
-import org.vaadin.tori.component.ComponentUtil;
 import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.util.ComponentUtil;
+import org.vaadin.tori.util.ToriScheduler;
+import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.view.thread.PostEditor.PostEditorListener;
 import org.vaadin.tori.view.thread.ThreadView.PostData;
 import org.vaadin.tori.widgetset.client.ui.post.PostComponentClientRpc;

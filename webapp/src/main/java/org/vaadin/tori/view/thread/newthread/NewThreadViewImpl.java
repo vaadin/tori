@@ -19,9 +19,9 @@ package org.vaadin.tori.view.thread.newthread;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.AuthoringComponent;
-import org.vaadin.tori.component.ComponentUtil;
-import org.vaadin.tori.component.ComponentUtil.HeadingLevel;
 import org.vaadin.tori.mvp.AbstractView;
+import org.vaadin.tori.util.ComponentUtil;
+import org.vaadin.tori.util.ComponentUtil.HeadingLevel;
 
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Component;

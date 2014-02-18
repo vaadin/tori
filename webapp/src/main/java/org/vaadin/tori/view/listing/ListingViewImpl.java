@@ -16,11 +16,11 @@
 
 package org.vaadin.tori.view.listing;
 
-import org.vaadin.tori.component.ComponentUtil;
-import org.vaadin.tori.component.ComponentUtil.HeadingLevel;
 import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.AbstractView;
+import org.vaadin.tori.util.ComponentUtil;
+import org.vaadin.tori.util.ComponentUtil.HeadingLevel;
 import org.vaadin.tori.view.listing.category.CategoryListingViewImpl;
 import org.vaadin.tori.view.listing.thread.ThreadListingViewImpl;
 

@@ -22,14 +22,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.ToriScheduler;
-import org.vaadin.tori.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.AuthoringComponent;
 import org.vaadin.tori.component.AuthoringComponent.AuthoringListener;
 import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.AbstractView;
+import org.vaadin.tori.util.ToriScheduler;
+import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
 
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;

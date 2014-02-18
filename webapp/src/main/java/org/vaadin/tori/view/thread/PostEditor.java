@@ -17,7 +17,7 @@
 package org.vaadin.tori.view.thread;
 
 import org.vaadin.tori.component.BBCodeWysiwygEditor;
-import org.vaadin.tori.component.ComponentUtil;
+import org.vaadin.tori.util.ComponentUtil;
 
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.ui.Button;

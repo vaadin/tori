@@ -49,7 +49,7 @@ public class ToriUI extends UI {
     protected void init(final VaadinRequest request) {
         setPollInterval(DEFAULT_POLL_INTERVAL);
         ToriApiLoader.init(request);
-        URLUtil.fixUrl();
+        UrlFixer.fixUrl();
 
         final String trackerId = ToriApiLoader.getCurrent().getDataSource()
                 .getGoogleAnalyticsTrackerId();

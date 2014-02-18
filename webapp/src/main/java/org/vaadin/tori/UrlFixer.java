@@ -30,7 +30,7 @@ import com.vaadin.server.Page;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 
-public class URLUtil {
+public class UrlFixer {
 
     @SuppressWarnings("deprecation")
     public static void fixUrl() {
@@ -133,7 +133,7 @@ public class URLUtil {
     }
 
     private static Logger getLogger() {
-        return Logger.getLogger(URLUtil.class);
+        return Logger.getLogger(UrlFixer.class);
     }
 
     /**

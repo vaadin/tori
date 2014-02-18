@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.component.ComponentUtil;
+import org.vaadin.tori.util.ComponentUtil;
 import org.vaadin.tori.view.listing.thread.ThreadListingView.ThreadData;
 import org.vaadin.tori.view.listing.thread.ThreadListingView.ThreadProvider;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingClientRpc;

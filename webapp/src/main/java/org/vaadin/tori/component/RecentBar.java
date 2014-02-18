@@ -20,14 +20,15 @@ import java.util.List;
 
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.ToriScheduler;
-import org.vaadin.tori.ToriScheduler.ScheduledCommand;
-import org.vaadin.tori.component.ComponentUtil.HeadingLevel;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.util.ComponentUtil;
+import org.vaadin.tori.util.ToriScheduler;
+import org.vaadin.tori.util.ComponentUtil.HeadingLevel;
 import org.vaadin.tori.util.ToriActivityMessaging.UserAuthoredListener;
+import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.view.listing.SpecialCategory;
 
 import com.ocpsoft.pretty.time.PrettyTime;
