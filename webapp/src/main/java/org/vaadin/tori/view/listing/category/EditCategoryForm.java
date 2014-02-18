@@ -16,6 +16,7 @@
 
 package org.vaadin.tori.view.listing.category;
 
+import org.vaadin.tori.util.ComponentUtil;
 import org.vaadin.tori.view.listing.category.CategoryListingView.CategoryData;
 
 import com.vaadin.ui.Alignment;
@@ -69,8 +70,8 @@ public class EditCategoryForm extends CustomComponent {
                                 descriptionField.getValue());
                     }
                 });
-        final Button cancelButton = new Button(("cancel"),
-                new Button.ClickListener() {
+        final Button cancelButton = ComponentUtil.getSecondaryButton(
+                ("cancel"), new Button.ClickListener() {
                     @Override
                     public void buttonClick(final ClickEvent event) {
                         listener.cancel();

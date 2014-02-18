@@ -75,6 +75,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
     private Link myPostsLink;
     private Button followButton;
     private long threadId;
+    private Label iconsComponent;
 
     public Breadcrumbs() {
         setStyleName("breadcrumbs");
@@ -90,13 +91,17 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
     private Component buildCaptionLayout() {
         viewCaption = new Label("");
         viewCaption.addStyleName("viewcaption");
+        viewCaption.setSizeUndefined();
+
+        iconsComponent = new Label("");
+        iconsComponent.setSizeUndefined();
 
         myPosts = new Label("My Posts");
 
         final HorizontalLayout captionLayout = new HorizontalLayout(
-                viewCaption, myPosts);
+                viewCaption, iconsComponent, myPosts);
         captionLayout.setWidth(100.0f, Unit.PERCENTAGE);
-        captionLayout.setExpandRatio(viewCaption, 1.0f);
+        captionLayout.setExpandRatio(iconsComponent, 1.0f);
 
         myPostsLink = new Link("My Posts", new ExternalResource("#"
                 + ToriNavigator.ApplicationView.CATEGORIES.getUrl() + "/"
@@ -153,6 +158,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
     @Override
     public void afterViewChange(ViewChangeEvent event) {
         viewCaption.setValue(null);
+        iconsComponent.setStyleName("icons");
         myPostsLink.setVisible(false);
         followButton.setVisible(false);
 
@@ -188,6 +194,13 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
         if (view instanceof ThreadView) {
             try {
                 DiscussionThread thread = dataSource.getThread(urlParameterId);
+                if (thread.isLocked()) {
+                    iconsComponent.addStyleName("lockedthread");
+                }
+                if (thread.isSticky()) {
+                    iconsComponent.addStyleName("stickythread");
+                }
+
                 followButton.setVisible(true);
                 threadId = thread.getId();
                 updateFollowButtonStyle();

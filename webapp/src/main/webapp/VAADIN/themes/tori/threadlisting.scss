@@ -79,17 +79,19 @@
 			top: 2px;
 		}
 		
-		&.sticky .topic:after {
+		.threadicons {
+			font-family: "Tori-Icons";
+			vertical-align: middle;
+		}
+		
+		&.sticky .threadicons:before {
 			content: "\e00a";
+			color: #50D497;
 		}
-		&.locked .topic:after {
+		&.locked .threadicons:after {
 			content: "\e00b";
+			color: #EDC628;
 		}
-		
-		&.locked.sticky .topic:after {
-			content: "\e00a\e00b";
-		}
-		
 	}
 	
 	.topic {

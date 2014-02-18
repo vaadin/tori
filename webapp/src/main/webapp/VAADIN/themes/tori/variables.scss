@@ -4,6 +4,7 @@ $header-background-color: #f0efef;
 $popup-border-width: 2px;
 $popup-border-style: solid;
 $popup-border-color: #d1d1d1;
+$popup-background-color: #fff;
 
 $highlight-color: #2AAAE6;
 
@@ -15,7 +16,6 @@ $button-color: $highlight-color;
 $button-border: 2px solid rgba(41,170,230,0.65);
 $secondary-button-color: #555;
 $secondary-button-border: 2px solid #C7C7C7;
-
 
 // Dropdown
 $dropdown-highlight-color: $highlight-color;
@@ -29,3 +29,10 @@ $post-anonymous-avatar-color: #fff;
 $post-anonymous-avatar-background-color: $post-avatar-border-color;
 $post-permalink-color: #AAA;
 $post-separator-border: 1px solid #E8E8E8;
+
+// Popupbutton
+$popupbutton-border: $popup-border-width $popup-border-style $popup-border-color;
+$popupbutton-background-color: $popup-background-color;
+
+// Window
+$window-background-color: $popup-background-color;

@@ -2,7 +2,10 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<g:HTMLPanel>
-		<a class="topic" ui:field='topic' />
+		<a class="topic" ui:field='topic'>
+			<span class="topicname" ui:field='topicName' />
+			<span class="threadicons"/>
+		</a>
 		<div class="startedby" ui:field='startedBy' />
 		<div class="postcount" ui:field='postCount' />
 		<div class="latesttime" ui:field='latestTime' />

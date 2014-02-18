@@ -67,6 +67,25 @@
         font-size: 24px;
     }
     
+    .v-label.icons {
+    	font-family: "Tori-Icons";
+    	font-size: 24px;
+    	line-height: normal;
+    	vertical-align: middle;
+    	margin-left: 12px;
+    	
+    	&.stickythread:before {
+			content: "\e00a";
+			color: #50D497;
+			margin-right: 5px;
+		}
+		
+    	&.lockedthread:after {
+    		content: "\e00b";
+			color: #EDC628;
+    	}
+    }
+    
     .mypostslink:before {
     	font-family: "Tori-Icons";
     	content: "\e007";

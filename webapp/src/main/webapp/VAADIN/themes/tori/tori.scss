@@ -27,8 +27,16 @@
     @include floatingcomponent;
     @include authoring;
     
+    .v-widget {
+        font-family: inherit;
+        font-size: inherit;
+        color: inherit;
+    }
+    
     &.v-app,
-    .v-ui {
+    .v-ui,
+    .v-window,
+    .v-window .v-scrollable {
 	    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	    font-size: 14px;
 	    color: #555;
@@ -38,11 +46,7 @@
    		margin-bottom: 50px;
    	}
     
-    .v-widget {
-        font-family: inherit;
-        font-size: inherit;
-        color: inherit;
-    }
+    
     
     .v-link span,
     a {
@@ -138,4 +142,17 @@
 		color: #888;
 	}
 	
+	.v-popupbutton-popup {
+		background-color: $popupbutton-background-color;
+		border: $popupbutton-border;
+	}
+	
+	.v-window {
+		height: 7em !important;
+		background-color: $window-background-color;
+	
+		.v-window-outerheader {
+			display: none;
+		}
+	}
 }
