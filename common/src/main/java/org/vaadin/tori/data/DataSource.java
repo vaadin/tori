@@ -38,9 +38,9 @@ public interface DataSource {
             CATEGORY, THREAD, DASHBOARD;
         }
 
-        public Destination getDestination();
+        Destination getDestination();
 
-        public long getId();
+        long getId();
     }
 
     /**

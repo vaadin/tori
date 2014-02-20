@@ -47,7 +47,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     private DiscussionThread currentThread;
 
-    public ThreadPresenter(ThreadView view) {
+    public ThreadPresenter(final ThreadView view) {
         super(view);
     }
 
@@ -105,7 +105,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             }
 
             @Override
-            public String getFormattedBody(boolean allowHtml) {
+            public String getFormattedBody(final boolean allowHtml) {
                 String formattedPost = postFormatter.format(post);
                 if (!allowHtml) {
                     formattedPost = stripTags(formattedPost);
@@ -201,7 +201,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     }
 
     public void setCurrentThreadById(final String threadIdString,
-            String selectedPostIdString) throws DataSourceException {
+            final String selectedPostIdString) throws DataSourceException {
         DiscussionThread requestedThread = null;
         try {
             try {
@@ -308,7 +308,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         };
     }
 
-    private void displayPosts(long threadId, Long selectedPostId) {
+    private void displayPosts(final long threadId, final Long selectedPostId) {
         List<PostData> posts = new ArrayList<PostData>();
         try {
             for (Post post : dataSource.getPosts(threadId)) {
@@ -349,7 +349,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         }
     }
 
-    public void delete(long postId) {
+    public void delete(final long postId) {
         try {
             dataSource.deletePost(postId);
             view.showNotification("Post deleted");
@@ -366,7 +366,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
      * If the user hasn't upvoted a post, give it an upvote. If that user
      * already has upvoted the post, remove the vote.
      */
-    public void upvote(long postId) throws DataSourceException {
+    public void upvote(final long postId) throws DataSourceException {
         try {
             Boolean vote = getPostVote(postId);
             if (vote == null || !vote) {
@@ -425,7 +425,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     }
 
     public void sendReply(final String rawBody,
-            Map<String, byte[]> attachments, boolean follow) {
+            final Map<String, byte[]> attachments, final boolean follow) {
         startedTyping = null;
         try {
             final Post updatedPost = dataSource.saveReply(rawBody, attachments,
@@ -453,7 +453,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     }
 
     public void handleArguments(final String[] arguments)
-            throws NoSuchThreadException, DataSourceException {
+            throws DataSourceException {
         if (arguments.length > 0) {
             String postId = null;
             if (arguments.length > 1) {
@@ -466,7 +466,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         }
     }
 
-    public void quotePost(long postId) {
+    public void quotePost(final long postId) {
         try {
             Post post = dataSource.getPost(postId);
             final String quote = postFormatter.getQuote(post);
@@ -506,14 +506,14 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         }
     }
 
-    public void handlePostReport(PostData post, Reason reason,
-            String additionalInfo, String postUrl) {
+    public void handlePostReport(final PostData post, final Reason reason,
+            final String additionalInfo, final String postUrl) {
         dataSource.reportPost(post.getId(), reason, additionalInfo, postUrl);
         view.showNotification("Post reported");
     }
 
     @Override
-    public void navigationTo(String[] args) {
+    public void navigationTo(final String[] args) {
         if (messaging != null) {
             messaging.addUserAuthoredListener(this);
             messaging.addUserTypingListener(this);
@@ -532,7 +532,8 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     private final List<Long> newPosts = new ArrayList<Long>();
 
     @Override
-    public void userTyping(long userId, long threadId, Date startedTyping) {
+    public void userTyping(final long userId, final long threadId,
+            final Date startedTyping) {
         if (currentThread.getId() == threadId) {
             pendingReplies
                     .put(userId, new Date[] { startedTyping, new Date() });
@@ -541,7 +542,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     }
 
     @Override
-    public void userAuthored(long postId, long threadId) {
+    public void userAuthored(final long postId, final long threadId) {
         if (currentThread.getId() == threadId) {
             newPosts.add(postId);
             try {

@@ -51,7 +51,7 @@ public abstract class Presenter<V extends View> {
         // NOP, subclasses may override
     }
 
-    public void navigationTo(String[] arguments) {
+    public void navigationTo(final String[] arguments) {
         // NOP, subclasses may override
     }
 

@@ -38,7 +38,7 @@ import com.liferay.portal.theme.ThemeDisplay;
 
 public class LiferayPostFormatter implements PostFormatter, PortletRequestAware {
 
-    private static final Logger log = Logger
+    private static final Logger LOG = Logger
             .getLogger(LiferayPostFormatter.class);
 
     private static Collection<FontFace> fontFaces;
@@ -55,10 +55,14 @@ public class LiferayPostFormatter implements PostFormatter, PortletRequestAware 
     }
 
     @Override
-    public String format(Post post) {
-        String msgBody = post.getBodyRaw();
+    public String format(final Post post) {
+        String msgBody = post.getBodyRaw().trim();
         if (post.isFormatBBCode()) {
-            msgBody = BBCodeTranslatorUtil.getHTML(msgBody);
+            try {
+                msgBody = BBCodeTranslatorUtil.getHTML(msgBody);
+            } catch (Exception e) {
+                LOG.debug("Couldn't parse the given post body: " + msgBody);
+            }
             msgBody = StringUtil.replace(msgBody,
                     "@theme_images_path@/emoticons",
                     themeDisplay.getPathThemeImages() + "/emoticons");
@@ -71,7 +75,7 @@ public class LiferayPostFormatter implements PostFormatter, PortletRequestAware 
                     msgBody = msgBody.replaceAll(entry.getKey(),
                             entry.getValue());
                 } catch (final PatternSyntaxException e) {
-                    log.warn(
+                    LOG.warn(
                             "Invalid replacement regex pattern: "
                                     + entry.getKey(), e);
                 }
@@ -111,7 +115,7 @@ public class LiferayPostFormatter implements PostFormatter, PortletRequestAware 
     }
 
     @Override
-    public void setRequest(PortletRequest request) {
+    public void setRequest(final PortletRequest request) {
         themeDisplay = (ThemeDisplay) request
                 .getAttribute(WebKeys.THEME_DISPLAY);
     }

@@ -46,9 +46,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     private CssLayout layout;
 
-    private final static String INPUT_CACHE_NAME = "inputcache";
-    private final static String REPLY_ID = "threadreply";
-    private final static String STYLE_REPLY_HIDDEN = "replyhidden";
+    private static final String INPUT_CACHE_NAME = "inputcache";
+    private static final String REPLY_ID = "threadreply";
+    private static final String STYLE_REPLY_HIDDEN = "replyhidden";
     private PostsLayout postsLayout;
     private AuthoringComponent reply;
     private ViewData viewData;
@@ -56,14 +56,16 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     protected Component createCompositionRoot() {
-        return layout = new CssLayout();
+        layout = new CssLayout();
+        return layout;
     }
 
     @Override
     public void initView() {
         setStyleName("threadview");
         layout.setWidth("100%");
-        layout.addComponent(buildPostsLayout());
+        postsLayout = new PostsLayout(getPresenter());
+        layout.addComponent(postsLayout);
 
         final Component reply = buildReply();
         ToriScheduler.get().scheduleManual(new ScheduledCommand() {
@@ -77,10 +79,6 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         });
     }
 
-    private Component buildPostsLayout() {
-        return postsLayout = new PostsLayout(getPresenter());
-    }
-
     @Override
     protected ThreadPresenter createPresenter() {
         return new ThreadPresenter(this);
@@ -89,15 +87,15 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     private Component buildReply() {
         AuthoringListener replyListener = new AuthoringListener() {
             @Override
-            public void submit(String rawBody, Map<String, byte[]> attachments,
-                    boolean follow) {
+            public void submit(final String rawBody,
+                    final Map<String, byte[]> attachments, final boolean follow) {
                 if (!rawBody.trim().isEmpty()) {
                     getPresenter().sendReply(rawBody, attachments, follow);
                 }
             }
 
             @Override
-            public void inputValueChanged(String value) {
+            public void inputValueChanged(final String value) {
                 if (viewData != null) {
                     getInputCache().put(viewData.getThreadTopic(), value);
                 }
@@ -158,17 +156,18 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void showNotification(String message) {
+    public void showNotification(final String message) {
         Notification.show(message);
     }
 
     @Override
-    public void showError(String message) {
+    public void showError(final String message) {
         Notification.show(message, Type.ERROR_MESSAGE);
     }
 
     @Override
-    public void setViewData(ViewData viewData, AuthoringData authoringData) {
+    public void setViewData(final ViewData viewData,
+            final AuthoringData authoringData) {
         reply.setAuthoringData(authoringData);
         reply.setVisible(viewData.mayReplyInThread()
                 && !viewData.isUserBanned());
@@ -203,7 +202,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void updatePost(PostData postData) {
+    public void updatePost(final PostData postData) {
         postsLayout.updatePost(postData);
     }
 
@@ -219,6 +218,11 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 reply.removeStyleName(STYLE_REPLY_HIDDEN);
             }
         });
+    }
+
+    @Override
+    public void exit() {
+        ToriScheduler.get().executeManualCommands();
     }
 
 }

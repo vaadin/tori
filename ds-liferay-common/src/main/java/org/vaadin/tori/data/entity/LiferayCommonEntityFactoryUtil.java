@@ -131,17 +131,17 @@ public class LiferayCommonEntityFactoryUtil {
         final User entity = new User();
         entity.setId(0);
         entity.setDisplayedName("Anonymous");
-        entity.setAvatarUrl(getAvatarUrl(0, imagePath, false));
         return entity;
     }
 
     private static String getAvatarUrl(final long liferayPortraidId,
             final String imagePath, final boolean isFemale) {
-        if (imagePath != null) {
-            return imagePath + "/user_" + (isFemale ? "female" : "male")
+        String result = null;
+        if (imagePath != null && liferayPortraidId > 0) {
+            result = imagePath + "/user_" + (isFemale ? "female" : "male")
                     + "_portrait?img_id=" + liferayPortraidId;
         }
-        return null;
+        return result;
     }
 
 }
