@@ -31,12 +31,17 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class EditCategoryForm extends CustomComponent {
 
+    private final TextField nameField;
+    private final TextArea descriptionField;
+    private final CategoryData categoryToEdit;
+
     public EditCategoryForm(final EditCategoryListener listener) {
         this(listener, null);
     }
 
     public EditCategoryForm(final EditCategoryListener listener,
             final CategoryData categoryToEdit) {
+        this.categoryToEdit = categoryToEdit;
         setData(categoryToEdit);
 
         final VerticalLayout newCategoryLayout = new VerticalLayout();
@@ -44,7 +49,7 @@ public class EditCategoryForm extends CustomComponent {
         newCategoryLayout.setMargin(true);
         newCategoryLayout.setWidth("100%");
 
-        final TextField nameField = new TextField();
+        nameField = new TextField();
         nameField.setInputPrompt("Category name");
         nameField.setWidth("100%");
         if (categoryToEdit != null) {
@@ -52,7 +57,7 @@ public class EditCategoryForm extends CustomComponent {
         }
         newCategoryLayout.addComponent(nameField);
 
-        final TextArea descriptionField = new TextArea();
+        descriptionField = new TextArea();
         descriptionField.setInputPrompt("Description");
         descriptionField.setRows(3);
         descriptionField.setWidth("100%");
@@ -68,6 +73,7 @@ public class EditCategoryForm extends CustomComponent {
                     public void buttonClick(final ClickEvent event) {
                         listener.commit(nameField.getValue(),
                                 descriptionField.getValue());
+                        resetForm();
                     }
                 });
         final Button cancelButton = ComponentUtil.getSecondaryButton(
@@ -75,10 +81,7 @@ public class EditCategoryForm extends CustomComponent {
                     @Override
                     public void buttonClick(final ClickEvent event) {
                         listener.cancel();
-                        nameField.setValue(categoryToEdit == null ? ""
-                                : categoryToEdit.getName());
-                        descriptionField.setValue(categoryToEdit == null ? ""
-                                : categoryToEdit.getDescription());
+                        resetForm();
                     }
                 });
 
@@ -94,6 +97,13 @@ public class EditCategoryForm extends CustomComponent {
 
         setWidth("300px");
         setCompositionRoot(newCategoryLayout);
+    }
+
+    private void resetForm() {
+        nameField.setValue(categoryToEdit == null ? "" : categoryToEdit
+                .getName());
+        descriptionField.setValue(categoryToEdit == null ? "" : categoryToEdit
+                .getDescription());
     }
 
     public interface EditCategoryListener {
