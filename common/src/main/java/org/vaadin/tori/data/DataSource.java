@@ -314,7 +314,7 @@ public interface DataSource {
      */
 
     UrlInfo getUrlInfoFromBackendNativeRequest(HttpServletRequest servletRequest)
-            throws NoSuchThreadException, DataSourceException;
+            throws DataSourceException;
 
     User getToriUser(long userId) throws DataSourceException;
 

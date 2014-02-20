@@ -62,7 +62,7 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     private static final Logger log = Logger.getLogger(LiferayDataSource.class);
 
     @Override
-    public void followThread(long threadId) throws DataSourceException {
+    public void followThread(final long threadId) throws DataSourceException {
         try {
             SubscriptionLocalServiceUtil.addSubscription(currentUserId,
                     currentUser.getGroupId(), MBThread.class.getName(),
@@ -115,7 +115,7 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     }
 
     @Override
-    public boolean isThreadRead(long threadId) {
+    public boolean isThreadRead(final long threadId) {
         boolean result = true;
         if (currentUserId > 0) {
             try {
@@ -134,7 +134,7 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     }
 
     @Override
-    public void markThreadRead(long threadId) throws DataSourceException {
+    public void markThreadRead(final long threadId) throws DataSourceException {
         if (currentUserId > 0) {
             try {
                 MBThreadFlagLocalServiceUtil.addThreadFlag(currentUserId,
@@ -149,8 +149,8 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     }
 
     @Override
-    public void saveNewCategory(Long parentCategoryId, String name,
-            String description) throws DataSourceException {
+    public void saveNewCategory(final Long parentCategoryId, final String name,
+            final String description) throws DataSourceException {
         try {
             log.debug("Adding new category: " + name);
             final long parentId = normalizeCategoryId(parentCategoryId);
@@ -195,7 +195,7 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
 
     @Override
     protected MBMessage internalSaveAsCurrentUser(final String rawBody,
-            final Map<String, byte[]> files, DiscussionThread thread,
+            final Map<String, byte[]> files, final DiscussionThread thread,
             final long parentMessageId) throws PortalException, SystemException {
         final long groupId = scopeGroupId;
         final long categoryId = thread.getCategory().getId();
@@ -243,6 +243,11 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     @Override
     protected String getThemeDisplayKey() {
         return WebKeys.THEME_DISPLAY;
+    }
+
+    @Override
+    protected boolean isFormatBBCode(final MBMessage message) {
+        return message.isFormatBBCode();
     }
 
 }

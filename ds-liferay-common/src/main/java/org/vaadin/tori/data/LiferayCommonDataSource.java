@@ -89,7 +89,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
     private static final boolean INCLUDE_SUBSCRIBED = false;
     private static final boolean INCLUDE_ANONYMOUS = false;
 
-    private static final Logger log = Logger
+    private static final Logger LOG = Logger
             .getLogger(LiferayCommonDataSource.class);
 
     private static final long ROOT_CATEGORY_ID = 0;
@@ -125,7 +125,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
     private static final String REPLACEMENT_SEPARATOR = "<TORI-REPLACEMENT>";
 
     @Override
-    public List<Category> getSubCategories(Long categoryId)
+    public List<Category> getSubCategories(final Long categoryId)
             throws DataSourceException {
         final long parentCategoryId = normalizeCategoryId(categoryId);
 
@@ -133,13 +133,13 @@ public abstract class LiferayCommonDataSource implements DataSource,
             List<MBCategory> categories = MBCategoryLocalServiceUtil
                     .getCategories(scopeGroupId, parentCategoryId, QUERY_ALL,
                             QUERY_ALL);
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Found %d categories.",
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(String.format("Found %d categories.",
                         categories.size()));
             }
             return LiferayCommonEntityFactoryUtil.createCategories(categories);
         } catch (final SystemException e) {
-            log.error(String.format(
+            LOG.error(String.format(
                     "Couldn't get subcategories for parent category %d.",
                     parentCategoryId), e);
             throw new DataSourceException(e);
@@ -153,7 +153,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
                     .getMBThread(threadId);
             return liferayThread.getRootMessageId();
         } catch (final NestableException e) {
-            log.error(String.format(
+            LOG.error(String.format(
                     "Couldn't get root message id for thread %d.", threadId), e);
             throw new DataSourceException(e);
         }
@@ -182,7 +182,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
             }
             return result;
         } catch (final NestableException e) {
-            log.error(String.format("Couldn't get threads for category %d.",
+            LOG.error(String.format("Couldn't get threads for category %d.",
                     categoryId), e);
             throw new DataSourceException(e);
         }
@@ -214,10 +214,10 @@ public abstract class LiferayCommonDataSource implements DataSource,
             }
             return result;
         } catch (final SystemException e) {
-            log.error("Couldn't get recent threads.", e);
+            LOG.error("Couldn't get recent threads.", e);
             throw new DataSourceException(e);
         } catch (final PortalException e) {
-            log.error("Couldn't get recent threads.", e);
+            LOG.error("Couldn't get recent threads.", e);
             throw new DataSourceException(e);
         }
     }
@@ -229,7 +229,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
                     WorkflowConstants.STATUS_APPROVED, INCLUDE_ANONYMOUS,
                     INCLUDE_SUBSCRIBED);
         } catch (final SystemException e) {
-            log.error("Couldn't get amount of recent threads.", e);
+            LOG.error("Couldn't get amount of recent threads.", e);
             throw new DataSourceException(e);
         }
     };
@@ -250,10 +250,10 @@ public abstract class LiferayCommonDataSource implements DataSource,
             }
             return result;
         } catch (final SystemException e) {
-            log.error("Couldn't get my posts.", e);
+            LOG.error("Couldn't get my posts.", e);
             throw new DataSourceException(e);
         } catch (final PortalException e) {
-            log.error("Couldn't get my posts.", e);
+            LOG.error("Couldn't get my posts.", e);
             throw new DataSourceException(e);
         }
     }
@@ -264,11 +264,11 @@ public abstract class LiferayCommonDataSource implements DataSource,
             final int groupThreadsCount = MBThreadServiceUtil
                     .getGroupThreadsCount(scopeGroupId, currentUserId,
                             WorkflowConstants.STATUS_ANY);
-            log.debug("LiferayDataSource.getMyPostThreadsCount(): "
+            LOG.debug("LiferayDataSource.getMyPostThreadsCount(): "
                     + groupThreadsCount);
             return groupThreadsCount;
         } catch (final SystemException e) {
-            log.error("Couldn't get my posts' count.", e);
+            LOG.error("Couldn't get my posts' count.", e);
             throw new DataSourceException(e);
         }
     }
@@ -322,8 +322,8 @@ public abstract class LiferayCommonDataSource implements DataSource,
         final List<MBThread> liferayThreads = MBThreadLocalServiceUtil
                 .getThreads(scopeGroupId, categoryId,
                         WorkflowConstants.STATUS_APPROVED, start, end);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(String.format(
                     "Found %d threads for category with id %d.",
                     liferayThreads.size(), categoryId));
         }
@@ -354,14 +354,14 @@ public abstract class LiferayCommonDataSource implements DataSource,
             throw new org.vaadin.tori.exception.NoSuchCategoryException(
                     categoryId, e);
         } catch (final NestableException e) {
-            log.error(String.format("Couldn't get category for id %d.",
+            LOG.error(String.format("Couldn't get category for id %d.",
                     categoryId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public int getThreadCountRecursively(Long categoryId)
+    public int getThreadCountRecursively(final Long categoryId)
             throws DataSourceException {
         try {
             int count = MBThreadLocalServiceUtil.getCategoryThreadsCount(
@@ -377,15 +377,15 @@ public abstract class LiferayCommonDataSource implements DataSource,
             }
             return count;
         } catch (final SystemException e) {
-            log.error(String.format(
+            LOG.error(String.format(
                     "Couldn't get recursive thread count for category %d.",
                     categoryId), e);
             throw new DataSourceException(e);
         }
     }
 
-    protected Collection<Long> getCategoryIdsRecursively(Long rootCategoryId)
-            throws DataSourceException {
+    protected Collection<Long> getCategoryIdsRecursively(
+            final Long rootCategoryId) throws DataSourceException {
         Collection<Long> categories = new ArrayList<Long>();
         categories.add(rootCategoryId);
         try {
@@ -403,20 +403,20 @@ public abstract class LiferayCommonDataSource implements DataSource,
     }
 
     @Override
-    public int getThreadCount(Long categoryId) throws DataSourceException {
+    public int getThreadCount(final Long categoryId) throws DataSourceException {
         try {
             return MBThreadLocalServiceUtil.getCategoryThreadsCount(
                     scopeGroupId, normalizeCategoryId(categoryId),
                     WorkflowConstants.STATUS_APPROVED);
         } catch (final SystemException e) {
-            log.error(String.format(
+            LOG.error(String.format(
                     "Couldn't get thread count for category %d.", categoryId),
                     e);
             throw new DataSourceException(e);
         }
     }
 
-    public static long normalizeCategoryId(Long categoryId) {
+    public static long normalizeCategoryId(final Long categoryId) {
         return categoryId == null ? ROOT_CATEGORY_ID : categoryId;
     }
 
@@ -434,7 +434,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
             throw new org.vaadin.tori.exception.NoSuchThreadException(threadId,
                     e);
         } catch (final NestableException e) {
-            log.error(
+            LOG.error(
                     String.format("Couldn't get thread for id %d.", threadId),
                     e);
             throw new DataSourceException(e);
@@ -454,12 +454,12 @@ public abstract class LiferayCommonDataSource implements DataSource,
             MBThreadLocalServiceUtil.updateThread(liferayThread.getThreadId(),
                     liferayThread.getViewCount() + 1);
         } catch (final PortalException e) {
-            log.error(String.format(
+            LOG.error(String.format(
                     "Couldn't increment view count for thread %d.",
                     thread.getId()), e);
             throw new DataSourceException(e);
         } catch (final SystemException e) {
-            log.error(String.format(
+            LOG.error(String.format(
                     "Couldn't increment view count for thread %d.",
                     thread.getId()), e);
             throw new DataSourceException(e);
@@ -467,71 +467,61 @@ public abstract class LiferayCommonDataSource implements DataSource,
     }
 
     @Override
-    public List<Post> getPosts(long threadId) throws DataSourceException {
+    public List<Post> getPosts(final long threadId) throws DataSourceException {
         try {
             final List<MBMessage> messages = getLiferayPostsForThread(threadId);
-
             final List<Post> result = new ArrayList<Post>(messages.size());
             final DiscussionThread thread = getThread(threadId);
             for (final MBMessage message : messages) {
-                final User author = getUser(message.getUserId());
-                final List<Attachment> attachments = getAttachments(message);
-
-                final Post post = LiferayCommonEntityFactoryUtil.createPost(
-                        message, author, thread, attachments);
-                if (getReplaceMessageBoardsLinks()) {
-                    String bodyRaw = post.getBodyRaw();
-                    bodyRaw = replaceMessageBoardsLinksCategories(bodyRaw);
-                    bodyRaw = replaceMessageBoardsLinksMessages(bodyRaw);
-                    post.setBodyRaw(bodyRaw);
-                }
-                result.add(post);
+                result.add(internalGetPost(message, thread));
             }
             return result;
         } catch (final NestableException e) {
-            log.error(String.format("Couldn't get posts for thread %d.",
+            LOG.error(String.format("Couldn't get posts for thread %d.",
                     threadId), e);
             throw new DataSourceException(e);
         }
     }
 
-    private String replaceMessageBoardsLinksCategories(String bodyRaw) {
+    private String replaceMessageBoardsLinksCategories(final String bodyRaw) {
+        String body = bodyRaw;
         // Liferay 6.0 pattern
         final Pattern pattern = Pattern.compile(
                 "/-/message_boards\\?[_,\\d]+mbCategoryId=\\d+",
                 Pattern.CASE_INSENSITIVE);
-        final Matcher matcher = pattern.matcher(bodyRaw);
+        final Matcher matcher = pattern.matcher(body);
         while (matcher.find()) {
             final String group = matcher.group();
             final String category = "mbCategoryId=";
             final String categoryIdString = group.substring(group
                     .indexOf(category) + category.length());
             final String fragment = CATEGORIES + categoryIdString;
-            bodyRaw = bodyRaw.replaceFirst(group.replaceAll("\\?", "\\\\?"),
-                    fragment);
+            body = body
+                    .replaceFirst(group.replaceAll("\\?", "\\\\?"), fragment);
         }
 
         // Liferay 6.1 pattern
         final Pattern pattern61 = Pattern.compile(
                 "/-/message_boards/category/\\d+", Pattern.CASE_INSENSITIVE);
-        final Matcher matcher61 = pattern61.matcher(bodyRaw);
+        final Matcher matcher61 = pattern61.matcher(body);
         while (matcher61.find()) {
             final String group = matcher61.group();
             final String categoryIdString = group.substring(group
                     .lastIndexOf('/') + 1);
             final String fragment = CATEGORIES + categoryIdString;
-            bodyRaw = bodyRaw.replaceFirst(group, fragment);
+            body = body.replaceFirst(group, fragment);
         }
 
-        return bodyRaw;
+        return body;
     }
 
-    private String replaceMessageBoardsLinksMessages(String bodyRaw) {
+    private String replaceMessageBoardsLinksMessages(final String bodyRaw) {
+        String body = bodyRaw;
         final Pattern pattern = Pattern
                 .compile(
                         "/-/message_boards/(view_)?message/\\d+(#[_,\\d]+message_\\d+)?",
                         Pattern.CASE_INSENSITIVE);
-        final Matcher matcher = pattern.matcher(bodyRaw);
+        final Matcher matcher = pattern.matcher(body);
         while (matcher.find()) {
             final String group = matcher.group();
             String messageIdString = group
@@ -555,13 +545,13 @@ public abstract class LiferayCommonDataSource implements DataSource,
 
                 final String fragment = THREADS + threadId + "/" + messageId;
 
-                bodyRaw = bodyRaw.replaceFirst(group, fragment);
+                body = body.replaceFirst(group, fragment);
             } catch (final NestableException e) {
-                log.warn("Unable to get MBmessage for id: " + messageId);
+                LOG.warn("Unable to get MBmessage for id: " + messageId);
             }
         }
 
-        return bodyRaw;
+        return body;
     }
 
     protected abstract List<Attachment> getAttachments(final MBMessage message)
@@ -577,41 +567,40 @@ public abstract class LiferayCommonDataSource implements DataSource,
     }
 
     @Override
-    public void updateCategory(long categoryId, String name, String description)
-            throws DataSourceException {
+    public void updateCategory(final long categoryId, final String name,
+            final String description) throws DataSourceException {
         try {
-            log.debug("Updating existing category: " + categoryId);
+            LOG.debug("Updating existing category: " + categoryId);
             final MBCategory category = MBCategoryLocalServiceUtil
                     .getCategory(categoryId);
             category.setName(name);
             category.setDescription(description);
             MBCategoryLocalServiceUtil.updateMBCategory(category);
         } catch (NestableException e) {
-            log.error(String.format("Cannot save category %d", categoryId), e);
+            LOG.error(String.format("Cannot save category %d", categoryId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public void deleteCategory(long categoryId) throws DataSourceException {
+    public void deleteCategory(final long categoryId)
+            throws DataSourceException {
         try {
             MBCategoryServiceUtil.deleteCategory(scopeGroupId, categoryId);
         } catch (final NestableException e) {
-            log.error(String.format("Cannot delete category %d", categoryId), e);
+            LOG.error(String.format("Cannot delete category %d", categoryId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public void reportPost(long postId, Reason reason, String additionalInfo,
-            String postUrl) {
+    public void reportPost(final long postId, final Reason reason,
+            final String additionalInfo, final String postUrl) {
         String reporterEmailAddress = "";
         try {
             reporterEmailAddress = getCurrentLiferayUser().getEmailAddress();
-        } catch (final PortalException e) {
-            log.error("Couldn't get the email address of current user.", e);
-        } catch (final SystemException e) {
-            log.error("Couldn't get the email address of current user.", e);
+        } catch (final NestableException e) {
+            LOG.error("Couldn't get the email address of current user.", e);
         }
 
         try {
@@ -634,48 +623,48 @@ public abstract class LiferayCommonDataSource implements DataSource,
     }
 
     @Override
-    public void savePost(long postId, String bodyRaw) {
+    public void savePost(final long postId, final String bodyRaw) {
         try {
             // Currently only editing of message body allowed
             MBMessageLocalServiceUtil.updateMessage(postId, bodyRaw);
         } catch (final Exception e) {
-            log.error("Editing message failed", e);
+            LOG.error("Editing message failed", e);
         }
     }
 
     @Override
-    public void banUser(long userId) throws DataSourceException {
+    public void banUser(final long userId) throws DataSourceException {
         try {
             MBBanServiceUtil.addBan(userId, mbBanServiceContext);
         } catch (NestableException e) {
-            log.error(String.format("Cannot ban user %d", userId), e);
+            LOG.error(String.format("Cannot ban user %d", userId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public void unbanUser(long userId) throws DataSourceException {
+    public void unbanUser(final long userId) throws DataSourceException {
         try {
             MBBanServiceUtil.deleteBan(userId, mbBanServiceContext);
         } catch (final NestableException e) {
-            log.error(String.format("Cannot unban user %d", userId), e);
+            LOG.error(String.format("Cannot unban user %d", userId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public void unfollowThread(long threadId) throws DataSourceException {
+    public void unfollowThread(final long threadId) throws DataSourceException {
         try {
             SubscriptionLocalServiceUtil.deleteSubscription(currentUserId,
                     MBThread.class.getName(), threadId);
         } catch (final NestableException e) {
-            log.error(String.format("Cannot unfollow thread %d", threadId), e);
+            LOG.error(String.format("Cannot unfollow thread %d", threadId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public boolean isFollowingThread(long threadId) {
+    public boolean isFollowingThread(final long threadId) {
         boolean result = false;
         if (currentUserId > 0) {
             try {
@@ -684,7 +673,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
                         user.getCompanyId(), user.getUserId(),
                         MBThread.class.getName(), threadId);
             } catch (final NestableException e) {
-                log.error(String
+                LOG.error(String
                         .format("Cannot check if user is following thread %d",
                                 threadId), e);
             }
@@ -693,17 +682,17 @@ public abstract class LiferayCommonDataSource implements DataSource,
     }
 
     @Override
-    public void deletePost(long postId) throws DataSourceException {
+    public void deletePost(final long postId) throws DataSourceException {
         try {
             MBMessageServiceUtil.deleteMessage(postId);
         } catch (final NestableException e) {
-            log.error(String.format("Couldn't delete post %d.", postId), e);
+            LOG.error(String.format("Couldn't delete post %d.", postId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public Boolean getPostVote(long postId) throws DataSourceException {
+    public Boolean getPostVote(final long postId) throws DataSourceException {
         Boolean result = null;
         try {
             RatingsEntry entry = RatingsEntryLocalServiceUtil.getEntry(
@@ -712,8 +701,9 @@ public abstract class LiferayCommonDataSource implements DataSource,
                 result = entry.getScore() > 0;
             }
         } catch (final NoSuchEntryException e) {
+            // Ignore
         } catch (final NestableException e) {
-            log.error(String.format("Couldn't get post vote for post %d.",
+            LOG.error(String.format("Couldn't get post vote for post %d.",
                     postId), e);
             throw new DataSourceException(e);
         }
@@ -721,71 +711,63 @@ public abstract class LiferayCommonDataSource implements DataSource,
     }
 
     @Override
-    public void upvote(long postId) throws DataSourceException {
+    public void upvote(final long postId) throws DataSourceException {
         ratePost(postId, 1);
     }
 
     @Override
-    public void downvote(long postId) throws DataSourceException {
+    public void downvote(final long postId) throws DataSourceException {
         ratePost(postId, -1);
     }
 
-    private void ratePost(long postId, final int score)
+    private void ratePost(final long postId, final int score)
             throws DataSourceException {
         try {
             RatingsEntryServiceUtil.updateEntry(MBMessage.class.getName(),
                     postId, score);
         } catch (final NestableException e) {
-            log.error(String.format("Couldn't rate post %d.", postId), e);
+            LOG.error(String.format("Couldn't rate post %d.", postId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public void removeUserVote(long postId) throws DataSourceException {
+    public void removeUserVote(final long postId) throws DataSourceException {
         try {
             RatingsEntryServiceUtil.deleteEntry(MBMessage.class.getName(),
                     postId);
         } catch (final NestableException e) {
-            log.error(String.format("Couldn't remove user vote for post %d.",
+            LOG.error(String.format("Couldn't remove user vote for post %d.",
                     postId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public long getPostScore(long postId) throws DataSourceException {
+    public long getPostScore(final long postId) throws DataSourceException {
         try {
             final RatingsStats ratingsStats = RatingsStatsLocalServiceUtil
                     .getStats(MBMessage.class.getName(), postId);
             return (long) (ratingsStats.getAverageScore() * ratingsStats
                     .getTotalEntries());
         } catch (final SystemException e) {
-            log.error(String.format("Couldn't get score for post %d.", postId),
+            LOG.error(String.format("Couldn't get score for post %d.", postId),
                     e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public Post saveReply(String rawBody, Map<String, byte[]> attachments,
-            long threadId) throws DataSourceException {
+    public Post saveReply(final String rawBody,
+            final Map<String, byte[]> attachments, final long threadId)
+            throws DataSourceException {
         try {
             final MBMessage newPost = internalSaveAsCurrentUser(rawBody,
                     attachments, getThread(threadId),
                     getRootMessageId(threadId));
-            final Post post2 = LiferayCommonEntityFactoryUtil.createPost(
-                    newPost, getUser(currentUserId),
-                    getThread(newPost.getThreadId()), getAttachments(newPost));
-            if (getReplaceMessageBoardsLinks()) {
-                String bodyRaw = post2.getBodyRaw();
-                bodyRaw = replaceMessageBoardsLinksCategories(bodyRaw);
-                bodyRaw = replaceMessageBoardsLinksMessages(bodyRaw);
-                post2.setBodyRaw(bodyRaw);
-            }
-            return post2;
+            return getPost(newPost.getMessageId());
         } catch (final NestableException e) {
-            log.error("Couldn't save post.", e);
+            LOG.error("Couldn't save post.", e);
             throw new DataSourceException(e);
         }
     }
@@ -796,68 +778,68 @@ public abstract class LiferayCommonDataSource implements DataSource,
             throws PortalException, SystemException;
 
     @Override
-    public void moveThread(final long threadId, Long destinationCategoryId)
+    public void moveThread(final long threadId, final Long destinationCategoryId)
             throws DataSourceException {
         try {
             MBThreadLocalServiceUtil.moveThread(scopeGroupId,
                     destinationCategoryId, threadId);
         } catch (final NestableException e) {
-            log.error(String.format("Couldn't move thread %d.", threadId), e);
+            LOG.error(String.format("Couldn't move thread %d.", threadId), e);
             throw new DataSourceException(e);
         }
 
     }
 
     @Override
-    public void stickyThread(long threadId) throws DataSourceException {
+    public void stickyThread(final long threadId) throws DataSourceException {
         updateThreadPriority(threadId, STICKY_PRIORITY);
     }
 
     @Override
-    public void unstickyThread(long threadId) throws DataSourceException {
+    public void unstickyThread(final long threadId) throws DataSourceException {
         updateThreadPriority(threadId, MBThreadConstants.PRIORITY_NOT_GIVEN);
     }
 
-    private void updateThreadPriority(long threadId, final double newPriority)
-            throws DataSourceException {
+    private void updateThreadPriority(final long threadId,
+            final double newPriority) throws DataSourceException {
         try {
             final MBThread liferayThread = MBThreadLocalServiceUtil
                     .getThread(threadId);
             liferayThread.setPriority(newPriority);
             MBThreadLocalServiceUtil.updateMBThread(liferayThread);
         } catch (final NestableException e) {
-            log.error(String.format("Couldn't change priority for thread %d.",
+            LOG.error(String.format("Couldn't change priority for thread %d.",
                     threadId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public void lockThread(long threadId) throws DataSourceException {
+    public void lockThread(final long threadId) throws DataSourceException {
         try {
             MBThreadServiceUtil.lockThread(threadId);
         } catch (final NestableException e) {
-            log.error(String.format("Couldn't lock thread %d.", threadId), e);
+            LOG.error(String.format("Couldn't lock thread %d.", threadId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public void unlockThread(long threadId) throws DataSourceException {
+    public void unlockThread(final long threadId) throws DataSourceException {
         try {
             MBThreadServiceUtil.unlockThread(threadId);
         } catch (final NestableException e) {
-            log.error(String.format("Couldn't unlock thread %d.", threadId), e);
+            LOG.error(String.format("Couldn't unlock thread %d.", threadId), e);
             throw new DataSourceException(e);
         }
     }
 
     @Override
-    public void deleteThread(long threadId) throws DataSourceException {
+    public void deleteThread(final long threadId) throws DataSourceException {
         try {
             MBThreadLocalServiceUtil.deleteMBThread(threadId);
         } catch (final NestableException e) {
-            log.error(String.format("Couldn't delete thread %d.", threadId), e);
+            LOG.error(String.format("Couldn't delete thread %d.", threadId), e);
             throw new DataSourceException(e);
         }
     }
@@ -874,7 +856,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
             if (scopeGroupId < 0) {
                 // scope not defined yet -> get if from the theme display
                 scopeGroupId = themeDisplay.getScopeGroupId();
-                log.debug("Using groupId " + scopeGroupId + " as the scope.");
+                LOG.debug("Using groupId " + scopeGroupId + " as the scope.");
             }
             long remoteUser = 0;
             if (request.getRemoteUser() != null) {
@@ -900,14 +882,14 @@ public abstract class LiferayCommonDataSource implements DataSource,
             mbMessageServiceContext = ServiceContextFactory.getInstance(
                     MBMessage.class.getName(), request);
         } catch (final NestableException e) {
-            log.error("Couldn't create ServiceContext.", e);
+            LOG.error("Couldn't create ServiceContext.", e);
         }
 
         try {
             portletPreferences = PortletPreferencesFactoryUtil
                     .getPortletSetup(request);
         } catch (final NestableException e) {
-            log.error("Couldn't load PortletPreferences.", e);
+            LOG.error("Couldn't load PortletPreferences.", e);
         }
     }
 
@@ -922,6 +904,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
     private static final String TORI_THREAD_ID = "toriThreadId";
     /** @see org.vaadin.tori.ToriApplication.TORI_MESSAGE_ID */
     private static final String TORI_MESSAGE_ID = "toriMessageId";
+    private static final int DEFAULT_MAX_FILE_SIZE = 307200;
 
     private Map<String, String> postReplacements;
 
@@ -939,7 +922,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
                     session.setAttribute(TORI_THREAD_ID, message.getThreadId());
                     session.setAttribute(TORI_MESSAGE_ID, messageId);
                 } catch (final NestableException e) {
-                    log.warn("Unable to load MBMessage for id: " + messageId, e);
+                    LOG.warn("Unable to load MBMessage for id: " + messageId, e);
                 }
             }
         } else {
@@ -965,7 +948,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
                         break;
                     }
                 } catch (final Exception e) {
-                    log.warn("Unable to parse parameter value.", e);
+                    LOG.warn("Unable to parse parameter value.", e);
                 }
             }
         }
@@ -981,8 +964,8 @@ public abstract class LiferayCommonDataSource implements DataSource,
     }
 
     @Override
-    public Post saveNewThread(String topic, String rawBody,
-            Map<String, byte[]> attachments, Long categoryId)
+    public Post saveNewThread(final String topic, final String rawBody,
+            final Map<String, byte[]> attachments, final Long categoryId)
             throws DataSourceException {
 
         try {
@@ -1002,7 +985,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
                 }
             }
         } catch (final NestableException e) {
-            log.error("Couldn't save new thread.", e);
+            LOG.error("Couldn't save new thread.", e);
             throw new DataSourceException(e);
         }
         // if we get this far, saving has failed -> throw exception
@@ -1015,8 +998,8 @@ public abstract class LiferayCommonDataSource implements DataSource,
             return Integer.parseInt(PrefsPropsUtil
                     .getString(PropsKeys.DL_FILE_MAX_SIZE));
         } catch (final Exception e) {
-            log.error("Couldn't get max file size");
-            return 307200;
+            LOG.error("Couldn't get max file size");
+            return DEFAULT_MAX_FILE_SIZE;
         }
     }
 
@@ -1121,7 +1104,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
 
                 portletPreferences.store();
             } catch (final Exception e) {
-                log.error("Unable to store portlet preferences", e);
+                LOG.error("Unable to store portlet preferences", e);
                 throw new DataSourceException(e);
             }
         }
@@ -1140,9 +1123,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
 
     @Override
     public UrlInfo getUrlInfoFromBackendNativeRequest(
-            final HttpServletRequest servletRequest)
-            throws org.vaadin.tori.exception.NoSuchThreadException,
-            DataSourceException {
+            final HttpServletRequest servletRequest) throws DataSourceException {
         final String portletId = servletRequest.getParameter("p_p_id");
         final String messageId = servletRequest.getParameter("_" + portletId
                 + "_messageId");
@@ -1199,7 +1180,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
     }
 
     @Override
-    public User getToriUser(long userId) throws DataSourceException {
+    public User getToriUser(final long userId) throws DataSourceException {
         User user = null;
         if (userId > 0) {
             try {
@@ -1212,27 +1193,34 @@ public abstract class LiferayCommonDataSource implements DataSource,
     }
 
     @Override
-    public Post getPost(long postId) throws DataSourceException {
+    public Post getPost(final long postId) throws DataSourceException {
         Post result = null;
         try {
             MBMessage message = MBMessageLocalServiceUtil.getMBMessage(postId);
-            final User author = getUser(message.getUserId());
-            final List<Attachment> attachments = getAttachments(message);
-
             DiscussionThread thread = getThread(message.getThreadId());
-            result = LiferayCommonEntityFactoryUtil.createPost(message, author,
-                    thread, attachments);
-            if (getReplaceMessageBoardsLinks()) {
-                String bodyRaw = result.getBodyRaw();
-                bodyRaw = replaceMessageBoardsLinksCategories(bodyRaw);
-                bodyRaw = replaceMessageBoardsLinksMessages(bodyRaw);
-                result.setBodyRaw(bodyRaw);
-            }
+            result = internalGetPost(message, thread);
         } catch (NestableException e) {
             throw new DataSourceException(e);
         }
         return result;
     }
+
+    private Post internalGetPost(final MBMessage message,
+            final DiscussionThread thread) throws NestableException {
+        final User author = getUser(message.getUserId());
+        final List<Attachment> attachments = getAttachments(message);
+        final boolean formatBBCode = isFormatBBCode(message);
+        String bodyRaw = message.getBody(false);
+        if (getReplaceMessageBoardsLinks()) {
+            bodyRaw = replaceMessageBoardsLinksCategories(bodyRaw);
+            bodyRaw = replaceMessageBoardsLinksMessages(bodyRaw);
+        }
+
+        return LiferayCommonEntityFactoryUtil.createPost(message, bodyRaw,
+                formatBBCode, author, thread, attachments);
+    }
+
+    protected abstract boolean isFormatBBCode(MBMessage message);
 
     @Override
     public User getCurrentUser() {

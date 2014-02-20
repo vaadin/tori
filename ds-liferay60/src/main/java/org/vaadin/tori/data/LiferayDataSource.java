@@ -44,7 +44,6 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portal.service.SubscriptionLocalServiceUtil;
-import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBMessageConstants;
 import com.liferay.portlet.messageboards.model.MBMessageFlag;
@@ -61,7 +60,7 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     private static final Logger log = Logger.getLogger(LiferayDataSource.class);
 
     @Override
-    public void followThread(long threadId) throws DataSourceException {
+    public void followThread(final long threadId) throws DataSourceException {
         try {
             SubscriptionLocalServiceUtil.addSubscription(currentUserId,
                     MBThread.class.getName(), threadId);
@@ -114,7 +113,7 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     }
 
     @Override
-    public boolean isThreadRead(long threadId) {
+    public boolean isThreadRead(final long threadId) {
         boolean result = true;
         if (currentUserId > 0) {
             try {
@@ -132,7 +131,7 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     }
 
     @Override
-    public void markThreadRead(long threadId) throws DataSourceException {
+    public void markThreadRead(final long threadId) throws DataSourceException {
         if (currentUserId > 0) {
             try {
                 MBMessageFlagLocalServiceUtil.addReadFlags(currentUserId,
@@ -146,13 +145,13 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     }
 
     @Override
-    public void saveNewCategory(Long parentCategoryId, String name,
-            String description) throws DataSourceException {
+    public void saveNewCategory(final Long parentCategoryId, final String name,
+            final String description) throws DataSourceException {
         try {
-            final MBCategory c = MBCategoryServiceUtil.addCategory(
-                    parentCategoryId, name, description, null, null, null, 0,
-                    false, null, null, 0, null, false, null, 0, false, null,
-                    null, false, mbCategoryServiceContext);
+            MBCategoryServiceUtil.addCategory(parentCategoryId, name,
+                    description, null, null, null, 0, false, null, null, 0,
+                    null, false, null, 0, false, null, null, false,
+                    mbCategoryServiceContext);
         } catch (final NestableException e) {
             log.error(String.format("Cannot save category"), e);
             throw new DataSourceException(e);
@@ -160,7 +159,7 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     }
 
     @Override
-    protected List<Attachment> getAttachments(MBMessage message)
+    protected List<Attachment> getAttachments(final MBMessage message)
             throws NestableException {
         final List<Attachment> attachments = new ArrayList<Attachment>();
         if (message.isAttachments()) {
@@ -190,9 +189,9 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     }
 
     @Override
-    protected MBMessage internalSaveAsCurrentUser(String rawBody,
-            Map<String, byte[]> files, DiscussionThread thread,
-            long parentMessageId) throws PortalException, SystemException {
+    protected MBMessage internalSaveAsCurrentUser(final String rawBody,
+            final Map<String, byte[]> files, final DiscussionThread thread,
+            final long parentMessageId) throws PortalException, SystemException {
         final long groupId = scopeGroupId;
         final long categoryId = thread.getCategory().getId();
         final long threadId = thread.getId();
@@ -231,6 +230,11 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     @Override
     protected String getThemeDisplayKey() {
         return WebKeys.THEME_DISPLAY;
+    }
+
+    @Override
+    protected boolean isFormatBBCode(final MBMessage message) {
+        return true;
     }
 
 }

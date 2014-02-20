@@ -74,6 +74,7 @@ public class LiferayCommonEntityFactoryUtil {
     }
 
     public static Post createPost(final MBMessage liferayMessage,
+            final String bodyRaw, final boolean formatBBCode,
             final User author, final DiscussionThread thread,
             final List<Attachment> attachments) {
         final Post entity = new Post();
@@ -82,6 +83,7 @@ public class LiferayCommonEntityFactoryUtil {
         entity.setBodyRaw(liferayMessage.getBody(false));
         entity.setThread(thread);
         entity.setAuthor(author);
+        entity.setFormatBBCode(formatBBCode);
         entity.setAttachments(attachments);
         return entity;
     }
