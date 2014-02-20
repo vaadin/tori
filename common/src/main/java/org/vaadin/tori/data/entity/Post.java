@@ -53,6 +53,16 @@ public class Post extends AbstractEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Attachment> attachments;
 
+    private boolean formatBBCode;
+
+    public boolean isFormatBBCode() {
+        return formatBBCode;
+    }
+
+    public void setFormatBBCode(boolean formatBBCode) {
+        this.formatBBCode = formatBBCode;
+    }
+
     public void setAuthor(final User author) {
         this.author = author;
     }

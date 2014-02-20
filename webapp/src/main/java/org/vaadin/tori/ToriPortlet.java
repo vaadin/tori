@@ -45,7 +45,7 @@ import com.vaadin.server.VaadinRequest;
 public class ToriPortlet extends VaadinPortlet {
 
     private static final String PORTAL_UTIL_CLASS = "com.liferay.portal.util.PortalUtil";
-    private static final String DEFAULT_THEME_NAME = "tori-liferay";
+    private static final String DEFAULT_THEME_NAME = "tori";
 
     private class ToriPortletService extends VaadinPortletService {
 

@@ -86,7 +86,6 @@ public class LiferayCommonEntityFactoryUtil {
         return entity;
     }
 
-    @SuppressWarnings("deprecation")
     public static User createUser(
             final com.liferay.portal.model.User liferayUser,
             final String imagePath, final boolean isFemale,

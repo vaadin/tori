@@ -38,20 +38,20 @@ import com.vaadin.ui.UI;
 @SuppressWarnings("serial")
 public class BBCodeWysiwygEditor extends CKEditorTextField {
 
-    public BBCodeWysiwygEditor(boolean autoGrow) {
+    public BBCodeWysiwygEditor(boolean autoGrow, boolean bbcode) {
         addStyleName("wysiwyg-editor");
         setHeight(null);
         setImmediate(true);
 
         CKEditorConfig config = new CKEditorConfig();
         configureTheme(config);
-        configurePlugins(config, autoGrow);
+        configurePlugins(config, autoGrow, bbcode);
         configureFonts(config);
         configureToolbar(config);
 
         config.setForcePasteAsPlainText(true);
         config.disableElementsPath();
-        config.setEnterMode(1);
+        config.setEnterMode("BR");
 
         setConfig(config);
     }
@@ -86,8 +86,11 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
         config.addExtraConfig("fontSize_sizes", sb.toString());
     }
 
-    private void configurePlugins(CKEditorConfig config, boolean autoGrow) {
-        config.addToExtraPlugins("custombbcode");
+    private void configurePlugins(CKEditorConfig config, boolean autoGrow,
+            boolean bbcode) {
+        if (bbcode) {
+            config.addToExtraPlugins("custombbcode");
+        }
         config.addToExtraPlugins("codebutton");
         config.addToRemovePlugins("magicline");
 
@@ -111,16 +114,15 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
                 + "/VAADIN/themes/";
         String toriTheme = UI.getCurrent().getTheme() + "/";
         String toriCss = themesPath + toriTheme + "styles.css";
-        String editorCss = themesPath + toriTheme + "editor/editor.css";
 
         WebBrowser browser = Page.getCurrent().getWebBrowser();
         if (browser.isIE()) {
             String ieCss = themesPath + toriTheme + "editor/ie.css";
-            config.setContentsCss(toriCss, editorCss, ieCss);
+            config.setContentsCss(toriCss, ieCss);
         } else {
-            config.setContentsCss(toriCss, editorCss);
+            config.setContentsCss(toriCss);
         }
-        config.setBodyClass("v-app v-widget authoring "
+        config.setBodyClass("v-app v-widget authoring post tori "
                 + UI.getCurrent().getTheme());
     }
 

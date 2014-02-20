@@ -89,6 +89,8 @@ public interface ThreadView extends View {
 
         String getAuthorLink();
 
+        boolean isFormatBBCode();
+
     }
 
     interface ViewData {

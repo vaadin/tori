@@ -71,6 +71,10 @@ public class PostsLayout extends CssLayout {
 
     @Override
     public void addComponent(Component c) {
+        if (c instanceof PostComponent) {
+            PostComponent postComponent = (PostComponent) c;
+            postComponents.put(postComponent.getPostId(), postComponent);
+        }
         if (getComponentCount() > RENDER_BATCH_SIZE) {
             c.setVisible(false);
         }
@@ -103,7 +107,6 @@ public class PostsLayout extends CssLayout {
         removeStyleName(STYLE_READY);
         for (PostData post : posts) {
             PostComponent postComponent = new PostComponent(post, presenter);
-            postComponents.put(post.getId(), postComponent);
             addComponent(postComponent);
             if (post.isSelected()) {
                 setScrollToComponent(postComponent);

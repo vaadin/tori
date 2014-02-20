@@ -1,0 +1,123 @@
+
+
+@mixin postbody {
+
+	blockquote {
+		margin: 0 0 $post-body-line-height;
+	}
+
+	blockquote cite,
+	.quote-title {
+		background-color: $postbody-quote-background-color;
+		padding-left: 50px;
+		font-family: HelveticaNeue-Medium;
+		color: #555;
+		line-height: 35px;
+		position: relative;
+		display: block;
+		font-style: normal;
+		
+		&:before {
+			font-family: HelveticaNeue;
+			content: "\201D";
+			position: absolute;
+			font-size: 58px;
+			color: $postbody-quote-quotationmark-color;
+			line-height: 69px;
+			left: 11px;
+			top: -3px;
+		}
+	}
+	
+	blockquote cite:after{
+		content: ":";
+	}
+
+	blockquote > div,
+	.quote {
+		background-color: $postbody-quote-background-color;
+		padding: 0 5px 5px 50px;
+		
+		code:before,
+		.lfr-code table tr td.line-numbers {
+			background: $postbody-quote-code-linenumber-background-color;
+			color: $postbody-quote-code-linenumber-color;
+		}
+		
+		.lfr-code .lines,
+		code {
+			background-color: $postbody-quote-code-background-color;
+			color: $postbody-quote-code-color;
+		}
+	}
+	
+	.lfr-code {
+		font-family: Monaco, monospace;
+		font-size: 13px;
+		line-height: 18px;
+		white-space: pre;
+		background-color: transparent;
+	
+		
+		table tr td.line-numbers {
+			border-right-width: 2px;
+			text-align: right;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			user-select: none;
+			vertical-align: top;
+			width: 1%;
+			background: $postbody-code-linenumber-background-color;
+			color: $postbody-code-linenumber-color;
+			
+			.number {
+				cursor: default;
+				display: block;
+				padding: 0 5px 0 14px;
+				text-align: right;
+			}
+		}
+		
+		.lines {
+			background-color: $postbody-code-background-color;
+			color: $postbody-code-color;
+			padding-left: 5px;
+		}
+	}
+	
+	code {
+		font-family: Monaco, monospace;
+		font-size: 13px;
+		line-height: 18px;
+		background-color: $postbody-code-background-color;
+		color: $postbody-code-color;
+		white-space: pre;
+	    padding: 0;
+	    max-height: 306px;
+	    overflow: auto;
+	    
+	    display: inline-block;
+	    height: auto !important;
+	    padding-left: 37px;
+	    position: relative !important;
+	    top: 0 !important;
+	    left: 0 !important;
+	    display: block;
+	    
+	    &:before {
+		    content: "1 2 3 4 5 6 7 8 9 . .";
+		    position: absolute;
+		    top: 0;
+		    left: 0px;
+		    width: 10px;
+		    height: 100%;
+		    white-space: normal;
+		    text-align: right;
+		    color: $postbody-code-linenumber-color;
+		    overflow: hidden;
+		    background: $postbody-code-linenumber-background-color;
+		    padding: 0 6px 0 14px;
+		    border-right: 2px solid #fff;
+	    }
+	}
+}

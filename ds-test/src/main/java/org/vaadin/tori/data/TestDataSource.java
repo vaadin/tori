@@ -618,6 +618,7 @@ public class TestDataSource implements DataSource {
                 post.setBodyRaw(rawBody);
                 post.setAuthor(getCurrentUser());
                 post.setTime(new Date());
+                post.setFormatBBCode(true);
 
                 final DiscussionThread thread = em.find(DiscussionThread.class,
                         threadId);

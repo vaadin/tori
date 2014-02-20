@@ -40,6 +40,7 @@ import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
@@ -48,7 +49,6 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.Receiver;
@@ -105,7 +105,7 @@ public class AuthoringComponent extends PostComponent {
     }
 
     private BBCodeWysiwygEditor buildEditor() {
-        final BBCodeWysiwygEditor editor = new BBCodeWysiwygEditor(true);
+        final BBCodeWysiwygEditor editor = new BBCodeWysiwygEditor(true, true);
         editor.setSizeFull();
 
         editor.addValueChangeListener(new ValueChangeListener() {
@@ -154,8 +154,12 @@ public class AuthoringComponent extends PostComponent {
         result.addComponent(attach);
         followCheckbox = new CheckBox("Follow topic after posting", true);
         result.addComponent(followCheckbox);
-
         result.setExpandRatio(attach, 1.0f);
+
+        for (int i = 0; i < result.getComponentCount(); i++) {
+            result.setComponentAlignment(result.getComponent(i),
+                    Alignment.MIDDLE_LEFT);
+        }
 
         return result;
     }
@@ -231,10 +235,10 @@ public class AuthoringComponent extends PostComponent {
             final String caption = String.format("%s (%s KB)", fileName,
                     fileSize / 1024);
 
-            final TextField nameComponent = new TextField();
+            final Label nameComponent = new Label();
+            nameComponent.addStyleName("namelabel");
             nameComponent.setValue(caption);
-            nameComponent.setReadOnly(true);
-            nameComponent.setWidth("100%");
+            nameComponent.setWidth(300.0f, Unit.PIXELS);
             try {
                 nameComponent.addStyleName(fileName.substring(fileName
                         .lastIndexOf(".") + 1));
@@ -245,19 +249,17 @@ public class AuthoringComponent extends PostComponent {
             final HorizontalLayout wrapperLayout = new HorizontalLayout();
             wrapperLayout.addStyleName("filerow");
             wrapperLayout.addComponent(nameComponent);
-            nameComponent.setWidth(300.0f, Unit.PIXELS);
 
             final Label deleteLabel = new Label();
-            deleteLabel.setHeight(20.0f, Unit.PIXELS);
-            deleteLabel.setWidth(20.0f, Unit.PIXELS);
-
             deleteLabel.addStyleName("deleteattachment");
+
             wrapperLayout.addComponent(deleteLabel);
             wrapperLayout.addLayoutClickListener(new LayoutClickListener() {
                 @Override
                 public void layoutClick(final LayoutClickEvent event) {
                     if (event.getChildComponent() == deleteLabel) {
                         attachments.remove(entry.getKey());
+                        updateAttachmentList();
                     }
                 }
             });

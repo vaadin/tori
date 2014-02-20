@@ -29,6 +29,20 @@ $post-anonymous-avatar-color: #fff;
 $post-anonymous-avatar-background-color: $post-avatar-border-color;
 $post-permalink-color: #AAA;
 $post-separator-border: 1px solid #E8E8E8;
+$post-body-line-height: 22px;
+
+// Post body
+$postbody-quote-background-color: #F7F7F7;
+$postbody-quote-quotationmark-color: $highlight-color;
+$postbody-code-linenumber-background-color: #E8F6FD;
+$postbody-code-linenumber-color: #94BBCD;
+$postbody-code-background-color: #F3FBFF;
+$postbody-code-color: #5D7783;
+
+$postbody-quote-code-linenumber-background-color: #E7E7E7;
+$postbody-quote-code-linenumber-color: #888;
+$postbody-quote-code-background-color: #ECECEC;
+$postbody-quote-code-color: $postbody-quote-code-linenumber-color;
 
 // Popupbutton
 $popupbutton-border: $popup-border-width $popup-border-style $popup-border-color;

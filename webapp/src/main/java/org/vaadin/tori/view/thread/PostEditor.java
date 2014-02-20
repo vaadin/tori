@@ -32,11 +32,12 @@ public class PostEditor extends VerticalLayout {
     private BBCodeWysiwygEditor editor;
     private final PostEditorListener listener;
 
-    public PostEditor(String rawBody, PostEditorListener listener) {
+    public PostEditor(String rawBody, boolean bbcode,
+            PostEditorListener listener) {
         this.listener = listener;
         addStyleName("posteditor");
         setSizeFull();
-        editor = buildEditor();
+        editor = buildEditor(bbcode);
         editor.setValue(rawBody);
         addComponent(editor);
         setExpandRatio(editor, 1.0f);
@@ -72,8 +73,8 @@ public class PostEditor extends VerticalLayout {
         return result;
     }
 
-    private BBCodeWysiwygEditor buildEditor() {
-        editor = new BBCodeWysiwygEditor(false);
+    private BBCodeWysiwygEditor buildEditor(boolean bbcode) {
+        editor = new BBCodeWysiwygEditor(false, bbcode);
         editor.setSizeFull();
         return editor;
     }

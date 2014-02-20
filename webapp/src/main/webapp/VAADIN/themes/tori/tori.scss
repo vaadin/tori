@@ -1,12 +1,14 @@
 @import "../base/base.scss";
 @import "dropdown.scss";
 @import "post.scss";
+@import "postbody.scss";
 @import "categoryview.scss";
 @import "breadcrumbs.scss";
 @import "threadlisting.scss";
 @import "recentbar.scss";
 @import "floatingcomponent.scss";
 @import "authoring.scss";
+@import "ckeditor.scss";
 
 @font-face {
     font-family: 'Tori-Icons';
@@ -20,144 +22,150 @@
 }
     
 @mixin tori {
-    @include base;
-    @include dropdown;
-    @include post;
-    @include recentbar;
-    @include floatingcomponent;
-    @include authoring;
-    
-    .v-widget {
-        font-family: inherit;
-        font-size: inherit;
-        color: inherit;
-    }
-    
-    &.v-app,
-    .v-ui,
-    .v-window,
-    .v-window .v-scrollable {
-	    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-	    font-size: 14px;
-	    color: #555;
-    }
-        
-   	.debugcontrolpanel {
-   		margin-bottom: 50px;
-   	}
-    
-    
-    
-    .v-link span,
-    a {
-        text-decoration: none;
-        color: $link-color;
-    }
-    
-    .editview {
-        .subtitle {
-            padding-top: 20px;
-            font-weight: bold;
-        }
-        
-        .v-table {
-            .v-selected {
-                background: #0db5e7;
-            }
-            
-            input {
-                margin: 2px 0;
-            }
-        }
-        
-        .v-checkbox label {
-            display: inline-block;
-            padding-left: 5px;
-            margin-bottom: 0;
-        }
-        
-    }
-    
-    
-    .v-button {
-        outline: none;
-        cursor: pointer;
-        background: #fff;
-        color: $button-color;
-        border: $button-border;
-        border-radius: $button-border-radius;
-        
-        &.secondarybutton {
-        	color: $secondary-button-color;
-        	border: $secondary-button-border;
-        }
-    }
-    
-    .headerlayout {
-		background: #F7F7F7;
-		background-image: -o-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
-		background-image: -moz-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
-		background-image: -webkit-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
-		background-image: -ms-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
-		background-image: linear-gradient(-270deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
-		margin-top: 30px;
-		
-		.v-label {
-			font-family: HelveticaNeue-Light;
-			font-size: 15px;
-			color: #888;
-			line-height: 18px;
+	@include post;
+	@include ckeditor;
+	
+	.tori {
+	    @include base;
+	    @include dropdown;
+	    @include postbody;
+	    
+	    @include recentbar;
+	    @include floatingcomponent;
+	    @include authoring;
+	    
+	    .v-widget {
+	        font-family: inherit;
+	        font-size: inherit;
+	        color: inherit;
+	    }
+	    
+	    &.v-app,
+	    .v-ui,
+	    .v-window,
+	    .v-window .v-scrollable {
+		    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+		    font-size: 14px;
+		    color: #555;
+	    }
+	        
+	   	.debugcontrolpanel {
+	   		margin-bottom: 50px;
+	   	}
+	    
+	    
+	    
+	    .v-link span,
+	    a {
+	        text-decoration: none;
+	        color: $link-color;
+	    }
+	    
+	    .editview {
+	        .subtitle {
+	            padding-top: 20px;
+	            font-weight: bold;
+	        }
+	        
+	        .v-table {
+	            .v-selected {
+	                background: #0db5e7;
+	            }
+	            
+	            input {
+	                margin: 2px 0;
+	            }
+	        }
+	        
+	        .v-checkbox label {
+	            display: inline-block;
+	            padding-left: 5px;
+	            margin-bottom: 0;
+	        }
+	        
+	    }
+	    
+	    
+	    .v-button {
+	        outline: none;
+	        cursor: pointer;
+	        background: #fff;
+	        color: $button-color;
+	        border: $button-border;
+	        border-radius: $button-border-radius;
+	        
+	        &.secondarybutton {
+	        	color: $secondary-button-color;
+	        	border: $secondary-button-border;
+	        }
+	    }
+	    
+	    .headerlayout {
+			background: #F7F7F7;
+			background-image: -o-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
+			background-image: -moz-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
+			background-image: -webkit-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
+			background-image: -ms-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
+			background-image: linear-gradient(-270deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
+			margin-top: 30px;
 			
-			&.h2 {
-				font-size: 18px;
-				color: #555;
-				line-height: 22px;
+			.v-label {
+				font-family: HelveticaNeue-Light;
+				font-size: 15px;
+				color: #888;
+				line-height: 18px;
+				
+				&.h2 {
+					font-size: 18px;
+					color: #555;
+					line-height: 22px;
+				}
+			}
+			
+			.v-button:before {
+				font-family: "Tori-Icons";
+				content: "\e008"; 
+				vertical-align: middle;
+				margin-right: 3px;
 			}
 		}
 		
-		.v-button:before {
-			font-family: "Tori-Icons";
-			content: "\e008"; 
-			vertical-align: middle;
-			margin-right: 3px;
-		}
-	}
-	
-	.v-shadow {
-		display: none;
-	}
-	
-	.v-window-closebox {
-		display: none;
-	}
-	
-	.v-popup-indicator {
-		display: none !important;
-	}
-	
-	.v-tooltip .popupContent {
-		border: $dropdown-popup-border;
-		padding: 11px 12px;
-		font-size: 12px;
-		color: #888;
-	}
-	
-	.v-popupbutton-popup {
-		background-color: $popupbutton-background-color;
-		border: $popupbutton-border;
-		
-		.v-textarea,
-		.v-textfield {
-			border: $popupbutton-border;
-		}
-	}
-	
-	.v-window {
-		height: 7em !important;
-		background-color: $window-background-color;
-	
-		.v-window-outerheader {
+		.v-shadow {
 			display: none;
+		}
+		
+		.v-window-closebox {
+			display: none;
+		}
+		
+		.v-popup-indicator {
+			display: none !important;
+		}
+		
+		.v-tooltip .popupContent {
+			border: $dropdown-popup-border;
+			padding: 11px 12px;
+			font-size: 12px;
+			color: #888;
+		}
+		
+		.v-popupbutton-popup {
+			background-color: $popupbutton-background-color;
+			border: $popupbutton-border;
+			
+			.v-textarea,
+			.v-textfield {
+				border: $popupbutton-border;
+			}
+		}
+		
+		.v-window {
+			height: 7em !important;
+			background-color: $window-background-color;
+		
+			.v-window-outerheader {
+				display: none;
+			}
 		}
 	}
 }

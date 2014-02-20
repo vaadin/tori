@@ -106,7 +106,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
             @Override
             public String getFormattedBody(boolean allowHtml) {
-                String formattedPost = postFormatter.format(post.getBodyRaw());
+                String formattedPost = postFormatter.format(post);
                 if (!allowHtml) {
                     formattedPost = stripTags(formattedPost);
                 }
@@ -179,7 +179,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             @Override
             public boolean userMayQuote() {
                 return authorizationService.mayReplyInThread(post.getThread()
-                        .getId());
+                        .getId()) && post.isFormatBBCode();
             }
 
             @Override
@@ -190,6 +190,11 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             @Override
             public boolean userMayDelete() {
                 return authorizationService.mayDeletePost(postId);
+            }
+
+            @Override
+            public boolean isFormatBBCode() {
+                return post.isFormatBBCode();
             }
 
         };

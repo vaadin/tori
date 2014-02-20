@@ -16,24 +16,85 @@
 
 package org.vaadin.tori.util;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
 
+import com.liferay.portal.kernel.parsers.bbcode.BBCodeTranslatorUtil;
+import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.parsers.bbcode.HtmlBBCodeTranslatorImpl;
+import com.liferay.portal.util.HtmlImpl;
+
 public class TestPostFormatter implements PostFormatter {
 
-    private static class TestFontFace implements FontFace {
-        private final String name;
-        private final String syntax;
+    private static final FontsInfo FONTS_INFO = new FontsInfo() {
 
-        public TestFontFace(final String name, final String syntax) {
+        @Override
+        public Collection<FontFace> getFontFaces() {
+            return Arrays.asList((FontFace[]) TestFontFace.values());
+        }
+
+        @Override
+        public Collection<FontSize> getFontSizes() {
+            return Arrays.asList((FontSize[]) TestFontSize.values());
+        }
+
+    };
+
+    private final BBCodeTranslatorUtil bbCodeTranslatorUtil = new BBCodeTranslatorUtil();
+
+    public TestPostFormatter() {
+        bbCodeTranslatorUtil
+                .setBBCodeTranslator(new HtmlBBCodeTranslatorImpl());
+        new HtmlUtil().setHtml(new HtmlImpl());
+    }
+
+    @Override
+    public String format(final Post post) {
+        String msgBody = post.getBodyRaw();
+        if (post.isFormatBBCode()) {
+            msgBody = BBCodeTranslatorUtil.getHTML(msgBody);
+        }
+        return msgBody;
+    }
+
+    @Override
+    public FontsInfo getFontsInfo() {
+        return FONTS_INFO;
+    }
+
+    @Override
+    public String getQuote(final Post postToQuote) {
+        if (postToQuote == null) {
+            return "";
+        }
+        return String.format("[quote=%s]%s[/quote]\n", postToQuote.getAuthor()
+                .getDisplayedName(), postToQuote.getBodyRaw());
+    }
+
+    @Override
+    public void setPostReplacements(final Map<String, String> postReplacements) {
+
+    }
+
+    public enum TestFontFace implements FontFace {
+        // @formatter:off
+        ARIAL("Arial"),
+        COMIC_SANS("Comic Sans MS"),
+        COURIER_NEW("Courier New"),
+        TAHOMA("Tahoma"),
+        TIMES_NEW_ROMAN("Times New Roman"),
+        VERDANA("Verdana");
+        // @formatter:on
+
+        private final String name;
+
+        private TestFontFace(final String name) {
             this.name = name;
-            this.syntax = syntax;
         }
 
         @Override
@@ -42,11 +103,21 @@ public class TestPostFormatter implements PostFormatter {
         }
     }
 
-    private static class TestFontSize implements FontSize {
+    public enum TestFontSize implements FontSize {
+        // @formatter:off
+        SIZE1("1", "10px"),
+        SIZE2("2", "12px"),
+        SIZE3("3", "16px"),
+        SIZE4("4", "18px"),
+        SIZE5("5", "24px"),
+        SIZE6("6", "32px"),
+        SIZE7("7", "48px");
+        // @formatter:on
+
         private final String name;
         private final String value;
 
-        public TestFontSize(final String name, final String value) {
+        private TestFontSize(final String name, final String value) {
             this.name = name;
             this.value = value;
         }
@@ -60,57 +131,6 @@ public class TestPostFormatter implements PostFormatter {
         public String getFontSizeValue() {
             return value;
         }
-    }
-
-    private static final FontsInfo FONTS_INFO = new FontsInfo() {
-
-        @Override
-        public Collection<FontFace> getFontFaces() {
-            final List<FontFace> list = new ArrayList<FontFace>();
-            list.add(new TestFontFace("SANSSERIF!", "[font=sans-serif][/font]"));
-            list.add(new TestFontFace("serif :(", "[font=serif][/font]"));
-            list.add(new TestFontFace("monospace", "[font=monospace][/font]"));
-            return list;
-        }
-
-        @Override
-        public Collection<FontSize> getFontSizes() {
-            final List<FontSize> list = new ArrayList<FontSize>();
-            list.add(new TestFontSize("1", "0.7em"));
-            list.add(new TestFontSize("2", "0.8em"));
-            list.add(new TestFontSize("3", "0.9em"));
-            list.add(new TestFontSize("4", "1.0em"));
-            list.add(new TestFontSize("5", "1.1em"));
-            list.add(new TestFontSize("6", "1.3em"));
-            list.add(new TestFontSize("7", "1.5em"));
-            return list;
-        }
-
-    };
-
-    @Override
-    public String format(final String rawPostBody) {
-        return rawPostBody.replace("<", "&lt;").replace(">", "&gt;")
-                .replace("[b]", "<b>").replace("[/b]", "</b>")
-                .replace("\n", "<br/>");
-    }
-
-    @Override
-    public FontsInfo getFontsInfo() {
-        return FONTS_INFO;
-    }
-
-    @Override
-    public String getQuote(final Post postToQuote) {
-        if (postToQuote == null) {
-            return "";
-        }
-        return String.format("%s wrote:\n\n%s\n---\n", postToQuote.getAuthor()
-                .getDisplayedName(), postToQuote.getBodyRaw());
-    }
-
-    @Override
-    public void setPostReplacements(final Map<String, String> postReplacements) {
 
     }
 }

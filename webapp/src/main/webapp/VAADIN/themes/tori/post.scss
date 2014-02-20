@@ -137,7 +137,7 @@
         	
         .bodytext {
         	margin-top: 50px;
-			line-height: 22px;
+			line-height: $post-body-line-height;
 			padding: 0 8px;
 			min-height: 98px;
 			position: relative;
@@ -146,7 +146,7 @@
         }
         
         .attachments {
-            border-top: 1px solid $post-separator-border;
+            border-top: $post-separator-border;
             margin-top: 50px;
             margin-bottom: 20px;
             float: left;
@@ -154,17 +154,40 @@
             position: relative;
             padding-top: 5px;
             width: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
         
             &:before {
-                font-weight: bold;
-                content: "Attachments";
+                content: "ATTACHMENTS";
+                font-size: 11px;
+                color: #888;
                 position: absolute;
-                left: 0;
+                left: 5px;
+				top: 8px;
             }
             
+            .filerow,
             a {
+                font-size: 12px;
                 float: left;
                 clear: both;
+                line-height: 18px;
+                
+                .namelabel {
+            		vertical-align: text-bottom;
+            	}
+            	
+            	.deleteattachment{
+            		cursor: pointer;
+            		color: #E6452A;
+					font-size: 15px;
+					line-height: 13px;
+					vertical-align: top;
+						
+	            	&:before {
+	            		content: "x";
+	            	}
+	            }
             }
         }
         
@@ -210,24 +233,9 @@
         	color: #43B536;
         }
         
-        .quote-title {
-            font-weight: bold;
-            padding: 5px 0 5px 0;
-        }
-        
-        .quote {
-            background: white url(images/quoteleft.png) left top no-repeat;
-            border: 1px solid #777;
-            padding: 5px 0 0 5px;
-        }
-        
-        .quote-content {
-            background: transparent url(images/quoteright.png) right bottom no-repeat;
-            padding: 5px 30px 10px 30px;
-        }
-        
         .footer {
 	        width: 100%;
+	        margin-top: 15px;
 	        padding: 17px 10px 6px;
 			box-sizing: border-box;
 			display: inline-block;

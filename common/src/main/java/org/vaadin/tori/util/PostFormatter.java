@@ -54,8 +54,8 @@ public interface PostFormatter {
     }
 
     /**
-     * Given a raw string of text for a {@link Post}, format it in the
-     * appropriate way into valid XHTML.
+     * Given a {@link Post}, format its body in the appropriate way into valid
+     * XHTML.
      * <p/>
      * <strong>Note:</strong> make sure to sanitize the raw post for possible
      * XHTML, if you don't want users to be able to format posts with XHTML,
@@ -64,7 +64,7 @@ public interface PostFormatter {
      * @return The XHTML to be rendered as-is.
      * @see Post#getBodyRaw()
      */
-    String format(String rawPostBody);
+    String format(Post rawPostBody);
 
     FontsInfo getFontsInfo();
 

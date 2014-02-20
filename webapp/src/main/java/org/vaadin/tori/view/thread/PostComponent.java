@@ -212,8 +212,8 @@ public class PostComponent extends AbstractComponentContainer implements
         ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
-                PostEditor postEditor = new PostEditor(post.getRawBody(),
-                        PostComponent.this);
+                PostEditor postEditor = new PostEditor(post.getRawBody(), post
+                        .isFormatBBCode(), PostComponent.this);
                 editorWrapper.addComponent(postEditor);
                 addStyleName("editing");
             }
@@ -289,5 +289,9 @@ public class PostComponent extends AbstractComponentContainer implements
     private void closeEditor() {
         removeStyleName("editing");
         updatePrimaryData();
+    }
+
+    public Long getPostId() {
+        return post.getId();
     }
 }

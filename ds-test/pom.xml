@@ -23,6 +23,16 @@
 			<artifactId>javax.persistence</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.liferay.portal</groupId>
+			<artifactId>portal-impl</artifactId>
+			<version>6.2.0-RC5</version>
+		</dependency>
+		<dependency>
+			<groupId>com.liferay.portal</groupId>
+			<artifactId>portal-service</artifactId>
+			<version>6.2.0-RC5</version>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>eclipselink</artifactId>
 			<version>2.5.0</version>

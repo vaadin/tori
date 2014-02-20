@@ -55,30 +55,29 @@ public class LiferayPostFormatter implements PostFormatter, PortletRequestAware 
     }
 
     @Override
-    public String format(final String rawPostBody) {
-        try {
-            String body = BBCodeTranslatorUtil.getHTML(rawPostBody.trim());
-            body = StringUtil.replace(body, "@theme_images_path@/emoticons",
+    public String format(Post post) {
+        String msgBody = post.getBodyRaw();
+        if (post.isFormatBBCode()) {
+            msgBody = BBCodeTranslatorUtil.getHTML(msgBody);
+            msgBody = StringUtil.replace(msgBody,
+                    "@theme_images_path@/emoticons",
                     themeDisplay.getPathThemeImages() + "/emoticons");
+        }
 
-            if (postReplacements != null) {
-                for (final Entry<String, String> entry : postReplacements
-                        .entrySet()) {
-                    try {
-                        body = body
-                                .replaceAll(entry.getKey(), entry.getValue());
-                    } catch (final PatternSyntaxException e) {
-                        log.warn(
-                                "Invalid replacement regex pattern: "
-                                        + entry.getKey(), e);
-                    }
+        if (postReplacements != null) {
+            for (final Entry<String, String> entry : postReplacements
+                    .entrySet()) {
+                try {
+                    msgBody = msgBody.replaceAll(entry.getKey(),
+                            entry.getValue());
+                } catch (final PatternSyntaxException e) {
+                    log.warn(
+                            "Invalid replacement regex pattern: "
+                                    + entry.getKey(), e);
                 }
             }
-            return body;
-        } catch (final Exception e) {
-            log.debug("Couldn't parse the given post body: " + rawPostBody);
         }
-        return rawPostBody;
+        return msgBody;
     }
 
     @Override
