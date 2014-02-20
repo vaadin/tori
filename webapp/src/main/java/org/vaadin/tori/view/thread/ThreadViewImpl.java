@@ -38,21 +38,40 @@ import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.UIDetachedException;
 
 @SuppressWarnings("serial")
 public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         implements ThreadView {
 
-    private CssLayout layout;
-
     private static final String INPUT_CACHE_NAME = "inputcache";
     private static final String REPLY_ID = "threadreply";
     private static final String STYLE_REPLY_HIDDEN = "replyhidden";
+
+    private CssLayout layout;
     private PostsLayout postsLayout;
-    private AuthoringComponent reply;
-    private ViewData viewData;
     private ThreadUpdatesComponent threadUpdatesComponent;
+    private AuthoringComponent reply;
+
+    private ViewData viewData;
+    private AuthoringData authoringData;
+
+    private final AuthoringListener replyListener = new AuthoringListener() {
+        @Override
+        public void submit(final String rawBody,
+                final Map<String, byte[]> attachments, final boolean follow) {
+            if (!rawBody.trim().isEmpty()) {
+                getPresenter().sendReply(rawBody, attachments, follow);
+            }
+        }
+
+        @Override
+        public void inputValueChanged(final String value) {
+            if (viewData != null) {
+                getInputCache().put(viewData.getThreadTopic(), value);
+            }
+            getPresenter().inputValueChanged();
+        }
+    };
 
     @Override
     protected Component createCompositionRoot() {
@@ -67,14 +86,13 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         postsLayout = new PostsLayout(getPresenter());
         layout.addComponent(postsLayout);
 
-        final Component reply = buildReply();
         ToriScheduler.get().scheduleManual(new ScheduledCommand() {
             @Override
             public void execute() {
                 threadUpdatesComponent = new ThreadUpdatesComponent(
                         getPresenter());
                 layout.addComponent(threadUpdatesComponent);
-                layout.addComponent(reply);
+                appendNewReply();
             }
         });
     }
@@ -82,29 +100,6 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     protected ThreadPresenter createPresenter() {
         return new ThreadPresenter(this);
-    }
-
-    private Component buildReply() {
-        AuthoringListener replyListener = new AuthoringListener() {
-            @Override
-            public void submit(final String rawBody,
-                    final Map<String, byte[]> attachments, final boolean follow) {
-                if (!rawBody.trim().isEmpty()) {
-                    getPresenter().sendReply(rawBody, attachments, follow);
-                }
-            }
-
-            @Override
-            public void inputValueChanged(final String value) {
-                if (viewData != null) {
-                    getInputCache().put(viewData.getThreadTopic(), value);
-                }
-                getPresenter().inputValueChanged();
-            }
-        };
-        reply = new AuthoringComponent(replyListener);
-        reply.setId(REPLY_ID);
-        return reply;
     }
 
     @Override
@@ -129,6 +124,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                     .addComponent(new PostComponent(postData, getPresenter()));
         }
         ToriScheduler.get().executeManualCommands();
+        appendNewReply();
     }
 
     @Override
@@ -168,10 +164,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public void setViewData(final ViewData viewData,
             final AuthoringData authoringData) {
-        reply.setAuthoringData(authoringData);
-        reply.setVisible(viewData.mayReplyInThread()
-                && !viewData.isUserBanned());
-        reply.insertIntoMessage(getInputCache().get(viewData.getThreadTopic()));
+        this.authoringData = authoringData;
         this.viewData = viewData;
     }
 
@@ -196,7 +189,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                     threadUpdatesComponent.setPendingReplies(pendingReplies);
                 }
             });
-        } catch (UIDetachedException e) {
+        } catch (RuntimeException e) {
             // Ignore
         }
     }
@@ -210,12 +203,38 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     public void replySent() {
         getInputCache().remove(viewData.getThreadTopic());
         ToriUI.getCurrent().trackAction("reply");
-        reply.reset();
-        reply.addStyleName(STYLE_REPLY_HIDDEN);
+    }
+
+    private void appendNewReply() {
+        if (reply != null) {
+            reply.addStyleName(STYLE_REPLY_HIDDEN);
+        }
+
         ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
-                reply.removeStyleName(STYLE_REPLY_HIDDEN);
+                if (reply != null) {
+                    layout.removeComponent(reply);
+                }
+                reply = new AuthoringComponent(replyListener);
+                reply.setId(REPLY_ID);
+
+                reply.setAuthoringData(authoringData);
+                reply.setVisible(viewData.mayReplyInThread()
+                        && !viewData.isUserBanned());
+                reply.insertIntoMessage(getInputCache().get(
+                        viewData.getThreadTopic()));
+                layout.addComponent(reply);
+
+                // Fade in
+                reply.addStyleName(STYLE_REPLY_HIDDEN);
+                ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        reply.removeStyleName(STYLE_REPLY_HIDDEN);
+                    }
+                });
+
             }
         });
     }

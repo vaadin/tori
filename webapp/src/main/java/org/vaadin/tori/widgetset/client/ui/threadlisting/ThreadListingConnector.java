@@ -6,13 +6,15 @@ import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.RowI
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
+import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.ConnectorHierarchyChangeEvent;
 import com.vaadin.client.communication.RpcProxy;
-import com.vaadin.client.ui.AbstractComponentConnector;
+import com.vaadin.client.ui.AbstractComponentContainerConnector;
 import com.vaadin.shared.ui.Connect;
 
 @SuppressWarnings("serial")
 @Connect(org.vaadin.tori.view.listing.thread.ThreadListing.class)
-public class ThreadListingConnector extends AbstractComponentConnector {
+public class ThreadListingConnector extends AbstractComponentContainerConnector {
 
     private final ThreadListingServerRpc rpc = RpcProxy.create(
             ThreadListingServerRpc.class, this);
@@ -36,12 +38,13 @@ public class ThreadListingConnector extends AbstractComponentConnector {
             }
 
             @Override
-            public void removeThreadRow(long threadId) {
+            public void removeThreadRow(final long threadId) {
                 getWidget().removeThreadRow(threadId);
             }
 
             @Override
-            public void sendRows(List<RowInfo> rows, int placeholders) {
+            public void sendRows(final List<RowInfo> rows,
+                    final int placeholders) {
                 getWidget().addRows(rows, placeholders);
             }
         });
@@ -55,6 +58,17 @@ public class ThreadListingConnector extends AbstractComponentConnector {
     @Override
     public ThreadListingWidget getWidget() {
         return (ThreadListingWidget) super.getWidget();
+    }
+
+    @Override
+    public void updateCaption(final ComponentConnector connector) {
+        // Not supported
+    }
+
+    @Override
+    public void onConnectorHierarchyChange(
+            final ConnectorHierarchyChangeEvent connectorHierarchyChangeEvent) {
+        // Ignore
     }
 
 }

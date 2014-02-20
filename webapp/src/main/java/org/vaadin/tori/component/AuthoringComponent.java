@@ -87,12 +87,7 @@ public class AuthoringComponent extends PostComponent {
         ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
-                ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
-                    @Override
-                    public void execute() {
-                        editorLayout.addComponent(editor, 0);
-                    }
-                });
+                editorLayout.addComponent(editor, 0);
             }
         });
 
@@ -110,7 +105,7 @@ public class AuthoringComponent extends PostComponent {
 
         editor.addValueChangeListener(new ValueChangeListener() {
             @Override
-            public void valueChange(ValueChangeEvent event) {
+            public void valueChange(final ValueChangeEvent event) {
                 if (!ignoreInputChanges) {
                     listener.inputValueChanged(editor.getValue());
                 }
@@ -119,14 +114,14 @@ public class AuthoringComponent extends PostComponent {
 
         editor.addBlurListener(new BlurListener() {
             @Override
-            public void blur(BlurEvent event) {
+            public void blur(final BlurEvent event) {
                 UI.getCurrent().setPollInterval(ToriUI.DEFAULT_POLL_INTERVAL);
             }
         });
 
         editor.addFocusListener(new FocusListener() {
             @Override
-            public void focus(FocusEvent event) {
+            public void focus(final FocusEvent event) {
                 UI.getCurrent().setPollInterval(3000);
             }
         });
@@ -144,7 +139,7 @@ public class AuthoringComponent extends PostComponent {
                 new Button.ClickListener() {
 
                     @Override
-                    public void buttonClick(ClickEvent event) {
+                    public void buttonClick(final ClickEvent event) {
                         listener.submit(editor.getValue(), attachments,
                                 followCheckbox.getValue());
                     }
@@ -162,14 +157,6 @@ public class AuthoringComponent extends PostComponent {
         }
 
         return result;
-    }
-
-    public void reset() {
-        ignoreInputChanges = true;
-        editor.setValue("");
-        attachments.clear();
-        updateAttachmentList();
-        ignoreInputChanges = false;
     }
 
     private Upload buildAttachUpload() {
@@ -279,7 +266,7 @@ public class AuthoringComponent extends PostComponent {
         return Arrays.asList((Component) editorLayout).iterator();
     }
 
-    public void setAuthoringData(AuthoringData authoringData) {
+    public void setAuthoringData(final AuthoringData authoringData) {
         attach.setVisible(authoringData.mayAddFiles());
         maxFileSize = authoringData.getMaxFileSize();
 
