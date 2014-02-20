@@ -311,8 +311,15 @@ public abstract class LiferayCommonDataSource implements DataSource,
             } else {
                 final boolean isBanned = MBBanLocalServiceUtil.hasBan(
                         scopeGroupId, liferayUser.getUserId());
+
+                String userLink = null;
+                if (liferayUser.getGroup() != null
+                        && liferayUser.getPublicLayoutsPageCount() > 0) {
+                    userLink = liferayUser.getDisplayURL(themeDisplay);
+                }
+
                 return LiferayCommonEntityFactoryUtil.createUser(liferayUser,
-                        imagePath, liferayUser.isFemale(), isBanned);
+                        imagePath, userLink, liferayUser.isFemale(), isBanned);
             }
         }
     }

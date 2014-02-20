@@ -4,8 +4,10 @@
 	<g:HTMLPanel>
 		<div class="author">
 			<a class="avatar" ui:field='avatar' />
-			<a class="authorname" ui:field='authorName' />
-			<span class="badge" ui:field='badge' />
+			<div class="authornamewrapper">
+				<a class="authorname" ui:field='authorName' />
+				<span class="badge" ui:field='badge' />
+			</div>
 			<div class='prettytime' ui:field='prettyTime' />
 			<a class="permalink" ui:field='permaLink'>Permalink</a>
 		</div>

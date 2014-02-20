@@ -71,25 +71,25 @@ public class PostWidget extends Composite {
     }
 
     @UiHandler("quote")
-    void handleQuoteClick(ClickEvent e) {
+    void handleQuoteClick(final ClickEvent e) {
         listener.quoteForReply();
     }
 
     @UiHandler("upVote")
-    void handleUpVoteClick(ClickEvent e) {
+    void handleUpVoteClick(final ClickEvent e) {
         listener.postVoted(true);
     }
 
     @UiHandler("downVote")
-    void handleDownVoteClick(ClickEvent e) {
+    void handleDownVoteClick(final ClickEvent e) {
         listener.postVoted(false);
     }
 
-    public void setListener(PostWidgetListener listener) {
+    public void setListener(final PostWidgetListener listener) {
         this.listener = listener;
     }
 
-    public void updatePostData(PostPrimaryData data) {
+    public void updatePostData(final PostPrimaryData data) {
         authorName.setInnerText(data.getAuthorName());
         authorName.setHref(data.getAuthorLink());
         avatar.setHref(data.getAuthorLink());
@@ -126,7 +126,7 @@ public class PostWidget extends Composite {
         setVisible(true);
     }
 
-    public void updatePostData(PostAdditionalData data) {
+    public void updatePostData(final PostAdditionalData data) {
         prettyTime.setInnerText(data.getPrettyTime());
         badge.setInnerHTML(data.getBadgeHTML());
         quote.setVisible(data.isQuotingEnabled());
@@ -167,7 +167,7 @@ public class PostWidget extends Composite {
         }
     }
 
-    public void addEditPostComponent(Widget widget) {
+    public void addEditPostComponent(final Widget widget) {
         postEditorPlaceholder.setWidget(widget);
     }
 }

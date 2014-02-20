@@ -90,8 +90,8 @@ public class LiferayCommonEntityFactoryUtil {
 
     public static User createUser(
             final com.liferay.portal.model.User liferayUser,
-            final String imagePath, final boolean isFemale,
-            final boolean isBanned) {
+            final String imagePath, final String userLink,
+            final boolean isFemale, final boolean isBanned) {
         final User entity = new User();
         entity.setId(liferayUser.getUserId());
         entity.setDisplayedName(liferayUser.getFullName());
@@ -103,6 +103,8 @@ public class LiferayCommonEntityFactoryUtil {
                 imagePath, isFemale));
         entity.setBanned(isBanned);
         entity.setOriginalUserObject(liferayUser);
+
+        entity.setUserLink(userLink);
         return entity;
     }
 

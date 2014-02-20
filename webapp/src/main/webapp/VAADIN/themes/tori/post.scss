@@ -46,13 +46,15 @@
             	font-size: 88px;
             }
         }
+        
+        .authornamewrapper {
+        	margin-bottom: 10px;
+        }
     
         .authorname {
-        	display: block;
 	        font-size: 15px;
 	        font-family: HelveticaNeue-Light;
 			line-height: 22px;
-			margin-bottom: 10px;
 			overflow: hidden;
         	text-overflow: ellipsis;
 			
@@ -63,6 +65,20 @@
 					text-decoration: none;
 				}
 			}
+        }
+        
+        .badge a {
+        	color: transparent;
+        	position: relative;
+        	
+        	&:before {
+        		content: "\e001";
+				color: #EDC628;
+				font-family: "Tori-Icons";
+				position: absolute;
+				top: 0;
+				left: 0;
+        	}
         }
         
         .prettytime {
