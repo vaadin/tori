@@ -39,8 +39,9 @@ public class ThreadMoveComponent extends Window {
     private final Tree categoriesTree;
 
     public ThreadMoveComponent(final long threadId,
-            final Long currentCategoryId, List<Category> allCategories,
+            final Long currentCategoryId, final List<Category> allCategories,
             final ThreadMoveComponentListener listener) {
+        addStyleName("threadmove");
         setClosable(false);
         setResizable(false);
         setModal(true);
@@ -79,7 +80,7 @@ public class ThreadMoveComponent extends Window {
         horizontalLayout.addComponent(moveButton);
         categoriesTree.addValueChangeListener(new ValueChangeListener() {
             @Override
-            public void valueChange(ValueChangeEvent event) {
+            public void valueChange(final ValueChangeEvent event) {
                 moveButton.setEnabled(event.getProperty().getValue() == null
                         || !event.getProperty().getValue()
                                 .equals(currentCategoryId));
@@ -95,8 +96,8 @@ public class ThreadMoveComponent extends Window {
                 }));
     }
 
-    private Tree createCategories(List<Category> allCategories, long threadId,
-            Long threadCategoryId) {
+    private Tree createCategories(final List<Category> allCategories,
+            final long threadId, final Long threadCategoryId) {
         final Tree tree = new Tree();
 
         for (final Category category : allCategories) {

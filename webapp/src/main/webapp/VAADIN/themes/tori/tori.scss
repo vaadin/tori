@@ -25,7 +25,7 @@
 	@include post;
 	@include ckeditor;
 	
-	.tori {
+	.v-app {
 	    @include base;
 	    @include dropdown;
 	    @include postbody;
@@ -160,12 +160,15 @@
 		}
 		
 		.v-window {
-			height: 7em !important;
 			background-color: $window-background-color;
 		
 			.v-window-outerheader {
 				display: none;
 			}
+		}
+		
+		#confirmdialog-window {
+			height: 7em !important;
 		}
 	}
 }
