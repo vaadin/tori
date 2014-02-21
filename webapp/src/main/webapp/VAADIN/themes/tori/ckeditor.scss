@@ -1,14 +1,11 @@
 @mixin ckeditor {
 
 	html[dir="ltr"] {
-		padding: 8px;
+		overflow-x: hidden;
 	}
 
 	/*body*/
 	.cke_editable.post {
-		margin: 0 !important;
 		line-height: $post-body-line-height;
-		width: 100%;
 	}
-	
 }

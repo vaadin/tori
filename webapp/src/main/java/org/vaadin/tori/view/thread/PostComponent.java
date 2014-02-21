@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.ocpsoft.prettytime.PrettyTime;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUI;
@@ -36,7 +37,6 @@ import org.vaadin.tori.widgetset.client.ui.post.PostComponentRpc;
 import org.vaadin.tori.widgetset.client.ui.post.PostData.PostAdditionalData;
 import org.vaadin.tori.widgetset.client.ui.post.PostData.PostPrimaryData;
 
-import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.shared.Connector;
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
@@ -125,7 +125,7 @@ public class PostComponent extends AbstractComponentContainer implements
         MenuItem root = settingsMenuBar.getMoreMenuItem();
         Command command = new Command() {
             @Override
-            public void menuSelected(MenuItem selectedItem) {
+            public void menuSelected(final MenuItem selectedItem) {
                 if (EDIT_CAPTION.equals(selectedItem.getText())) {
                     editPost();
                 } else if (DELETE_CAPTION.equals(selectedItem.getText())) {
@@ -177,7 +177,7 @@ public class PostComponent extends AbstractComponentContainer implements
                 "Are you sure you want to delete the post?",
                 new ConfirmDialog.Listener() {
                     @Override
-                    public void onClose(ConfirmDialog arg0) {
+                    public void onClose(final ConfirmDialog arg0) {
                         if (arg0.isConfirmed()) {
                             ((ComponentContainer) getParent())
                                     .removeComponent(PostComponent.this);
@@ -188,7 +188,7 @@ public class PostComponent extends AbstractComponentContainer implements
     }
 
     @Override
-    public void postVoted(boolean up) {
+    public void postVoted(final boolean up) {
         try {
             if (up) {
                 presenter.upvote(post.getId());
@@ -226,7 +226,7 @@ public class PostComponent extends AbstractComponentContainer implements
         addComponent(editorComponent);
     }
 
-    private void setUserIsBanned(boolean banned) {
+    private void setUserIsBanned(final boolean banned) {
         if (banned) {
             addStyleName(STYLE_BANNED);
             setDescription(post.getAuthorName() + " is banned.");
@@ -250,7 +250,8 @@ public class PostComponent extends AbstractComponentContainer implements
     }
 
     @Override
-    public void replaceComponent(Component oldComponent, Component newComponent) {
+    public void replaceComponent(final Component oldComponent,
+            final Component newComponent) {
 
     }
 
@@ -274,7 +275,7 @@ public class PostComponent extends AbstractComponentContainer implements
     }
 
     @Override
-    public void submitEdit(String rawBody) {
+    public void submitEdit(final String rawBody) {
         presenter.saveEdited(post.getId(), rawBody);
         ToriUI.getCurrent().trackAction("edit-post");
 

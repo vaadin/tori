@@ -38,7 +38,7 @@ import com.vaadin.ui.UI;
 @SuppressWarnings("serial")
 public class BBCodeWysiwygEditor extends CKEditorTextField {
 
-    public BBCodeWysiwygEditor(boolean autoGrow, boolean bbcode) {
+    public BBCodeWysiwygEditor(final boolean autoGrow, final boolean bbcode) {
         addStyleName("wysiwyg-editor");
         setHeight(null);
         setImmediate(true);
@@ -56,7 +56,7 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
         setConfig(config);
     }
 
-    private void configureToolbar(CKEditorConfig config) {
+    private void configureToolbar(final CKEditorConfig config) {
         config.addCustomToolbarLine("{ items: ['Font','FontSize'] },"
                 + "{ items: ['Bold','Italic','Underline','Strike','TextColor','RemoveFormat'] },"
                 + "{ items: ['codebutton'] },"
@@ -64,7 +64,7 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
                 + "{ items: ['Source'] }");
     }
 
-    private void configureFonts(CKEditorConfig config) {
+    private void configureFonts(final CKEditorConfig config) {
         FontsInfo fontsInfo = ToriApiLoader.getCurrent().getPostFormatter()
                 .getFontsInfo();
         List<String> fontNames = new ArrayList<String>();
@@ -86,8 +86,8 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
         config.addExtraConfig("fontSize_sizes", sb.toString());
     }
 
-    private void configurePlugins(CKEditorConfig config, boolean autoGrow,
-            boolean bbcode) {
+    private void configurePlugins(final CKEditorConfig config,
+            final boolean autoGrow, final boolean bbcode) {
         if (bbcode) {
             config.addToExtraPlugins("custombbcode");
         }
@@ -109,7 +109,7 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
         }
     }
 
-    private void configureTheme(CKEditorConfig config) {
+    private void configureTheme(final CKEditorConfig config) {
         String themesPath = VaadinService.getCurrentRequest().getContextPath()
                 + "/VAADIN/themes/";
         String toriTheme = UI.getCurrent().getTheme() + "/";
@@ -130,7 +130,8 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
     private boolean ignoreNextRepaint;
 
     @Override
-    public void changeVariables(Object source, Map<String, Object> variables) {
+    public void changeVariables(final Object source,
+            final Map<String, Object> variables) {
         if (variables.containsKey(VCKEditorTextField.VAR_TEXT)) {
             ignoreNextRepaint = true;
         }
@@ -138,7 +139,7 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
     }
 
     @Override
-    public void paintContent(PaintTarget target) throws PaintException {
+    public void paintContent(final PaintTarget target) throws PaintException {
         if (ignoreNextRepaint) {
             ignoreNextRepaint = false;
         } else {

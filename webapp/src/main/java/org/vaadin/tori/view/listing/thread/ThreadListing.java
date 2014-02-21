@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.ocpsoft.prettytime.PrettyTime;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.util.ComponentUtil;
@@ -16,7 +17,6 @@ import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingServerRpc;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.RowInfo;
 
-import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.MenuBar;
@@ -73,7 +73,7 @@ public class ThreadListing extends AbstractComponentContainer implements
     private Command getSettingsCommand(final long threadId) {
         return new Command() {
             @Override
-            public void menuSelected(MenuItem selectedItem) {
+            public void menuSelected(final MenuItem selectedItem) {
                 if (FOLLOW_CAPTION.equals(selectedItem.getText())) {
                     presenter.follow(threadId);
                 } else if (UNFOLLOW_CAPTION.equals(selectedItem.getText())) {
@@ -93,7 +93,7 @@ public class ThreadListing extends AbstractComponentContainer implements
                             "Are you sure you want to delete the thread?",
                             new ConfirmDialog.Listener() {
                                 @Override
-                                public void onClose(ConfirmDialog arg0) {
+                                public void onClose(final ConfirmDialog arg0) {
                                     if (arg0.isConfirmed()) {
                                         removeThreadRow(threadId);
                                         presenter.delete(threadId);
@@ -105,7 +105,7 @@ public class ThreadListing extends AbstractComponentContainer implements
         };
     }
 
-    private Component buildSettings(ThreadData thread) {
+    private Component buildSettings(final ThreadData thread) {
         Command settingsCommand = getSettingsCommand(thread.getId());
         MenuBar dropdownMenu = ComponentUtil.getDropdownMenu();
         MenuItem rootItem = dropdownMenu.getMoreMenuItem();
@@ -151,17 +151,18 @@ public class ThreadListing extends AbstractComponentContainer implements
         return (ThreadListingState) super.getState();
     }
 
-    public void updateThreadRow(ThreadData thread) {
+    public void updateThreadRow(final ThreadData thread) {
         getRpcProxy(ThreadListingClientRpc.class).refreshThreadRow(
                 getRowInfo(thread));
     }
 
-    public void removeThreadRow(long threadId) {
+    public void removeThreadRow(final long threadId) {
         getRpcProxy(ThreadListingClientRpc.class).removeThreadRow(threadId);
     }
 
     @Override
-    public void replaceComponent(Component oldComponent, Component newComponent) {
+    public void replaceComponent(final Component oldComponent,
+            final Component newComponent) {
         // Ignore
     }
 

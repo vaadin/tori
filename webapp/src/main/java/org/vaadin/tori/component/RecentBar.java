@@ -18,6 +18,7 @@ package org.vaadin.tori.component;
 
 import java.util.List;
 
+import org.ocpsoft.prettytime.PrettyTime;
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.data.DataSource;
@@ -25,13 +26,12 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.util.ComponentUtil;
-import org.vaadin.tori.util.ToriScheduler;
 import org.vaadin.tori.util.ComponentUtil.HeadingLevel;
 import org.vaadin.tori.util.ToriActivityMessaging.UserAuthoredListener;
+import org.vaadin.tori.util.ToriScheduler;
 import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.view.listing.SpecialCategory;
 
-import com.ocpsoft.pretty.time.PrettyTime;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -103,7 +103,7 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
         }
     }
 
-    private void addRecentLink(HorizontalLayout barLayout) {
+    private void addRecentLink(final HorizontalLayout barLayout) {
         Link link = new Link("Recent Posts", new ExternalResource("#"
                 + ToriNavigator.ApplicationView.CATEGORIES.getUrl() + "/"
                 + SpecialCategory.RECENT_POSTS.getId().toLowerCase()));
@@ -112,7 +112,7 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
         barLayout.setComponentAlignment(link, Alignment.MIDDLE_RIGHT);
     }
 
-    private void addNotificationsLayout(HorizontalLayout barLayout) {
+    private void addNotificationsLayout(final HorizontalLayout barLayout) {
         notificationsLayout = new CssLayout();
         notificationsLayout.setSizeFull();
         notificationsLayout.addStyleName("notificationslayout");
@@ -122,7 +122,7 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
                 Alignment.MIDDLE_LEFT);
     }
 
-    private void addTitleLabel(HorizontalLayout barLayout) {
+    private void addTitleLabel(final HorizontalLayout barLayout) {
         Label headingLabel = ComponentUtil.getHeadingLabel("MOST RECENT",
                 HeadingLevel.H4);
         headingLabel.setWidth(110.0f, Unit.PIXELS);
@@ -131,7 +131,7 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
     }
 
     @Override
-    public void userAuthored(final long postId, long threadId) {
+    public void userAuthored(final long postId, final long threadId) {
         try {
             getUI().access(new Runnable() {
                 @Override
@@ -148,7 +148,7 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
         }
     }
 
-    private void newPostAdded(Post post) {
+    private void newPostAdded(final Post post) {
         if (previous != null) {
             notificationsLayout.removeComponent(previous);
         }
@@ -175,7 +175,7 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
     public static class PostNotification extends HorizontalLayout {
         private final PrettyTime prettyTime = new PrettyTime();
 
-        public PostNotification(Post post) {
+        public PostNotification(final Post post) {
             setSpacing(true);
             Link link = new Link(post.getThread().getTopic(),
                     new ExternalResource(getPermaLinkUrl(post)));
@@ -187,7 +187,7 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
             setState(PostNotificationState.NEXT);
         }
 
-        public void setState(PostNotificationState state) {
+        public void setState(final PostNotificationState state) {
             setStyleName("postnotification " + state.name().toLowerCase());
         }
 
@@ -195,7 +195,7 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
             // @formatter:off
             final String linkUrl = String.format(
                     "#%s/%s/%s",
-                    ToriNavigator.ApplicationView.THREADS.getUrl(), 
+                    ToriNavigator.ApplicationView.THREADS.getUrl(),
                     post.getThread().getId(),
                     post.getId()
                     );
@@ -218,7 +218,7 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
             addComponent(link);
         }
 
-        public void setLink(String caption, String url) {
+        public void setLink(final String caption, final String url) {
             link.setCaption(caption);
             link.setResource(new ExternalResource(url));
         }

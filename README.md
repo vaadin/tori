@@ -19,10 +19,10 @@ It supports all modern browsers, including Internet Explorer 8 and newer.
 ## 3rd Party Libraries
 
  * [Apache log4j](http://logging.apache.org/log4j/1.2/) -- Apache, Apache 2.0
- * [ExpandingTextArea](http://vaadin.com/addon/expandingtextarea) -- Henri Kerola, Apache 2.0
  * [FindBugs annotations](http://findbugs.sourceforge.net/) -- University of Maryland, LGPL
  * [CKEditor wrapper for Vaadin](http://vaadin.com/addon/ckeditor-wrapper-for-vaadin) -- David Wall, Apache 2.0
  * [Mockito](http://code.google.com/p/mockito/) -- Szczepan Faber & co, MIT
  * [PopupButton](http://vaadin.com/addon/popupbutton) -- Henri Kerola, Apache 2.0
+ * [ConfirmDialog](http://vaadin.com/addon/confirmdialog) -- Sami Ekblad, Apache 2.0
  * [PrettyTime](http://ocpsoft.com/prettytime/) -- OCPsoft, LGPL3  
  * [Vaadin](http://vaadin.com/) -- Vaadin, Apache 2.0
