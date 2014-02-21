@@ -45,6 +45,8 @@ public class ToriUI extends UI {
 
     private GoogleAnalyticsTracker analytics;
 
+    private RecentBar recentBar;
+
     @Override
     protected void init(final VaadinRequest request) {
         setPollInterval(DEFAULT_POLL_INTERVAL);
@@ -68,7 +70,8 @@ public class ToriUI extends UI {
         final Breadcrumbs breadcrumbs = new Breadcrumbs();
 
         addControlPanelIfInDevelopment();
-        mainLayout.addComponent(new RecentBar());
+        recentBar = new RecentBar();
+        mainLayout.addComponent(recentBar);
         mainLayout.addComponent(breadcrumbs);
         mainLayout.addComponent(navigatorContent);
 
@@ -122,6 +125,10 @@ public class ToriUI extends UI {
             getLogger()
                     .debug("Can't track an action - no analytics configured");
         }
+    }
+
+    public RecentBar getRecentBar() {
+        return recentBar;
     }
 
     private static Logger getLogger() {

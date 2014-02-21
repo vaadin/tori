@@ -65,7 +65,7 @@ public class ReportComponent extends CustomComponent {
         reportPopup = new PopupButton("Flag post...");
         reportPopup.addPopupVisibilityListener(new PopupVisibilityListener() {
             @Override
-            public void popupVisibilityChange(PopupVisibilityEvent event) {
+            public void popupVisibilityChange(final PopupVisibilityEvent event) {
                 if (reportPopup.getContent() == null) {
                     reportPopup.setContent(newReportLayout());
                 }

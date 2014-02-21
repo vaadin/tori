@@ -26,6 +26,7 @@ import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.AuthoringComponent;
 import org.vaadin.tori.component.AuthoringComponent.AuthoringListener;
 import org.vaadin.tori.component.PanicComponent;
+import org.vaadin.tori.component.RecentBar;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.util.ToriScheduler;
@@ -203,6 +204,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     public void replySent() {
         getInputCache().remove(viewData.getThreadTopic());
         ToriUI.getCurrent().trackAction("reply");
+        RecentBar.getCurrent().refresh();
     }
 
     private void appendNewReply() {

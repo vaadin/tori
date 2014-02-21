@@ -21,6 +21,7 @@ import java.util.List;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
@@ -80,27 +81,9 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
         ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
-                prePopulate();
+                refresh();
             }
         });
-    }
-
-    private void prePopulate() {
-        try {
-            List<DiscussionThread> recentPosts = dataSource
-                    .getRecentPosts(0, 1);
-            if (!recentPosts.isEmpty()) {
-                Post latestPost = recentPosts.get(0).getLatestPost();
-                // TODO: Fix
-                if (latestPost != null && latestPost.getThread() != null) {
-                    current = new PostNotification(latestPost);
-                    current.setState(PostNotificationState.CURRENT);
-                    notificationsLayout.addComponent(current);
-                }
-            }
-        } catch (DataSourceException e) {
-            e.printStackTrace();
-        }
     }
 
     private void addRecentLink(final HorizontalLayout barLayout) {
@@ -136,11 +119,7 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
             getUI().access(new Runnable() {
                 @Override
                 public void run() {
-                    try {
-                        newPostAdded(dataSource.getPost(postId));
-                    } catch (DataSourceException e) {
-                        e.printStackTrace();
-                    }
+                    refresh();
                 }
             });
         } catch (UIDetachedException e) {
@@ -174,8 +153,10 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
 
     public static class PostNotification extends HorizontalLayout {
         private final PrettyTime prettyTime = new PrettyTime();
+        private final Post post;
 
         public PostNotification(final Post post) {
+            this.post = post;
             setSpacing(true);
             Link link = new Link(post.getThread().getTopic(),
                     new ExternalResource(getPermaLinkUrl(post)));
@@ -202,6 +183,10 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
             // @formatter:on
             return linkUrl;
         }
+
+        public Post getPost() {
+            return post;
+        }
     }
 
     public static class FloatingNotification extends CssLayout {
@@ -221,6 +206,32 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
         public void setLink(final String caption, final String url) {
             link.setCaption(caption);
             link.setResource(new ExternalResource(url));
+        }
+    }
+
+    public static RecentBar getCurrent() {
+        return ToriUI.getCurrent().getRecentBar();
+    }
+
+    public void refresh() {
+        try {
+            List<DiscussionThread> recentPosts = dataSource
+                    .getRecentPosts(0, 0);
+            if (!recentPosts.isEmpty()) {
+                Post latestPost = recentPosts.get(0).getLatestPost();
+                if (latestPost != null && latestPost.getThread() != null) {
+                    if (current == null) {
+                        current = new PostNotification(latestPost);
+                        current.setState(PostNotificationState.CURRENT);
+                        notificationsLayout.addComponent(current);
+                    } else {
+                        newPostAdded(latestPost);
+                    }
+                }
+            }
+        } catch (DataSourceException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
