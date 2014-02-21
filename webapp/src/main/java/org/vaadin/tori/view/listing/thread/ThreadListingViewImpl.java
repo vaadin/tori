@@ -71,9 +71,9 @@ public class ThreadListingViewImpl extends
         result.addComponent(noTopicsLabel);
         result.setComponentAlignment(noTopicsLabel, Alignment.MIDDLE_CENTER);
 
-        createTopicButton = new Button("Create Topic", new ClickListener() {
+        createTopicButton = new Button("+ Create Topic", new ClickListener() {
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 getPresenter().createTopicRequested();
             }
         });
@@ -96,7 +96,7 @@ public class ThreadListingViewImpl extends
     }
 
     @Override
-    public void setThreadProvider(ThreadProvider threadProvider) {
+    public void setThreadProvider(final ThreadProvider threadProvider) {
         boolean hasThreads = threadProvider.getThreadCount() > 0;
         noTopicsLabel.setVisible(!hasThreads);
         threadListing.setVisible(hasThreads);
@@ -104,13 +104,14 @@ public class ThreadListingViewImpl extends
     }
 
     @Override
-    public void showThreadMovePopup(long threadId, final Long threadCategoryId,
-            List<Category> allCategories) {
+    public void showThreadMovePopup(final long threadId,
+            final Long threadCategoryId, final List<Category> allCategories) {
         final Window window = new ThreadMoveComponent(threadId,
                 threadCategoryId, allCategories,
                 new ThreadMoveComponentListener() {
                     @Override
-                    public void commit(long threadId, Long newCategoryId) {
+                    public void commit(final long threadId,
+                            final Long newCategoryId) {
                         threadListing.removeThreadRow(threadId);
                         getPresenter().move(threadId, newCategoryId);
                     }
@@ -120,27 +121,27 @@ public class ThreadListingViewImpl extends
     }
 
     @Override
-    public void showError(String message) {
+    public void showError(final String message) {
         Notification.show(message, Type.ERROR_MESSAGE);
     }
 
     @Override
-    public void showNotification(String message) {
+    public void showNotification(final String message) {
         Notification.show(message);
     }
 
     @Override
-    public void updateThread(ThreadData thread) {
+    public void updateThread(final ThreadData thread) {
         threadListing.updateThreadRow(thread);
     }
 
     @Override
-    public void setMayCreateThreads(boolean mayCreateThreads) {
+    public void setMayCreateThreads(final boolean mayCreateThreads) {
         createTopicButton.setVisible(mayCreateThreads);
     }
 
     @Override
-    public void navigateToNewThreadView(Long categoryId) {
+    public void navigateToNewThreadView(final Long categoryId) {
         ToriNavigator.getCurrent().navigateToNewThread(categoryId);
     }
 

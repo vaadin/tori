@@ -73,24 +73,28 @@
 		
 		&.following .topic:before {
 			font-family: "Tori-Icons";
-			content: "\e000";
+			content: "\e605";
 			position: absolute;
-			left: 0;
+			left: 3px;
 			top: 2px;
+			font-size: 12px;
 		}
 		
 		.threadicons {
 			font-family: "Tori-Icons";
-			vertical-align: middle;
+			vertical-align: top;
+			font-size: 12px;
 		}
 		
 		&.sticky .threadicons:before {
-			content: "\e00a";
+			content: "\e604";
 			color: #50D497;
+			margin-left: 5px;
 		}
 		&.locked .threadicons:after {
-			content: "\e00b";
+			content: "\e00c";
 			color: #EDC628;
+			margin-left: 5px;
 		}
 	}
 	

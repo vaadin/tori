@@ -71,7 +71,7 @@ public class CategoryListingViewImpl extends
         result.addComponent(noCategoriesLabel);
         result.setComponentAlignment(noCategoriesLabel, Alignment.MIDDLE_CENTER);
 
-        createCategoryButton = new PopupButton("Create Category");
+        createCategoryButton = new PopupButton("+ Create Category");
         createCategoryButton.setContent(new EditCategoryForm(
                 new EditCategoryListener() {
                     @Override
@@ -80,7 +80,8 @@ public class CategoryListingViewImpl extends
                     }
 
                     @Override
-                    public void commit(String name, String description) {
+                    public void commit(final String name,
+                            final String description) {
                         getPresenter().saveNewCategory(name, description);
                         createCategoryButton.setPopupVisible(false);
                     }
@@ -97,12 +98,12 @@ public class CategoryListingViewImpl extends
     }
 
     @Override
-    public void showError(String message) {
+    public void showError(final String message) {
         Notification.show(message, Type.ERROR_MESSAGE);
     }
 
     @Override
-    public void setCategories(List<CategoryData> categories) {
+    public void setCategories(final List<CategoryData> categories) {
         boolean hasCategories = !categories.isEmpty();
         setVisible(true);
         noCategoriesLabel.setVisible(!hasCategories);
@@ -111,7 +112,7 @@ public class CategoryListingViewImpl extends
     }
 
     @Override
-    public void setMayCreateCategories(boolean mayEditCategories) {
+    public void setMayCreateCategories(final boolean mayEditCategories) {
         createCategoryButton.setVisible(mayEditCategories);
     }
 }

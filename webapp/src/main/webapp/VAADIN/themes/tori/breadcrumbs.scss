@@ -69,28 +69,32 @@
     
     .v-label.icons {
     	font-family: "Tori-Icons";
-    	font-size: 24px;
-    	line-height: normal;
-    	vertical-align: middle;
-    	margin-left: 12px;
+    	font-size: 20px;
+    	line-height: 28px;
+    	padding-right: 10px;
     	
     	&.stickythread:before {
-			content: "\e00a";
+			content: "\e604";
 			color: #50D497;
-			margin-right: 5px;
+			margin-left: 10px;
 		}
 		
     	&.lockedthread:after {
-    		content: "\e00b";
+    		content: "\e00c";
 			color: #EDC628;
+			margin-left: 10px;
     	}
+    	
     }
     
     .mypostslink:before {
     	font-family: "Tori-Icons";
-    	content: "\e007";
-    	color: $link-color;
-    	vertical-align: middle;
+		content: "\e606";
+		color: #2AAAE6;
+		font-size: 11px;
+		position: absolute;
+		top: 5px;
+		left: -16px;
     }
     
     .v-button {

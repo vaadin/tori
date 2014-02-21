@@ -39,11 +39,15 @@
 			-webkit-box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.07);
 			box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.07);
 			background-position: center;
+			position: relative;
             
             &.anonymous:before {
             	font-family: "Tori-Icons";
-            	content: "\e001";
-            	font-size: 88px;
+				content: "\e606";
+				font-size: 52px;
+				position: absolute;
+				top: 10px;
+				left: 2px;
             }
         }
         
@@ -72,7 +76,7 @@
         	position: relative;
         	
         	&:before {
-        		content: "\e001";
+        		content: "\e015";
 				color: #EDC628;
 				font-family: "Tori-Icons";
 				position: absolute;
@@ -150,6 +154,11 @@
     			background-color: #F7F7F7;
     			padding: 8px 11px 7px;
     		}
+    		
+    		.v-button {
+    			margin-bottom: 1px;
+    		}
+    		
         }
         	
         .bodytext {
@@ -219,9 +228,13 @@
             }
             
             &.upvote {
+            	margin-top: -2px;
+            	
             	&:after {
-	            	content: "\e003";
+	            	content: "\e602";
+	            	font-size: 18px;
 	            }
+	            &.done,
             	&:hover {
             		color: #43B536;
             	}
@@ -229,8 +242,10 @@
             
             &.downvote {
             	&:after {
-	            	content: "\e004";
+	            	content: "\e603";
+	            	font-size: 16px;
 	            }
+	            &.done,
             	&:hover {
             		color: #E6452A;
             	}
@@ -238,14 +253,15 @@
         }
         
         .zero {
-        	float: left;
-        	visibility: hidden;
+        	display: none;
         }
         .negative {
+        	padding-left: 5px;
         	float: left;
         	color: #E6452A;
         }
         .positive {
+        	padding-left: 5px;
         	float: left;	
         	color: #43B536;
         }
@@ -273,9 +289,10 @@
 	    
 	    .quoteforreply:before {
 	    	font-family: "Tori-Icons";
-	    	content: "\e001";
-	    	padding-right: 5px;
-	    	vertical-align: middle;
+			content: "\e007";
+			padding-right: 3px;
+			vertical-align: middle;
+			font-size: 16px;
 	    }
 	    
 	    .flagpost .v-button {
@@ -285,7 +302,7 @@
     		
     		&:before {
 		    	font-family: "Tori-Icons";
-		    	content: "\e002";
+		    	content: "\e014";
 		    	padding-right: 5px;
 		    	vertical-align: middle;
 		    }
