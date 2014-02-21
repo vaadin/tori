@@ -32,6 +32,10 @@
 			-webkit-transition: opacity 0ms;
 			opacity: 0;
 		}
+		
+		.cke_contents {
+			min-height: 173px;
+		}
 	}
 	
 	.newthreadview .newthread {

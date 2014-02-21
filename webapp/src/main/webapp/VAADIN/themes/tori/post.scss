@@ -53,7 +53,7 @@
     
         .authorname {
 	        font-size: 15px;
-	        font-family: HelveticaNeue-Light;
+	        font-family: $font-family-secondary;
 			line-height: 22px;
 			overflow: hidden;
         	text-overflow: ellipsis;
@@ -82,7 +82,7 @@
         }
         
         .prettytime {
-        	font-family: HelveticaNeue-Light;
+        	font-family: $font-family-secondary;
 			font-size: 13px;
 			color: #888;
 			line-height: 22px;
@@ -257,7 +257,7 @@
 			box-sizing: border-box;
 			display: inline-block;
 			font-size: 13px;
-    		font-family: HelveticaNeue-Light;
+    		font-family: $font-family-secondary;
     		color: #888;
 	    }
 	    

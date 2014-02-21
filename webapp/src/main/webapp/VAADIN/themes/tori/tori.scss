@@ -44,7 +44,7 @@
 	    .v-ui,
 	    .v-window,
 	    .v-window .v-scrollable {
-		    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+		    font-family: $font-family-primary;
 		    font-size: 14px;
 		    color: #555;
 	    }
@@ -110,7 +110,7 @@
 			margin-top: 30px;
 			
 			.v-label {
-				font-family: HelveticaNeue-Light;
+				font-family: $font-family-secondary;
 				font-size: 15px;
 				color: #888;
 				line-height: 18px;

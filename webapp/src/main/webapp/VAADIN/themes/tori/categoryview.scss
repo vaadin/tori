@@ -18,7 +18,7 @@
         .categoryLink,
         .categoryLink span {
             display: block;
-            font-family: HelveticaNeue-Light;
+            font-family: $font-family-secondary;
             font-size: 18px;
         }
         
@@ -29,7 +29,7 @@
         }
     
     	.description {
-			font-family: HelveticaNeue-Light;
+			font-family: $font-family-secondary;
 			color: #474747;
     	}
     	
@@ -94,7 +94,7 @@
             .v-table-cell-content {
                 padding: 10px;
                 border-right: none;
-                font-family: HelveticaNeue-Light;
+                font-family: $font-family-secondary;
             }
             
             &:nth-child(n+2) .v-table-cell-content {
