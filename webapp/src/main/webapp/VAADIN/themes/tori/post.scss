@@ -4,6 +4,11 @@
 	    /*display: table;
 	    table-layout: fixed;*/
 	    position: relative;
+	    -webkit-font-smoothing: antialiased;
+	    
+	    table {
+	    	border-collapse: collapse;
+	    }
 	    
 	    .dropdown {
 	    	font-size: 20px;
@@ -105,6 +110,7 @@
 	        	opacity: 1;
 	        }
 	        
+	        .attachments,
 	        .bodytext {
 	        	visibility: hidden;
 	        }
@@ -150,9 +156,9 @@
     			border: 1px solid #b6b6b6;
     		}
     		
-    		.buttonslayout {
+    		.buttonslayout.v-horizontallayout {
     			background-color: #F7F7F7;
-    			padding: 8px 11px 7px;
+    			padding: 8px 11px 6px;
     		}
     		
     		.v-button {
@@ -232,7 +238,7 @@
             	
             	&:after {
 	            	content: "\e602";
-	            	font-size: 18px;
+	            	font-size: 16px;
 	            }
 	            &.done,
             	&:hover {
@@ -243,7 +249,7 @@
             &.downvote {
             	&:after {
 	            	content: "\e603";
-	            	font-size: 16px;
+	            	font-size: 14px;
 	            }
 	            &.done,
             	&:hover {
@@ -268,13 +274,15 @@
         
         .footer {
 	        width: 100%;
-	        margin-top: 15px;
+	        height: 39px;
+	        margin-top: 10px;
 	        padding: 17px 10px 6px;
 			box-sizing: border-box;
 			display: inline-block;
 			font-size: 13px;
     		font-family: $font-family-secondary;
     		color: #888;
+    		line-height: 1;
 	    }
 	    
 	    .vote, .score {

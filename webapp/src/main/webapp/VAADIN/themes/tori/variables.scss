@@ -7,6 +7,7 @@ $popup-border-color: #d1d1d1;
 $popup-background-color: #fff;
 
 $font-family-primary: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+$font-size-primary: 14px;
 $font-family-secondary: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
 $highlight-color: #2AAAE6;
@@ -41,11 +42,14 @@ $postbody-code-linenumber-background-color: #E8F6FD;
 $postbody-code-linenumber-color: #94BBCD;
 $postbody-code-background-color: #F3FBFF;
 $postbody-code-color: #5D7783;
+$postbody-code-vertical-padding: 4px;
 
 $postbody-quote-code-linenumber-background-color: #E7E7E7;
 $postbody-quote-code-linenumber-color: #888;
 $postbody-quote-code-background-color: #ECECEC;
 $postbody-quote-code-color: $postbody-quote-code-linenumber-color;
+
+
 
 // Popupbutton
 $popupbutton-border: $popup-border-width $popup-border-style $popup-border-color;

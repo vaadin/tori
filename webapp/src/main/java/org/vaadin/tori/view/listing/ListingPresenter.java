@@ -29,22 +29,22 @@ public class ListingPresenter extends Presenter<ListingView> {
 
     private ThreadListingPresenter threadListingPresenter;
 
-    public ListingPresenter(ListingView view) {
+    public ListingPresenter(final ListingView view) {
         super(view);
     }
 
     public void setCategoryListingPresenter(
-            CategoryListingPresenter categoryListingPresenter) {
+            final CategoryListingPresenter categoryListingPresenter) {
         this.categoryListingPresenter = categoryListingPresenter;
     }
 
     public void setThreadListingPresenter(
-            ThreadListingPresenter threadListingPresenter) {
+            final ThreadListingPresenter threadListingPresenter) {
         this.threadListingPresenter = threadListingPresenter;
     }
 
     @Override
-    public void navigationTo(String[] arguments) {
+    public void navigationTo(final String[] arguments) {
         String categoryIdString = arguments[0];
         Category category = null;
         if (!categoryIdString.isEmpty()) {
@@ -54,15 +54,15 @@ public class ListingPresenter extends Presenter<ListingView> {
                     .equals(SpecialCategory.MY_POSTS.getId())) {
                 category = SpecialCategory.MY_POSTS.getInstance();
             } else {
-                final long categoryId = Long.valueOf(categoryIdString);
                 try {
+                    final long categoryId = Long.valueOf(categoryIdString);
                     if (authorizationService.mayViewCategory(categoryId)) {
                         category = dataSource.getCategory(categoryId);
                     } else {
                         view.showError("No rights to access this category");
                     }
                 } catch (final NumberFormatException e) {
-                    log.error("Invalid category id format: " + categoryId);
+                    log.error("Invalid category id format: " + categoryIdString);
                 } catch (final NoSuchCategoryException e) {
                     view.displayCategoryNotFoundError(String.valueOf(e
                             .getCategoryId()));

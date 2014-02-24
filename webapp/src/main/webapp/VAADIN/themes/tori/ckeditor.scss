@@ -7,5 +7,23 @@
 	/*body*/
 	.cke_editable.post {
 		line-height: $post-body-line-height;
+		width: auto;
+		
+		& > blockquote {
+			margin: 0;
+			margin-bottom: $post-body-line-height;
+		}
+		
+		/*& > ol, & > ul {
+			margin-bottom: $post-body-line-height + $font-size-primary;
+		}
+		
+		& > code {
+			margin-bottom: $post-body-line-height + $font-size-primary;
+		}*/
+		
+		& > *:last-child {
+			margin-bottom: 0;
+		}
 	}
 }

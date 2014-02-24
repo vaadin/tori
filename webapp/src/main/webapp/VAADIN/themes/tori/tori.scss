@@ -41,11 +41,11 @@
 	    }
 	    
 	    &.v-app,
-	    .v-ui,
+	    .v-ui.v-ui,
 	    .v-window,
 	    .v-window .v-scrollable {
 		    font-family: $font-family-primary;
-		    font-size: 14px;
+		    font-size: $font-size-primary;
 		    color: #555;
 	    }
 	        
