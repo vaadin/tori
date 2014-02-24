@@ -224,7 +224,8 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
                         current = new PostNotification(latestPost);
                         current.setState(PostNotificationState.CURRENT);
                         notificationsLayout.addComponent(current);
-                    } else {
+                    } else if (latestPost != null
+                            && current.getPost().getId() != latestPost.getId()) {
                         newPostAdded(latestPost);
                     }
                 }
