@@ -45,6 +45,10 @@ public interface ThreadView extends View {
 
     void setThreadUpdates(int newPostsCount, Map<User, Date> pendingReplies);
 
+    void replySent();
+
+    void threadDeleted();
+
     public interface PostData {
 
         long getId();
@@ -101,8 +105,8 @@ public interface ThreadView extends View {
         Long getThreadId();
 
         boolean isUserBanned();
-    }
 
-    void replySent();
+        Long getCategoryId();
+    }
 
 }

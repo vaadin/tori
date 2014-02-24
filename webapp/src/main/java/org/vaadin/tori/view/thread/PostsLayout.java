@@ -38,7 +38,7 @@ public class PostsLayout extends CssLayout {
     private static final String STYLE_READY = "ready";
     private final Map<Long, PostComponent> postComponents = new HashMap<Long, PostComponent>();
 
-    public PostsLayout(ThreadPresenter presenter) {
+    public PostsLayout(final ThreadPresenter presenter) {
         this.presenter = presenter;
     }
 
@@ -55,7 +55,7 @@ public class PostsLayout extends CssLayout {
                 component.setId("scrollpostid");
                 UI.getCurrent().scrollIntoView(component);
                 JavaScript
-                        .eval("window.setTimeout(\"document.getElementById('scrollpostid').scrollIntoView()\",100)");
+                        .eval("window.setTimeout(\"document.getElementById('scrollpostid').scrollIntoView(true)\",100)");
                 scrollToComponent = null;
             }
             if (rendered > RENDER_BATCH_SIZE) {
@@ -70,7 +70,7 @@ public class PostsLayout extends CssLayout {
     }
 
     @Override
-    public void addComponent(Component c) {
+    public void addComponent(final Component c) {
         if (c instanceof PostComponent) {
             PostComponent postComponent = (PostComponent) c;
             postComponents.put(postComponent.getPostId(), postComponent);
@@ -82,7 +82,7 @@ public class PostsLayout extends CssLayout {
     }
 
     @Override
-    public void beforeClientResponse(boolean initial) {
+    public void beforeClientResponse(final boolean initial) {
         ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
@@ -98,11 +98,11 @@ public class PostsLayout extends CssLayout {
         super.beforeClientResponse(initial);
     }
 
-    public void setScrollToComponent(Component component) {
+    public void setScrollToComponent(final Component component) {
         this.scrollToComponent = component;
     }
 
-    public void setPosts(List<PostData> posts) {
+    public void setPosts(final List<PostData> posts) {
         removeAllComponents();
         removeStyleName(STYLE_READY);
         for (PostData post : posts) {
@@ -115,7 +115,7 @@ public class PostsLayout extends CssLayout {
 
     }
 
-    public void updatePost(PostData postData) {
+    public void updatePost(final PostData postData) {
         postComponents.get(postData.getId()).update(postData);
     }
 }

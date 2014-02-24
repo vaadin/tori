@@ -90,10 +90,12 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         ToriScheduler.get().scheduleManual(new ScheduledCommand() {
             @Override
             public void execute() {
-                threadUpdatesComponent = new ThreadUpdatesComponent(
-                        getPresenter());
-                layout.addComponent(threadUpdatesComponent);
-                appendNewReply();
+                if (viewData != null) {
+                    threadUpdatesComponent = new ThreadUpdatesComponent(
+                            getPresenter());
+                    layout.addComponent(threadUpdatesComponent);
+                    appendNewReply();
+                }
             }
         });
     }
@@ -149,7 +151,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         // Scroll to reply component
         UI.getCurrent().scrollIntoView(reply);
         JavaScript.eval("window.setTimeout(\"document.getElementById('"
-                + REPLY_ID + "').scrollIntoView()\",100)");
+                + REPLY_ID + "').scrollIntoView(true)\",100)");
     }
 
     @Override
@@ -165,18 +167,22 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public void setViewData(final ViewData viewData,
             final AuthoringData authoringData) {
-        this.authoringData = authoringData;
-        this.viewData = viewData;
+        if (viewData == null) {
+            ToriNavigator.getCurrent().navigateToDashboard();
+        } else {
+            this.authoringData = authoringData;
+            this.viewData = viewData;
+        }
     }
 
     @Override
     public String getTitle() {
-        return viewData.getThreadTopic();
+        return viewData != null ? viewData.getThreadTopic() : null;
     }
 
     @Override
     public Long getUrlParameterId() {
-        return viewData.getThreadId();
+        return viewData != null ? viewData.getThreadId() : null;
     }
 
     @Override
@@ -244,6 +250,11 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public void exit() {
         ToriScheduler.get().executeManualCommands();
+    }
+
+    @Override
+    public void threadDeleted() {
+        ToriNavigator.getCurrent().navigateToCategory(viewData.getCategoryId());
     }
 
 }

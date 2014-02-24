@@ -267,20 +267,22 @@ public class AuthoringComponent extends PostComponent {
     }
 
     public void setAuthoringData(final AuthoringData authoringData) {
-        attach.setVisible(authoringData.mayAddFiles());
-        maxFileSize = authoringData.getMaxFileSize();
+        if (authoringData != null) {
+            attach.setVisible(authoringData.mayAddFiles());
+            maxFileSize = authoringData.getMaxFileSize();
 
-        PostPrimaryData data = new PostPrimaryData();
-        data.setAuthorName(authoringData.getCurrentUserName());
-        data.setAuthorAvatarUrl(authoringData.getCurrentUserAvatarUrl());
-        getRpcProxy(PostComponentClientRpc.class).setPostPrimaryData(data);
+            PostPrimaryData data = new PostPrimaryData();
+            data.setAuthorName(authoringData.getCurrentUserName());
+            data.setAuthorAvatarUrl(authoringData.getCurrentUserAvatarUrl());
+            getRpcProxy(PostComponentClientRpc.class).setPostPrimaryData(data);
 
-        // PostAdditionalData additionalData = new PostAdditionalData();
-        // data.setBadgeHTML(post.getBadgeHTML());
-        // getRpcProxy(PostComponentClientRpc.class).setPostAdditionalData(
-        // additionalData);
+            // PostAdditionalData additionalData = new PostAdditionalData();
+            // data.setBadgeHTML(post.getBadgeHTML());
+            // getRpcProxy(PostComponentClientRpc.class).setPostAdditionalData(
+            // additionalData);
 
-        getRpcProxy(PostComponentClientRpc.class).editPost(editorLayout);
+            getRpcProxy(PostComponentClientRpc.class).editPost(editorLayout);
+        }
     }
 
     public interface AuthoringListener {

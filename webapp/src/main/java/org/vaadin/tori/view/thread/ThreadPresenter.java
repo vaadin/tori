@@ -226,7 +226,16 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
                     view.setViewData(getViewData(currentThread),
                             getAuthoringData());
+
+                    try {
+                        dataSource.incrementViewCount(requestedThread);
+                        dataSource.markThreadRead(requestedThread.getId());
+                    } catch (final DataSourceException e) {
+                        log.error("Couldn't increment view count and "
+                                + "mark thread as read.", e);
+                    }
                 } else {
+                    view.setViewData(null, null);
                     log.error("requestedthread was null, but no exception was thrown.");
                 }
 
@@ -243,17 +252,6 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             throw e;
         }
 
-        if (requestedThread != null) {
-            try {
-                dataSource.incrementViewCount(requestedThread);
-                dataSource.markThreadRead(requestedThread.getId());
-            } catch (final DataSourceException e) {
-                // Just log the exception, we don't want an exception in view
-                // count incrementing or marking as read to stop us here.
-                log.error("Couldn't increment view count and "
-                        + "mark thread as read.", e);
-            }
-        }
     }
 
     private ViewData getViewData(final DiscussionThread currentThread) {
@@ -277,6 +275,12 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             @Override
             public boolean isUserBanned() {
                 return dataSource.getCurrentUser().isBanned();
+            }
+
+            @Override
+            public Long getCategoryId() {
+                final Category category = currentThread.getCategory();
+                return category != null ? category.getId() : null;
             }
         };
     }
@@ -352,6 +356,12 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     public void delete(final long postId) {
         try {
             dataSource.deletePost(postId);
+
+            if (dataSource.getPosts(currentThread.getId()).isEmpty()) {
+                dataSource.deleteThread(currentThread.getId());
+                view.threadDeleted();
+            }
+
             view.showNotification("Post deleted");
         } catch (final DataSourceException e) {
             log.error(e);

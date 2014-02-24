@@ -38,7 +38,7 @@ public class ToriNavigator extends Navigator {
     private final boolean updatePateTitle = ToriApiLoader.getCurrent()
             .getDataSource().getUpdatePageTitle();
 
-    public ToriNavigator(ComponentContainer container) {
+    public ToriNavigator(final ComponentContainer container) {
         super(UI.getCurrent(), container);
         for (ApplicationView view : ApplicationView.values()) {
             addView(view.getNavigatorUrl(), view.getViewClass());
@@ -47,13 +47,13 @@ public class ToriNavigator extends Navigator {
 
         addViewChangeListener(new ViewChangeListener() {
             @Override
-            public boolean beforeViewChange(ViewChangeEvent event) {
+            public boolean beforeViewChange(final ViewChangeEvent event) {
                 ((AbstractView<?, ?>) event.getNewView()).init();
                 return true;
             }
 
             @Override
-            public void afterViewChange(ViewChangeEvent event) {
+            public void afterViewChange(final ViewChangeEvent event) {
                 final View newView = event.getNewView();
                 if (newView instanceof AbstractView<?, ?>) {
                     String title = ((AbstractView) newView).getTitle();
@@ -74,7 +74,7 @@ public class ToriNavigator extends Navigator {
 
     }
 
-    private void updatePageTitle(String title) {
+    private void updatePageTitle(final String title) {
         String prefix = ToriApiLoader.getCurrent().getDataSource()
                 .getPageTitlePrefix();
 
@@ -113,16 +113,20 @@ public class ToriNavigator extends Navigator {
         navigateTo(ApplicationView.DASHBOARD.getNavigatorUrl());
     }
 
-    public void navigateToCategory(long categoryId) {
-        navigateTo(ApplicationView.CATEGORIES.getNavigatorUrl() + "/"
-                + categoryId);
+    public void navigateToCategory(final Long categoryId) {
+        if (categoryId == null) {
+            navigateToDashboard();
+        } else {
+            navigateTo(ApplicationView.CATEGORIES.getNavigatorUrl() + "/"
+                    + categoryId);
+        }
     }
 
-    public void navigateToThread(long threadId) {
+    public void navigateToThread(final long threadId) {
         navigateTo(ApplicationView.THREADS.getNavigatorUrl() + "/" + threadId);
     }
 
-    public void navigateToNewThread(Long categoryId) {
+    public void navigateToNewThread(final Long categoryId) {
         String suffix = "";
         if (categoryId != null) {
             suffix = String.valueOf(categoryId);
