@@ -121,7 +121,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public List<Category> getSubCategories(Long categoryId)
+    public List<Category> getSubCategories(final Long categoryId)
             throws DataSourceException {
         Category category = null;
         try {
@@ -150,7 +150,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public List<DiscussionThread> getThreads(Long categoryId,
+    public List<DiscussionThread> getThreads(final Long categoryId,
             final int startIndex, final int endIndex)
             throws DataSourceException {
         final Category category = getCategory(categoryId);
@@ -203,7 +203,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public int getThreadCountRecursively(Long categoryId)
+    public int getThreadCountRecursively(final Long categoryId)
             throws DataSourceException {
         final Category category = getCategory(categoryId);
         final long threadCount = getThreadCount(categoryId);
@@ -219,8 +219,8 @@ public class TestDataSource implements DataSource {
                 // recursively add thread count of all sub categories
                 Long theThreadCount = threadCount;
                 try {
-                    final List<Category> subCategories = getSubCategories(category
-                            .getId());
+                    final List<Category> subCategories = getSubCategories(category != null ? category
+                            .getId() : null);
                     for (final Category subCategory : subCategories) {
                         theThreadCount += getThreadCountRecursively(subCategory
                                 .getId());
@@ -234,7 +234,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public int getThreadCount(Long categoryId) throws DataSourceException {
+    public int getThreadCount(final Long categoryId) throws DataSourceException {
         Category category = null;
         if (categoryId != null) {
             category = getCategory(categoryId);
@@ -273,7 +273,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public List<Post> getPosts(long threadId) throws DataSourceException {
+    public List<Post> getPosts(final long threadId) throws DataSourceException {
         final DiscussionThread thread = getThread(threadId);
         return executeWithEntityManager(new Command<List<Post>>() {
             @Override
@@ -334,7 +334,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public int getUnreadThreadCount(long categoryId) {
+    public int getUnreadThreadCount(final long categoryId) {
         return 0;
     }
 
@@ -355,14 +355,14 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void banUser(long userId) throws DataSourceException {
+    public void banUser(final long userId) throws DataSourceException {
         User user = getUser(userId);
         user.setBanned(true);
         save(user);
     }
 
     @Override
-    public void unbanUser(long userId) throws DataSourceException {
+    public void unbanUser(final long userId) throws DataSourceException {
         User user = getUser(userId);
         user.setBanned(false);
         save(user);
@@ -383,7 +383,7 @@ public class TestDataSource implements DataSource {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void followThread(long threadId) throws DataSourceException {
+    public void followThread(final long threadId) throws DataSourceException {
         DiscussionThread thread = getThread(threadId);
         if (!isFollowingThread(threadId)) {
             final org.vaadin.tori.data.entity.Following following = new org.vaadin.tori.data.entity.Following();
@@ -409,7 +409,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void unfollowThread(long threadId) throws DataSourceException {
+    public void unfollowThread(final long threadId) throws DataSourceException {
         final DiscussionThread thread = getThread(threadId);
         executeWithEntityManager(new Command<Void>() {
             @Override
@@ -431,7 +431,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public boolean isFollowingThread(long threadId) {
+    public boolean isFollowingThread(final long threadId) {
         try {
             final DiscussionThread thread = getThread(threadId);
             return executeWithEntityManager(new Command<Boolean>() {
@@ -457,7 +457,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void deletePost(long postId) throws DataSourceException {
+    public void deletePost(final long postId) throws DataSourceException {
         final Post post = getPost(postId);
         executeWithEntityManager(new Command<Void>() {
             @Override
@@ -486,7 +486,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public Boolean getPostVote(long postId) throws DataSourceException {
+    public Boolean getPostVote(final long postId) throws DataSourceException {
         Boolean result = null;
         PostVote vote = getPostVoteInternal(postId);
         if (vote.isDownvote()) {
@@ -497,7 +497,7 @@ public class TestDataSource implements DataSource {
         return result;
     }
 
-    private PostVote getPostVoteInternal(long postId)
+    private PostVote getPostVoteInternal(final long postId)
             throws DataSourceException {
         final Post post = getPost(postId);
         return executeWithEntityManager(new Command<PostVote>() {
@@ -521,14 +521,14 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void upvote(long postId) throws DataSourceException {
+    public void upvote(final long postId) throws DataSourceException {
         final PostVote vote = getPostVoteInternal(postId);
         vote.setUpvote();
         save(vote);
     }
 
     @Override
-    public void downvote(long postId) throws DataSourceException {
+    public void downvote(final long postId) throws DataSourceException {
         final PostVote vote = getPostVoteInternal(postId);
         vote.setDownvote();
         save(vote);
@@ -557,7 +557,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void removeUserVote(long postId) throws DataSourceException {
+    public void removeUserVote(final long postId) throws DataSourceException {
         delete(getPostVoteInternal(postId));
     }
 
@@ -584,7 +584,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public long getPostScore(long postId) throws DataSourceException {
+    public long getPostScore(final long postId) throws DataSourceException {
         final Post post = getPost(postId);
         return executeWithEntityManager(new Command<Long>() {
             @Override
@@ -673,7 +673,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void moveThread(long threadId, final Long destinationCategoryId)
+    public void moveThread(final long threadId, final Long destinationCategoryId)
             throws DataSourceException {
         final DiscussionThread thread = getThread(threadId);
         final Category destinationCategory = getCategory(destinationCategoryId);
@@ -692,28 +692,28 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void stickyThread(long threadId) throws DataSourceException {
+    public void stickyThread(final long threadId) throws DataSourceException {
         DiscussionThread thread = getThread(threadId);
         thread.setSticky(true);
         save(thread);
     }
 
     @Override
-    public void unstickyThread(long threadId) throws DataSourceException {
+    public void unstickyThread(final long threadId) throws DataSourceException {
         DiscussionThread thread = getThread(threadId);
         thread.setSticky(false);
         save(thread);
     }
 
     @Override
-    public void lockThread(long threadId) throws DataSourceException {
+    public void lockThread(final long threadId) throws DataSourceException {
         DiscussionThread thread = getThread(threadId);
         thread.setLocked(true);
         save(thread);
     }
 
     @Override
-    public void unlockThread(long threadId) throws DataSourceException {
+    public void unlockThread(final long threadId) throws DataSourceException {
         DiscussionThread thread = getThread(threadId);
         thread.setLocked(false);
         save(thread);
@@ -771,7 +771,7 @@ public class TestDataSource implements DataSource {
 
     @Override
     public Post saveNewThread(final String topic, final String rawBody,
-            final Map<String, byte[]> attachments, Long categoryId)
+            final Map<String, byte[]> attachments, final Long categoryId)
             throws DataSourceException {
         final Category category = categoryId == null ? null
                 : getCategory(categoryId);
@@ -783,6 +783,7 @@ public class TestDataSource implements DataSource {
                 newThread.setTopic(topic);
 
                 Post firstPost = new Post();
+                firstPost.setFormatBBCode(true);
                 firstPost.setAuthor(getCurrentUser());
                 firstPost.setBodyRaw(rawBody);
                 firstPost.setTime(new Date());
@@ -825,12 +826,12 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public boolean isThreadRead(long threadId) {
+    public boolean isThreadRead(final long threadId) {
         return new Random().nextBoolean();
     }
 
     @Override
-    public void markThreadRead(long threadId) throws DataSourceException {
+    public void markThreadRead(final long threadId) throws DataSourceException {
         System.out.println(String.format(
                 "Marking thread %d as read. Not actually implemented in "
                         + getClass().getSimpleName() + ".", threadId));
@@ -942,7 +943,7 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public User getToriUser(long userId) {
+    public User getToriUser(final long userId) {
         User user = null;
         if (userId > 0) {
             try {
@@ -1027,8 +1028,8 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public void reportPost(long postId, Reason reason, String additionalInfo,
-            String postUrl) {
+    public void reportPost(final long postId, final Reason reason,
+            final String additionalInfo, final String postUrl) {
         System.out.println("TestDataSource.reportPost()");
         System.out.println("Post: " + postId);
         System.out.println("Reason: " + reason);

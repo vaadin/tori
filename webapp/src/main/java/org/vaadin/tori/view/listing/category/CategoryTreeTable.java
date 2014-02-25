@@ -52,8 +52,8 @@ public class CategoryTreeTable extends TreeTable {
     private final CategoryListingPresenter presenter;
 
     @Override
-    protected String formatPropertyValue(Object rowId, Object colId,
-            Property<?> property) {
+    protected String formatPropertyValue(final Object rowId,
+            final Object colId, final Property<?> property) {
         String result = super.formatPropertyValue(rowId, colId, property);
         if (rowId != getCurrentPageFirstItemId()) {
             if (PROPERTY_ID_THREADS.equals(colId)
@@ -66,7 +66,7 @@ public class CategoryTreeTable extends TreeTable {
         return result;
     }
 
-    public CategoryTreeTable(CategoryListingPresenter presenter) {
+    public CategoryTreeTable(final CategoryListingPresenter presenter) {
         this.presenter = presenter;
         setStyleName("categoryTree");
 
@@ -77,8 +77,8 @@ public class CategoryTreeTable extends TreeTable {
 
         addGeneratedColumn(PROPERTY_ID_CATEGORY, new ColumnGenerator() {
             @Override
-            public Object generateCell(Table source, Object itemId,
-                    Object columnId) {
+            public Object generateCell(final Table source, final Object itemId,
+                    final Object columnId) {
                 return new CategoryLayout((CategoryData) itemId);
             }
         });
@@ -102,7 +102,7 @@ public class CategoryTreeTable extends TreeTable {
 
     private class CategoryLayout extends CssLayout {
 
-        private final String CATEGORY_URL = "#"
+        private final String categoryUrl = "#"
                 + ToriNavigator.ApplicationView.CATEGORIES.getUrl() + "/";
 
         public CategoryLayout(final CategoryData category) {
@@ -133,7 +133,7 @@ public class CategoryTreeTable extends TreeTable {
         private Component createCategoryLink(final long id, final String name) {
             final Link categoryLink = new Link();
             categoryLink.setCaption(name);
-            categoryLink.setResource(new ExternalResource(CATEGORY_URL + id));
+            categoryLink.setResource(new ExternalResource(categoryUrl + id));
             categoryLink.setStyleName("categoryLink");
             categoryLink.setWidth(null);
             return categoryLink;
@@ -148,7 +148,7 @@ public class CategoryTreeTable extends TreeTable {
 
             Command command = new Command() {
                 @Override
-                public void menuSelected(MenuItem selectedItem) {
+                public void menuSelected(final MenuItem selectedItem) {
                     if (EDIT_CAPTION.equals(selectedItem.getText())) {
                         editPopup.setPopupVisible(true);
                     } else if (DELETE_CAPTION.equals(selectedItem.getText())) {
@@ -179,7 +179,7 @@ public class CategoryTreeTable extends TreeTable {
                 categoryData.getName()));
         ConfirmDialog.show(getUI(), title, new ConfirmDialog.Listener() {
             @Override
-            public void onClose(ConfirmDialog arg0) {
+            public void onClose(final ConfirmDialog arg0) {
                 if (arg0.isConfirmed()) {
                     presenter.deleteCategory(categoryData.getId());
                 }
@@ -196,7 +196,7 @@ public class CategoryTreeTable extends TreeTable {
             }
 
             @Override
-            public void commit(String name, String description) {
+            public void commit(final String name, final String description) {
                 editPopup.setPopupVisible(false);
                 categoryData.setName(name);
                 categoryData.setDescription(description);
@@ -209,7 +209,7 @@ public class CategoryTreeTable extends TreeTable {
         return editPopup;
     }
 
-    public void setCategories(List<CategoryData> categories) {
+    public void setCategories(final List<CategoryData> categories) {
         removeAllItems();
         for (final CategoryData category : categories) {
             addCategory(category, null);

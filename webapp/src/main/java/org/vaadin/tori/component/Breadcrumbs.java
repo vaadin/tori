@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator;
+import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -119,7 +120,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
         Button result = new Button();
         result.addClickListener(new ClickListener() {
             @Override
-            public void buttonClick(ClickEvent event) {
+            public void buttonClick(final ClickEvent event) {
                 try {
                     if (dataSource.isFollowingThread(threadId)) {
                         dataSource.unfollowThread(threadId);
@@ -141,7 +142,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
         return result;
     }
 
-    private void updateFollowButtonStyle() {
+    public void updateFollowButtonStyle() {
         followButton.setVisible(authorizationService.mayFollowThread(threadId));
         followButton
                 .setStyleName(dataSource.isFollowingThread(threadId) ? "followed"
@@ -156,7 +157,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
     }
 
     @Override
-    public void afterViewChange(ViewChangeEvent event) {
+    public void afterViewChange(final ViewChangeEvent event) {
         viewCaption.setValue(null);
         iconsComponent.setStyleName("icons");
         myPostsLink.setVisible(false);
@@ -175,7 +176,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
             } else if (urlParameterId == null) {
                 crumbsLayout.removeAllComponents();
                 viewCaption.setValue(getDashboardTitle());
-                myPostsLink.setVisible(true);
+                myPostsLink.setVisible(dataSource.getCurrentUser().getId() > 0);
             } else {
                 ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
                     @Override
@@ -189,7 +190,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
 
     }
 
-    private void buildCrumbs(View view, Long urlParameterId) {
+    private void buildCrumbs(final View view, final Long urlParameterId) {
         Category parentCategory = null;
         if (view instanceof ThreadView) {
             try {
@@ -229,7 +230,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
         }
     }
 
-    private void prependLink(Category category) {
+    private void prependLink(final Category category) {
         if (category == null) {
             crumbsLayout.addComponent(getDashboardLink(), 0);
         } else {
@@ -276,7 +277,8 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
         return menuBar;
     }
 
-    protected void populateSiblingMenu(MenuItem topItem, Category category) {
+    protected void populateSiblingMenu(final MenuItem topItem,
+            final Category category) {
         try {
             Category parent = category.getParentCategory();
             Long parentId = parent != null ? parent.getId() : null;
@@ -286,7 +288,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
                 if (authorizationService.mayViewCategory(sibling.getId())) {
                     topItem.addItem(sibling.getName(), new Command() {
                         @Override
-                        public void menuSelected(MenuItem selectedItem) {
+                        public void menuSelected(final MenuItem selectedItem) {
                             ToriNavigator.getCurrent().navigateToCategory(
                                     sibling.getId());
                         }
@@ -304,7 +306,11 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
     }
 
     @Override
-    public boolean beforeViewChange(ViewChangeEvent event) {
+    public boolean beforeViewChange(final ViewChangeEvent event) {
         return true;
+    }
+
+    public static Breadcrumbs getCurrent() {
+        return ToriUI.getCurrent().getBreadcrumbs();
     }
 }

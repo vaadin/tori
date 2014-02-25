@@ -25,6 +25,7 @@ import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.AuthoringComponent;
 import org.vaadin.tori.component.AuthoringComponent.AuthoringListener;
+import org.vaadin.tori.component.Breadcrumbs;
 import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.component.RecentBar;
 import org.vaadin.tori.data.entity.User;
@@ -62,6 +63,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 final Map<String, byte[]> attachments, final boolean follow) {
             if (!rawBody.trim().isEmpty()) {
                 getPresenter().sendReply(rawBody, attachments, follow);
+                Breadcrumbs.getCurrent().updateFollowButtonStyle();
             }
         }
 
@@ -210,7 +212,12 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     public void replySent() {
         getInputCache().remove(viewData.getThreadTopic());
         ToriUI.getCurrent().trackAction("reply");
-        RecentBar.getCurrent().refresh();
+        ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override
+            public void execute() {
+                RecentBar.getCurrent().refresh();
+            }
+        });
     }
 
     private void appendNewReply() {

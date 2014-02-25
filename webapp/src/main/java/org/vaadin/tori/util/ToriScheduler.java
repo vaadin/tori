@@ -49,6 +49,7 @@ public class ToriScheduler {
                             JavaScript.getCurrent().removeFunction(
                                     DEFERRED_COMMAND_FUNCTION_NAME);
                             executeCommands(deferredCommands);
+
                         }
                     });
         }
@@ -63,13 +64,17 @@ public class ToriScheduler {
         executeCommands(manualCommands);
     }
 
-    private void executeCommands(Collection<ScheduledCommand> commands) {
+    private void executeCommands(final Collection<ScheduledCommand> commands) {
         final Collection<ScheduledCommand> executableCommands = new ArrayList<ScheduledCommand>(
                 commands);
         commands.clear();
 
         for (ScheduledCommand command : executableCommands) {
-            command.execute();
+            try {
+                command.execute();
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+            }
         }
     }
 

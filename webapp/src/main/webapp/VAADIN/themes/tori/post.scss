@@ -20,6 +20,17 @@
 	        opacity: 0.5;
 	    }
 	    
+	    &#threadreply .author:before {
+	    	content: "Post Reply";
+	    	font-family: $font-family-secondary;
+	    	font-size: 20px;
+	    	color: #555;
+	    	height: 0;
+	    	display: block;
+	    	position: relative;
+	    	top: -35px;
+	    }
+	    
 	    .author {
 	        width: 153px;
 	        min-width: 153px;
@@ -27,7 +38,7 @@
 	        text-align: center;
 	        margin-top: 45px;
 	    }
-        .avatar {
+        .avatar.avatar {
         	color: $post-anonymous-avatar-color;
             margin-bottom: 9px;
             display: block;
@@ -51,7 +62,7 @@
 				content: "\e606";
 				font-size: 52px;
 				position: absolute;
-				top: 10px;
+				top: 11px;
 				left: 2px;
             }
         }
@@ -120,6 +131,11 @@
 	        }
         }
         
+        &#threadreply .attachments {
+        	visibility: visible;
+        	margin-bottom: 20px;
+        }
+        
 	    .posteditorplaceholder {
 	    	outline: none;
         	position: absolute;
@@ -180,7 +196,6 @@
         .attachments {
             border-top: $post-separator-border;
             margin-top: 50px;
-            margin-bottom: 20px;
             float: left;
             padding-left: 105px;
             position: relative;
@@ -249,7 +264,7 @@
             &.downvote {
             	&:after {
 	            	content: "\e603";
-	            	font-size: 14px;
+	            	font-size: 15px;
 	            }
 	            &.done,
             	&:hover {

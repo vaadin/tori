@@ -69,7 +69,7 @@ class ThreadUpdatesComponent extends CustomComponent {
 
         layout.addLayoutClickListener(new LayoutClickListener() {
             @Override
-            public void layoutClick(LayoutClickEvent event) {
+            public void layoutClick(final LayoutClickEvent event) {
                 if (event.getChildComponent() == showAllLabel) {
                     presenter.showNewPostsRequested();
                 }
@@ -77,7 +77,7 @@ class ThreadUpdatesComponent extends CustomComponent {
         });
     }
 
-    public void setNewPostsCount(int count) {
+    public void setNewPostsCount(final int count) {
         newPostsCount = count;
         newPostsLabel.setVisible(count > 0);
         showAllLabel.setVisible(count > 0);
@@ -88,12 +88,15 @@ class ThreadUpdatesComponent extends CustomComponent {
         updateVisibility();
     }
 
-    public void setPendingReplies(Map<User, Date> pendingReplies) {
+    public void setPendingReplies(final Map<User, Date> pendingReplies) {
         this.pendingReplies = pendingReplies;
 
         pendingRepliesLabel.setVisible(!pendingReplies.isEmpty());
-        pendingRepliesLabel.setValue(pendingReplies.size() + " pending "
-                + (pendingReplies.size() > 1 ? "replies" : "reply") + "...");
+        boolean plural = pendingReplies.size() > 1;
+        pendingRepliesLabel.setValue(pendingReplies.size() + " user"
+                + (plural ? "s" : "") + " " + (plural ? "are" : "is")
+                + " typing a message to this thread");
+
         pendingRepliesLabel.setDescription("test");
         StringBuilder description = new StringBuilder();
 

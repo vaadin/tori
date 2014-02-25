@@ -64,20 +64,21 @@ public class NewThreadViewImpl extends
         AuthoringListener listener = new AuthoringListener() {
 
             @Override
-            public void submit(String rawBody, Map<String, byte[]> attachments,
-                    boolean follow) {
+            public void submit(final String rawBody,
+                    final Map<String, byte[]> attachments, final boolean follow) {
                 String topic = topicField.getValue();
                 getPresenter().saveNewThread(topic, rawBody, attachments,
                         follow);
             }
 
             @Override
-            public void inputValueChanged(String value) {
+            public void inputValueChanged(final String value) {
                 // Ignore
             }
         };
 
         authoringComponent = new AuthoringComponent(listener);
+        authoringComponent.setPostButtonCaption("Submit");
         return authoringComponent;
     }
 
@@ -121,23 +122,23 @@ public class NewThreadViewImpl extends
     }
 
     @Override
-    public void showNotification(String message) {
+    public void showNotification(final String message) {
         Notification.show(message);
     }
 
     @Override
-    public void showError(String message) {
+    public void showError(final String message) {
         Notification.show(message, Type.ERROR_MESSAGE);
     }
 
     @Override
-    public void newThreadCreated(long threadId) {
+    public void newThreadCreated(final long threadId) {
         ToriUI.getCurrent().trackAction("new-thread");
         ToriNavigator.getCurrent().navigateToThread(threadId);
     }
 
     @Override
-    public void setViewData(AuthoringData authoringData) {
+    public void setViewData(final AuthoringData authoringData) {
         authoringComponent.setAuthoringData(authoringData);
     }
 }

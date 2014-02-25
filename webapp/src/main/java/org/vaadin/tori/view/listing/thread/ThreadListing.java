@@ -135,9 +135,13 @@ public class ThreadListing extends AbstractComponentContainer implements
             rootItem.removeChild(separator);
         }
 
-        components.add(dropdownMenu);
-        addComponent(dropdownMenu);
-        return dropdownMenu;
+        Component result = null;
+        if (rootItem.hasChildren()) {
+            components.add(dropdownMenu);
+            addComponent(dropdownMenu);
+            result = dropdownMenu;
+        }
+        return result;
     }
 
     public void setThreadProvider(final ThreadProvider threadProvider) {

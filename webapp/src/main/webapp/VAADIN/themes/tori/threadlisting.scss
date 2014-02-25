@@ -9,6 +9,7 @@
 		white-space: nowrap;
 		-webkit-transform: translatez(0);
 		position: relative;
+		-moz-box-sizing: border-box;
 		box-sizing: border-box;
 		padding-right: 320px;
 		padding-left: 5px;
@@ -71,7 +72,7 @@
         	margin-right: 10px;
 		}
 		
-		&.following .topic:before {
+		&.following .followtopic:before {
 			font-family: "Tori-Icons";
 			content: "\e605";
 			position: absolute;

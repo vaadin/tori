@@ -22,6 +22,8 @@ import java.util.List;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.Presenter;
+import org.vaadin.tori.util.ToriScheduler;
+import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.view.listing.SpecialCategory;
 import org.vaadin.tori.view.listing.category.CategoryListingView.CategoryData;
 
@@ -44,17 +46,26 @@ public class CategoryListingPresenter extends Presenter<CategoryListingView> {
         updateView();
     }
 
-    public void deleteCategory(long categoryId) {
+    public void deleteCategory(final long categoryId) {
         try {
             dataSource.deleteCategory(categoryId);
         } catch (final DataSourceException e) {
             displayError(e);
         }
-        // refresh the categories
-        updateView();
+
+        // FIXME: This is here temporarily and only to avoid a Vaadin bug which
+        // caused the confirm window not to close after deleting a category.
+        ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override
+            public void execute() {
+                // refresh the categories
+                updateView();
+            }
+        });
+
     }
 
-    public void updateCategory(long categoryId, final String name,
+    public void updateCategory(final long categoryId, final String name,
             final String description) {
         try {
             dataSource.updateCategory(categoryId, name, description);
@@ -70,14 +81,14 @@ public class CategoryListingPresenter extends Presenter<CategoryListingView> {
         view.setMayCreateCategories(authorizationService.mayEditCategories());
     }
 
-    public void categorySelected(Category category) {
+    public void categorySelected(final Category category) {
         if (!SpecialCategory.isSpecialCategory(category)) {
             this.parentCategoryId = category != null ? category.getId() : null;
             updateView();
         }
     }
 
-    private List<CategoryData> getCategorySubCategories(Long categoryId) {
+    private List<CategoryData> getCategorySubCategories(final Long categoryId) {
         List<CategoryData> result = new ArrayList<CategoryData>();
         try {
             for (Category subCategory : dataSource.getSubCategories(categoryId)) {
@@ -91,7 +102,7 @@ public class CategoryListingPresenter extends Presenter<CategoryListingView> {
         return result;
     }
 
-    private void displayError(DataSourceException e) {
+    private void displayError(final DataSourceException e) {
         log.error(e);
         e.printStackTrace();
         view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
@@ -154,12 +165,12 @@ public class CategoryListingPresenter extends Presenter<CategoryListingView> {
             }
 
             @Override
-            public void setName(String name) {
+            public void setName(final String name) {
                 category.setName(name);
             }
 
             @Override
-            public void setDescription(String description) {
+            public void setDescription(final String description) {
                 category.setDescription(description);
             }
         };

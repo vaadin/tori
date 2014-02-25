@@ -148,10 +148,11 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     public void saveNewCategory(final Long parentCategoryId, final String name,
             final String description) throws DataSourceException {
         try {
-            MBCategoryServiceUtil.addCategory(parentCategoryId, name,
-                    description, null, null, null, 0, false, null, null, 0,
-                    null, false, null, 0, false, null, null, false,
-                    mbCategoryServiceContext);
+            MBCategoryServiceUtil
+                    .addCategory(normalizeCategoryId(parentCategoryId), name,
+                            description, null, null, null, 0, false, null,
+                            null, 0, null, false, null, 0, false, null, null,
+                            false, mbCategoryServiceContext);
         } catch (final NestableException e) {
             log.error(String.format("Cannot save category"), e);
             throw new DataSourceException(e);

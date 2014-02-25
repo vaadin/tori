@@ -15,6 +15,12 @@
 		
 		.posteditorplaceholder {
 			position: relative;
+			top: -1px;
+		}
+		
+		.bodytext,
+		.footer {
+			display: none;
 		}
 		
 		.cke_inner {
@@ -24,7 +30,7 @@
 		.v-upload .v-button {
 			color: $secondary-button-color;
         	border: $secondary-button-border;
-        	font-size: 14px;
+        	font-size: $button-font-size;
 		}
 		
 		&.replyhidden {

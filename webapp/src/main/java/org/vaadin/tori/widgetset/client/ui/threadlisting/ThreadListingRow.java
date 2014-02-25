@@ -22,6 +22,8 @@ public class ThreadListingRow extends Composite {
     @UiField
     public SpanElement topicName;
     @UiField
+    public SpanElement follow;
+    @UiField
     public DivElement startedBy;
     @UiField
     public DivElement postCount;
@@ -37,13 +39,13 @@ public class ThreadListingRow extends Composite {
             UiBinder<Widget, ThreadListingRow> {
     }
 
-    public ThreadListingRow(RowInfo rowInfo) {
+    public ThreadListingRow(final RowInfo rowInfo) {
         initWidget(uiBinder.createAndBindUi(this));
         setWidth("100%");
         updateRowInfo(rowInfo);
     }
 
-    public void updateRowInfo(RowInfo rowInfo) {
+    public void updateRowInfo(final RowInfo rowInfo) {
         setStyleName(ROW_CLASS_NAME);
         if (rowInfo.isLocked) {
             addStyleName("locked");
@@ -52,6 +54,7 @@ public class ThreadListingRow extends Composite {
             addStyleName("sticky");
         }
         if (rowInfo.isFollowed) {
+            follow.setTitle("I'm following this thread");
             addStyleName("following");
         }
         if (!rowInfo.isRead) {
@@ -74,5 +77,6 @@ public class ThreadListingRow extends Composite {
                     .getWidget();
             this.settings.setWidget(settings);
         }
+
     }
 }

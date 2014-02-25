@@ -544,7 +544,8 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     @Override
     public void userTyping(final long userId, final long threadId,
             final Date startedTyping) {
-        if (currentThread.getId() == threadId) {
+        if (currentThread.getId() == threadId
+                && dataSource.getCurrentUser().getId() != userId) {
             pendingReplies
                     .put(userId, new Date[] { startedTyping, new Date() });
         }

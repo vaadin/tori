@@ -70,6 +70,7 @@ public class AuthoringComponent extends PostComponent {
     private Upload attach;
     private CheckBox followCheckbox;
     private boolean ignoreInputChanges;
+    private Button postButton;
 
     public AuthoringComponent(final AuthoringListener listener) {
         super(null, null);
@@ -129,21 +130,25 @@ public class AuthoringComponent extends PostComponent {
         return editor;
     }
 
+    public void setPostButtonCaption(final String caption) {
+        postButton.setCaption(caption);
+    }
+
     private Component buildButtons() {
         HorizontalLayout result = new HorizontalLayout();
         result.addStyleName("buttonslayout");
         result.setWidth(100.0f, Unit.PERCENTAGE);
         result.setSpacing(true);
         result.setMargin(true);
-        result.addComponent(new Button("Post Reply",
-                new Button.ClickListener() {
+        postButton = new Button("Post Reply", new Button.ClickListener() {
 
-                    @Override
-                    public void buttonClick(final ClickEvent event) {
-                        listener.submit(editor.getValue(), attachments,
-                                followCheckbox.getValue());
-                    }
-                }));
+            @Override
+            public void buttonClick(final ClickEvent event) {
+                listener.submit(editor.getValue(), attachments,
+                        followCheckbox.getValue());
+            }
+        });
+        result.addComponent(postButton);
 
         attach = buildAttachUpload();
         result.addComponent(attach);

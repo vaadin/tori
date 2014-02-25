@@ -215,11 +215,26 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
 
     public void refresh() {
         try {
-            List<DiscussionThread> recentPosts = dataSource
-                    .getRecentPosts(0, 0);
-            if (!recentPosts.isEmpty()) {
-                Post latestPost = recentPosts.get(0).getLatestPost();
-                if (latestPost != null && latestPost.getThread() != null) {
+            DiscussionThread recentThread = null;
+            int count = dataSource.getThreadCountRecursively(null);
+
+            for (int i = 0; i < count; i++) {
+                DiscussionThread thread = dataSource.getRecentPosts(i, i)
+                        .get(0);
+                boolean newerThread = recentThread == null
+                        || thread.getLatestPost().getTime()
+                                .after(recentThread.getLatestPost().getTime());
+                recentThread = newerThread ? thread : recentThread;
+                if (!thread.isSticky()) {
+                    break;
+                }
+            }
+
+            if (recentThread != null) {
+                List<Post> posts = dataSource.getPosts(recentThread.getId());
+                Post latestPost = posts.get(posts.size() - 1);
+                if (latestPost != null) {
+                    latestPost.setThread(recentThread);
                     if (current == null) {
                         current = new PostNotification(latestPost);
                         current.setState(PostNotificationState.CURRENT);
@@ -231,9 +246,7 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
                 }
             }
         } catch (DataSourceException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
-
 }

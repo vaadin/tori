@@ -46,6 +46,7 @@ public class ToriUI extends UI {
     private GoogleAnalyticsTracker analytics;
 
     private RecentBar recentBar;
+    private Breadcrumbs breadcrumbs;
 
     @Override
     protected void init(final VaadinRequest request) {
@@ -67,7 +68,7 @@ public class ToriUI extends UI {
 
         VerticalLayout navigatorContent = new VerticalLayout();
         setNavigator(new ToriNavigator(navigatorContent));
-        final Breadcrumbs breadcrumbs = new Breadcrumbs();
+        breadcrumbs = new Breadcrumbs();
 
         addControlPanelIfInDevelopment();
         recentBar = new RecentBar();
@@ -129,6 +130,10 @@ public class ToriUI extends UI {
 
     public RecentBar getRecentBar() {
         return recentBar;
+    }
+
+    public Breadcrumbs getBreadcrumbs() {
+        return breadcrumbs;
     }
 
     private static Logger getLogger() {

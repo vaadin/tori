@@ -198,7 +198,8 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
             final Map<String, byte[]> files, final DiscussionThread thread,
             final long parentMessageId) throws PortalException, SystemException {
         final long groupId = scopeGroupId;
-        final long categoryId = thread.getCategory().getId();
+        final long categoryId = thread.getCategory() != null ? thread
+                .getCategory().getId() : normalizeCategoryId(null);
 
         // trim because liferay seems to bug out otherwise
         String subject = thread.getTopic().trim();

@@ -3,6 +3,7 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<g:HTMLPanel>
 		<a class="topic" ui:field='topic'>
+			<span class="followtopic" title="Follow topic" ui:field='follow' />
 			<span class="topicname" ui:field='topicName' />
 			<span class="threadicons"/>
 		</a>

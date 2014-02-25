@@ -44,6 +44,7 @@ import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.post.PostReport.Reason;
 
+import com.liferay.portal.NoSuchUserException;
 import com.liferay.portal.kernel.exception.NestableException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
@@ -303,23 +304,29 @@ public abstract class LiferayCommonDataSource implements DataSource,
             return LiferayCommonEntityFactoryUtil
                     .createAnonymousUser(imagePath);
         } else {
-            final com.liferay.portal.model.User liferayUser = UserLocalServiceUtil
-                    .getUser(userId);
-            if (liferayUser.isDefaultUser()) {
+            try {
+                final com.liferay.portal.model.User liferayUser = UserLocalServiceUtil
+                        .getUser(userId);
+                if (liferayUser.isDefaultUser()) {
+                    return LiferayCommonEntityFactoryUtil
+                            .createAnonymousUser(imagePath);
+                } else {
+                    final boolean isBanned = MBBanLocalServiceUtil.hasBan(
+                            scopeGroupId, liferayUser.getUserId());
+
+                    String userLink = null;
+                    if (liferayUser.getGroup() != null
+                            && liferayUser.getPublicLayoutsPageCount() > 0) {
+                        userLink = liferayUser.getDisplayURL(themeDisplay);
+                    }
+
+                    return LiferayCommonEntityFactoryUtil.createUser(
+                            liferayUser, imagePath, userLink,
+                            liferayUser.isFemale(), isBanned);
+                }
+            } catch (NoSuchUserException e) {
                 return LiferayCommonEntityFactoryUtil
                         .createAnonymousUser(imagePath);
-            } else {
-                final boolean isBanned = MBBanLocalServiceUtil.hasBan(
-                        scopeGroupId, liferayUser.getUserId());
-
-                String userLink = null;
-                if (liferayUser.getGroup() != null
-                        && liferayUser.getPublicLayoutsPageCount() > 0) {
-                    userLink = liferayUser.getDisplayURL(themeDisplay);
-                }
-
-                return LiferayCommonEntityFactoryUtil.createUser(liferayUser,
-                        imagePath, userLink, liferayUser.isFemale(), isBanned);
             }
         }
     }
@@ -377,7 +384,8 @@ public abstract class LiferayCommonDataSource implements DataSource,
 
             // recursively add thread count of all sub categories
             List<MBCategory> subCategories = MBCategoryLocalServiceUtil
-                    .getCategories(scopeGroupId, categoryId, QUERY_ALL,
+                    .getCategories(scopeGroupId,
+                            normalizeCategoryId(categoryId), QUERY_ALL,
                             QUERY_ALL);
             for (final MBCategory subCategory : subCategories) {
                 count += getThreadCountRecursively(subCategory.getCategoryId());
@@ -985,11 +993,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
                     rawBody, attachments, thread,
                     MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID);
             if (savedRootMessage != null) {
-                final DiscussionThread savedThread = getThread(savedRootMessage
-                        .getThreadId());
-                if (savedThread != null) {
-                    return savedThread.getLatestPost();
-                }
+                return getPost(savedRootMessage.getMessageId());
             }
         } catch (final NestableException e) {
             LOG.error("Couldn't save new thread.", e);
