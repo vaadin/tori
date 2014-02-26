@@ -22,9 +22,11 @@ import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.AuthoringComponent;
 import org.vaadin.tori.component.AuthoringComponent.AuthoringListener;
+import org.vaadin.tori.component.RecentBar;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.view.thread.AuthoringData;
 
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
@@ -44,6 +46,8 @@ public class NewThreadViewImpl extends
 
     private TextField topicField;
 
+    private ViewData viewData;
+
     @Override
     protected Component createCompositionRoot() {
         layout = new VerticalLayout();
@@ -57,7 +61,8 @@ public class NewThreadViewImpl extends
         layout.setWidth(100.0f, Unit.PERCENTAGE);
         layout.addComponent(buildTopicLayout());
         layout.addComponent(buildAuthoringComponent());
-
+        layout.addStyleName("post");
+        layout.addStyleName("editing");
     }
 
     private Component buildAuthoringComponent() {
@@ -69,6 +74,7 @@ public class NewThreadViewImpl extends
                 String topic = topicField.getValue();
                 getPresenter().saveNewThread(topic, rawBody, attachments,
                         follow);
+                RecentBar.getCurrent().refresh();
             }
 
             @Override
@@ -87,15 +93,17 @@ public class NewThreadViewImpl extends
 
         final HorizontalLayout topicLayout = new HorizontalLayout();
         topicLayout.setWidth(100.0f, Unit.PERCENTAGE);
-        topicLayout.setMargin(true);
-        topicLayout.setStyleName("newthread");
+        topicLayout.setMargin(new MarginInfo(true, true, false, true));
+        topicLayout.setStyleName("newthreadtopic");
 
-        topicField = new TextField("Topic");
+        topicField = new TextField();
+
         topicField.setStyleName("topicfield");
-        topicField.setWidth("70%");
+        topicField.setInputPrompt("Write your topic title here...");
+        topicField.setWidth(100.0f, Unit.PERCENTAGE);
+        topicField.setHeight(48.0f, Unit.PIXELS);
         topicLayout.addComponent(topicField);
         topicLayout.setExpandRatio(topicField, 1.0f);
-        topicField.focus();
 
         result.addComponent(topicLayout);
 
@@ -118,7 +126,7 @@ public class NewThreadViewImpl extends
 
     @Override
     public String getTitle() {
-        return "New thread";
+        return null;
     }
 
     @Override
@@ -138,7 +146,14 @@ public class NewThreadViewImpl extends
     }
 
     @Override
-    public void setViewData(final AuthoringData authoringData) {
+    public void setViewData(final ViewData viewData,
+            final AuthoringData authoringData) {
+        this.viewData = viewData;
         authoringComponent.setAuthoringData(authoringData);
+    }
+
+    @Override
+    public Long getUrlParameterId() {
+        return viewData.getCategoryId();
     }
 }

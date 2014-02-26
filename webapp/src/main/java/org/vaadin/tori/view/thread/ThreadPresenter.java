@@ -286,6 +286,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     }
 
     private AuthoringData getAuthoringData() {
+        final User currentUser = dataSource.getCurrentUser();
         return new AuthoringData() {
             @Override
             public boolean mayAddFiles() {
@@ -302,12 +303,28 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
             @Override
             public String getCurrentUserName() {
-                return dataSource.getCurrentUser().getDisplayedName();
+                return currentUser.getDisplayedName();
             }
 
             @Override
             public String getCurrentUserAvatarUrl() {
-                return dataSource.getCurrentUser().getAvatarUrl();
+                return currentUser.getAvatarUrl();
+            }
+
+            @Override
+            public String getCurrentUserBadgeHTML() {
+                String result = null;
+                final UserBadgeProvider badgeProvider = ToriApiLoader
+                        .getCurrent().getUserBadgeProvider();
+                if (badgeProvider != null) {
+                    result = badgeProvider.getHtmlBadgeFor(currentUser);
+                }
+                return result;
+            }
+
+            @Override
+            public String getCurrentUserLink() {
+                return currentUser.getUserLink();
             }
         };
     }

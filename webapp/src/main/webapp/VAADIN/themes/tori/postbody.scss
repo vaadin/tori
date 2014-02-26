@@ -25,6 +25,27 @@
 		}
 	}
 	
+	.quote,
+	blockquote {
+		position: relative;
+		
+		&:before {
+			font-family: HelveticaNeue;
+			content: "\201D";
+			position: absolute;
+			font-size: 58px;
+			color: $postbody-quote-quotationmark-color;
+			line-height: 69px;
+			left: 11px;
+			top: -3px;
+		}
+	}
+	
+	.quote-title + .quote:before {
+		content: "";
+	}
+	
+	
 	blockquote cite:after{
 		content: ":";
 	}

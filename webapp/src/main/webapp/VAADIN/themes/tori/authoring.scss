@@ -42,9 +42,18 @@
 		.cke_contents {
 			min-height: 173px;
 		}
-	}
-	
-	.newthreadview .newthread {
-		padding-left: 153px;
+		
+		.v-checkbox{
+			font-size: 13px;
+			
+			input {
+				margin-right: 5px;
+			}
+		}
+		
+		.badge {
+			visibility: visible;
+			opacity: 1;
+		}
 	}
 }

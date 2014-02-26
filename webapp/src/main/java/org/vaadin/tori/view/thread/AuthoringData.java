@@ -25,4 +25,8 @@ public interface AuthoringData {
     String getCurrentUserName();
 
     String getCurrentUserAvatarUrl();
+
+    String getCurrentUserBadgeHTML();
+
+    String getCurrentUserLink();
 }

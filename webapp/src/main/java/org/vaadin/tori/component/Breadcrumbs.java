@@ -151,7 +151,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
 
     private Component buildCrumbsLayout() {
         crumbsLayout = new HorizontalLayout();
-        crumbsLayout.setHeight(30.0f, Unit.PIXELS);
+        crumbsLayout.setHeight(22.0f, Unit.PIXELS);
         crumbsLayout.setStyleName("breadcrumbs-layout");
         return crumbsLayout;
     }
@@ -172,7 +172,13 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
             viewCaption.setValue(viewTitle);
             if (view instanceof NewThreadView) {
                 crumbsLayout.removeAllComponents();
-                prependLink(null);
+                Long categoryId = ((AbstractView) view).getUrlParameterId();
+                try {
+                    Category category = dataSource.getCategory(categoryId);
+                    prependLink(category);
+                } catch (DataSourceException e) {
+                    e.printStackTrace();
+                }
             } else if (urlParameterId == null) {
                 crumbsLayout.removeAllComponents();
                 viewCaption.setValue(getDashboardTitle());
@@ -240,8 +246,10 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
     }
 
     private Component getDashboardLink() {
-        return new Link(getDashboardTitle(), new ExternalResource("#"
+        Link link = new Link(getDashboardTitle(), new ExternalResource("#"
                 + ToriNavigator.ApplicationView.DASHBOARD.getUrl()));
+        link.setHeight(100.0f, Unit.PERCENTAGE);
+        return link;
     }
 
     private String getDashboardTitle() {
@@ -250,13 +258,17 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
 
     private Component getCategoryLink(final Category category) {
         HorizontalLayout result = new HorizontalLayout();
+        result.setSpacing(true);
+        result.setHeight(100.0f, Unit.PERCENTAGE);
         result.addStyleName("categorylink");
         final Link crumb = new Link(category.getName(), new ExternalResource(
                 "#" + ToriNavigator.ApplicationView.CATEGORIES.getUrl() + "/"
                         + category.getId()));
+        crumb.setHeight(100.0f, Unit.PERCENTAGE);
         result.addComponent(crumb);
         result.setComponentAlignment(crumb, Alignment.MIDDLE_CENTER);
         Component siblingMenu = getSiblingMenuBar(category);
+        siblingMenu.setHeight(100.0f, Unit.PERCENTAGE);
         result.addComponent(siblingMenu);
         result.setComponentAlignment(siblingMenu, Alignment.MIDDLE_CENTER);
         return result;

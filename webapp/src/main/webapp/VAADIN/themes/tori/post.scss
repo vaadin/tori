@@ -5,12 +5,14 @@
 	    table-layout: fixed;*/
 	    position: relative;
 	    -webkit-font-smoothing: antialiased;
+	    transition: background 500ms;
+		-webkit-transition: background 500ms;
 	    
 	    table {
 	    	border-collapse: collapse;
 	    }
 	    
-	    .dropdown {
+	   	.settings .dropdown {
 	    	font-size: 20px;
 	    }
 	    
@@ -116,18 +118,31 @@
 	    }
 	    
 	    &.editing {
+	    	background: #FAFAFA;
+			background-image: -o-linear-gradient(0deg, #FFFFFF 0%, #FAFAFA 26%);
+			background-image: -moz-linear-gradient(0deg, #FFFFFF 0%, #FAFAFA 26%);
+			background-image: -webkit-linear-gradient(0deg, #FFFFFF 0%, #FAFAFA 26%);
+			background-image: -ms-linear-gradient(0deg, #FFFFFF 0%, #FAFAFA 26%);
+			background-image: linear-gradient(-270deg, #FFFFFF 0%, #FAFAFA 26%);
+			
 	        .posteditorplaceholder {
 	        	visibility: visible;
 	        	opacity: 1;
 	        }
 	        
-	        .attachments,
+	        
 	        .bodytext {
-	        	visibility: hidden;
+	        	visibility: hidden !important;
 	        }
 	        
-	        div.settings {
-	        	opacity: 0 !important;
+	        .attachments,
+	        .settings,
+	        .footer * {
+	        	display: none;
+	        }
+	        
+	        .body {
+	        	border-bottom-color: transparent;
 	        }
         }
         
@@ -150,6 +165,7 @@
         
 	    .body {
 	        padding-top: 1px;
+	        margin-right: 12px;
 	        margin-left: 153px;
 	        position: relative;
 	        border-bottom: $post-separator-border;
@@ -162,8 +178,6 @@
 	    }
 	    
         .posteditor {
-    		background-color: #fff;
-    		
     		.wysiwyg-editor > div {
     			border: none;
     		}
@@ -173,14 +187,12 @@
     		}
     		
     		.buttonslayout.v-horizontallayout {
-    			background-color: #F7F7F7;
     			padding: 8px 11px 6px;
+    			
+    			.v-button {
+    				min-width: 126px;
+    			}
     		}
-    		
-    		.v-button {
-    			margin-bottom: 1px;
-    		}
-    		
         }
         	
         .bodytext {
@@ -189,6 +201,7 @@
 			padding: 0 8px;
 			min-height: 98px;
 			position: relative;
+			background: #fff;
 			transition: visibility 500ms;
 			-webkit-transition: visibility 500ms;
         }
@@ -322,6 +335,13 @@
     		padding: 0;
     		border: none;
     		color: #888;
+    		height: 16px;
+    		background: transparent;
+    		
+    		.v-button-caption,
+    		.v-button-wrap {
+    			vertical-align: baseline;
+    		}
     		
     		&:before {
 		    	font-family: "Tori-Icons";
@@ -384,6 +404,4 @@
 			}
 		}
 	}
-	
-	
 }

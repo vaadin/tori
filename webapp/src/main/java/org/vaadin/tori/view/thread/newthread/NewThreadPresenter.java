@@ -18,21 +18,25 @@ package org.vaadin.tori.view.thread.newthread;
 
 import java.util.Map;
 
+import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.data.entity.Post;
+import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.Presenter;
+import org.vaadin.tori.util.UserBadgeProvider;
 import org.vaadin.tori.view.thread.AuthoringData;
+import org.vaadin.tori.view.thread.newthread.NewThreadView.ViewData;
 
 public class NewThreadPresenter extends Presenter<NewThreadView> {
 
     private Long categoryId;
 
-    public NewThreadPresenter(NewThreadView view) {
+    public NewThreadPresenter(final NewThreadView view) {
         super(view);
     }
 
     public void saveNewThread(final String topic, final String rawBody,
-            Map<String, byte[]> attachments, boolean follow) {
+            final Map<String, byte[]> attachments, final boolean follow) {
         if (topic.isEmpty() || rawBody.isEmpty()) {
             view.showError("Thread topic and body needed");
         } else {
@@ -54,6 +58,7 @@ public class NewThreadPresenter extends Presenter<NewThreadView> {
     }
 
     private AuthoringData getAuthoringData() {
+        final User currentUser = dataSource.getCurrentUser();
         return new AuthoringData() {
             @Override
             public boolean mayAddFiles() {
@@ -67,23 +72,45 @@ public class NewThreadPresenter extends Presenter<NewThreadView> {
 
             @Override
             public String getCurrentUserName() {
-                return dataSource.getCurrentUser().getDisplayedName();
+                return currentUser.getDisplayedName();
             }
 
             @Override
             public String getCurrentUserAvatarUrl() {
-                return dataSource.getCurrentUser().getAvatarUrl();
+                return currentUser.getAvatarUrl();
+            }
+
+            @Override
+            public String getCurrentUserBadgeHTML() {
+                String result = null;
+                final UserBadgeProvider badgeProvider = ToriApiLoader
+                        .getCurrent().getUserBadgeProvider();
+                if (badgeProvider != null) {
+                    result = badgeProvider.getHtmlBadgeFor(currentUser);
+                }
+                return result;
+            }
+
+            @Override
+            public String getCurrentUserLink() {
+                return currentUser.getUserLink();
             }
         };
     }
 
     @Override
-    public void navigationTo(String[] args) {
+    public void navigationTo(final String[] args) {
         try {
             String categoryString = args[0];
             categoryId = categoryString.isEmpty() ? null : Long
                     .parseLong(categoryString);
-            view.setViewData(getAuthoringData());
+            NewThreadView.ViewData viewData = new ViewData() {
+                @Override
+                public Long getCategoryId() {
+                    return categoryId;
+                }
+            };
+            view.setViewData(viewData, getAuthoringData());
         } catch (final NumberFormatException e) {
             view.showError("Category not found");
             view.redirectToDashboard();

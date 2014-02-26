@@ -26,8 +26,12 @@ public interface NewThreadView extends View {
 
     void redirectToDashboard();
 
-    void setViewData(AuthoringData authoringData);
+    void setViewData(ViewData viewData, AuthoringData authoringData);
 
     void newThreadCreated(long threadId);
+
+    interface ViewData {
+        Long getCategoryId();
+    }
 
 }

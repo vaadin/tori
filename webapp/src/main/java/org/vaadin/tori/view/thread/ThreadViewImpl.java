@@ -228,9 +228,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
-                if (reply != null) {
-                    layout.removeComponent(reply);
-                }
+                final Component oldReply = reply;
                 reply = new AuthoringComponent(replyListener);
                 reply.setId(REPLY_ID);
 
@@ -246,6 +244,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
                     @Override
                     public void execute() {
+                        if (oldReply != null) {
+                            layout.removeComponent(oldReply);
+                        }
                         reply.removeStyleName(STYLE_REPLY_HIDDEN);
                     }
                 });

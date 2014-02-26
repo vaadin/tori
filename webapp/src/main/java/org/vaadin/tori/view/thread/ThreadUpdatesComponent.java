@@ -62,7 +62,7 @@ class ThreadUpdatesComponent extends CustomComponent {
         layout.addComponent(showAllLabel);
         layout.setExpandRatio(showAllLabel, 1.0f);
 
-        pendingRepliesLabel.setWidth(150.0f, Unit.PIXELS);
+        pendingRepliesLabel.setWidth(280.0f, Unit.PIXELS);
         layout.addComponent(pendingRepliesLabel);
         layout.setComponentAlignment(pendingRepliesLabel,
                 Alignment.MIDDLE_RIGHT);

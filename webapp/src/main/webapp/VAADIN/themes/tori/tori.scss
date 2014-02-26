@@ -1,3 +1,4 @@
+@import "mixins.scss";
 @import "../base/base.scss";
 @import "dropdown.scss";
 @import "post.scss";
@@ -9,6 +10,8 @@
 @import "floatingcomponent.scss";
 @import "authoring.scss";
 @import "ckeditor.scss";
+@import "newthread.scss";
+
 
 @font-face {
     font-family: 'Tori-Icons';
@@ -33,6 +36,7 @@
 	    @include recentbar;
 	    @include floatingcomponent;
 	    @include authoring;
+	    @include newthread;
 	    
 	    .v-widget {
 	        font-family: inherit;
@@ -92,12 +96,18 @@
 	        background: #fff;
 	        font-size: $button-font-size;
 	        color: $button-color;
+	        height: 29px;
 	        border: $button-border;
 	        border-radius: $button-border-radius;
 	        
 	        &.secondarybutton {
 	        	color: $secondary-button-color;
 	        	border: $secondary-button-border;
+	        }
+	        
+	        .v-button-caption,
+	        .v-button-wrap {
+	        	vertical-align: middle;
 	        }
 	    }
 	    

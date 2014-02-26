@@ -1,34 +1,30 @@
-@import "variables.scss";
-
 .breadcrumbs {
     margin-top: 30px;
     
-    .dropdown .v-menubar-menuitem {
-    	margin-top: 7px;
-		margin-left: 4px;
-		font-size: 16px;
-    }
-    
-    .categorylink {
-    	padding-left: 20px;
-    
-	    &:BEFORE {
-	    	color: #ccc;
-	    	content: "/";
-	    	position: absolute;
-			font-size: 27px;
-			font-weight: 100;
-			left: 5px;
-			top: 2px;
-	    }
-    }
-    
     .breadcrumbs-layout {
-    	height: 32px;
-    }
-    
-    .breadcrumbs-wrapper .v-widget {
-        font-size: 15px;
+    	margin-bottom: 8px;
+    	
+    	.dropdown .v-menubar-menuitem {
+			font-size: 16px;
+	    }
+	    
+	    .categorylink {
+	    	padding-left: 20px;
+	    	
+		    &:BEFORE {
+		    	color: #ccc;
+		    	content: "/";
+				font-size: 25px;
+				font-weight: 100;
+				position: absolute;
+				left: 5px;
+				top: -3px;
+		    }
+	    }
+	    
+	    .v-link span {
+	    	line-height: 22px;
+	    }
     }
     
     .v-link {
@@ -37,18 +33,7 @@
         
         span {
 			font-size: 12px;
-			line-height: 14px;
         }
-    }
-    
-    .v-button.v-popupbutton {
-        border: none;
-        background: transparent;
-        box-shadow: none;
-    }
-    
-    .breadcrumbs-separator {
-        background: url("images/separator-breadcrumbs.png") no-repeat right center;
     }
     
     .action-bar {
@@ -84,7 +69,6 @@
 			color: #EDC628;
 			margin-left: 10px;
     	}
-    	
     }
     
     .mypostslink:before {
@@ -100,13 +84,13 @@
     .v-button {
     	width: 130px;
     	height: 27px;
-    	padding: 2px 0 !important;
+    	padding: 4px 0 !important;
     	transition: all 400ms;
 		-webkit-transition: all 400ms;
     
     	&:before {
     		font-family: "Tori-Icons";
-    		content: "\e00c";
+    		content: "\e605";
     		vertical-align: middle;
     		padding-right: 5px;
     	}

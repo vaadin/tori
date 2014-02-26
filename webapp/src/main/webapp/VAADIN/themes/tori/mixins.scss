@@ -1,0 +1,58 @@
+$prefixes: -moz-, -webkit-, -ms-, -o-, "";
+
+@mixin transition ($t) {
+	@each $pref in $prefixes {
+		#{$pref}transition: $t;
+	}
+}
+
+@mixin animation ($t) {
+	@each $pref in $prefixes {
+		#{$pref}animation: $t;
+	}
+}
+
+@mixin transition-delay ($d) {
+	@each $pref in $prefixes {
+		#{$pref}transition-delay: $d;
+	}
+}
+
+@mixin box-shadow ($bs) {
+	-webkit-box-shadow: $bs;
+	-moz-box-shadow: $bs;
+	box-shadow: $bs;
+}
+
+@mixin center-column {
+	margin: 0 auto;
+	width: 100%;
+	max-width: 960px;
+}
+
+@mixin transform($t) {
+	@each $pref in $prefixes {
+		#{$pref}transform: $t;
+	}
+}
+
+@mixin keyframes($animationName) {
+    @-webkit-keyframes #{$animationName} {
+        @content;
+    }
+    @-moz-keyframes #{$animationName} {
+        @content;
+    }
+    @-o-keyframes #{$animationName} {
+        @content;
+    }
+    @keyframes #{$animationName} {
+        @content;
+    }
+}
+
+@mixin border-box {
+	@each $pref in $prefixes {
+		#{$pref}box-sizing: border-box;
+	}
+}
