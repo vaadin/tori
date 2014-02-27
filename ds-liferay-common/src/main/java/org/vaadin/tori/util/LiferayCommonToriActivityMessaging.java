@@ -69,7 +69,7 @@ public class LiferayCommonToriActivityMessaging implements
     }
 
     @Override
-    public void sendUserTyping(long threadId, Date startedTyping) {
+    public void sendUserTyping(final long threadId, final Date startedTyping) {
         Message message = new Message();
         message.put(USER_ID, new Long(currentUserId));
         message.put(THREAD_ID, new Long(threadId));
@@ -78,23 +78,23 @@ public class LiferayCommonToriActivityMessaging implements
     }
 
     @Override
-    public void sendUserAuthored(long postId, long threadId) {
+    public void sendUserAuthored(final long postId, final long threadId) {
         Message message = new Message();
         message.put(POST_ID, new Long(postId));
         message.put(THREAD_ID, new Long(threadId));
         sendMessage(message, USER_AUTHORED_DESTINATION);
     }
 
-    private void sendMessage(Message message, String destinationName) {
+    private void sendMessage(final Message message, final String destinationName) {
         message.put(SENDER_ID, getSenderId());
         MessageBusUtil.sendMessage(destinationName, message);
     }
 
     private String getSenderId() {
-        return request.getRequestedSessionId();
+        return request.getPortletSession().getId();
     }
 
-    private boolean isThisSender(Message message) {
+    private boolean isThisSender(final Message message) {
         Object senderId = message.get(SENDER_ID);
         return senderId != null && senderId.equals(getSenderId());
     }
@@ -104,7 +104,7 @@ public class LiferayCommonToriActivityMessaging implements
         addListener(listener, new FilteringMessageListener(
                 USER_TYPING_DESTINATION) {
             @Override
-            protected void process(Message message) {
+            protected void process(final Message message) {
                 listener.userTyping(message.getLong(USER_ID),
                         message.getLong(THREAD_ID),
                         new Date(message.getLong(STARTED_TYPING)));
@@ -117,7 +117,7 @@ public class LiferayCommonToriActivityMessaging implements
         addListener(listener, new FilteringMessageListener(
                 USER_AUTHORED_DESTINATION) {
             @Override
-            protected void process(Message message) {
+            protected void process(final Message message) {
                 listener.userAuthored(message.getLong(POST_ID),
                         message.getLong(THREAD_ID));
             }
@@ -125,23 +125,23 @@ public class LiferayCommonToriActivityMessaging implements
     }
 
     @Override
-    public void removeUserTypingListener(UserTypingListener listener) {
+    public void removeUserTypingListener(final UserTypingListener listener) {
         removeListener(listener, USER_TYPING_DESTINATION);
     }
 
     @Override
-    public void removeUserAuthoredListener(UserAuthoredListener listener) {
+    public void removeUserAuthoredListener(final UserAuthoredListener listener) {
         removeListener(listener, USER_AUTHORED_DESTINATION);
     }
 
-    private void addListener(Object key,
-            FilteringMessageListener messageListener) {
+    private void addListener(final Object key,
+            final FilteringMessageListener messageListener) {
         MessageBusUtil.registerMessageListener(messageListener.destinationName,
                 messageListener);
         getListeners(messageListener.destinationName).put(key, messageListener);
     }
 
-    private void removeListener(Object key, String destination) {
+    private void removeListener(final Object key, final String destination) {
         MessageListener messageListener = getListeners(destination).remove(key);
         if (messageListener != null) {
             MessageBusUtil.unregisterMessageListener(destination,
@@ -150,7 +150,7 @@ public class LiferayCommonToriActivityMessaging implements
     }
 
     @SuppressWarnings("unchecked")
-    private Map<Object, MessageListener> getListeners(String destination) {
+    private Map<Object, MessageListener> getListeners(final String destination) {
         PortletSession session = request.getPortletSession();
         String attrId = TORIACTIVITYLISTENERS + destination;
         if (session.getAttribute(attrId) == null) {
@@ -160,7 +160,7 @@ public class LiferayCommonToriActivityMessaging implements
     }
 
     @Override
-    public void setRequest(PortletRequest request) {
+    public void setRequest(final PortletRequest request) {
         this.request = request;
         if (currentUserId == 0 && request.getRemoteUser() != null) {
             currentUserId = Long.valueOf(request.getRemoteUser());
@@ -171,12 +171,12 @@ public class LiferayCommonToriActivityMessaging implements
 
         private final String destinationName;
 
-        public FilteringMessageListener(String destinationName) {
+        public FilteringMessageListener(final String destinationName) {
             this.destinationName = destinationName;
         }
 
         @Override
-        public void receive(Message message) throws RuntimeException {
+        public void receive(final Message message) throws RuntimeException {
             try {
                 getListeners(USER_TYPING_DESTINATION);
                 if (!isThisSender(message)) {

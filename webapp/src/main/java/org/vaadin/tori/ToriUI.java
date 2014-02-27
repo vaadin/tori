@@ -19,6 +19,7 @@ package org.vaadin.tori;
 import javax.portlet.PortletMode;
 
 import org.apache.log4j.Logger;
+import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.googleanalytics.tracking.GoogleAnalyticsTracker;
 import org.vaadin.tori.component.Breadcrumbs;
 import org.vaadin.tori.component.DebugControlPanel;
@@ -26,6 +27,7 @@ import org.vaadin.tori.component.RecentBar;
 import org.vaadin.tori.edit.EditViewImpl;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
+import org.vaadin.tori.util.ComponentUtil;
 
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.Page;
@@ -80,6 +82,8 @@ public class ToriUI extends UI {
             final VaadinPortletRequest r = (VaadinPortletRequest) request;
             setPortletMode(r.getPortletRequest().getPortletMode());
         }
+
+        ConfirmDialog.setFactory(ComponentUtil.getConfirmDialogFactory());
     }
 
     public final void setPortletMode(final PortletMode portletMode) {

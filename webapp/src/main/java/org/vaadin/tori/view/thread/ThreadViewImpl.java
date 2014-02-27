@@ -37,6 +37,7 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.JavaScript;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
@@ -52,6 +53,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     private CssLayout layout;
     private PostsLayout postsLayout;
     private ThreadUpdatesComponent threadUpdatesComponent;
+    private Label mayNotReplyNote;
     private AuthoringComponent reply;
 
     private ViewData viewData;
@@ -90,12 +92,17 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         layout.addComponent(postsLayout);
 
         ToriScheduler.get().scheduleManual(new ScheduledCommand() {
+
             @Override
             public void execute() {
                 if (viewData != null) {
                     threadUpdatesComponent = new ThreadUpdatesComponent(
                             getPresenter());
                     layout.addComponent(threadUpdatesComponent);
+                    mayNotReplyNote = new Label();
+                    mayNotReplyNote.addStyleName("maynotreplynote");
+                    mayNotReplyNote.setVisible(false);
+                    layout.addComponent(mayNotReplyNote);
                     appendNewReply();
                 }
             }
@@ -221,38 +228,48 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     private void appendNewReply() {
-        if (reply != null) {
-            reply.addStyleName(STYLE_REPLY_HIDDEN);
-        }
+        if (viewData.mayReplyInThread() && !viewData.isUserBanned()) {
+            mayNotReplyNote.setVisible(false);
 
-        ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
-            @Override
-            public void execute() {
-                final Component oldReply = reply;
-                reply = new AuthoringComponent(replyListener);
-                reply.setId(REPLY_ID);
-
-                reply.setAuthoringData(authoringData);
-                reply.setVisible(viewData.mayReplyInThread()
-                        && !viewData.isUserBanned());
-                reply.insertIntoMessage(getInputCache().get(
-                        viewData.getThreadTopic()));
-                layout.addComponent(reply);
-
-                // Fade in
+            if (reply != null) {
                 reply.addStyleName(STYLE_REPLY_HIDDEN);
-                ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
-                    @Override
-                    public void execute() {
-                        if (oldReply != null) {
-                            layout.removeComponent(oldReply);
-                        }
-                        reply.removeStyleName(STYLE_REPLY_HIDDEN);
-                    }
-                });
-
             }
-        });
+
+            ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
+                @Override
+                public void execute() {
+
+                    final Component oldReply = reply;
+                    reply = new AuthoringComponent(replyListener);
+                    reply.setId(REPLY_ID);
+
+                    reply.setAuthoringData(authoringData);
+                    reply.insertIntoMessage(getInputCache().get(
+                            viewData.getThreadTopic()));
+                    layout.addComponent(reply);
+
+                    // Fade in
+                    reply.addStyleName(STYLE_REPLY_HIDDEN);
+                    ToriScheduler.get().scheduleDeferred(
+                            new ScheduledCommand() {
+                                @Override
+                                public void execute() {
+                                    if (oldReply != null) {
+                                        layout.removeComponent(oldReply);
+                                    }
+                                    reply.removeStyleName(STYLE_REPLY_HIDDEN);
+                                }
+                            });
+                }
+            });
+        } else {
+            mayNotReplyNote.setVisible(true);
+            String note = viewData.getMayNotReplyNote();
+            if (note == null) {
+                note = "Please log in to reply";
+            }
+            mayNotReplyNote.setValue(note);
+        }
     }
 
     @Override

@@ -38,7 +38,8 @@
     }
     
     .v-menubar-submenu-dropdown {
-    	width: 154px;
+    	min-width: 154px;
+    	max-width: 300px;
     	border: $dropdown-popup-border;
     	padding: 7px 0;
     	
@@ -46,7 +47,7 @@
 		-webkit-box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.13);
 		box-shadow:         0px 2px 4px 0px rgba(0,0,0,0.13);
     	
-    	 @include animation(vertical-fade-in 600ms);
+    	 @include animation(vertical-fade-in 200ms);
     	
     	.v-menubar-menuitem {
     		line-height: 22px;

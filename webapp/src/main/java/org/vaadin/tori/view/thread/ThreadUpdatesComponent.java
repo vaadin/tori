@@ -97,7 +97,6 @@ class ThreadUpdatesComponent extends CustomComponent {
                 + (plural ? "s" : "") + " " + (plural ? "are" : "is")
                 + " typing a message to this thread");
 
-        pendingRepliesLabel.setDescription("test");
         StringBuilder description = new StringBuilder();
 
         for (Entry<User, Date> entry : pendingReplies.entrySet()) {
@@ -111,7 +110,7 @@ class ThreadUpdatesComponent extends CustomComponent {
             }
             description.append("<div><a href='" + entry.getKey().getUserLink()
                     + "'>");
-            description.append(entry.getKey().getDisplayedName());
+            description.append(stripTags(entry.getKey().getDisplayedName()));
             description.append("</a><span> started writing a reply ");
             description.append(pretty);
             description.append("</span></div>");
@@ -119,6 +118,10 @@ class ThreadUpdatesComponent extends CustomComponent {
         pendingRepliesLabel.setDescription(description.toString());
 
         updateVisibility();
+    }
+
+    private String stripTags(final String html) {
+        return html.replaceAll("\\<.*?>", "");
     }
 
     public void updateVisibility() {

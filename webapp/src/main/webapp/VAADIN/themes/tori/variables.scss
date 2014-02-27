@@ -7,8 +7,8 @@ $popup-border-color: #d1d1d1;
 $popup-background-color: #fff;
 
 $font-family-primary: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-$font-size-primary: 14px;
 $font-family-secondary: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-size-primary: 14px;
 
 $highlight-color: #2AAAE6;
 
@@ -58,3 +58,4 @@ $popupbutton-background-color: $popup-background-color;
 
 // Window
 $window-background-color: $popup-background-color;
+$window-border: $popup-border-width $popup-border-style $popup-border-color;

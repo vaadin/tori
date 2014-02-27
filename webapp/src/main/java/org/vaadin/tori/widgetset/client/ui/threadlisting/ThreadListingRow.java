@@ -28,7 +28,11 @@ public class ThreadListingRow extends Composite {
     @UiField
     public DivElement postCount;
     @UiField
-    public DivElement latestTime;
+    public AnchorElement latest;
+    @UiField
+    public SpanElement latestPretty;
+    @UiField
+    public SpanElement latestAuthor;
     @UiField
     public FocusPanel settings;
 
@@ -70,7 +74,9 @@ public class ThreadListingRow extends Composite {
                 .valueOf(rowInfo.postCount) : "";
         this.postCount.setInnerText(postCount);
 
-        latestTime.setInnerText(rowInfo.latestPostPretty);
+        latest.setHref(rowInfo.latestPostUrl);
+        latestAuthor.setInnerText(rowInfo.latestAuthor);
+        latestPretty.setInnerText(rowInfo.latestPostPretty);
 
         if (rowInfo.settings != null) {
             Widget settings = ((AbstractComponentConnector) rowInfo.settings)

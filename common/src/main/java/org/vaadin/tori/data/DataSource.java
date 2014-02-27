@@ -338,4 +338,6 @@ public interface DataSource {
 
     User getCurrentUser();
 
+    String getMayNotReplyNote();
+
 }

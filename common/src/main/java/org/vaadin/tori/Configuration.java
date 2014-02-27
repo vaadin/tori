@@ -26,6 +26,15 @@ public class Configuration {
     private Map<String, String> replacements;
     private String googleAnalyticsTrackerId;
     private String pathRoot;
+    private String mayNotReplyNote;
+
+    public String getMayNotReplyNote() {
+        return mayNotReplyNote;
+    }
+
+    public void setMayNotReplyNote(final String mayNotReplyNote) {
+        this.mayNotReplyNote = mayNotReplyNote;
+    }
 
     /**
      * Whether or not messages' links are replaced with what is in
@@ -96,7 +105,7 @@ public class Configuration {
         return updatePageTitle;
     }
 
-    public void setUpdatePageTitle(boolean updatePageTitle) {
+    public void setUpdatePageTitle(final boolean updatePageTitle) {
         this.updatePageTitle = updatePageTitle;
     }
 
@@ -104,7 +113,7 @@ public class Configuration {
         return pageTitlePrefix;
     }
 
-    public void setPageTitlePrefix(String pageTitlePrefix) {
+    public void setPageTitlePrefix(final String pageTitlePrefix) {
         this.pageTitlePrefix = pageTitlePrefix;
     }
 

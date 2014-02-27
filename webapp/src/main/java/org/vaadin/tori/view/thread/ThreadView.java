@@ -107,6 +107,8 @@ public interface ThreadView extends View {
         boolean isUserBanned();
 
         Long getCategoryId();
+
+        String getMayNotReplyNote();
     }
 
 }

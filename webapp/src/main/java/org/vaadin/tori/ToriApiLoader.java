@@ -58,7 +58,7 @@ public class ToriApiLoader implements Serializable {
         urlConverter = createService(UrlConverter.class);
     }
 
-    private <T> T createService(Class<T> clazz) {
+    private <T> T createService(final Class<T> clazz) {
         T service = null;
         final ServiceLoader<T> loader = ServiceLoader.load(clazz);
         if (loader.iterator().hasNext()) {
@@ -88,7 +88,6 @@ public class ToriApiLoader implements Serializable {
                             .setRequest((HttpServletRequest) request);
                 }
             }
-            postFormatter.setPostReplacements(ds.getPostReplacements());
         }
     }
 
@@ -197,7 +196,7 @@ public class ToriApiLoader implements Serializable {
         }
     }
 
-    public static void init(VaadinRequest request) {
+    public static void init(final VaadinRequest request) {
         ToriApiLoader toriApiLoader = VaadinSession.getCurrent().getAttribute(
                 ToriApiLoader.class);
         if (toriApiLoader == null) {

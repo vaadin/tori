@@ -16,15 +16,13 @@
 
 package org.vaadin.tori.edit;
 
-import java.util.Map;
-
 import org.vaadin.tori.Configuration;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.Presenter;
 
 public class EditPresenter extends Presenter<EditView> {
 
-    public EditPresenter(EditView view) {
+    public EditPresenter(final EditView view) {
         super(view);
     }
 
@@ -41,21 +39,12 @@ public class EditPresenter extends Presenter<EditView> {
         view.setPageTitlePrefix(dataSource.getPageTitlePrefix());
         view.setGoogleAnalyticsTrackerId(dataSource
                 .getGoogleAnalyticsTrackerId());
+        view.setMayNotReplyNote(dataSource.getMayNotReplyNote());
         view.setPathRoot(dataSource.getPathRoot());
     }
 
-    public final void savePreferences(final Map<String, String> replacements,
-            final boolean replaceMessageBoardsLinks, boolean updatePageTitle,
-            String pageTitlePrefix, final String googleAnalyticsTrackerId,
-            final String pathRoot) {
+    public final void savePreferences(final Configuration config) {
         try {
-            final Configuration config = new Configuration();
-            config.setReplaceMessageBoardsLinks(replaceMessageBoardsLinks);
-            config.setReplacements(replacements);
-            config.setGoogleAnalyticsTrackerId(googleAnalyticsTrackerId);
-            config.setPathRoot(pathRoot);
-            config.setUpdatePageTitle(updatePageTitle);
-            config.setPageTitlePrefix(pageTitlePrefix);
             dataSource.save(config);
             view.showNotification("Preferences saved");
         } catch (final DataSourceException e) {

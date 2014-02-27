@@ -1,189 +1,223 @@
-.threadlisting {
-    width: 100%;
-    display: block !important;
-
-	.threadlistingrow {
-		height: 40px;
-		white-space: nowrap;
-		-webkit-transform: translatez(0);
-		position: relative;
-		-moz-box-sizing: border-box;
-		box-sizing: border-box;
-		padding-right: 320px;
-		padding-left: 5px;
-		
-		@include animation(fade-in 600ms);
-		
-	    &.unread .topic {
-	    	font-weight: 500;
-	    }
-	    
-	    & > * {
-	    	display: inline-block;
-	    	vertical-align: middle;
-	    	line-height: 1;
-	    }
-	    
-	    &:before {
-	    	content: "";
-			position: absolute;
-			bottom: 0;
-			left: 0;
-			height: 1px;
-			width: 100%;
-			background: #e8e8e8;
-	    }
-	    
-	    &:hover {
-	    	&:after{
-		    	height: 2px;
-				width: 100%;
-				transition: all 300ms 100ms;
-			}
-			
-			.topic {
-				-webkit-transform: translatex(4px);
-				transition: all 120ms 80ms;
-			}
-			
-			.dropdown {
-				visibility: visible;
-			}
-	    }
-	    
-	    &:after {
-	    	width: 0;
-			transition: all 460ms;
-			content: "";
-			position: absolute;
-			left: 0;
-			bottom: 0;
-			height: 1px;
-			background: #96cdf0;
-	    }
-	    
-	    &:first-child .latesttime:before {
-	 		content: "LATEST";
-        	margin-right: 10px;
-        	font-size: 11px;
-        	color: #999; 
-        	letter-spacing: 0.42px;
-	 	}
-	 	
-	 	&:first-child .postcount:before {
-			content: "POSTS";
-        	margin-right: 10px;
-        	font-size: 11px;
-        	color: #999; 
-        	letter-spacing: 0.42px;
-		}
-		
-		&.following .followtopic:before {
-			font-family: "Tori-Icons";
-			content: "\e605";
-			position: absolute;
-			left: 3px;
-			top: 2px;
-			font-size: 12px;
-		}
-		
-		.threadicons {
-			font-family: "Tori-Icons";
-			vertical-align: top;
-			font-size: 12px;
-		}
-		
-		&.sticky .threadicons:before {
-			content: "\e604";
-			color: #50D497;
-			margin-left: 5px;
-		}
-		&.locked .threadicons:after {
-			content: "\e00c";
-			color: #EDC628;
-			margin-left: 5px;
-		}
-	}
+@mixin threadlisting {
 	
-	.topic {
-		transition: all 320ms;
-		-webkit-transform: translatez(0);
-    	font-size: 15px;
-		font-weight: 300;
-		padding-left: 20px;
-		line-height: 40px;
-		color: #2698E0;
-		width: 78%;
-		margin: 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		text-align: left;
-		vertical-align: middle;
-		
-		&:after {
-			font-family: "Tori-Icons";
-			vertical-align: middle;
+	.threadlisting {
+	    width: 100%;
+	    display: block !important;
+	
+		.threadlistingrow {
+			height: 40px;
+			white-space: nowrap;
+			-webkit-transform: translatez(0);
+			position: relative;
+			-moz-box-sizing: border-box;
+			box-sizing: border-box;
+			padding-right: 320px;
 			padding-left: 5px;
+			overflow: hidden;
+			
+			@include animation(fade-in 600ms);
+			
+		    &.unread .topic {
+		    	font-weight: 500;
+		    }
+		    
+		    & > * {
+		    	display: inline-block;
+		    	vertical-align: middle;
+		    	line-height: 1;
+		    }
+		    
+		    &:before {
+		    	content: "";
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				height: 1px;
+				width: 100%;
+				background: #e8e8e8;
+		    }
+		    
+		    &:hover {
+		    	&:after{
+			    	height: 2px;
+					width: 100%;
+					transition: all 300ms 100ms;
+				}
+				
+				.topic {
+					-webkit-transform: translatex(4px);
+					transition: all 120ms 80ms;
+				}
+				
+				.dropdown {
+					visibility: visible;
+				}
+		    }
+		    
+		    &:after {
+		    	width: 0;
+				transition: all 460ms;
+				content: "";
+				position: absolute;
+				left: 0;
+				bottom: 0;
+				height: 1px;
+				background: #96cdf0;
+		    }
+		    
+		    &:first-child .latesttime:before {
+		 		content: "LATEST";
+		 		float: left;
+	        	font-size: 11px;
+	        	color: #999; 
+	        	letter-spacing: 0.42px;
+		 	}
+		 	
+		 	&:first-child .postcount:before {
+				content: "POSTS";
+	        	margin-right: 10px;
+	        	font-size: 11px;
+	        	color: #999; 
+	        	letter-spacing: 0.42px;
+			}
+			
+			&.following .followtopic:before {
+				font-family: "Tori-Icons";
+				content: "\e605";
+				position: absolute;
+				left: 3px;
+				top: 2px;
+				font-size: 12px;
+			}
+			
+			.threadicons {
+				font-family: "Tori-Icons";
+				vertical-align: top;
+				font-size: 12px;
+			}
+			
+			&.sticky .threadicons:before {
+				content: "\e604";
+				color: #50D497;
+				margin-left: 5px;
+			}
+			&.locked .threadicons:after {
+				content: "\e00c";
+				color: #EDC628;
+				margin-left: 5px;
+			}
 		}
-    }
-    
-    .startedby {
-    	width: 22%;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		font-size: 13px;
-    }
-	
-	 .postcount {
-	 	text-align: right;
-		width: 65px;
-		margin-left: 0;
-		color: #888;
-		font-size: 12px;
-	 }
-	 
-	 .latesttime {
-	 	width: 130px;
-		padding-left: 30px;
-		overflow: hidden;
-		font-size: 12px;
-		text-align: right;
-		color: #888;
-	 }
-	 
-	 .dropdown {
-	 	vertical-align: middle !important;
-	 	visibility: hidden;
-	 	padding-left: 30px;
-	 }
-	 
-	 .threadlisting-placeholder {
-	 	height: 40px;
-	 	border-bottom: 1px solid #e8e8e8;
-	 	position: relative;
-	 
-	 	&:before {
-	 		padding-left: 26px;
-	 		content: "Loading Post...";
-	 		color: #888;
-	 		line-height: 40px;
-	 	}
-	 	
-	 	&:after {
-	 		content: "";
-			position: absolute;
-			left: 0;
-			bottom: 0;
-			background: #96cdf0;
-	        height: 1px;
-	        opacity: 1;
-	        -webkit-animation: loading 1000ms ease-in;
-	        -webkit-animation-iteration-count: infinite;
-	        animation: loading 1000ms ease-in;
-	        animation-iteration-count: infinite;
-	 	}
 		
-	 }
+		.topic {
+			transition: all 320ms;
+			-webkit-transform: translatez(0);
+	    	font-size: 15px;
+			font-weight: 300;
+			padding-left: 20px;
+			line-height: 40px;
+			color: #2698E0;
+			width: 78%;
+			margin: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			text-align: left;
+			vertical-align: middle;
+			
+			&:after {
+				font-family: "Tori-Icons";
+				vertical-align: middle;
+				padding-left: 5px;
+			}
+	    }
+	    
+	    .startedby {
+	    	width: 22%;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			font-size: 13px;
+	    }
+		
+		 .postcount {
+		 	text-align: right;
+			width: 65px;
+			margin-left: 0;
+			color: #888;
+			font-size: 12px;
+		 }
+		 
+		 .latesttime {
+		 	width: 130px;
+			padding-left: 30px;
+			font-size: 12px;
+			text-align: right;
+			color: #2698E0;
+			position: relative;
+			height: 11px;
+			
+			.pretty,
+			.authorname {
+				transition: all 200ms;
+				-webkit-transition: all 200ms;
+				position: absolute;
+				margin-left: 85px;
+				left: 0;
+				top: 0%;
+			}
+			
+			.authorname {
+				top: 300%;
+				visibility: hidden;
+				opacity: 0;
+			}
+			
+			&:hover {
+				.pretty,
+				.authorname {
+					top: 60%;
+					visibility: visible;
+					opacity: 1;
+				}
+				
+				.pretty{
+					top: -60%;
+				}
+			}
+		 }
+		 
+		 .dropdown {
+		 	vertical-align: middle !important;
+		 	visibility: hidden;
+		 	padding-left: 30px;
+		 }
+		 
+		 .threadlisting-placeholder {
+		 	height: 40px;
+		 	border-bottom: 1px solid #e8e8e8;
+		 	position: relative;
+		 
+		 	&:before {
+		 		padding-left: 26px;
+		 		content: "Loading Post...";
+		 		color: #888;
+		 		line-height: 40px;
+		 	}
+		 	
+		 	&:after {
+		 		content: "";
+				position: absolute;
+				left: 0;
+				bottom: 0;
+				background: #96cdf0;
+		        height: 1px;
+		        opacity: 1;
+		        -webkit-animation: loading 1000ms ease-in;
+		        -webkit-animation-iteration-count: infinite;
+		        animation: loading 1000ms ease-in;
+		        animation-iteration-count: infinite;
+		 	}
+			
+		 }
+	}
 }
 
 @include keyframes(fade-in) {

@@ -1,144 +1,140 @@
-.breadcrumbs {
-    margin-top: 30px;
-    
-    .breadcrumbs-layout {
-    	margin-bottom: 8px;
-    	
-    	.dropdown .v-menubar-menuitem {
-			font-size: 16px;
-	    }
+@mixin breadcrumbs {
+	.breadcrumbs {
+	    margin-top: 30px;
 	    
-	    .categorylink {
-	    	padding-left: 20px;
+	    .breadcrumbs-layout {
+	    	margin-bottom: 8px;
 	    	
-		    &:BEFORE {
-		    	color: #ccc;
-		    	content: "/";
-				font-size: 25px;
-				font-weight: 100;
-				position: absolute;
-				left: 5px;
-				top: -3px;
+	    	.dropdown .v-menubar-menuitem {
+				font-size: 16px;
+		    }
+		    
+		    .categorylink {
+		    	padding-left: 20px;
+		    	
+			    &:BEFORE {
+			    	color: #ccc;
+			    	content: "/";
+					font-size: 25px;
+					font-weight: 100;
+					position: absolute;
+					left: 5px;
+					top: -3px;
+			    }
+		    }
+		    
+		    .v-link span {
+		    	line-height: 22px;
 		    }
 	    }
 	    
-	    .v-link span {
-	    	line-height: 22px;
+	    .v-link {
+	        overflow: hidden;
+	        text-overflow: ellipsis;
+	        
+	        span {
+				font-size: 12px;
+	        }
 	    }
-    }
-    
-    .v-link {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        
-        span {
-			font-size: 12px;
-        }
-    }
-    
-    .action-bar {
-        .v-link {
-            padding-right: 10px;
-        }
-        
-        .v-icon {
-            padding-right: 5px;
-        }
-    }
-    
-    .v-label.viewcaption {
-    	font-family: $font-family-secondary;
-    	color: #222;
-        font-size: 24px;
-    }
-    
-    .v-label.icons {
-    	font-family: "Tori-Icons";
-    	font-size: 20px;
-    	line-height: 28px;
-    	padding-right: 10px;
-    	
-    	&.stickythread:before {
-			content: "\e604";
-			color: #50D497;
-			margin-left: 10px;
-		}
-		
-    	&.lockedthread:after {
-    		content: "\e00c";
-			color: #EDC628;
-			margin-left: 10px;
-    	}
-    }
-    
-    .mypostslink:before {
-    	font-family: "Tori-Icons";
-		content: "\e606";
-		color: #2AAAE6;
-		font-size: 11px;
-		position: absolute;
-		top: 5px;
-		left: -16px;
-    }
-    
-    .v-button {
-    	width: 130px;
-    	height: 27px;
-    	padding: 4px 0 !important;
-    	transition: all 400ms;
-		-webkit-transition: all 400ms;
-    
-    	&:before {
-    		font-family: "Tori-Icons";
-    		content: "\e605";
-    		vertical-align: middle;
-    		padding-right: 5px;
-    	}
-    	
-    	&:after {
-    		font-size: 13px; 
-    		vertical-align: middle;
-    	}
-    	
-    	&.followed {
-    		color: #fff;
-    		background: $button-color;
-    		border-color: $button-color;
-    	
-    		&:after {
-    			content: "Following Topic";
-    		}
-    		
-    		&:hover {
-    			background: #E6452A;
-    			border-color: #E6452A;
-    		
-	    		&:after{
-	    			content: "Unfollow";
+	    
+	    .action-bar {
+	        .v-link {
+	            padding-right: 10px;
+	        }
+	        
+	        .v-icon {
+	            padding-right: 5px;
+	        }
+	    }
+	    
+	    .v-label.viewcaption {
+	    	font-family: $font-family-secondary;
+	    	color: #222;
+	        font-size: 24px;
+	    }
+	    
+	    .v-label.icons {
+	    	font-family: "Tori-Icons";
+	    	font-size: 20px;
+	    	line-height: 28px;
+	    	padding-right: 10px;
+	    	
+	    	&.stickythread:before {
+				content: "\e604";
+				color: #50D497;
+				margin-left: 10px;
+			}
+			
+	    	&.lockedthread:after {
+	    		content: "\e00c";
+				color: #EDC628;
+				margin-left: 10px;
+	    	}
+	    }
+	    
+	    .mypostslink:before {
+	    	font-family: "Tori-Icons";
+			content: "\e606";
+			color: #2AAAE6;
+			font-size: 11px;
+			position: absolute;
+			top: 5px;
+			left: -16px;
+	    }
+	    
+	    .v-button {
+	    	width: 130px;
+	    	height: 27px;
+	    	padding: 4px 0 !important;
+	    	transition: all 400ms;
+			-webkit-transition: all 400ms;
+	    
+	    	&:before {
+	    		font-family: "Tori-Icons";
+	    		content: "\e605";
+	    		vertical-align: middle;
+	    		padding-right: 5px;
+	    	}
+	    	
+	    	&:after {
+	    		font-size: 13px; 
+	    		vertical-align: middle;
+	    	}
+	    	
+	    	&.followed {
+	    		color: #fff;
+	    		background: $button-color;
+	    		border-color: $button-color;
+	    	
+	    		&:after {
+	    			content: "Following Topic";
 	    		}
-    		}
-    	}
-    	
-    	&.notfollowed {
-    		&:after {
-    			content: "Not following";
-    		}
-    		
-    		&:hover{
-    			background: #43B536;
-    			border-color: #43B536;
-    			color: #fff;
-    			
-    			&:after {
-    				content: "Follow";
-    			}
-    		}
-    	}
-    }
-    
-}
-
-.v-popupbutton-popup-categorypopup .v-tree-node-caption > div{
-    overflow: hidden;
-    text-overflow: ellipsis;
+	    		
+	    		&:hover {
+	    			background: #E6452A;
+	    			border-color: #E6452A;
+	    		
+		    		&:after{
+		    			content: "Unfollow";
+		    		}
+	    		}
+	    	}
+	    	
+	    	&.notfollowed {
+	    		&:after {
+	    			content: "Not following";
+	    		}
+	    		
+	    		&:hover{
+	    			background: #43B536;
+	    			border-color: #43B536;
+	    			color: #fff;
+	    			
+	    			&:after {
+	    				content: "Follow";
+	    			}
+	    		}
+	    	}
+	    }
+	}
 }

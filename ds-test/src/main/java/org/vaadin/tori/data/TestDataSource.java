@@ -199,6 +199,9 @@ public class TestDataSource implements DataSource {
                 }
             });
         }
+        if (categoryId != null && category == null) {
+            throw new NoSuchCategoryException(categoryId, null);
+        }
         return category;
     }
 
@@ -1043,5 +1046,10 @@ public class TestDataSource implements DataSource {
         } catch (DataSourceException e) {
             return new User();
         }
+    }
+
+    @Override
+    public String getMayNotReplyNote() {
+        return "Please log in to reply";
     }
 }

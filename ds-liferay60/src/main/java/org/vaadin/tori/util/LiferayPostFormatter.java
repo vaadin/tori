@@ -19,32 +19,21 @@ package org.vaadin.tori.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.regex.PatternSyntaxException;
-
-import javax.portlet.PortletRequest;
 
 import org.apache.log4j.Logger;
-import org.vaadin.tori.PortletRequestAware;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
 
-import com.liferay.portal.kernel.util.WebKeys;
-import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portlet.messageboards.util.BBCodeUtil;
 
-public class LiferayPostFormatter implements PostFormatter, PortletRequestAware {
+public class LiferayPostFormatter implements PostFormatter {
 
     private static final Logger LOG = Logger
             .getLogger(LiferayPostFormatter.class);
 
     private static Collection<FontFace> fontFaces;
     private static Collection<FontSize> fontSizes;
-    private Map<String, String> postReplacements;
-
-    private ThemeDisplay themeDisplay;
 
     static {
         fontFaces = new ArrayList<FontFace>(Arrays.asList(LiferayCommonFontFace
@@ -61,20 +50,6 @@ public class LiferayPostFormatter implements PostFormatter, PortletRequestAware 
                 msgBody = BBCodeUtil.getHTML(msgBody);
             } catch (Exception e) {
                 LOG.debug("Couldn't parse the given post body: " + msgBody);
-            }
-        }
-
-        if (postReplacements != null) {
-            for (final Entry<String, String> entry : postReplacements
-                    .entrySet()) {
-                try {
-                    msgBody = msgBody.replaceAll(entry.getKey(),
-                            entry.getValue());
-                } catch (final PatternSyntaxException e) {
-                    LOG.warn(
-                            "Invalid replacement regex pattern: "
-                                    + entry.getKey(), e);
-                }
             }
         }
         return msgBody;
@@ -104,15 +79,4 @@ public class LiferayPostFormatter implements PostFormatter, PortletRequestAware 
                 .getDisplayedName(), postToQuote.getBodyRaw());
     }
 
-    @Override
-    public final void setPostReplacements(
-            final Map<String, String> postReplacements) {
-        this.postReplacements = postReplacements;
-    }
-
-    @Override
-    public void setRequest(final PortletRequest request) {
-        themeDisplay = (ThemeDisplay) request
-                .getAttribute(WebKeys.THEME_DISPLAY);
-    }
 }

@@ -23,6 +23,8 @@ public class ThreadListingState extends AbstractComponentState {
         public String url;
         public boolean isRead;
         public Connector settings;
+        public String latestPostUrl;
+        public String latestAuthor;
     }
 
 }

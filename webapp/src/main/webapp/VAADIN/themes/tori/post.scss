@@ -22,17 +22,6 @@
 	        opacity: 0.5;
 	    }
 	    
-	    &#threadreply .author:before {
-	    	content: "Post Reply";
-	    	font-family: $font-family-secondary;
-	    	font-size: 20px;
-	    	color: #555;
-	    	height: 0;
-	    	display: block;
-	    	position: relative;
-	    	top: -35px;
-	    }
-	    
 	    .author {
 	        width: 153px;
 	        min-width: 153px;
@@ -100,6 +89,7 @@
 				position: absolute;
 				top: 0;
 				left: 0;
+				padding-left: 5px;
         	}
         }
         
@@ -321,6 +311,7 @@
 	    	float: right;
 	    	cursor: pointer;
 	    	margin-left: 30px;
+	    	line-height: 16px;
 	    }
 	    
 	    .quoteforreply:before {
@@ -372,36 +363,5 @@
 	    	visibility: visible;
 	    	opacity: 1;
 	    }
-	}
-	
-	.threadupdates {
-		padding: 32px 0 32px 153px;
-		
-		 transition: opacity 500ms, visibility 500ms;
-		-webkit-transition: opacity 500ms, visibility 500ms;
-		visibility: hidden;
-	    opacity: 0;
-	    
-	    &.visible {
-			visibility: visible;
-	    	opacity: 1;
-		}
-		
-		.threadupdateslayout {
-			border: 1px solid #B0DDF3;
-			background-color: #ECF8FD;
-			font-size: 13px;
-			line-height: 1;
-			color: #888;
-			
-			.newposts {
-				 color: #555;
-			}
-			
-			.showall {
-				color: $link-color;
-				cursor: pointer;
-			}
-		}
 	}
 }

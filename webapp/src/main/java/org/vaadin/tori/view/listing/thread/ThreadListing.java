@@ -64,6 +64,8 @@ public class ThreadListing extends AbstractComponentContainer implements
                 + thread.getId();
         row.latestPostPretty = new PrettyTime().format(thread
                 .getLatestPostTime());
+        row.latestAuthor = thread.getLatestPostAuthor();
+        row.latestPostUrl = row.url + "/" + thread.getLatestPostId();
 
         row.isRead = thread.userHasRead();
         row.settings = buildSettings(thread);

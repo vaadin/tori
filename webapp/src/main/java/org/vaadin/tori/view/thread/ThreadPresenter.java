@@ -282,6 +282,11 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
                 final Category category = currentThread.getCategory();
                 return category != null ? category.getId() : null;
             }
+
+            @Override
+            public String getMayNotReplyNote() {
+                return dataSource.getMayNotReplyNote();
+            }
         };
     }
 
@@ -561,8 +566,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     @Override
     public void userTyping(final long userId, final long threadId,
             final Date startedTyping) {
-        if (currentThread.getId() == threadId
-                && dataSource.getCurrentUser().getId() != userId) {
+        if (currentThread.getId() == threadId) {
             pendingReplies
                     .put(userId, new Date[] { startedTyping, new Date() });
         }

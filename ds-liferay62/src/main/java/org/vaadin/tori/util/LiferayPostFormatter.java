@@ -19,9 +19,6 @@ package org.vaadin.tori.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.regex.PatternSyntaxException;
 
 import javax.portlet.PortletRequest;
 
@@ -43,8 +40,6 @@ public class LiferayPostFormatter implements PostFormatter, PortletRequestAware 
 
     private static Collection<FontFace> fontFaces;
     private static Collection<FontSize> fontSizes;
-    private Map<String, String> postReplacements;
-
     private ThemeDisplay themeDisplay;
 
     static {
@@ -68,19 +63,6 @@ public class LiferayPostFormatter implements PostFormatter, PortletRequestAware 
                     themeDisplay.getPathThemeImages() + "/emoticons");
         }
 
-        if (postReplacements != null) {
-            for (final Entry<String, String> entry : postReplacements
-                    .entrySet()) {
-                try {
-                    msgBody = msgBody.replaceAll(entry.getKey(),
-                            entry.getValue());
-                } catch (final PatternSyntaxException e) {
-                    LOG.warn(
-                            "Invalid replacement regex pattern: "
-                                    + entry.getKey(), e);
-                }
-            }
-        }
         return msgBody;
     }
 
@@ -106,12 +88,6 @@ public class LiferayPostFormatter implements PostFormatter, PortletRequestAware 
         }
         return String.format("[quote=%s]%s[/quote]\n", postToQuote.getAuthor()
                 .getDisplayedName(), postToQuote.getBodyRaw());
-    }
-
-    @Override
-    public final void setPostReplacements(
-            final Map<String, String> postReplacements) {
-        this.postReplacements = postReplacements;
     }
 
     @Override

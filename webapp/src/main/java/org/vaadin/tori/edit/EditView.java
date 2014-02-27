@@ -36,4 +36,6 @@ public interface EditView extends View {
 
     void setPathRoot(String pathRoot);
 
+    void setMayNotReplyNote(String mayNotReplyNote);
+
 }

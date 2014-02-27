@@ -16,7 +16,6 @@ import com.liferay.portlet.expando.service.ExpandoValueLocalServiceUtil;
 
 public class VaadinBadgeProvider implements UserBadgeProvider {
 
-    private static final String BADGE_FONT_ICON_CHARACTER = "\ue015";
     private static final String LINK_URL_FSTRING = "/certificate/-/view/%s";
 
     private static final String BADGE_EXPANDO_COLUMN_NAME = "showCertificationBadge";
@@ -36,8 +35,8 @@ public class VaadinBadgeProvider implements UserBadgeProvider {
                 final String certificateLink = String.format(LINK_URL_FSTRING,
                         userId);
                 return String
-                        .format("<a href=\"%s\" title=\"Vaadin 7 Certified Developer\">%s</a>",
-                                certificateLink, BADGE_FONT_ICON_CHARACTER);
+                        .format("<a href=\"%s\" title=\"Vaadin 7 Certified Developer\"></a>",
+                                certificateLink);
             }
         } catch (final SystemException e) {
             getLogger().error(e);

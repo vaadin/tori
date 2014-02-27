@@ -77,7 +77,7 @@ public class EditCategoryForm extends CustomComponent {
                     }
                 });
         final Button cancelButton = ComponentUtil.getSecondaryButton(
-                ("cancel"), new Button.ClickListener() {
+                ("Cancel"), new Button.ClickListener() {
                     @Override
                     public void buttonClick(final ClickEvent event) {
                         listener.cancel();

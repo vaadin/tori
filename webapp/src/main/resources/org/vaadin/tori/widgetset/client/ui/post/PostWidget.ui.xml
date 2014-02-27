@@ -22,7 +22,7 @@
 				<g:Label ui:field='downVote' />
 				<span class="score" ui:field='score' />
 
-				<g:Label styleName="quoteforreply" ui:field='quote'>Quote for Reply</g:Label>
+				<g:Label styleName="quoteforreply" ui:field='quote'>Reply</g:Label>
 				<g:FocusPanel styleName="flagpost" ui:field="flag" />
 			</div>
 		</div>

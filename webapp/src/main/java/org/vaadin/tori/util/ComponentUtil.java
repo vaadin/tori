@@ -16,11 +16,16 @@
 
 package org.vaadin.tori.util;
 
+import org.vaadin.dialogs.ConfirmDialog;
+import org.vaadin.dialogs.ConfirmDialog.Factory;
+import org.vaadin.dialogs.DefaultConfirmDialogFactory;
+
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
@@ -39,7 +44,7 @@ public class ComponentUtil {
         return label;
     }
 
-    public static HorizontalLayout getHeaderLayout(String titleString) {
+    public static HorizontalLayout getHeaderLayout(final String titleString) {
         final HorizontalLayout result = new HorizontalLayout();
         result.setWidth(100.0f, Unit.PERCENTAGE);
         result.setHeight(56.0f, Unit.PIXELS);
@@ -60,10 +65,25 @@ public class ComponentUtil {
         return result;
     }
 
-    public static Button getSecondaryButton(String caption,
-            ClickListener clickListener) {
+    public static Button getSecondaryButton(final String caption,
+            final ClickListener clickListener) {
         Button button = new Button(caption, clickListener);
         button.addStyleName("secondarybutton");
         return button;
+    }
+
+    public static Factory getConfirmDialogFactory() {
+        return new DefaultConfirmDialogFactory() {
+            @Override
+            public ConfirmDialog create(final String caption,
+                    final String message, final String okCaption,
+                    final String cancelCaption) {
+                ConfirmDialog confirmDialog = super.create(caption, message,
+                        okCaption, cancelCaption);
+                confirmDialog.getOkButton().addStyleName("secondarybutton");
+                HasComponents parent = confirmDialog.getOkButton().getParent();
+                return confirmDialog;
+            }
+        };
     }
 }

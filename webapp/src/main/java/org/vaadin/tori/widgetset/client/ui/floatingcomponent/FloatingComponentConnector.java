@@ -18,6 +18,11 @@ package org.vaadin.tori.widgetset.client.ui.floatingcomponent;
 
 import org.vaadin.tori.component.FloatingComponent;
 
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Widget;
@@ -36,6 +41,9 @@ public class FloatingComponentConnector extends AbstractExtensionConnector
     private static final String STYLE_VISIBLE = "floatingcomponent-visible";
     private Widget widget = null;
     private Timer timer;
+    private static final int DELAY = 10000;
+    private HandlerRegistration mouseOverHandler;
+    private HandlerRegistration mouseOutHandler;
 
     @Override
     protected void init() {
@@ -46,28 +54,57 @@ public class FloatingComponentConnector extends AbstractExtensionConnector
     @Override
     protected void extend(final ServerConnector target) {
         widget = ((ComponentConnector) target).getWidget();
+
+        mouseOverHandler = widget.addDomHandler(new MouseOverHandler() {
+            @Override
+            public void onMouseOver(final MouseOverEvent event) {
+                cancelTimer();
+            }
+        }, MouseOverEvent.getType());
+
+        mouseOutHandler = widget.addDomHandler(new MouseOutHandler() {
+            @Override
+            public void onMouseOut(final MouseOutEvent event) {
+                scheduleTimer();
+            }
+        }, MouseOutEvent.getType());
     }
 
     @Override
-    public void flashIfNotVisible(Connector otherConnectort) {
+    public void onUnregister() {
+        mouseOverHandler.removeHandler();
+        mouseOutHandler.removeHandler();
+        super.onUnregister();
+    }
+
+    @Override
+    public void flashIfNotVisible(final Connector otherConnectort) {
         Element element = ((AbstractComponentConnector) otherConnectort)
                 .getWidget().getElement();
         if (!isElementInViewport(element)) {
             widget.addStyleName(STYLE_VISIBLE);
-            if (timer != null) {
-                timer.cancel();
-            }
-            timer = new Timer() {
-                @Override
-                public void run() {
-                    widget.removeStyleName(STYLE_VISIBLE);
-                }
-            };
-            timer.schedule(5000);
+            scheduleTimer();
         }
     }
 
-    private static native boolean isElementInViewport(Element el)
+    private void cancelTimer() {
+        if (timer != null) {
+            timer.cancel();
+        }
+    }
+
+    private void scheduleTimer() {
+        cancelTimer();
+        timer = new Timer() {
+            @Override
+            public void run() {
+                widget.removeStyleName(STYLE_VISIBLE);
+            }
+        };
+        timer.schedule(DELAY);
+    }
+
+    private static native boolean isElementInViewport(final Element el)
     /*-{
         var rect = el.getBoundingClientRect();
         return (

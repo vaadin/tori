@@ -16,8 +16,6 @@
 
 package org.vaadin.tori.component;
 
-import java.util.List;
-
 import org.ocpsoft.prettytime.PrettyTime;
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator;
@@ -231,8 +229,7 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
             }
 
             if (recentThread != null) {
-                List<Post> posts = dataSource.getPosts(recentThread.getId());
-                Post latestPost = posts.get(posts.size() - 1);
+                Post latestPost = recentThread.getLatestPost();
                 if (latestPost != null) {
                     latestPost.setThread(recentThread);
                     if (current == null) {

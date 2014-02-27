@@ -19,8 +19,6 @@ package org.vaadin.tori.view.listing;
 import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.AbstractView;
-import org.vaadin.tori.util.ComponentUtil;
-import org.vaadin.tori.util.ComponentUtil.HeadingLevel;
 import org.vaadin.tori.view.listing.category.CategoryListingViewImpl;
 import org.vaadin.tori.view.listing.thread.ThreadListingViewImpl;
 
@@ -70,10 +68,7 @@ public class ListingViewImpl extends
     @Override
     public void displayCategoryNotFoundError(final String requestedCategoryId) {
         layout.removeAllComponents();
-        layout.addComponent(ComponentUtil
-                .getHeadingLabel(
-                        "No such category found. You probably followed a broken link...",
-                        HeadingLevel.H1));
+        showError("No such category found. You probably followed a broken link...");
     }
 
     @Override
@@ -83,12 +78,12 @@ public class ListingViewImpl extends
     }
 
     @Override
-    public void showError(String message) {
+    public void showError(final String message) {
         Notification.show(message, Type.ERROR_MESSAGE);
     }
 
     @Override
-    public void setCategory(Category category) {
+    public void setCategory(final Category category) {
         categoryName = category != null ? category.getName() : null;
         categoryId = category != null ? category.getId() : null;
     }

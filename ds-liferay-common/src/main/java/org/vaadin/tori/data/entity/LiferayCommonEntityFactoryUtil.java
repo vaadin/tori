@@ -48,7 +48,8 @@ public class LiferayCommonEntityFactoryUtil {
 
     public static DiscussionThread createDiscussionThread(
             final MBThread liferayThread, final MBMessage threadRootMessage,
-            final User threadAuthor, final User lastPostAuthor) {
+            final User threadAuthor, final User lastPostAuthor,
+            final Long lastPostId) {
         final DiscussionThread entity = new DiscussionThread() {
             @Override
             public Post getLatestPost() {
@@ -56,6 +57,7 @@ public class LiferayCommonEntityFactoryUtil {
                 final Post fakedLastPost = new Post();
                 fakedLastPost.setTime(liferayThread.getLastPostDate());
                 fakedLastPost.setAuthor(lastPostAuthor);
+                fakedLastPost.setId(lastPostId);
                 return fakedLastPost;
             }
 
@@ -80,7 +82,7 @@ public class LiferayCommonEntityFactoryUtil {
         final Post entity = new Post();
         entity.setId(liferayMessage.getMessageId());
         entity.setTime(liferayMessage.getCreateDate());
-        entity.setBodyRaw(liferayMessage.getBody(false));
+        entity.setBodyRaw(bodyRaw);
         entity.setThread(thread);
         entity.setAuthor(author);
         entity.setFormatBBCode(formatBBCode);

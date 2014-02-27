@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
@@ -115,7 +116,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
     private static final String PREFS_REPLACE_MESSAGE_BOARDS_LINKS = "toriReplaceMessageBoardsLinks";
     private static final String PREFS_UPDATE_PAGE_TITLE = "toriUpdatePageTitle";
     private static final String PREFS_PAGE_TITLE_PREFIX = "toriPageTitlePrefix";
-
+    private static final String PREFS_MAY_NOT_REPLY_NOTE = "mayNotReplyNote";
     private static final String PREFS_PATHROOT = "pathroot";
 
     private static final String URL_PREFIX = "/#!/";
@@ -290,9 +291,13 @@ public abstract class LiferayCommonDataSource implements DataSource,
             category = getCategory(liferayThread.getCategoryId());
         }
 
+        List<MBMessage> posts = getLiferayPostsForThread(liferayThread
+                .getThreadId());
+        MBMessage last = posts.get(posts.size() - 1);
+
         final DiscussionThread thread = LiferayCommonEntityFactoryUtil
                 .createDiscussionThread(liferayThread, rootMessage,
-                        threadAuthor, lastPostAuthor);
+                        threadAuthor, lastPostAuthor, last.getMessageId());
         thread.setCategory(category);
         thread.setSticky(liferayThread.getPriority() >= STICKY_PRIORITY);
         return thread;
@@ -1112,6 +1117,8 @@ public abstract class LiferayCommonDataSource implements DataSource,
                         .valueOf(config.isUpdatePageTitle()).toString());
                 portletPreferences.setValue(PREFS_PAGE_TITLE_PREFIX,
                         config.getPageTitlePrefix());
+                portletPreferences.setValue(PREFS_MAY_NOT_REPLY_NOTE,
+                        config.getMayNotReplyNote());
 
                 portletPreferences.store();
             } catch (final Exception e) {
@@ -1227,6 +1234,20 @@ public abstract class LiferayCommonDataSource implements DataSource,
             bodyRaw = replaceMessageBoardsLinksMessages(bodyRaw);
         }
 
+        if (getPostReplacements() != null) {
+            for (final Entry<String, String> entry : getPostReplacements()
+                    .entrySet()) {
+                try {
+                    bodyRaw = bodyRaw.replaceAll(entry.getKey(),
+                            entry.getValue());
+                } catch (final PatternSyntaxException e) {
+                    LOG.warn(
+                            "Invalid replacement regex pattern: "
+                                    + entry.getKey(), e);
+                }
+            }
+        }
+
         return LiferayCommonEntityFactoryUtil.createPost(message, bodyRaw,
                 formatBBCode, author, thread, attachments);
     }
@@ -1241,6 +1262,11 @@ public abstract class LiferayCommonDataSource implements DataSource,
             return LiferayCommonEntityFactoryUtil
                     .createAnonymousUser(imagePath);
         }
+    }
+
+    @Override
+    public String getMayNotReplyNote() {
+        return portletPreferences.getValue(PREFS_MAY_NOT_REPLY_NOTE, null);
     }
 
 }

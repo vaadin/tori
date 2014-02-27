@@ -1,4 +1,13 @@
-
+@mixin quotationmark {
+	font-family: HelveticaNeue;
+	content: "\201D";
+	position: absolute;
+	font-size: 58px;
+	color: $postbody-quote-quotationmark-color;
+	line-height: 69px;
+	left: 11px;
+	top: -3px;
+}
 
 @mixin postbody {
 
@@ -14,14 +23,7 @@
 		font-style: normal;
 		
 		&:before {
-			font-family: HelveticaNeue;
-			content: "\201D";
-			position: absolute;
-			font-size: 58px;
-			color: $postbody-quote-quotationmark-color;
-			line-height: 69px;
-			left: 11px;
-			top: -3px;
+			@include quotationmark;
 		}
 	}
 	
@@ -30,14 +32,7 @@
 		position: relative;
 		
 		&:before {
-			font-family: HelveticaNeue;
-			content: "\201D";
-			position: absolute;
-			font-size: 58px;
-			color: $postbody-quote-quotationmark-color;
-			line-height: 69px;
-			left: 11px;
-			top: -3px;
+			@include quotationmark;
 		}
 	}
 	

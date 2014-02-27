@@ -18,7 +18,6 @@ package org.vaadin.tori.util;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
 
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
@@ -74,11 +73,6 @@ public class TestPostFormatter implements PostFormatter {
         }
         return String.format("[quote=%s]%s[/quote]\n", postToQuote.getAuthor()
                 .getDisplayedName(), postToQuote.getBodyRaw());
-    }
-
-    @Override
-    public void setPostReplacements(final Map<String, String> postReplacements) {
-
     }
 
     public enum TestFontFace implements FontFace {

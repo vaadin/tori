@@ -33,11 +33,11 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
 
     private Long categoryId;
 
-    public ThreadListingPresenter(ThreadListingView view) {
+    public ThreadListingPresenter(final ThreadListingView view) {
         super(view);
     }
 
-    public void categorySelected(Category category) {
+    public void categorySelected(final Category category) {
         view.setMayCreateThreads(false);
         ThreadProvider threadProvider = null;
         if (category == SpecialCategory.RECENT_POSTS.getInstance()) {
@@ -55,47 +55,47 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
 
     }
 
-    public void follow(long threadId) {
+    public void follow(final long threadId) {
         try {
             dataSource.followThread(threadId);
-            view.showNotification("Thread followed");
+            view.showNotification("Topic followed");
             updateThread(threadId);
         } catch (final DataSourceException e) {
             displayError(e);
         }
     }
 
-    public void unfollow(long threadId) {
+    public void unfollow(final long threadId) {
         try {
             dataSource.unfollowThread(threadId);
-            view.showNotification("Thread unfollowed");
+            view.showNotification("Topic unfollowed");
             updateThread(threadId);
         } catch (final DataSourceException e) {
             displayError(e);
         }
     }
 
-    public void sticky(long threadId) {
+    public void sticky(final long threadId) {
         try {
             dataSource.stickyThread(threadId);
-            view.showNotification("Thread pinned");
+            view.showNotification("Topic pinned");
             updateThread(threadId);
         } catch (final DataSourceException e) {
             displayError(e);
         }
     }
 
-    public void unsticky(long threadId) {
+    public void unsticky(final long threadId) {
         try {
             dataSource.unstickyThread(threadId);
-            view.showNotification("Thread unpinned");
+            view.showNotification("Topic unpinned");
             updateThread(threadId);
         } catch (final DataSourceException e) {
             displayError(e);
         }
     }
 
-    private void updateThread(long threadId) {
+    private void updateThread(final long threadId) {
         try {
             view.updateThread(getThreadData(dataSource.getThread(threadId)));
         } catch (NoSuchThreadException e) {
@@ -105,10 +105,10 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
         }
     }
 
-    public void delete(long threadId) {
+    public void delete(final long threadId) {
         try {
             dataSource.deleteThread(threadId);
-            view.showNotification("Thread deleted");
+            view.showNotification("Topic deleted");
         } catch (final DataSourceException e) {
             displayError(e);
         }
@@ -117,7 +117,7 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
     public void lock(final long threadId) {
         try {
             dataSource.lockThread(threadId);
-            view.showNotification("Thread locked");
+            view.showNotification("Topic locked");
             updateThread(threadId);
         } catch (final DataSourceException e) {
             displayError(e);
@@ -127,20 +127,20 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
     public void unlock(final long threadId) {
         try {
             dataSource.unlockThread(threadId);
-            view.showNotification("Thread unlocked");
+            view.showNotification("Topic unlocked");
             updateThread(threadId);
         } catch (final DataSourceException e) {
             displayError(e);
         }
     }
 
-    private void displayError(DataSourceException e) {
+    private void displayError(final DataSourceException e) {
         log.error(e);
         e.printStackTrace();
         view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
     }
 
-    public void moveRequested(long threadId) {
+    public void moveRequested(final long threadId) {
         try {
             Category category = dataSource.getThread(threadId).getCategory();
             Long threadCategoryId = category != null ? category.getId() : null;
@@ -151,16 +151,16 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
         }
     }
 
-    public void move(long threadId, Long categoryId) {
+    public void move(final long threadId, final Long categoryId) {
         try {
             dataSource.moveThread(threadId, categoryId);
-            view.showNotification("Thread moved");
+            view.showNotification("Topic moved");
         } catch (DataSourceException e) {
             displayError(e);
         }
     }
 
-    private List<Category> getSubCategoriesRecursively(Long categoryId) {
+    private List<Category> getSubCategoriesRecursively(final Long categoryId) {
         List<Category> result = new ArrayList<Category>();
         try {
             for (Category subCategory : dataSource.getSubCategories(categoryId)) {
@@ -263,6 +263,11 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
                 return thread.getLatestPost().getTime();
             }
 
+            @Override
+            public Long getLatestPostId() {
+                return thread.getLatestPost().getId();
+            }
+
         };
     }
 
@@ -270,7 +275,7 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
         return new AbstractThreadProvider() {
             @Override
             protected List<DiscussionThread> getThreadsBetweenInternal(
-                    int from, int to) throws DataSourceException {
+                    final int from, final int to) throws DataSourceException {
                 return dataSource.getThreads(categoryId, from, to);
             }
 
@@ -285,7 +290,7 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
         return new AbstractThreadProvider() {
             @Override
             protected List<DiscussionThread> getThreadsBetweenInternal(
-                    int from, int to) throws DataSourceException {
+                    final int from, final int to) throws DataSourceException {
                 return dataSource.getMyPostThreads(from, to);
             }
 
@@ -300,7 +305,7 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
         return new AbstractThreadProvider() {
             @Override
             protected List<DiscussionThread> getThreadsBetweenInternal(
-                    int from, int to) throws DataSourceException {
+                    final int from, final int to) throws DataSourceException {
                 return dataSource.getRecentPosts(from, to);
             }
 
@@ -325,7 +330,7 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
         }
 
         @Override
-        public List<ThreadData> getThreadsBetween(int from, int to) {
+        public List<ThreadData> getThreadsBetween(final int from, final int to) {
             List<ThreadData> result = new ArrayList<ThreadData>();
             try {
                 for (DiscussionThread thread : getThreadsBetweenInternal(from,

@@ -19,9 +19,11 @@ package org.vaadin.tori.view.listing.thread;
 import java.util.List;
 
 import org.vaadin.tori.data.entity.Category;
+import org.vaadin.tori.util.ComponentUtil;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -48,6 +50,7 @@ public class ThreadMoveComponent extends Window {
 
         setContent(layout);
         layout.setSizeFull();
+        layout.setMargin(true);
 
         setCaption("Move Thread to Category...");
         setWidth("300px");
@@ -62,17 +65,16 @@ public class ThreadMoveComponent extends Window {
         layout.setExpandRatio(panel, 1.0f);
 
         final HorizontalLayout horizontalLayout = new HorizontalLayout();
+        horizontalLayout.setSpacing(true);
         layout.addComponent(horizontalLayout);
 
-        final Component moveButton = new NativeButton("Move Thread",
-                new NativeButton.ClickListener() {
+        final Component moveButton = new Button("Move Thread",
+                new Button.ClickListener() {
                     @Override
                     public void buttonClick(final ClickEvent event) {
                         final Long newCategoryId = (Long) categoriesTree
                                 .getValue();
-                        if (newCategoryId != currentCategoryId) {
-                            listener.commit(threadId, newCategoryId);
-                        }
+                        listener.commit(threadId, newCategoryId);
                         close();
                     }
                 });
@@ -87,8 +89,8 @@ public class ThreadMoveComponent extends Window {
             }
         });
 
-        horizontalLayout.addComponent(new NativeButton("Cancel",
-                new NativeButton.ClickListener() {
+        horizontalLayout.addComponent(ComponentUtil.getSecondaryButton(
+                "Cancel", new NativeButton.ClickListener() {
                     @Override
                     public void buttonClick(final ClickEvent event) {
                         close();
