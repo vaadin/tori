@@ -44,7 +44,7 @@ import com.vaadin.ui.TreeTable;
 public class CategoryTreeTable extends TreeTable {
 
     private static final String PROPERTY_ID_THREADS = "Threads";
-    private static final String PROPERTY_ID_UNREAD = "Unread Threads";
+    private static final String PROPERTY_ID_UNREAD = "Unread";
     private static final String PROPERTY_ID_CATEGORY = "Category";
     private static final String EDIT_CAPTION = "Edit Category";
     private static final String DELETE_CAPTION = "Delete Category";
@@ -69,6 +69,14 @@ public class CategoryTreeTable extends TreeTable {
     public CategoryTreeTable(final CategoryListingPresenter presenter) {
         this.presenter = presenter;
         setStyleName("categoryTree");
+
+        setCellStyleGenerator(new CellStyleGenerator() {
+            @Override
+            public String getStyle(final Table source, final Object itemId,
+                    final Object propertyId) {
+                return String.valueOf(propertyId).toLowerCase();
+            }
+        });
 
         getContainerDataSource().addContainerProperty(PROPERTY_ID_THREADS,
                 Integer.class, 0);
