@@ -145,10 +145,15 @@ public class AuthoringComponent extends PostComponent {
 
             @Override
             public void buttonClick(final ClickEvent event) {
-                listener.submit(editor.getValue(), attachments,
-                        followCheckbox.getValue());
+                if (editor.getValue().trim().isEmpty()) {
+                    postButton.setEnabled(true);
+                } else {
+                    listener.submit(editor.getValue(), attachments,
+                            followCheckbox.getValue());
+                }
             }
         });
+        postButton.setDisableOnClick(true);
         result.addComponent(postButton);
 
         attach = buildAttachUpload();
