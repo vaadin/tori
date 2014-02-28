@@ -24,7 +24,7 @@ import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.View;
 
 public interface ThreadView extends View {
-    void setPosts(List<PostData> posts);
+    void setPosts(List<PostData> posts, Integer selectedIndex);
 
     void updatePost(PostData postData);
 
@@ -66,8 +66,6 @@ public interface ThreadView extends View {
         String getRawBody();
 
         String getFormattedBody(boolean allowHtml);
-
-        boolean isSelected();
 
         Map<String, String> getAttachments();
 

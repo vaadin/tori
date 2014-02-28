@@ -115,8 +115,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     }
 
     @Override
-    public void setPosts(final List<PostData> posts) {
-        postsLayout.setPosts(posts);
+    public void setPosts(final List<PostData> posts, final Integer selectedIndex) {
+        postsLayout.setPosts(posts, selectedIndex);
     }
 
     @SuppressWarnings("unchecked")

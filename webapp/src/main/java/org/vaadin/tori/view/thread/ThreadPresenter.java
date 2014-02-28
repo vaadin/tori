@@ -51,7 +51,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         super(view);
     }
 
-    public PostData getPostData(final Post _post, final boolean selected) {
+    public PostData getPostData(final Post _post) {
         return new PostData() {
             private final Post post = _post;
             final User author = _post.getAuthor();
@@ -111,11 +111,6 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
                     formattedPost = stripTags(formattedPost);
                 }
                 return formattedPost;
-            }
-
-            @Override
-            public boolean isSelected() {
-                return selected;
             }
 
             @Override
@@ -222,10 +217,10 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
                         }
                     }
 
-                    displayPosts(threadId, selectedPostId);
-
                     view.setViewData(getViewData(currentThread),
                             getAuthoringData());
+
+                    displayPosts(threadId, selectedPostId);
 
                     try {
                         dataSource.incrementViewCount(requestedThread);
@@ -336,15 +331,20 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     private void displayPosts(final long threadId, final Long selectedPostId) {
         List<PostData> posts = new ArrayList<PostData>();
+        Integer selectedIndex = null;
         try {
+            int index = -1;
             for (Post post : dataSource.getPosts(threadId)) {
-                posts.add(getPostData(post, selectedPostId != null
-                        && selectedPostId == post.getId()));
+                index++;
+                posts.add(getPostData(post));
+                if (selectedPostId != null && selectedPostId == post.getId()) {
+                    selectedIndex = index;
+                }
             }
         } catch (DataSourceException e) {
             e.printStackTrace();
         }
-        view.setPosts(posts);
+        view.setPosts(posts, selectedIndex);
     }
 
     public DiscussionThread getCurrentThread() {
@@ -472,7 +472,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             messaging.sendUserAuthored(updatedPost.getId(),
                     currentThread.getId());
             view.replySent();
-            view.appendPosts(Arrays.asList(getPostData(updatedPost, false)));
+            view.appendPosts(Arrays.asList(getPostData(updatedPost)));
         } catch (final DataSourceException e) {
             view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
             log.error(e);
@@ -514,7 +514,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         if (authorizationService.mayEditPost(postId)) {
             try {
                 dataSource.savePost(postId, newBody);
-                view.updatePost(getPostData(dataSource.getPost(postId), false));
+                view.updatePost(getPostData(dataSource.getPost(postId)));
             } catch (DataSourceException e) {
                 view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
                 e.printStackTrace();
@@ -611,7 +611,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         for (Long postId : newPosts) {
             try {
                 Post post = dataSource.getPost(postId);
-                newPostsData.add(getPostData(post, false));
+                newPostsData.add(getPostData(post));
             } catch (DataSourceException e) {
                 e.printStackTrace();
             }
