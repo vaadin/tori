@@ -15,6 +15,7 @@ public class ThreadListingState extends AbstractComponentState {
         public long threadId;
         public boolean isSticky;
         public boolean isLocked;
+        public boolean mayFollow;
         public boolean isFollowed;
         public String topic;
         public String author;

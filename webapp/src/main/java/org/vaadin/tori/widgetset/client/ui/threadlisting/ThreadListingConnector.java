@@ -22,12 +22,7 @@ public class ThreadListingConnector extends AbstractComponentContainerConnector 
     @Override
     protected void init() {
         super.init();
-        getWidget().init(new ThreadListingWidget.Fetcher() {
-            @Override
-            public void fetchRows() {
-                rpc.fetchRows();
-            }
-        });
+        getWidget().init(rpc, rpc);
         getWidget().attachScrollHandlersIfNeeded(
                 getConnection().getUIConnector().getWidget());
 

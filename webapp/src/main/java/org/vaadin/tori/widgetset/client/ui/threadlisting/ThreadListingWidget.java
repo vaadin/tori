@@ -4,12 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingRow.ThreadListingRowListener;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.RowInfo;
 
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -34,23 +36,30 @@ public class ThreadListingWidget extends FlowPanel {
     private int pageHeight;
     private final double distanceMultiplier = 1.0;
 
+    private ThreadListingRowListener threadListingRowListener;
     private Fetcher fetcher;
     private boolean fetching;
+    private Timer timer;
+
+    private static final int DELAY = 200;
 
     public ThreadListingWidget() {
         setStyleName("threadlisting");
         setWidth("100%");
     }
 
-    public void init(final Fetcher fetcher) {
+    public void init(final Fetcher fetcher,
+            final ThreadListingRowListener threadListingRowListener) {
         this.fetcher = fetcher;
+        this.threadListingRowListener = threadListingRowListener;
     }
 
-    public void addRows(List<RowInfo> rows, int placeholders) {
+    public void addRows(final List<RowInfo> rows, final int placeholders) {
 
         remove(placeHolders);
         for (RowInfo rowInfo : rows) {
-            ThreadListingRow newRow = new ThreadListingRow(rowInfo);
+            ThreadListingRow newRow = new ThreadListingRow(rowInfo,
+                    threadListingRowListener);
             add(newRow);
             threadRows.put(rowInfo.threadId, newRow);
         }
@@ -65,6 +74,7 @@ public class ThreadListingWidget extends FlowPanel {
         }
         add(placeHolders);
         fetching = false;
+        checkNewRowsNeeded();
     }
 
     @Override
@@ -109,10 +119,20 @@ public class ThreadListingWidget extends FlowPanel {
     }
 
     private void checkNewRowsNeeded() {
-        if (!fetching && placeHolders.getWidgetCount() > 0
-                && isElementInViewport(placeHolders.getElement())) {
-            fetching = true;
-            fetcher.fetchRows();
+        if (timer == null) {
+            timer = new Timer() {
+                @Override
+                public void run() {
+                    if (!fetching && placeHolders.getWidgetCount() > 0
+                            && isElementInViewport(placeHolders.getElement())) {
+                        fetching = true;
+                        fetcher.fetchRows();
+                    }
+                    timer.cancel();
+                    timer = null;
+                }
+            };
+            timer.schedule(DELAY);
         }
     }
 
@@ -124,7 +144,7 @@ public class ThreadListingWidget extends FlowPanel {
         threadRows.get(rowInfo.threadId).updateRowInfo(rowInfo);
     }
 
-    public void removeThreadRow(long threadId) {
+    public void removeThreadRow(final long threadId) {
         remove(threadRows.get(threadId));
     }
 

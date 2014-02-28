@@ -58,6 +58,7 @@ public class ThreadListing extends AbstractComponentContainer implements
         row.isLocked = thread.isLocked();
         row.isSticky = thread.isSticky();
         row.isFollowed = thread.isFollowing();
+        row.mayFollow = thread.mayFollow();
         row.topic = thread.getTopic();
         row.postCount = thread.getPostCount();
         row.url = "#" + ToriNavigator.ApplicationView.THREADS.getUrl() + "/"
@@ -196,5 +197,14 @@ public class ThreadListing extends AbstractComponentContainer implements
         int remaining = totalRows - fetchedRows;
         int placeholders = Math.min(remaining, PRELOAD_AMOUNT);
         getRpcProxy(ThreadListingClientRpc.class).sendRows(rows, placeholders);
+    }
+
+    @Override
+    public void follow(final long threadId, final boolean follow) {
+        if (follow) {
+            presenter.follow(threadId);
+        } else {
+            presenter.unfollow(threadId);
+        }
     }
 }

@@ -2,11 +2,11 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
 	<g:HTMLPanel>
-		<a class="topic" ui:field='topic'>
-			<span class="followtopic" title="Follow topic" ui:field='follow' />
-			<span class="topicname" ui:field='topicName' />
+		<span class="topic" ui:field='topic'>
+			<g:Label styleName="followtopic" ui:field='follow' />
+			<a class="topicname" ui:field='topicName' />
 			<span class="threadicons"/>
-		</a>
+		</span>
 		<div class="startedby" ui:field='startedBy' />
 		<div class="postcount" ui:field='postCount' />
 		<a class="latesttime" ui:field='latest' >

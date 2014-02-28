@@ -6,10 +6,13 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ui.AbstractComponentConnector;
 
@@ -18,11 +21,11 @@ public class ThreadListingRow extends Composite {
     private static final String ROW_CLASS_NAME = "threadlistingrow";
 
     @UiField
-    public AnchorElement topic;
+    public SpanElement topic;
     @UiField
-    public SpanElement topicName;
+    public AnchorElement topicName;
     @UiField
-    public SpanElement follow;
+    public Label follow;
     @UiField
     public DivElement startedBy;
     @UiField
@@ -36,6 +39,12 @@ public class ThreadListingRow extends Composite {
     @UiField
     public FocusPanel settings;
 
+    private final long threadId;
+
+    private final ThreadListingRowListener listener;
+
+    private boolean following;
+
     private static ThreadListingRowUiBinder uiBinder = GWT
             .create(ThreadListingRowUiBinder.class);
 
@@ -43,29 +52,50 @@ public class ThreadListingRow extends Composite {
             UiBinder<Widget, ThreadListingRow> {
     }
 
-    public ThreadListingRow(final RowInfo rowInfo) {
+    @UiHandler("follow")
+    void handleQuoteClick(final ClickEvent e) {
+        listener.follow(threadId, !following);
+        threadFollowed(!following);
+    }
+
+    public ThreadListingRow(final RowInfo rowInfo,
+            final ThreadListingRowListener listener) {
+        this.threadId = rowInfo.threadId;
+        this.listener = listener;
         initWidget(uiBinder.createAndBindUi(this));
         setWidth("100%");
         updateRowInfo(rowInfo);
     }
 
+    public void threadFollowed(final boolean followed) {
+        this.following = followed;
+        final String followingStyleName = "following";
+        removeStyleName(followingStyleName);
+        if (followed) {
+            follow.setTitle("I'm following this topic");
+            addStyleName(followingStyleName);
+        } else {
+            follow.setTitle("Follow topic");
+        }
+    }
+
     public void updateRowInfo(final RowInfo rowInfo) {
         setStyleName(ROW_CLASS_NAME);
+        threadFollowed(rowInfo.isFollowed);
+        if (!rowInfo.mayFollow) {
+            addStyleName("maynotfollow");
+        }
         if (rowInfo.isLocked) {
             addStyleName("locked");
         }
         if (rowInfo.isSticky) {
             addStyleName("sticky");
         }
-        if (rowInfo.isFollowed) {
-            follow.setTitle("I'm following this thread");
-            addStyleName("following");
-        }
         if (!rowInfo.isRead) {
             addStyleName("unread");
         }
 
-        topic.setHref(rowInfo.url);
+        topicName.setHref(rowInfo.url);
         topicName.setInnerText(rowInfo.topic);
 
         startedBy.setInnerText(rowInfo.author);
@@ -83,6 +113,9 @@ public class ThreadListingRow extends Composite {
                     .getWidget();
             this.settings.setWidget(settings);
         }
+    }
 
+    public interface ThreadListingRowListener {
+        void follow(long threadId, boolean follow);
     }
 }
