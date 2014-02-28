@@ -134,7 +134,7 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
         notificationsLayout.addComponent(current);
         floatingNotification.setLink(post.getThread().getTopic(),
                 PostNotification.getPermaLinkUrl(post));
-        floatingComponent.flashIfNotVisible(notificationsLayout);
+        floatingComponent.flash();
 
         ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override

@@ -16,10 +16,9 @@
 
 package org.vaadin.tori.widgetset.client.ui.floatingcomponent;
 
-import com.vaadin.shared.Connector;
 import com.vaadin.shared.communication.ClientRpc;
 
 public interface FloatingComponentClientRpc extends ClientRpc {
 
-    void flashIfNotVisible(Connector otherConnectort);
+    void flash();
 }

@@ -23,14 +23,11 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ServerConnector;
 import com.vaadin.client.extensions.AbstractExtensionConnector;
-import com.vaadin.client.ui.AbstractComponentConnector;
-import com.vaadin.shared.Connector;
 import com.vaadin.shared.ui.Connect;
 
 @SuppressWarnings("serial")
@@ -78,13 +75,9 @@ public class FloatingComponentConnector extends AbstractExtensionConnector
     }
 
     @Override
-    public void flashIfNotVisible(final Connector otherConnectort) {
-        Element element = ((AbstractComponentConnector) otherConnectort)
-                .getWidget().getElement();
-        if (!isElementInViewport(element)) {
-            widget.addStyleName(STYLE_VISIBLE);
-            scheduleTimer();
-        }
+    public void flash() {
+        widget.addStyleName(STYLE_VISIBLE);
+        scheduleTimer();
     }
 
     private void cancelTimer() {
@@ -104,12 +97,4 @@ public class FloatingComponentConnector extends AbstractExtensionConnector
         timer.schedule(DELAY);
     }
 
-    private static native boolean isElementInViewport(final Element el)
-    /*-{
-        var rect = el.getBoundingClientRect();
-        return (
-            rect.top >= 0 &&
-            rect.bottom <= ($wnd.innerHeight || $doc.documentElement.clientHeight)
-        );
-    }-*/;
 }

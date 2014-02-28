@@ -28,8 +28,7 @@ public class FloatingComponent extends AbstractExtension {
         target.addStyleName("floatingcomponent");
     }
 
-    public void flashIfNotVisible(AbstractComponent otherComponent) {
-        getRpcProxy(FloatingComponentClientRpc.class).flashIfNotVisible(
-                otherComponent);
+    public void flash() {
+        getRpcProxy(FloatingComponentClientRpc.class).flash();
     }
 }
