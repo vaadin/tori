@@ -10,7 +10,7 @@
 @import "recentbar.scss";
 @import "floatingcomponent.scss";
 @import "authoring.scss";
-@import "ckeditor.scss";
+@import "ckeditorcontent.scss";
 @import "newthread.scss";
 
 
@@ -27,7 +27,7 @@
     
 @mixin tori {
 	@include post;
-	@include ckeditor;
+	@include ckeditorcontent;
 	
 	.v-app {
 	    @include base;
@@ -66,7 +66,9 @@
 	   		margin-bottom: 50px;
 	   	}
 	    
-	    
+	    .v-loading-indicator {
+	    	display: none !important;
+	    }
 	    
 	    .v-link span,
 	    a {
@@ -110,14 +112,20 @@
 	        height: 29px;
 	        border: $button-border;
 	        border-radius: $button-border-radius;
+	        line-height: 0.9;
 	        
 	        &.secondarybutton {
 	        	color: $secondary-button-color;
 	        	border: $secondary-button-border;
+	        	
+	        	.v-button-caption {
+	        		 font-weight: normal;
+	        	}
 	        }
 	        
 	        .v-button-caption,
 	        .v-button-wrap {
+	        	font-weight: 500;
 	        	vertical-align: middle;
 	        }
 	        
@@ -146,6 +154,11 @@
 					color: #555;
 					line-height: 22px;
 				}
+			}
+			
+			.v-button-wrap:before {
+				content: "+";
+				padding-right: 5px;
 			}
 		}
 		

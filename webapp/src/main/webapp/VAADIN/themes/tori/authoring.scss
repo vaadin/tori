@@ -13,18 +13,9 @@
 			visibility: hidden;
 		}
 		
-		.posteditorplaceholder {
-			position: relative;
-			top: -1px;
-		}
-		
 		.bodytext,
 		.footer {
 			display: none;
-		}
-		
-		.cke_inner {
-			min-height: 244px;
 		}
 		
 		.v-upload .v-button {
@@ -39,10 +30,6 @@
 			opacity: 0;
 		}
 		
-		.cke_contents {
-			min-height: 173px;
-		}
-		
 		.v-checkbox{
 			font-size: 13px;
 			
@@ -54,6 +41,41 @@
 		.badge {
 			visibility: visible;
 			opacity: 1;
+		}
+		
+		.buttonslayout.v-horizontallayout {
+			padding: 8px 11px 6px 0;
+			
+			.v-button {
+				min-width: 126px;
+			}
+		}
+		
+		.posteditorplaceholder {
+			position: relative;
+			top: -1px;
+		}
+		
+		.wysiwyg-editor {
+			.cke_inner {
+				min-height: 244px;
+				background: transparent;
+			}
+			
+			.cke_top {
+				background: transparent;
+				border: none;
+				padding-left: 0;
+				@include box-shadow(none);
+			}
+			
+			.cke_contents {
+				min-height: 173px;
+			}
+			
+			& > div {
+				border: none;
+			}
 		}
 	}
 }

@@ -7,6 +7,7 @@
 	    -webkit-font-smoothing: antialiased;
 	    transition: background 500ms;
 		-webkit-transition: background 500ms;
+		border-bottom: $post-separator-border;
 	    
 	    table {
 	    	border-collapse: collapse;
@@ -108,12 +109,7 @@
 	    }
 	    
 	    &.editing {
-	    	background: #FAFAFA;
-			background-image: -o-linear-gradient(0deg, #FFFFFF 0%, #FAFAFA 26%);
-			background-image: -moz-linear-gradient(0deg, #FFFFFF 0%, #FAFAFA 26%);
-			background-image: -webkit-linear-gradient(0deg, #FFFFFF 0%, #FAFAFA 26%);
-			background-image: -ms-linear-gradient(0deg, #FFFFFF 0%, #FAFAFA 26%);
-			background-image: linear-gradient(-270deg, #FFFFFF 0%, #FAFAFA 26%);
+	    	background: #F5F5F5;
 			
 	        .posteditorplaceholder {
 	        	visibility: visible;
@@ -131,9 +127,6 @@
 	        	display: none;
 	        }
 	        
-	        .body {
-	        	border-bottom-color: transparent;
-	        }
         }
         
         &#threadreply .attachments {
@@ -158,7 +151,6 @@
 	        margin-right: 12px;
 	        margin-left: 153px;
 	        position: relative;
-	        border-bottom: $post-separator-border;
 	    }
 	    
         .settings {
@@ -167,26 +159,8 @@
 			top: 11px;
 	    }
 	    
-        .posteditor {
-    		.wysiwyg-editor > div {
-    			border: none;
-    		}
-    		
-    		.cke_top {
-    			border: 1px solid #b6b6b6;
-    		}
-    		
-    		.buttonslayout.v-horizontallayout {
-    			padding: 8px 11px 6px;
-    			
-    			.v-button {
-    				min-width: 126px;
-    			}
-    		}
-        }
-        	
         .bodytext {
-        	margin-top: 50px;
+        	margin-top: 48px;
 			line-height: $post-body-line-height;
 			padding: 0 8px;
 			min-height: 98px;
@@ -295,6 +269,7 @@
 	        height: 39px;
 	        margin-top: 10px;
 	        padding: 17px 10px 6px;
+	        -moz-box-sizing: border-box;
 			box-sizing: border-box;
 			display: inline-block;
 			font-size: 13px;

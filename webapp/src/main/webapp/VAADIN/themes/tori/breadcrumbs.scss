@@ -60,7 +60,7 @@
 	    	padding-right: 10px;
 	    	
 	    	&.stickythread:before {
-				content: "\e604";
+				content: "\e004";
 				color: #50D497;
 				margin-left: 10px;
 			}
@@ -84,8 +84,7 @@
 	    
 	    .v-button {
 	    	width: 130px;
-	    	height: 27px;
-	    	padding: 4px 0 !important;
+	    	padding: 5px 0 !important;
 	    	transition: all 400ms;
 			-webkit-transition: all 400ms;
 	    
@@ -107,7 +106,7 @@
 	    		border-color: $button-color;
 	    	
 	    		&:after {
-	    			content: "Following Topic";
+	    			content: "Following";
 	    		}
 	    		
 	    		&:hover {

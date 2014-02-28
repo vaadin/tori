@@ -34,6 +34,7 @@ import org.vaadin.tori.util.ToriScheduler;
 import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
 
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.JavaScript;
@@ -100,6 +101,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                             getPresenter());
                     layout.addComponent(threadUpdatesComponent);
                     mayNotReplyNote = new Label();
+                    mayNotReplyNote.setContentMode(ContentMode.HTML);
                     mayNotReplyNote.addStyleName("maynotreplynote");
                     mayNotReplyNote.setVisible(false);
                     layout.addComponent(mayNotReplyNote);

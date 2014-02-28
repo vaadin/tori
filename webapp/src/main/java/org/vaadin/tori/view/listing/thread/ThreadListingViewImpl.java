@@ -71,7 +71,7 @@ public class ThreadListingViewImpl extends
         result.addComponent(noTopicsLabel);
         result.setComponentAlignment(noTopicsLabel, Alignment.MIDDLE_CENTER);
 
-        createTopicButton = new Button("+ Create Topic", new ClickListener() {
+        createTopicButton = new Button("New Topic", new ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
                 getPresenter().createTopicRequested();

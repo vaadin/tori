@@ -71,7 +71,7 @@ public class CategoryListingViewImpl extends
         result.addComponent(noCategoriesLabel);
         result.setComponentAlignment(noCategoriesLabel, Alignment.MIDDLE_CENTER);
 
-        createCategoryButton = new PopupButton("+ Create Category");
+        createCategoryButton = new PopupButton("New Category");
         createCategoryButton.setContent(new EditCategoryForm(
                 new EditCategoryListener() {
                     @Override

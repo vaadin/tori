@@ -32,10 +32,11 @@ public class PostEditor extends VerticalLayout {
     private BBCodeWysiwygEditor editor;
     private final PostEditorListener listener;
 
-    public PostEditor(String rawBody, boolean bbcode,
-            PostEditorListener listener) {
+    public PostEditor(final String rawBody, final boolean bbcode,
+            final PostEditorListener listener) {
         this.listener = listener;
         addStyleName("posteditor");
+        addStyleName("authoring");
         setSizeFull();
         editor = buildEditor(bbcode);
         editor.setValue(rawBody);
@@ -53,7 +54,7 @@ public class PostEditor extends VerticalLayout {
         final Button cancelButton = ComponentUtil.getSecondaryButton(
                 "Discard Changes", new Button.ClickListener() {
                     @Override
-                    public void buttonClick(ClickEvent event) {
+                    public void buttonClick(final ClickEvent event) {
                         event.getButton().removeClickShortcut();
                         listener.cancelEdit();
                     }
@@ -61,7 +62,7 @@ public class PostEditor extends VerticalLayout {
         result.addComponent(new Button("Confirm Edit",
                 new Button.ClickListener() {
                     @Override
-                    public void buttonClick(ClickEvent event) {
+                    public void buttonClick(final ClickEvent event) {
                         cancelButton.removeClickShortcut();
                         listener.submitEdit(editor.getValue());
                     }
@@ -73,7 +74,7 @@ public class PostEditor extends VerticalLayout {
         return result;
     }
 
-    private BBCodeWysiwygEditor buildEditor(boolean bbcode) {
+    private BBCodeWysiwygEditor buildEditor(final boolean bbcode) {
         editor = new BBCodeWysiwygEditor(false, bbcode);
         editor.setSizeFull();
         return editor;

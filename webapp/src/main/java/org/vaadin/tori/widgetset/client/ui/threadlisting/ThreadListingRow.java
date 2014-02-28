@@ -72,7 +72,7 @@ public class ThreadListingRow extends Composite {
         final String followingStyleName = "following";
         removeStyleName(followingStyleName);
         if (followed) {
-            follow.setTitle("I'm following this topic");
+            follow.setTitle("I'm following this topic. Click to unfollow");
             addStyleName(followingStyleName);
         } else {
             follow.setTitle("Follow topic");
