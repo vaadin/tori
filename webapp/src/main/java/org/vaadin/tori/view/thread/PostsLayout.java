@@ -64,8 +64,10 @@ public class PostsLayout extends CssLayout {
     }
 
     private void renderUntil(final int untilIndex) {
+        boolean postsAdded = false;
         while (renderedIndex++ <= untilIndex) {
             if (renderedIndex < posts.size()) {
+                postsAdded = true;
                 final Component component = new PostComponent(
                         posts.get(renderedIndex), presenter);
                 addComponent(component);
@@ -82,7 +84,7 @@ public class PostsLayout extends CssLayout {
             }
         }
 
-        if (renderedIndex >= posts.size() - 1) {
+        if (!postsAdded) {
             List<String> styles = getState(false).styles;
             if ((styles == null || !styles.contains(STYLE_READY))) {
                 ToriScheduler.get().executeManualCommands();
