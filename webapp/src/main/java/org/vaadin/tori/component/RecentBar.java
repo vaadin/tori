@@ -39,7 +39,6 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
-import com.vaadin.ui.UIDetachedException;
 
 @SuppressWarnings("serial")
 public class RecentBar extends CustomComponent implements UserAuthoredListener {
@@ -117,10 +116,14 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
             getUI().access(new Runnable() {
                 @Override
                 public void run() {
-                    refresh();
+                    try {
+                        refresh();
+                    } catch (RuntimeException e) {
+                        // Ignore
+                    }
                 }
             });
-        } catch (UIDetachedException e) {
+        } catch (RuntimeException e) {
             // Ignore
         }
     }

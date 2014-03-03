@@ -203,8 +203,13 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
             getUI().access(new Runnable() {
                 @Override
                 public void run() {
-                    threadUpdatesComponent.setNewPostsCount(newPostsCount);
-                    threadUpdatesComponent.setPendingReplies(pendingReplies);
+                    try {
+                        threadUpdatesComponent.setNewPostsCount(newPostsCount);
+                        threadUpdatesComponent
+                                .setPendingReplies(pendingReplies);
+                    } catch (RuntimeException e) {
+                        // Ignore
+                    }
                 }
             });
         } catch (RuntimeException e) {

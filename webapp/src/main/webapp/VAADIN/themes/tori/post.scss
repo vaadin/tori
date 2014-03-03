@@ -120,11 +120,20 @@
 	        	visibility: hidden !important;
 	        }
 	        
-	        .attachments,
+	        
 	        .settings,
 	        .footer .v-csslayout {
 	        	display: none;
 	        }
+	        
+	        .attachments {
+	        	visibility: hidden;
+	        }
+	        
+	        &.authoringcomponent .attachments {
+	        	visibility: visible;
+	        }
+	        
         }
         
         &#threadreply .attachments {
@@ -170,8 +179,6 @@
         
         .attachments {
             border-top: $post-separator-border;
-            margin-top: 50px;
-            float: left;
             padding-left: 105px;
             position: relative;
             padding-top: 5px;
@@ -321,7 +328,6 @@
 	    	transition: opacity 500ms, visibility 500ms;
 			-webkit-transition: opacity 500ms, visibility 500ms;
 	    }
-	    
 	    
 	}
 	

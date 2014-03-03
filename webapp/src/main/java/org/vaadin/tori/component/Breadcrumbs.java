@@ -79,7 +79,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
     private Label iconsComponent;
 
     public Breadcrumbs() {
-        setStyleName("breadcrumbs");
+        setStyleName("tori-breadcrumbs");
         ToriNavigator.getCurrent().addViewChangeListener(this);
 
         final VerticalLayout mainLayout = new VerticalLayout();
