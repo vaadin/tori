@@ -12,19 +12,11 @@
 			<a class="permalink" ui:field='permaLink'>Permalink</a>
 		</div>
 		<div class="body" ui:field="body">
-			<g:FocusPanel styleName="posteditorplaceholder" ui:field="postEditorPlaceholder" />
-			<g:FocusPanel styleName="settings" ui:field="settings" />
+			<g:SimplePanel styleName="posteditorplaceholder" ui:field="postEditorPlaceholder" />
+			<g:SimplePanel styleName="settings" ui:field="settings" />
 			<div class="bodytext" ui:field='bodyText' />
 			<g:FlowPanel styleName="attachments" ui:field='attachments' />
-
-			<div class="footer">
-				<g:Label ui:field='upVote' />
-				<g:Label ui:field='downVote' />
-				<span class="score" ui:field='score' />
-
-				<g:Label styleName="quoteforreply" ui:field='quote'>Reply</g:Label>
-				<g:FocusPanel styleName="flagpost" ui:field="flag" />
-			</div>
+			<g:SimplePanel styleName="footer" ui:field="footer" />
 		</div>
 	</g:HTMLPanel>
 </ui:UiBinder> 

@@ -56,9 +56,10 @@
 			top: -1px;
 		}
 		
+		
+		
 		.wysiwyg-editor {
 			.cke_inner {
-				min-height: 244px;
 				background: transparent;
 			}
 			
@@ -69,12 +70,18 @@
 				@include box-shadow(none);
 			}
 			
-			.cke_contents {
-				min-height: 173px;
-			}
-			
 			& > div {
 				border: none;
+			}
+		}
+		
+		&.authoringcomponent {
+			.cke_inner {
+				min-height: 244px;
+			}
+			
+			.cke_contents {
+				min-height: 200px;
 			}
 		}
 	}

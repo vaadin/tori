@@ -33,15 +33,17 @@ import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.view.thread.PostEditor.PostEditorListener;
 import org.vaadin.tori.view.thread.ThreadView.PostData;
 import org.vaadin.tori.widgetset.client.ui.post.PostComponentClientRpc;
-import org.vaadin.tori.widgetset.client.ui.post.PostComponentRpc;
 import org.vaadin.tori.widgetset.client.ui.post.PostData.PostAdditionalData;
 import org.vaadin.tori.widgetset.client.ui.post.PostData.PostPrimaryData;
 
+import com.vaadin.event.LayoutEvents.LayoutClickEvent;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.shared.Connector;
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
@@ -49,7 +51,7 @@ import com.vaadin.ui.Notification;
 
 @SuppressWarnings("serial")
 public class PostComponent extends AbstractComponentContainer implements
-        PostComponentRpc, PostEditorListener {
+        PostEditorListener {
 
     private static final String DELETE_CAPTION = "Delete Post...";
     private static final String EDIT_CAPTION = "Edit Post";
@@ -60,8 +62,8 @@ public class PostComponent extends AbstractComponentContainer implements
     private final PrettyTime prettyTime = new PrettyTime();
     private PostData post;
 
-    private ReportComponent reportComponent;
     private MenuBar settings;
+    private Component footer;
     private final ThreadPresenter presenter;
     private Component editorComponent;
 
@@ -69,7 +71,6 @@ public class PostComponent extends AbstractComponentContainer implements
         this.presenter = presenter;
         this.post = post;
 
-        registerRpc(this, PostComponentRpc.class);
         setStyleName("post");
 
         initData();
@@ -93,29 +94,93 @@ public class PostComponent extends AbstractComponentContainer implements
 
     private void updatePrimaryData() {
         PostPrimaryData data = new PostPrimaryData();
-        data.setAllowHTML(true);
-        data.setAttachments(post.getAttachments());
-        data.setAuthorName(post.getAuthorName());
-        data.setAuthorAvatarUrl(post.getAuthorAvatarUrl());
-        data.setAuthorLink(post.getAuthorLink());
-        data.setPostBody(post.getFormattedBody(true));
+        data.attachments = post.getAttachments();
+        data.authorName = post.getAuthorName();
+        data.authorAvatarUrl = post.getAuthorAvatarUrl();
+        data.authorLink = post.getAuthorLink();
+        data.postBody = post.getFormattedBody(true);
         getRpcProxy(PostComponentClientRpc.class).setPostPrimaryData(data);
     }
 
     private void updateAdditionalData() {
         removeAllComponents();
         PostAdditionalData data = new PostAdditionalData();
-        data.setPrettyTime(prettyTime.format(post.getTime()));
-        data.setPermaLink(getPermaLinkUrl(post));
+        data.prettyTime = prettyTime.format(post.getTime());
+        data.permaLink = getPermaLinkUrl(post);
         setUserIsBanned(post.isAuthorBanned());
-        data.setBadgeHTML(post.getBadgeHTML());
-        data.setQuotingEnabled(post.userMayQuote());
-        data.setVotingEnabled(post.userMayVote());
-        data.setScore(post.getScore());
-        data.setUpVoted(post.getUpVoted());
-        data.setReport(buildReportComponent());
-        data.setSettings(buildSettingsComponent());
+        data.badgeHTML = post.getBadgeHTML();
+        data.footer = buildFooter();
+        data.settings = buildSettingsComponent();
         getRpcProxy(PostComponentClientRpc.class).setPostAdditionalData(data);
+    }
+
+    private Connector buildFooter() {
+        CssLayout result = new CssLayout();
+        result.setSizeFull();
+
+        final Label upVote = new Label();
+        final Label downVote = new Label();
+        final Label reply = new Label("Reply");
+
+        result.addLayoutClickListener(new LayoutClickListener() {
+            @Override
+            public void layoutClick(final LayoutClickEvent event) {
+                if (event.getClickedComponent() == upVote) {
+                    postVoted(true);
+                } else if (event.getClickedComponent() == downVote) {
+                    postVoted(false);
+                } else if (event.getClickedComponent() == reply) {
+                    quoteForReply();
+                }
+            }
+        });
+
+        if (post.userMayVote()) {
+            upVote.setStyleName("vote upvote");
+            downVote.setStyleName("vote downvote");
+
+            upVote.setSizeUndefined();
+            downVote.setSizeUndefined();
+
+            if (post.getUpVoted() != null) {
+                if (post.getUpVoted()) {
+                    upVote.addStyleName("done");
+                } else {
+                    downVote.addStyleName("done");
+                }
+            }
+
+            result.addComponent(upVote);
+            result.addComponent(downVote);
+        }
+
+        final Label score = new Label();
+        score.setStyleName("score");
+        score.setSizeUndefined();
+        long newScore = post.getScore();
+        score.setValue((newScore > 0 ? "+" : "") + String.valueOf(newScore));
+        String scoreStyle = "zero";
+        if (newScore > 0) {
+            scoreStyle = "positive";
+        } else if (newScore < 0) {
+            scoreStyle = "negative";
+        }
+        score.addStyleName(scoreStyle);
+        result.addComponent(score);
+
+        if (post.userMayQuote()) {
+            reply.setStyleName("quoteforreply");
+            reply.setSizeUndefined();
+            result.addComponent(reply);
+        }
+
+        if (post.userMayReportPosts()) {
+            result.addComponent(new ReportComponent(post, presenter,
+                    getPermaLinkUrl(post)));
+        }
+        footer = result;
+        addComponent(footer);
+        return result;
     }
 
     private Connector buildSettingsComponent() {
@@ -162,16 +227,6 @@ public class PostComponent extends AbstractComponentContainer implements
         return settings;
     }
 
-    private Connector buildReportComponent() {
-        reportComponent = null;
-        if (post.userMayReportPosts()) {
-            reportComponent = new ReportComponent(post, presenter,
-                    getPermaLinkUrl(post));
-            addComponent(reportComponent);
-        }
-        return reportComponent;
-    }
-
     private void confirmDelete() {
         ConfirmDialog.show(getUI(),
                 "Are you sure you want to delete the post?",
@@ -187,8 +242,7 @@ public class PostComponent extends AbstractComponentContainer implements
                 });
     }
 
-    @Override
-    public void postVoted(final boolean up) {
+    private void postVoted(final boolean up) {
         try {
             if (up) {
                 presenter.upvote(post.getId());
@@ -201,8 +255,7 @@ public class PostComponent extends AbstractComponentContainer implements
         }
     }
 
-    @Override
-    public void quoteForReply() {
+    private void quoteForReply() {
         presenter.quotePost(post.getId());
     }
 
@@ -269,7 +322,7 @@ public class PostComponent extends AbstractComponentContainer implements
     @Override
     public Iterator<Component> iterator() {
         List<Component> components = new ArrayList<Component>(Arrays.asList(
-                editorComponent, settings, reportComponent));
+                editorComponent, settings, footer));
         components.removeAll(Collections.singleton(null));
         return components.iterator();
     }

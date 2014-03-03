@@ -76,6 +76,7 @@ public class AuthoringComponent extends PostComponent {
     public AuthoringComponent(final AuthoringListener listener) {
         super(null, null);
         this.listener = listener;
+        addStyleName("authoringcomponent");
         addStyleName("authoring");
         addStyleName("editing");
 
@@ -283,14 +284,13 @@ public class AuthoringComponent extends PostComponent {
             maxFileSize = authoringData.getMaxFileSize();
 
             PostPrimaryData data = new PostPrimaryData();
-            data.setAuthorName(authoringData.getCurrentUserName());
-            data.setAuthorAvatarUrl(authoringData.getCurrentUserAvatarUrl());
-            data.setAuthorLink(authoringData.getCurrentUserLink());
+            data.authorName = authoringData.getCurrentUserName();
+            data.authorAvatarUrl = authoringData.getCurrentUserAvatarUrl();
+            data.authorLink = authoringData.getCurrentUserLink();
             getRpcProxy(PostComponentClientRpc.class).setPostPrimaryData(data);
 
             PostAdditionalData additionalData = new PostAdditionalData();
-            additionalData
-                    .setBadgeHTML(authoringData.getCurrentUserBadgeHTML());
+            additionalData.badgeHTML = authoringData.getCurrentUserBadgeHTML();
             getRpcProxy(PostComponentClientRpc.class).setPostAdditionalData(
                     additionalData);
 

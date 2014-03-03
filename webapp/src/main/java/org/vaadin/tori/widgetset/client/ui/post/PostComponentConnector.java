@@ -24,7 +24,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ComponentConnector;
 import com.vaadin.client.ConnectorHierarchyChangeEvent;
-import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.client.ui.AbstractComponentConnector;
 import com.vaadin.client.ui.AbstractComponentContainerConnector;
 import com.vaadin.shared.Connector;
@@ -35,24 +34,21 @@ import com.vaadin.shared.ui.Connect;
 public final class PostComponentConnector extends
         AbstractComponentContainerConnector {
 
-    private final PostComponentRpc rpc = RpcProxy.create(
-            PostComponentRpc.class, this);
-
     public PostComponentConnector() {
         registerRpc(PostComponentClientRpc.class, new PostComponentClientRpc() {
 
             @Override
-            public void setPostPrimaryData(PostPrimaryData data) {
+            public void setPostPrimaryData(final PostPrimaryData data) {
                 getWidget().updatePostData(data);
             }
 
             @Override
-            public void setPostAdditionalData(PostAdditionalData data) {
+            public void setPostAdditionalData(final PostAdditionalData data) {
                 getWidget().updatePostData(data);
             }
 
             @Override
-            public void editPost(Connector editor) {
+            public void editPost(final Connector editor) {
                 getWidget().addEditPostComponent(
                         ((AbstractComponentConnector) editor).getWidget());
             }
@@ -62,9 +58,7 @@ public final class PostComponentConnector extends
 
     @Override
     protected Widget createWidget() {
-        final PostWidget widget = GWT.create(PostWidget.class);
-        widget.setListener(rpc);
-        return widget;
+        return GWT.create(PostWidget.class);
     }
 
     @Override

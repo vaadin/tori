@@ -22,10 +22,13 @@ import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
 import org.vaadin.tori.service.post.PostReport.Reason;
+import org.vaadin.tori.util.ComponentUtil;
 import org.vaadin.tori.view.thread.ThreadView.PostData;
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.server.Page;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -45,7 +48,7 @@ public class ReportComponent extends CustomComponent {
     private final PopupButton reportPopup;
 
     private Layout explanationLayout;
-    private NativeButton reportButton;
+    private Button reportButton;
     private final String postPermalink;
 
     /**
@@ -61,6 +64,8 @@ public class ReportComponent extends CustomComponent {
         this.post = post;
         this.presenter = presenter;
         this.postPermalink = postFragmentPermalink;
+        addStyleName("flagpost");
+        setSizeUndefined();
 
         reportPopup = new PopupButton("Flag post...");
         reportPopup.addPopupVisibilityListener(new PopupVisibilityListener() {
@@ -78,6 +83,7 @@ public class ReportComponent extends CustomComponent {
         final VerticalLayout layout = new VerticalLayout();
         layout.setWidth("260px");
         layout.setSpacing(true);
+        layout.setMargin(true);
 
         layout.addComponent(new Label("What's wrong with this post?"));
 
@@ -117,8 +123,9 @@ public class ReportComponent extends CustomComponent {
         final HorizontalLayout footer = new HorizontalLayout();
         footer.setSpacing(true);
         layout.addComponent(footer);
+        layout.setComponentAlignment(footer, Alignment.BOTTOM_RIGHT);
 
-        reportButton = new NativeButton("Report Post");
+        reportButton = new Button("Report Post");
         reportButton.addClickListener(new NativeButton.ClickListener() {
             @Override
             public void buttonClick(final ClickEvent event) {
@@ -133,13 +140,13 @@ public class ReportComponent extends CustomComponent {
         reportButton.setEnabled(false);
         footer.addComponent(reportButton);
 
-        final NativeButton cancel = new NativeButton("Cancel");
-        cancel.addClickListener(new NativeButton.ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                reportPopup.setPopupVisible(false);
-            }
-        });
+        final Button cancel = ComponentUtil.getSecondaryButton("Cancel",
+                new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(final ClickEvent event) {
+                        reportPopup.setPopupVisible(false);
+                    }
+                });
         footer.addComponent(cancel);
 
         return layout;

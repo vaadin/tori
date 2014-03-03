@@ -23,9 +23,9 @@ import com.vaadin.shared.Connector;
 import com.vaadin.shared.communication.ClientRpc;
 
 public interface PostComponentClientRpc extends ClientRpc {
-    public void setPostPrimaryData(PostPrimaryData data);
+    void setPostPrimaryData(PostPrimaryData data);
 
-    public void setPostAdditionalData(PostAdditionalData data);
+    void setPostAdditionalData(PostAdditionalData data);
 
-    public void editPost(Connector editor);
+    void editPost(Connector editor);
 }

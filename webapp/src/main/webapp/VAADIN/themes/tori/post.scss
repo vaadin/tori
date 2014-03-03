@@ -116,17 +116,15 @@
 	        	opacity: 1;
 	        }
 	        
-	        
 	        .bodytext {
 	        	visibility: hidden !important;
 	        }
 	        
 	        .attachments,
 	        .settings,
-	        .footer * {
+	        .footer .v-csslayout {
 	        	display: none;
 	        }
-	        
         }
         
         &#threadreply .attachments {
@@ -215,109 +213,109 @@
             }
         }
         
-        .vote {
-            margin-right: 10px;
-            cursor: pointer;
-            outline: none;
-            color: #ccc;
-            
-            &:after {
-            	font-family: "Tori-Icons";
-            }
-            
-            &.upvote {
-            	margin-top: -2px;
-            	
-            	&:after {
-	            	content: "\e602";
-	            	font-size: 16px;
-	            }
-	            &.done,
-            	&:hover {
-            		color: #43B536;
-            	}
-            }
-            
-            &.downvote {
-            	&:after {
-	            	content: "\e603";
-	            	font-size: 15px;
-	            }
-	            &.done,
-            	&:hover {
-            		color: #E6452A;
-            	}
-            }
-        }
-        
-        .zero {
-        	display: none;
-        }
-        .negative {
-        	padding-left: 5px;
-        	float: left;
-        	color: #E6452A;
-        }
-        .positive {
-        	padding-left: 5px;
-        	float: left;	
-        	color: #43B536;
-        }
         
         .footer {
 	        width: 100%;
-	        height: 39px;
+	        height: 41px;
 	        margin-top: 10px;
 	        padding: 17px 10px 6px;
 	        -moz-box-sizing: border-box;
 			box-sizing: border-box;
-			display: inline-block;
 			font-size: 13px;
     		font-family: $font-family-secondary;
     		color: #888;
     		line-height: 1;
-	    }
-	    
-	    .vote, .score {
-	    	float: left;
-	    }
-	    
-	    .quoteforreply, .flagpost {
-	    	float: right;
-	    	cursor: pointer;
-	    	margin-left: 30px;
-	    	line-height: 16px;
-	    }
-	    
-	    .quoteforreply:before {
-	    	font-family: "Tori-Icons";
-			content: "\e007";
-			padding-right: 3px;
-			vertical-align: middle;
-			font-size: 16px;
-	    }
-	    
-	    .flagpost .v-button {
-    		padding: 0;
-    		border: none;
-    		color: #888;
-    		height: 16px;
-    		background: transparent;
     		
-    		.v-button-caption,
-    		.v-button-wrap {
-    			vertical-align: baseline;
-    		}
-    		
-    		&:before {
+    		.vote {
+	            margin-right: 10px;
+	            cursor: pointer !important;
+	            outline: none;
+	            float: left;
+	            color: #ccc;
+	            
+	            &:after {
+	            	font-family: "Tori-Icons";
+	            }
+	            
+	            &.upvote {
+	            	margin-top: -2px;
+	            	
+	            	&:after {
+		            	content: "\e602";
+		            	font-size: 16px;
+		            }
+		            &.done,
+	            	&:hover {
+	            		color: #43B536;
+	            	}
+	            }
+	            
+	            &.downvote {
+	            	&:after {
+		            	content: "\e603";
+		            	font-size: 15px;
+		            }
+		            &.done,
+	            	&:hover {
+	            		color: #E6452A;
+	            	}
+	            }
+	        }
+        
+    		.score {
+	        	padding-left: 5px;
+	        	float: left;
+	        	line-height: 1;
+	        	
+	        	&.negative {
+	        		color: #E6452A;
+	        	}
+	        	&.positive {
+	        		color: #43B536;
+	        	}
+	        	&.zero {
+		        	display: none;
+		        }
+	        }
+	        
+	        .quoteforreply, .flagpost {
+		    	float: right;
+		    	cursor: pointer;
+		    	margin-left: 30px;
+		    	line-height: 16px;
+		    }
+		    
+		    .quoteforreply:before {
 		    	font-family: "Tori-Icons";
-		    	content: "\e014";
-		    	padding-right: 5px;
-		    	vertical-align: middle;
+				content: "\e007";
+				padding-right: 3px;
+				vertical-align: middle;
+				font-size: 16px;
+		    }
+		    
+		    .flagpost .v-button {
+	    		padding: 0;
+	    		border: none;
+	    		color: #888;
+	    		height: 16px;
+	    		background: transparent;
+	    		
+	    		.v-button-caption,
+	    		.v-button-wrap {
+	    			vertical-align: baseline;
+	    		}
+	    		
+	    		&:before {
+			    	font-family: "Tori-Icons";
+			    	content: "\e014";
+			    	padding-right: 5px;
+			    	vertical-align: middle;
+			    }
 		    }
 	    }
+	   
 		    
-	    .vote, .settings .v-menubar-menuitem, .badge, .postedtime, .quoteforreply, .flagpost {
+	    .footer, .settings .v-menubar-menuitem, .badge, .postedtime {
 	    	visibility: hidden;
 	    	opacity: 0;
 	    	transition: opacity 500ms, visibility 500ms;
@@ -325,11 +323,10 @@
 	    }
 	    
 	    
-	    
 	}
 	
 	.ready .post {
-		.vote, .badge, .postedtime, .quoteforreply, .flagpost {
+		.footer, .badge, .postedtime {
 	    	visibility: visible;
 	    	opacity: 1;
 	    }

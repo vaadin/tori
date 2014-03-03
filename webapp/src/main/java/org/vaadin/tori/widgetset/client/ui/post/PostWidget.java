@@ -10,22 +10,17 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FocusPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ui.AbstractComponentConnector;
 
 public class PostWidget extends Composite {
-
-    private PostWidgetListener listener;
 
     @UiField
     public AnchorElement avatar;
@@ -36,7 +31,9 @@ public class PostWidget extends Composite {
     @UiField
     public DivElement prettyTime;
     @UiField
-    public FocusPanel postEditorPlaceholder;
+    public SimplePanel postEditorPlaceholder;
+    @UiField
+    public SimplePanel footer;
     @UiField
     public DivElement body;
     @UiField
@@ -45,19 +42,8 @@ public class PostWidget extends Composite {
     public FlowPanel attachments;
     @UiField
     public AnchorElement permaLink;
-
     @UiField
-    public Label upVote;
-    @UiField
-    public Label downVote;
-    @UiField
-    public SpanElement score;
-    @UiField
-    public Label quote;
-    @UiField
-    public FocusPanel settings;
-    @UiField
-    public FocusPanel flag;
+    public SimplePanel settings;
 
     private static PostWidgetUiBinder uiBinder = GWT
             .create(PostWidgetUiBinder.class);
@@ -70,55 +56,31 @@ public class PostWidget extends Composite {
         setVisible(false);
     }
 
-    @UiHandler("quote")
-    void handleQuoteClick(final ClickEvent e) {
-        listener.quoteForReply();
-    }
-
-    @UiHandler("upVote")
-    void handleUpVoteClick(final ClickEvent e) {
-        listener.postVoted(true);
-    }
-
-    @UiHandler("downVote")
-    void handleDownVoteClick(final ClickEvent e) {
-        listener.postVoted(false);
-    }
-
-    public void setListener(final PostWidgetListener listener) {
-        this.listener = listener;
-    }
-
     public void updatePostData(final PostPrimaryData data) {
-        authorName.setInnerText(data.getAuthorName());
-        authorName.setHref(data.getAuthorLink());
-        avatar.setHref(data.getAuthorLink());
-        if (data.getAuthorLink() == null) {
+        authorName.setInnerText(data.authorName);
+        authorName.setHref(data.authorLink);
+        avatar.setHref(data.authorLink);
+        if (data.authorLink == null) {
             authorName.addClassName("nolink");
         }
 
-        if (data.isAllowHTML()) {
-            bodyText.setInnerHTML(data.getPostBody());
-        } else {
-            bodyText.setInnerText(data.getPostBody());
-        }
+        bodyText.setInnerHTML(data.postBody);
 
-        Map<String, String> attachmentMap = data.getAttachments();
+        final Map<String, String> attachmentMap = data.attachments;
         attachments.setVisible(attachmentMap != null
                 && !attachmentMap.isEmpty());
 
         attachments.clear();
         if (attachmentMap != null) {
             for (Entry<String, String> entry : attachmentMap.entrySet()) {
-                Anchor link = new Anchor(SimpleHtmlSanitizer.sanitizeHtml(entry
-                        .getValue()), entry.getKey());
-                attachments.add(link);
+                attachments.add(new Anchor(SimpleHtmlSanitizer
+                        .sanitizeHtml(entry.getValue()), entry.getKey()));
             }
         }
 
-        if (data.getAuthorAvatarUrl() != null) {
+        if (data.authorAvatarUrl != null) {
             avatar.getStyle().setBackgroundImage(
-                    "url(" + data.getAuthorAvatarUrl() + ")");
+                    "url(" + data.authorAvatarUrl + ")");
         } else {
             avatar.addClassName("anonymous");
         }
@@ -127,44 +89,13 @@ public class PostWidget extends Composite {
     }
 
     public void updatePostData(final PostAdditionalData data) {
-        prettyTime.setInnerText(data.getPrettyTime());
-        badge.setInnerHTML(data.getBadgeHTML());
-        quote.setVisible(data.isQuotingEnabled());
-        permaLink.setHref(data.getPermaLink());
+        prettyTime.setInnerText(data.prettyTime);
+        badge.setInnerHTML(data.badgeHTML);
+        permaLink.setHref(data.permaLink);
 
-        upVote.setVisible(data.isVotingEnabled());
-        downVote.setVisible(data.isVotingEnabled());
-        upVote.setStyleName("upvote vote");
-        downVote.setStyleName("downvote vote");
-        if (data.getUpVoted() != null) {
-            if (data.getUpVoted()) {
-                upVote.addStyleName("done");
-            } else {
-                downVote.addStyleName("done");
-            }
-        }
-
-        long newScore = data.getScore();
-        score.setInnerText((newScore > 0 ? "+" : "") + String.valueOf(newScore));
-        String scoreStyle = "zero";
-        if (newScore > 0) {
-            scoreStyle = "positive";
-        } else if (newScore < 0) {
-            scoreStyle = "negative";
-        }
-        score.setClassName(scoreStyle);
-
-        flag.setWidget(null);
-        if (data.getReport() != null) {
-            flag.setWidget(((AbstractComponentConnector) data.getReport())
-                    .getWidget());
-        }
-
-        settings.setWidget(null);
-        if (data.getReport() != null) {
-            settings.setWidget(((AbstractComponentConnector) data.getSettings())
-                    .getWidget());
-        }
+        footer.setWidget(((AbstractComponentConnector) data.footer).getWidget());
+        settings.setWidget(((AbstractComponentConnector) data.settings)
+                .getWidget());
     }
 
     public void addEditPostComponent(final Widget widget) {
