@@ -228,7 +228,7 @@ public class PostComponent extends AbstractComponentContainer implements
     }
 
     private void confirmDelete() {
-        ConfirmDialog.show(getUI(),
+        ConfirmDialog dialog = ConfirmDialog.show(getUI(),
                 "Are you sure you want to delete the post?",
                 new ConfirmDialog.Listener() {
                     @Override
@@ -240,6 +240,7 @@ public class PostComponent extends AbstractComponentContainer implements
                         }
                     }
                 });
+        dialog.getOkButton().setCaption("Delete Post");
     }
 
     private void postVoted(final boolean up) {

@@ -185,14 +185,16 @@ public class CategoryTreeTable extends TreeTable {
         final String title = String.format(String.format(
                 "Really delete category \"%s\" and all of its contents?",
                 categoryData.getName()));
-        ConfirmDialog.show(getUI(), title, new ConfirmDialog.Listener() {
-            @Override
-            public void onClose(final ConfirmDialog arg0) {
-                if (arg0.isConfirmed()) {
-                    presenter.deleteCategory(categoryData.getId());
-                }
-            }
-        });
+        ConfirmDialog dialog = ConfirmDialog.show(getUI(), title,
+                new ConfirmDialog.Listener() {
+                    @Override
+                    public void onClose(final ConfirmDialog arg0) {
+                        if (arg0.isConfirmed()) {
+                            presenter.deleteCategory(categoryData.getId());
+                        }
+                    }
+                });
+        dialog.getOkButton().setCaption("Delete Category");
     }
 
     public PopupButton createEditPopup(final CategoryData categoryData) {

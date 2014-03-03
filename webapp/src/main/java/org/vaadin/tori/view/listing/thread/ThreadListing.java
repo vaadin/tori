@@ -92,8 +92,8 @@ public class ThreadListing extends AbstractComponentContainer implements
                 } else if (MOVE_CAPTION.equals(selectedItem.getText())) {
                     presenter.moveRequested(threadId);
                 } else if (DELETE_CAPTION.equals(selectedItem.getText())) {
-                    ConfirmDialog.show(getUI(),
-                            "Are you sure you want to delete the thread?",
+                    ConfirmDialog dialog = ConfirmDialog.show(getUI(),
+                            "Are you sure you want to delete the topic?",
                             new ConfirmDialog.Listener() {
                                 @Override
                                 public void onClose(final ConfirmDialog arg0) {
@@ -103,6 +103,7 @@ public class ThreadListing extends AbstractComponentContainer implements
                                     }
                                 }
                             });
+                    dialog.getOkButton().setCaption("Delete Topic");
                 }
             }
         };
