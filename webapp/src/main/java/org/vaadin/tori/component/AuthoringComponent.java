@@ -41,6 +41,8 @@ import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
+import com.vaadin.server.Page;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -50,6 +52,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.Receiver;
@@ -67,7 +70,7 @@ public class AuthoringComponent extends PostComponent {
     private ByteArrayOutputStream attachmentData;
     private int maxFileSize = 307200;
     private VerticalLayout editorLayout;
-    private BBCodeWysiwygEditor editor;
+    private AbstractField<String> editor;
     private Upload attach;
     private CheckBox followCheckbox;
     private boolean ignoreInputChanges;
@@ -102,34 +105,40 @@ public class AuthoringComponent extends PostComponent {
         return editorLayout;
     }
 
-    private BBCodeWysiwygEditor buildEditor() {
-        final BBCodeWysiwygEditor editor = new BBCodeWysiwygEditor(true, true);
-        editor.setSizeFull();
+    private AbstractField<String> buildEditor() {
+        AbstractField<String> result = null;
+        if (Page.getCurrent().getWebBrowser().isAndroid()) {
+            result = new TextArea();
+        } else {
+            result = new BBCodeWysiwygEditor(true, true);
 
-        editor.addValueChangeListener(new ValueChangeListener() {
-            @Override
-            public void valueChange(final ValueChangeEvent event) {
-                if (!ignoreInputChanges) {
-                    listener.inputValueChanged(editor.getValue());
+            result.addValueChangeListener(new ValueChangeListener() {
+                @Override
+                public void valueChange(final ValueChangeEvent event) {
+                    if (!ignoreInputChanges) {
+                        listener.inputValueChanged(editor.getValue());
+                    }
                 }
-            }
-        });
+            });
 
-        editor.addBlurListener(new BlurListener() {
-            @Override
-            public void blur(final BlurEvent event) {
-                UI.getCurrent().setPollInterval(ToriUI.DEFAULT_POLL_INTERVAL);
-            }
-        });
+            ((BBCodeWysiwygEditor) result).addBlurListener(new BlurListener() {
+                @Override
+                public void blur(final BlurEvent event) {
+                    UI.getCurrent().setPollInterval(
+                            ToriUI.DEFAULT_POLL_INTERVAL);
+                }
+            });
 
-        editor.addFocusListener(new FocusListener() {
-            @Override
-            public void focus(final FocusEvent event) {
-                UI.getCurrent().setPollInterval(3000);
-            }
-        });
-
-        return editor;
+            ((BBCodeWysiwygEditor) result)
+                    .addFocusListener(new FocusListener() {
+                        @Override
+                        public void focus(final FocusEvent event) {
+                            UI.getCurrent().setPollInterval(3000);
+                        }
+                    });
+        }
+        result.setSizeFull();
+        return result;
     }
 
     public void setPostButtonCaption(final String caption) {

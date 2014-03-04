@@ -20,16 +20,19 @@ import org.vaadin.tori.component.BBCodeWysiwygEditor;
 import org.vaadin.tori.util.ComponentUtil;
 
 import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.server.Page;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
 public class PostEditor extends VerticalLayout {
 
-    private BBCodeWysiwygEditor editor;
+    private AbstractField<String> editor;
     private final PostEditorListener listener;
 
     public PostEditor(final String rawBody, final boolean bbcode,
@@ -74,8 +77,12 @@ public class PostEditor extends VerticalLayout {
         return result;
     }
 
-    private BBCodeWysiwygEditor buildEditor(final boolean bbcode) {
-        editor = new BBCodeWysiwygEditor(false, bbcode);
+    private AbstractField<String> buildEditor(final boolean bbcode) {
+        if (Page.getCurrent().getWebBrowser().isAndroid()) {
+            editor = new TextArea();
+        } else {
+            editor = new BBCodeWysiwygEditor(false, bbcode);
+        }
         editor.setSizeFull();
         return editor;
     }
