@@ -38,7 +38,6 @@ import org.vaadin.tori.widgetset.client.ui.post.PostData.PostPrimaryData;
 
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
-import com.vaadin.shared.Connector;
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
@@ -63,9 +62,10 @@ public class PostComponent extends AbstractComponentContainer implements
     private PostData post;
 
     private MenuBar settings;
-    private Component footer;
-    private final ThreadPresenter presenter;
+    private Footer footer;
     private Component editorComponent;
+
+    private final ThreadPresenter presenter;
 
     public PostComponent(final PostData post, final ThreadPresenter presenter) {
         this.presenter = presenter;
@@ -103,91 +103,32 @@ public class PostComponent extends AbstractComponentContainer implements
     }
 
     private void updateAdditionalData() {
-        removeAllComponents();
         PostAdditionalData data = new PostAdditionalData();
         data.prettyTime = prettyTime.format(post.getTime());
         data.permaLink = getPermaLinkUrl(post);
         setUserIsBanned(post.isAuthorBanned());
         data.badgeHTML = post.getBadgeHTML();
-        data.footer = buildFooter();
-        data.settings = buildSettingsComponent();
+
+        if (footer == null) {
+            footer = new Footer();
+            addComponent(footer);
+        }
+        footer.update();
+        data.footer = footer;
+
+        if (settings == null) {
+            settings = buildSettings();
+            addComponent(settings);
+        }
+        updateSettings();
+        data.settings = settings.isVisible() ? settings : null;
+
         getRpcProxy(PostComponentClientRpc.class).setPostAdditionalData(data);
     }
 
-    private Connector buildFooter() {
-        CssLayout result = new CssLayout();
-        result.setSizeFull();
-
-        final Label upVote = new Label();
-        final Label downVote = new Label();
-        final Label reply = new Label("Reply");
-
-        result.addLayoutClickListener(new LayoutClickListener() {
-            @Override
-            public void layoutClick(final LayoutClickEvent event) {
-                if (event.getClickedComponent() == upVote) {
-                    postVoted(true);
-                } else if (event.getClickedComponent() == downVote) {
-                    postVoted(false);
-                } else if (event.getClickedComponent() == reply) {
-                    quoteForReply();
-                }
-            }
-        });
-
-        if (post.userMayVote()) {
-            upVote.setStyleName("vote upvote");
-            downVote.setStyleName("vote downvote");
-
-            upVote.setSizeUndefined();
-            downVote.setSizeUndefined();
-
-            if (post.getUpVoted() != null) {
-                if (post.getUpVoted()) {
-                    upVote.addStyleName("done");
-                } else {
-                    downVote.addStyleName("done");
-                }
-            }
-
-            result.addComponent(upVote);
-            result.addComponent(downVote);
-        }
-
-        final Label score = new Label();
-        score.setStyleName("score");
-        score.setSizeUndefined();
-        long newScore = post.getScore();
-        score.setValue((newScore > 0 ? "+" : "") + String.valueOf(newScore));
-        String scoreStyle = "zero";
-        if (newScore > 0) {
-            scoreStyle = "positive";
-        } else if (newScore < 0) {
-            scoreStyle = "negative";
-        }
-        score.addStyleName(scoreStyle);
-        result.addComponent(score);
-
-        if (post.userMayQuote()) {
-            reply.setStyleName("quoteforreply");
-            reply.setSizeUndefined();
-            result.addComponent(reply);
-        }
-
-        if (post.userMayReportPosts()) {
-            result.addComponent(new ReportComponent(post, presenter,
-                    getPermaLinkUrl(post)));
-        }
-        footer = result;
-        addComponent(footer);
-        return result;
-    }
-
-    private Connector buildSettingsComponent() {
-        settings = null;
-
-        final MenuBar settingsMenuBar = ComponentUtil.getDropdownMenu();
-        MenuItem root = settingsMenuBar.getMoreMenuItem();
+    private void updateSettings() {
+        MenuItem root = settings.getMoreMenuItem();
+        root.removeChildren();
         Command command = new Command() {
             @Override
             public void menuSelected(final MenuItem selectedItem) {
@@ -220,11 +161,13 @@ public class PostComponent extends AbstractComponentContainer implements
             }
         }
 
-        if (root.hasChildren()) {
-            settings = settingsMenuBar;
-            addComponent(settings);
-        }
-        return settings;
+        settings.setVisible(root.hasChildren());
+    }
+
+    private MenuBar buildSettings() {
+        final MenuBar settingsMenuBar = ComponentUtil.getDropdownMenu();
+        settingsMenuBar.addStyleName("settings");
+        return settingsMenuBar;
     }
 
     private void confirmDelete() {
@@ -348,5 +291,73 @@ public class PostComponent extends AbstractComponentContainer implements
 
     public Long getPostId() {
         return post.getId();
+    }
+
+    private class Footer extends CssLayout {
+        private final Label upVote = new Label();
+        private final Label downVote = new Label();
+        private final Label reply = new Label("Reply");
+        private final Label score = new Label();
+        private final ReportComponent report = new ReportComponent(post,
+                presenter, getPermaLinkUrl(post));
+
+        public Footer() {
+            setStyleName("footer");
+
+            upVote.setSizeUndefined();
+            downVote.setSizeUndefined();
+            score.setSizeUndefined();
+            reply.setSizeUndefined();
+            reply.setStyleName("quoteforreply");
+
+            addComponent(upVote);
+            addComponent(downVote);
+            addComponent(score);
+            addComponent(reply);
+            addComponent(report);
+
+            addLayoutClickListener(new LayoutClickListener() {
+                @Override
+                public void layoutClick(final LayoutClickEvent event) {
+                    if (event.getClickedComponent() == upVote) {
+                        postVoted(true);
+                    } else if (event.getClickedComponent() == downVote) {
+                        postVoted(false);
+                    } else if (event.getClickedComponent() == reply) {
+                        quoteForReply();
+                    }
+                }
+            });
+        }
+
+        public void update() {
+            upVote.setVisible(post.userMayVote());
+            downVote.setVisible(post.userMayVote());
+
+            upVote.setStyleName("vote upvote");
+            downVote.setStyleName("vote downvote");
+            if (post.userMayVote() && post.getUpVoted() != null) {
+                if (post.getUpVoted()) {
+                    upVote.addStyleName("done");
+                } else {
+                    downVote.addStyleName("done");
+                }
+            }
+
+            long newScore = post.getScore();
+            score.setStyleName("score");
+            score.setValue((newScore > 0 ? "+" : "") + String.valueOf(newScore));
+            String scoreStyle = "zero";
+            if (newScore > 0) {
+                scoreStyle = "positive";
+            } else if (newScore < 0) {
+                scoreStyle = "negative";
+            }
+            score.addStyleName(scoreStyle);
+
+            reply.setVisible(post.userMayQuote());
+
+            report.setVisible(post.userMayReportPosts());
+        }
     }
 }

@@ -11,11 +11,13 @@ import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.safehtml.shared.SimpleHtmlSanitizer;
+import com.google.gwt.uibinder.client.LazyDomElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ui.AbstractComponentConnector;
@@ -27,32 +29,38 @@ public class PostWidget extends Composite {
     @UiField
     public AnchorElement authorName;
     @UiField
-    public SpanElement badge;
-    @UiField
-    public DivElement prettyTime;
-    @UiField
-    public SimplePanel postEditorPlaceholder;
-    @UiField
-    public SimplePanel footer;
-    @UiField
-    public DivElement body;
-    @UiField
     public DivElement bodyText;
+
     @UiField
-    public FlowPanel attachments;
+    public LazyDomElement<SpanElement> badge;
     @UiField
-    public AnchorElement permaLink;
+    public LazyDomElement<DivElement> prettyTime;
     @UiField
-    public SimplePanel settings;
+    public LazyDomElement<DivElement> postEditorPlaceholder;
+    private SimplePanel postEditorPlaceholderWidget;
+    @UiField
+    public LazyDomElement<DivElement> footer;
+    private Widget footerWidget;
+    @UiField
+    public LazyDomElement<DivElement> attachments;
+    private FlowPanel attachmentsWidget;
+    @UiField
+    public LazyDomElement<AnchorElement> permaLink;
+    @UiField
+    public LazyDomElement<DivElement> settings;
+    private Widget settingsWidget;
+
+    private final HTMLPanel panel;
 
     private static PostWidgetUiBinder uiBinder = GWT
             .create(PostWidgetUiBinder.class);
 
-    interface PostWidgetUiBinder extends UiBinder<Widget, PostWidget> {
+    interface PostWidgetUiBinder extends UiBinder<HTMLPanel, PostWidget> {
     }
 
     public PostWidget() {
-        initWidget(uiBinder.createAndBindUi(this));
+        panel = uiBinder.createAndBindUi(this);
+        initWidget(panel);
         setVisible(false);
     }
 
@@ -66,17 +74,7 @@ public class PostWidget extends Composite {
 
         bodyText.setInnerHTML(data.postBody);
 
-        final Map<String, String> attachmentMap = data.attachments;
-        attachments.setVisible(attachmentMap != null
-                && !attachmentMap.isEmpty());
-
-        attachments.clear();
-        if (attachmentMap != null) {
-            for (Entry<String, String> entry : attachmentMap.entrySet()) {
-                attachments.add(new Anchor(SimpleHtmlSanitizer
-                        .sanitizeHtml(entry.getValue()), entry.getKey()));
-            }
-        }
+        updateAttachments(data.attachments);
 
         if (data.authorAvatarUrl != null) {
             avatar.getStyle().setBackgroundImage(
@@ -88,17 +86,53 @@ public class PostWidget extends Composite {
         setVisible(true);
     }
 
-    public void updatePostData(final PostAdditionalData data) {
-        prettyTime.setInnerText(data.prettyTime);
-        badge.setInnerHTML(data.badgeHTML);
-        permaLink.setHref(data.permaLink);
+    private void updateAttachments(final Map<String, String> attachmentMap) {
+        boolean hasAttachments = attachmentMap != null
+                && !attachmentMap.isEmpty();
+        if (attachmentsWidget != null) {
+            attachmentsWidget.clear();
+            attachmentsWidget.setVisible(hasAttachments);
+        }
 
-        footer.setWidget(((AbstractComponentConnector) data.footer).getWidget());
-        settings.setWidget(((AbstractComponentConnector) data.settings)
-                .getWidget());
+        if (hasAttachments) {
+            if (attachmentsWidget == null) {
+                attachmentsWidget = new FlowPanel();
+                attachmentsWidget.setStyleName("attachments");
+                panel.addAndReplaceElement(attachmentsWidget,
+                        this.attachments.get());
+            }
+            for (Entry<String, String> entry : attachmentMap.entrySet()) {
+                attachmentsWidget.add(new Anchor(SimpleHtmlSanitizer
+                        .sanitizeHtml(entry.getValue()), entry.getKey()));
+            }
+        }
+    }
+
+    public void updatePostData(final PostAdditionalData data) {
+        prettyTime.get().setInnerText(data.prettyTime);
+        badge.get().setInnerHTML(data.badgeHTML);
+        permaLink.get().setHref(data.permaLink);
+
+        if (footerWidget == null && data.footer != null) {
+            footerWidget = ((AbstractComponentConnector) data.footer)
+                    .getWidget();
+            panel.addAndReplaceElement(footerWidget, footer.get());
+        }
+
+        if (settingsWidget == null && data.settings != null) {
+            settingsWidget = ((AbstractComponentConnector) data.settings)
+                    .getWidget();
+            panel.addAndReplaceElement(settingsWidget, settings.get());
+        }
     }
 
     public void addEditPostComponent(final Widget widget) {
-        postEditorPlaceholder.setWidget(widget);
+        if (postEditorPlaceholderWidget == null) {
+            postEditorPlaceholderWidget = new SimplePanel();
+            postEditorPlaceholderWidget.setStyleName("posteditorplaceholder");
+            panel.addAndReplaceElement(postEditorPlaceholderWidget,
+                    postEditorPlaceholder.get());
+        }
+        postEditorPlaceholderWidget.setWidget(widget);
     }
 }

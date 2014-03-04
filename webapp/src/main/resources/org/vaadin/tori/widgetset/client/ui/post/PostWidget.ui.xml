@@ -11,12 +11,12 @@
 			<div class='prettytime' ui:field='prettyTime' />
 			<a class="permalink" ui:field='permaLink'>Permalink</a>
 		</div>
-		<div class="body" ui:field="body">
-			<g:SimplePanel styleName="posteditorplaceholder" ui:field="postEditorPlaceholder" />
-			<g:SimplePanel styleName="settings" ui:field="settings" />
+		<div class="body">
+			<div class="posteditorplaceholder" ui:field="postEditorPlaceholder" />
+			<div class="settings" ui:field="settings" />
 			<div class="bodytext" ui:field='bodyText' />
-			<g:FlowPanel styleName="attachments" ui:field='attachments' />
-			<g:SimplePanel styleName="footer" ui:field="footer" />
+			<div ui:field='attachments' />
+			<div class="footer" ui:field="footer" />
 		</div>
 	</g:HTMLPanel>
 </ui:UiBinder> 
