@@ -19,6 +19,11 @@ package org.vaadin.tori.data.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.vaadin.tori.data.DataSource;
+import org.vaadin.tori.data.LiferayCommonDataSource;
+import org.vaadin.tori.exception.DataSourceException;
+
+import com.liferay.portal.kernel.exception.NestableException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portlet.expando.service.ExpandoValueLocalServiceUtil;
@@ -26,38 +31,75 @@ import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBThread;
 
+/**
+ * A utility for mapping Liferay entities to Tori entities.
+ * 
+ * TODO: Map immutable DTOs/proxies instead of entities
+ */
 public class LiferayCommonEntityFactoryUtil {
 
-    public static Category createCategory(final MBCategory liferayCategory) {
-        final Category entity = new Category();
+    public static Category createCategory(final MBCategory liferayCategory,
+            final DataSource dataSource) {
+        final Category entity = new Category() {
+            @Override
+            public Category getParentCategory() {
+                Category result = null;
+                long parentCategoryId = liferayCategory.getParentCategoryId();
+                if (parentCategoryId > 0) {
+                    try {
+                        result = dataSource.getCategory(parentCategoryId);
+                    } catch (DataSourceException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return result;
+            }
+        };
         entity.setId(liferayCategory.getCategoryId());
         entity.setName(liferayCategory.getName());
         entity.setDescription(liferayCategory.getDescription());
+
         return entity;
     }
 
     public static List<Category> createCategories(
-            final List<MBCategory> liferayCategories) {
+            final List<MBCategory> liferayCategories,
+            final DataSource dataSource) {
         final List<Category> entities = new ArrayList<Category>(
                 liferayCategories.size());
         for (final MBCategory liferayCategory : liferayCategories) {
-            entities.add(createCategory(liferayCategory));
+            entities.add(createCategory(liferayCategory, dataSource));
         }
         return entities;
     }
 
     public static DiscussionThread createDiscussionThread(
-            final MBThread liferayThread, final MBMessage threadRootMessage,
-            final User threadAuthor, final User lastPostAuthor,
-            final Long lastPostId) {
+            final Category category, final MBThread liferayThread,
+            final MBMessage threadRootMessage, final User threadAuthor,
+            final User lastPostAuthor, final boolean sticky,
+            final LiferayCommonDataSource dataSource) {
         final DiscussionThread entity = new DiscussionThread() {
             @Override
             public Post getLatestPost() {
                 // TODO workaround for this hack
-                final Post fakedLastPost = new Post();
+                final Post fakedLastPost = new Post() {
+                    @Override
+                    public long getId() {
+                        long result = 0;
+                        try {
+                            List<MBMessage> posts = dataSource
+                                    .getLiferayPostsForThread(liferayThread
+                                            .getThreadId());
+                            MBMessage last = posts.get(posts.size() - 1);
+                            result = last.getMessageId();
+                        } catch (NestableException e) {
+                            e.printStackTrace();
+                        }
+                        return result;
+                    }
+                };
                 fakedLastPost.setTime(liferayThread.getLastPostDate());
                 fakedLastPost.setAuthor(lastPostAuthor);
-                fakedLastPost.setId(lastPostId);
                 return fakedLastPost;
             }
 
@@ -67,6 +109,8 @@ public class LiferayCommonEntityFactoryUtil {
                 return threadAuthor;
             }
         };
+        entity.setSticky(sticky);
+        entity.setCategory(category);
         entity.setId(liferayThread.getThreadId());
         entity.setTopic(threadRootMessage.getSubject());
         entity.setPostCount(liferayThread.getMessageCount());

@@ -1,18 +1,21 @@
 package org.vaadin.tori.widgetset.client.ui.threadlisting;
 
-import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.RowInfo;
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadData.ThreadAdditionalData;
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadData.ThreadPrimaryData;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.uibinder.client.LazyDomElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vaadin.client.ui.AbstractComponentConnector;
 
@@ -35,9 +38,9 @@ public class ThreadListingRow extends Composite {
     @UiField
     public SpanElement latestPretty;
     @UiField
-    public SpanElement latestAuthor;
+    public LazyDomElement<SpanElement> latestAuthor;
     @UiField
-    public FocusPanel settings;
+    public SimplePanel settings;
 
     private final long threadId;
 
@@ -58,12 +61,14 @@ public class ThreadListingRow extends Composite {
         threadFollowed(!following);
     }
 
-    public ThreadListingRow(final RowInfo rowInfo,
+    public ThreadListingRow(final ThreadPrimaryData rowInfo,
             final ThreadListingRowListener listener) {
         this.threadId = rowInfo.threadId;
         this.listener = listener;
         initWidget(uiBinder.createAndBindUi(this));
         setWidth("100%");
+        setStyleName(ROW_CLASS_NAME);
+        latest.setHref(Window.Location.getHref());
         updateRowInfo(rowInfo);
     }
 
@@ -79,37 +84,38 @@ public class ThreadListingRow extends Composite {
         }
     }
 
-    public void updateRowInfo(final RowInfo rowInfo) {
+    public void updateRowInfo(final ThreadPrimaryData data) {
+        topicName.setInnerText(data.topic);
+        startedBy.setInnerText(data.author);
+        latestPretty.setInnerText(data.latestPostPretty);
+
+        String postCount = data.postCount != 0 ? String.valueOf(data.postCount)
+                : "";
+        this.postCount.setInnerText(postCount);
+    }
+
+    public void updateRowInfo(final ThreadAdditionalData data) {
         setStyleName(ROW_CLASS_NAME);
-        threadFollowed(rowInfo.isFollowed);
-        if (!rowInfo.mayFollow) {
+        threadFollowed(data.isFollowed);
+        if (!data.mayFollow) {
             addStyleName("maynotfollow");
         }
-        if (rowInfo.isLocked) {
+        if (data.isLocked) {
             addStyleName("locked");
         }
-        if (rowInfo.isSticky) {
+        if (data.isSticky) {
             addStyleName("sticky");
         }
-        if (!rowInfo.isRead) {
+        if (!data.isRead) {
             addStyleName("unread");
         }
 
-        topicName.setHref(rowInfo.url);
-        topicName.setInnerText(rowInfo.topic);
+        topicName.setHref(data.url);
+        latest.setHref(data.latestPostUrl);
+        latestAuthor.get().setInnerText(data.latestAuthor);
 
-        startedBy.setInnerText(rowInfo.author);
-
-        String postCount = rowInfo.postCount != 0 ? String
-                .valueOf(rowInfo.postCount) : "";
-        this.postCount.setInnerText(postCount);
-
-        latest.setHref(rowInfo.latestPostUrl);
-        latestAuthor.setInnerText(rowInfo.latestAuthor);
-        latestPretty.setInnerText(rowInfo.latestPostPretty);
-
-        if (rowInfo.settings != null) {
-            Widget settings = ((AbstractComponentConnector) rowInfo.settings)
+        if (data.settings != null) {
+            Widget settings = ((AbstractComponentConnector) data.settings)
                     .getWidget();
             this.settings.setWidget(settings);
         }

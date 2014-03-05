@@ -9,10 +9,10 @@
 		</span>
 		<div class="startedby" ui:field='startedBy' />
 		<div class="postcount" ui:field='postCount' />
-		<a class="latesttime" ui:field='latest' >
+		<a class="latesttime" ui:field='latest' href="">
 			<span class="pretty" ui:field='latestPretty' />
 			<span class="authorname" ui:field='latestAuthor' />
 		</a>
-		<g:FocusPanel styleName="settings" ui:field="settings" />
+		<g:SimplePanel styleName="settings" ui:field="settings" />
 	</g:HTMLPanel>
 </ui:UiBinder> 

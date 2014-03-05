@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadData.ThreadAdditionalData;
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadData.ThreadPrimaryData;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingRow.ThreadListingRowListener;
-import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.RowInfo;
 
 import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.event.dom.client.ScrollHandler;
@@ -32,10 +33,6 @@ public class ThreadListingWidget extends FlowPanel {
         void fetchRows();
     }
 
-    private final int renderDelay = 500;
-    private int pageHeight;
-    private final double distanceMultiplier = 1.0;
-
     private ThreadListingRowListener threadListingRowListener;
     private Fetcher fetcher;
     private boolean fetching;
@@ -54,14 +51,17 @@ public class ThreadListingWidget extends FlowPanel {
         this.threadListingRowListener = threadListingRowListener;
     }
 
-    public void addRows(final List<RowInfo> rows, final int placeholders) {
+    public void addRows(final List<ThreadPrimaryData> rows,
+            final int placeholders) {
 
         remove(placeHolders);
-        for (RowInfo rowInfo : rows) {
-            ThreadListingRow newRow = new ThreadListingRow(rowInfo,
-                    threadListingRowListener);
-            add(newRow);
-            threadRows.put(rowInfo.threadId, newRow);
+        if (rows != null) {
+            for (ThreadPrimaryData rowInfo : rows) {
+                ThreadListingRow newRow = new ThreadListingRow(rowInfo,
+                        threadListingRowListener);
+                add(newRow);
+                threadRows.put(rowInfo.threadId, newRow);
+            }
         }
         while (placeHolders.getWidgetCount() > 0
                 && placeHolders.getWidgetCount() > placeholders) {
@@ -136,23 +136,20 @@ public class ThreadListingWidget extends FlowPanel {
         }
     }
 
-    private int getFetchDistancePx() {
-        return (int) (pageHeight * distanceMultiplier);
-    }
-
-    public void refreshRow(final RowInfo rowInfo) {
-        threadRows.get(rowInfo.threadId).updateRowInfo(rowInfo);
-    }
-
     public void removeThreadRow(final long threadId) {
         remove(threadRows.get(threadId));
     }
 
-    private static native boolean isElementInViewport(Element el)
+    private static native boolean isElementInViewport(final Element el)
     /*-{
         return (
             el.getBoundingClientRect().top <= ($wnd.innerHeight || $doc.documentElement.clientHeight)
         );
     }-*/;
 
+    public void refreshRows(final List<ThreadAdditionalData> rows) {
+        for (ThreadAdditionalData data : rows) {
+            threadRows.get(data.threadId).updateRowInfo(data);
+        }
+    }
 }

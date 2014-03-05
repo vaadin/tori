@@ -2,7 +2,8 @@ package org.vaadin.tori.widgetset.client.ui.threadlisting;
 
 import java.util.List;
 
-import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.RowInfo;
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadData.ThreadAdditionalData;
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadData.ThreadPrimaryData;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
@@ -27,10 +28,6 @@ public class ThreadListingConnector extends AbstractComponentContainerConnector 
                 getConnection().getUIConnector().getWidget());
 
         registerRpc(ThreadListingClientRpc.class, new ThreadListingClientRpc() {
-            @Override
-            public void refreshThreadRow(final RowInfo rowInfo) {
-                getWidget().refreshRow(rowInfo);
-            }
 
             @Override
             public void removeThreadRow(final long threadId) {
@@ -38,9 +35,14 @@ public class ThreadListingConnector extends AbstractComponentContainerConnector 
             }
 
             @Override
-            public void sendRows(final List<RowInfo> rows,
+            public void sendRows(final List<ThreadPrimaryData> rows,
                     final int placeholders) {
                 getWidget().addRows(rows, placeholders);
+            }
+
+            @Override
+            public void refreshThreadRows(final List<ThreadAdditionalData> rows) {
+                getWidget().refreshRows(rows);
             }
         });
     }

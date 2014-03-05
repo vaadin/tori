@@ -139,7 +139,8 @@ public abstract class LiferayCommonDataSource implements DataSource,
                 LOG.debug(String.format("Found %d categories.",
                         categories.size()));
             }
-            return LiferayCommonEntityFactoryUtil.createCategories(categories);
+            return LiferayCommonEntityFactoryUtil.createCategories(categories,
+                    this);
         } catch (final SystemException e) {
             LOG.error(String.format(
                     "Couldn't get subcategories for parent category %d.",
@@ -291,16 +292,9 @@ public abstract class LiferayCommonDataSource implements DataSource,
             category = getCategory(liferayThread.getCategoryId());
         }
 
-        List<MBMessage> posts = getLiferayPostsForThread(liferayThread
-                .getThreadId());
-        MBMessage last = posts.get(posts.size() - 1);
-
-        final DiscussionThread thread = LiferayCommonEntityFactoryUtil
-                .createDiscussionThread(liferayThread, rootMessage,
-                        threadAuthor, lastPostAuthor, last.getMessageId());
-        thread.setCategory(category);
-        thread.setSticky(liferayThread.getPriority() >= STICKY_PRIORITY);
-        return thread;
+        return LiferayCommonEntityFactoryUtil.createDiscussionThread(category,
+                liferayThread, rootMessage, threadAuthor, lastPostAuthor,
+                liferayThread.getPriority() >= STICKY_PRIORITY, this);
     }
 
     private User getUser(final long userId) throws PortalException,
@@ -368,7 +362,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
         try {
             return LiferayCommonEntityFactoryUtil
                     .createCategory(MBCategoryLocalServiceUtil
-                            .getCategory(normalizeCategoryId(categoryId)));
+                            .getCategory(normalizeCategoryId(categoryId)), this);
         } catch (final NoSuchCategoryException e) {
             throw new org.vaadin.tori.exception.NoSuchCategoryException(
                     categoryId, e);
@@ -448,7 +442,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
                     .getMBThread(threadId);
             final Category category = LiferayCommonEntityFactoryUtil
                     .createCategory(MBCategoryLocalServiceUtil
-                            .getCategory(thread.getCategoryId()));
+                            .getCategory(thread.getCategoryId()), this);
             return wrapLiferayThread(thread, category);
         } catch (final NoSuchThreadException e) {
             throw new org.vaadin.tori.exception.NoSuchThreadException(threadId,
@@ -577,7 +571,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
     protected abstract List<Attachment> getAttachments(final MBMessage message)
             throws NestableException;
 
-    private List<MBMessage> getLiferayPostsForThread(final long threadId)
+    public List<MBMessage> getLiferayPostsForThread(final long threadId)
             throws SystemException {
         @SuppressWarnings("unchecked")
         final Comparator<MBMessage> comparator = new MessageCreateDateComparator(

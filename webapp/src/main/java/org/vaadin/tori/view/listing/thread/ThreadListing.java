@@ -1,6 +1,7 @@
 package org.vaadin.tori.view.listing.thread;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -10,12 +11,14 @@ import org.ocpsoft.prettytime.PrettyTime;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.util.ComponentUtil;
+import org.vaadin.tori.util.ToriScheduler;
+import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.view.listing.thread.ThreadListingView.ThreadData;
 import org.vaadin.tori.view.listing.thread.ThreadListingView.ThreadProvider;
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadData.ThreadAdditionalData;
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadData.ThreadPrimaryData;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingClientRpc;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingServerRpc;
-import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState;
-import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.RowInfo;
 
 import com.vaadin.ui.AbstractComponentContainer;
 import com.vaadin.ui.Component;
@@ -51,26 +54,31 @@ public class ThreadListing extends AbstractComponentContainer implements
     private ThreadProvider threadProvider;
     private final ThreadListingPresenter presenter;
 
-    private RowInfo getRowInfo(final ThreadData thread) {
-        final RowInfo row = new RowInfo();
-        row.threadId = thread.getId();
-        row.author = thread.getAuthor();
-        row.isLocked = thread.isLocked();
-        row.isSticky = thread.isSticky();
-        row.isFollowed = thread.isFollowing();
-        row.mayFollow = thread.mayFollow();
-        row.topic = thread.getTopic();
-        row.postCount = thread.getPostCount();
-        row.url = "#" + ToriNavigator.ApplicationView.THREADS.getUrl() + "/"
-                + thread.getId();
-        row.latestPostPretty = new PrettyTime().format(thread
+    private ThreadPrimaryData getThreadPrimaryData(final ThreadData thread) {
+        final ThreadPrimaryData data = new ThreadPrimaryData();
+        data.author = thread.getAuthor();
+        data.latestPostPretty = new PrettyTime().format(thread
                 .getLatestPostTime());
-        row.latestAuthor = thread.getLatestPostAuthor();
-        row.latestPostUrl = row.url + "/" + thread.getLatestPostId();
+        data.postCount = thread.getPostCount();
+        data.threadId = thread.getId();
+        data.topic = thread.getTopic();
+        return data;
+    }
 
-        row.isRead = thread.userHasRead();
-        row.settings = buildSettings(thread);
-        return row;
+    private ThreadAdditionalData getThreadAdditionalData(final ThreadData thread) {
+        final ThreadAdditionalData data = new ThreadAdditionalData();
+        data.threadId = thread.getId();
+        data.isLocked = thread.isLocked();
+        data.isSticky = thread.isSticky();
+        data.isFollowed = thread.isFollowing();
+        data.mayFollow = thread.mayFollow();
+        data.url = "#" + ToriNavigator.ApplicationView.THREADS.getUrl() + "/"
+                + thread.getId();
+        data.latestPostUrl = data.url + "/" + thread.getLatestPostId();
+        data.latestAuthor = thread.getLatestPostAuthor();
+        data.isRead = thread.userHasRead();
+        data.settings = buildSettings(thread);
+        return data;
     }
 
     private Command getSettingsCommand(final long threadId) {
@@ -151,17 +159,13 @@ public class ThreadListing extends AbstractComponentContainer implements
     public void setThreadProvider(final ThreadProvider threadProvider) {
         this.threadProvider = threadProvider;
         totalRows = threadProvider.getThreadCount();
-        fetchRows();
-    }
-
-    @Override
-    protected ThreadListingState getState() {
-        return (ThreadListingState) super.getState();
+        getRpcProxy(ThreadListingClientRpc.class).sendRows(null,
+                Math.min(totalRows, PRELOAD_AMOUNT));
     }
 
     public void updateThreadRow(final ThreadData thread) {
-        getRpcProxy(ThreadListingClientRpc.class).refreshThreadRow(
-                getRowInfo(thread));
+        getRpcProxy(ThreadListingClientRpc.class).refreshThreadRows(
+                Arrays.asList(getThreadAdditionalData(thread)));
     }
 
     public void removeThreadRow(final long threadId) {
@@ -189,15 +193,28 @@ public class ThreadListing extends AbstractComponentContainer implements
         final List<ThreadData> threads = threadProvider.getThreadsBetween(
                 fetchedRows, fetchedRows + PRELOAD_AMOUNT);
 
-        final ArrayList<RowInfo> rows = new ArrayList<RowInfo>();
+        final ArrayList<ThreadPrimaryData> rows = new ArrayList<ThreadPrimaryData>();
 
         for (final ThreadData thread : threads) {
-            rows.add(getRowInfo(thread));
+            rows.add(getThreadPrimaryData(thread));
         }
+
         fetchedRows += rows.size();
         int remaining = totalRows - fetchedRows;
         int placeholders = Math.min(remaining, PRELOAD_AMOUNT);
         getRpcProxy(ThreadListingClientRpc.class).sendRows(rows, placeholders);
+
+        ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
+            @Override
+            public void execute() {
+                final ArrayList<ThreadAdditionalData> rows = new ArrayList<ThreadAdditionalData>();
+                for (final ThreadData thread : threads) {
+                    rows.add(getThreadAdditionalData(thread));
+                }
+                getRpcProxy(ThreadListingClientRpc.class).refreshThreadRows(
+                        rows);
+            }
+        });
     }
 
     @Override

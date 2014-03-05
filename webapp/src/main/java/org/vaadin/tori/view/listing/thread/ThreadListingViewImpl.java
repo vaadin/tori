@@ -49,7 +49,8 @@ public class ThreadListingViewImpl extends
 
     @Override
     protected Component createCompositionRoot() {
-        return layout = new VerticalLayout();
+        layout = new VerticalLayout();
+        return layout;
     }
 
     @Override
