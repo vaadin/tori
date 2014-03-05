@@ -782,7 +782,11 @@ public abstract class LiferayCommonDataSource implements DataSource,
             return getPost(newPost.getMessageId());
         } catch (final NestableException e) {
             LOG.error("Couldn't save post.", e);
-            throw new DataSourceException(e);
+            if ("FileNameException".equals(e.getClass().getSimpleName())) {
+                throw new org.vaadin.tori.exception.FileNameException(e);
+            } else {
+                throw new DataSourceException(e);
+            }
         }
     }
 
@@ -996,7 +1000,11 @@ public abstract class LiferayCommonDataSource implements DataSource,
             }
         } catch (final NestableException e) {
             LOG.error("Couldn't save new thread.", e);
-            throw new DataSourceException(e);
+            if ("FileNameException".equals(e.getClass().getSimpleName())) {
+                throw new org.vaadin.tori.exception.FileNameException(e);
+            } else {
+                throw new DataSourceException(e);
+            }
         }
         // if we get this far, saving has failed -> throw exception
         throw new DataSourceException();

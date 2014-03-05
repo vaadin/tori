@@ -22,6 +22,7 @@ import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.exception.FileNameException;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.util.UserBadgeProvider;
 import org.vaadin.tori.view.thread.AuthoringData;
@@ -49,10 +50,16 @@ public class NewThreadPresenter extends Presenter<NewThreadView> {
                 messaging.sendUserAuthored(post.getId(), post.getThread()
                         .getId());
                 view.newThreadCreated(post.getThread().getId());
+            } catch (final FileNameException e) {
+                log.error(e);
+                e.printStackTrace();
+                view.showError("Invalid file names");
+                view.authoringFailed();
             } catch (final DataSourceException e) {
                 log.error(e);
                 e.printStackTrace();
                 view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
+                view.authoringFailed();
             }
         }
     }

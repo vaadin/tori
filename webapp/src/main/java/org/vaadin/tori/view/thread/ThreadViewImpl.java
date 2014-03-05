@@ -289,4 +289,9 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         ToriNavigator.getCurrent().navigateToCategory(viewData.getCategoryId());
     }
 
+    @Override
+    public void authoringFailed() {
+        reply.reEnablePosting();
+    }
+
 }

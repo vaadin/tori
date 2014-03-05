@@ -49,6 +49,8 @@ public interface ThreadView extends View {
 
     void threadDeleted();
 
+    void authoringFailed();
+
     public interface PostData {
 
         long getId();

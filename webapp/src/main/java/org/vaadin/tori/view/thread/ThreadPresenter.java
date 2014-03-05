@@ -33,6 +33,7 @@ import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.exception.FileNameException;
 import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.mvp.Presenter;
 import org.vaadin.tori.service.post.PostReport.Reason;
@@ -377,14 +378,15 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
     public void delete(final long postId) {
         try {
+            boolean deletingLastMessage = currentThread.getPostCount() == 1;
             dataSource.deletePost(postId);
 
-            if (dataSource.getPosts(currentThread.getId()).isEmpty()) {
-                dataSource.deleteThread(currentThread.getId());
+            if (deletingLastMessage) {
+                view.showNotification("Thread deleted");
                 view.threadDeleted();
+            } else {
+                view.showNotification("Post deleted");
             }
-
-            view.showNotification("Post deleted");
         } catch (final DataSourceException e) {
             log.error(e);
             e.printStackTrace();
@@ -473,10 +475,16 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
                     currentThread.getId());
             view.replySent();
             view.appendPosts(Arrays.asList(getPostData(updatedPost)));
+        } catch (final FileNameException e) {
+            log.error(e);
+            e.printStackTrace();
+            view.showError("Invalid file names");
+            view.authoringFailed();
         } catch (final DataSourceException e) {
             view.showError(DataSourceException.GENERIC_ERROR_MESSAGE);
             log.error(e);
             e.printStackTrace();
+            view.authoringFailed();
         }
     }
 

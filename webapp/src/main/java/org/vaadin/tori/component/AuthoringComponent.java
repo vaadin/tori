@@ -313,4 +313,8 @@ public class AuthoringComponent extends PostComponent {
 
         void inputValueChanged(String value);
     }
+
+    public void reEnablePosting() {
+        postButton.setEnabled(true);
+    }
 }

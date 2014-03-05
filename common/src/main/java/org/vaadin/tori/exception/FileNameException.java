@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Vaadin Ltd.
+ * Copyright 2014 Vaadin Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,26 +14,11 @@
  * the License.
  */
 
-package org.vaadin.tori.view.thread.newthread;
+package org.vaadin.tori.exception;
 
-import org.vaadin.tori.mvp.View;
-import org.vaadin.tori.view.thread.AuthoringData;
-
-public interface NewThreadView extends View {
-    void showNotification(String message);
-
-    void showError(String message);
-
-    void redirectToDashboard();
-
-    void setViewData(ViewData viewData, AuthoringData authoringData);
-
-    void newThreadCreated(long threadId);
-
-    interface ViewData {
-        Long getCategoryId();
+@SuppressWarnings("serial")
+public class FileNameException extends DataSourceException {
+    public FileNameException(final Throwable e) {
+        super(e);
     }
-
-    void authoringFailed();
-
 }

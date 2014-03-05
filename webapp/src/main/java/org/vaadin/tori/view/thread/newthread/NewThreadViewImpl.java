@@ -156,4 +156,9 @@ public class NewThreadViewImpl extends
     public Long getUrlParameterId() {
         return viewData.getCategoryId();
     }
+
+    @Override
+    public void authoringFailed() {
+        authoringComponent.reEnablePosting();
+    }
 }
