@@ -114,14 +114,7 @@ public class BBCodeWysiwygEditor extends CKEditorTextField {
                 + "/VAADIN/themes/";
         String toriTheme = UI.getCurrent().getTheme() + "/";
         String toriCss = themesPath + toriTheme + "styles.css";
-
-        WebBrowser browser = Page.getCurrent().getWebBrowser();
-        if (browser.isIE()) {
-            String ieCss = themesPath + toriTheme + "editor/ie.css";
-            config.setContentsCss(toriCss, ieCss);
-        } else {
-            config.setContentsCss(toriCss);
-        }
+        config.setContentsCss(toriCss);
         config.setBodyClass("v-app v-widget authoring post tori "
                 + UI.getCurrent().getTheme());
     }

@@ -60,6 +60,10 @@
 				background: #96cdf0;
 		    }
 		    
+		    .touch &:after {
+		    	display: none;
+		    }
+		    
 		    &:first-child .latesttime:before {
 		 		content: "LATEST";
 		 		float: left;
