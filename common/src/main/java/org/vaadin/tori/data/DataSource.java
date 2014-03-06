@@ -340,4 +340,6 @@ public interface DataSource {
 
     String getMayNotReplyNote();
 
+    boolean getShowThreadsOnDashboard();
+
 }

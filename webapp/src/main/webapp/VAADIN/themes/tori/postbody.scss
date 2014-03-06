@@ -16,11 +16,12 @@
 		background-color: $postbody-quote-background-color;
 		padding-left: 50px;
 		font-family: $font-family-tertiary;
-		color: #555;
+		color: $font-color-secondary;
 		line-height: 35px;
 		position: relative;
 		display: block;
 		font-style: normal;
+		border-radius: $border-radius-primary $border-radius-primary 0 0;
 		
 		&:before {
 			@include quotationmark;
@@ -30,25 +31,38 @@
 	.quote,
 	blockquote {
 		position: relative;
+		margin: 0;
 		
 		&:before {
 			@include quotationmark;
 		}
 	}
 	
-	.quote-title + .quote:before {
-		content: "";
+	.quote-title + .quote {
+		border-radius: 0 0 $border-radius-primary $border-radius-primary;
+	
+		&:before {
+			content: "";
+		}
 	}
 	
 	
-	blockquote cite:after{
-		content: ":";
+	blockquote cite {
+		&:after{
+			content: ":";
+		}
+		
+		& + div {
+			border-radius: 0 0 $border-radius-primary $border-radius-primary;
+		}
 	}
 
 	blockquote > div,
 	.quote {
 		background-color: $postbody-quote-background-color;
-		padding: 0 5px 5px 50px;
+		border-radius: $border-radius-primary;
+		
+		padding: 0 20px 5px 50px;
 		
 		.code .code-lines,
 		code:before,
@@ -67,6 +81,7 @@
 	}
 	
 	.lfr-code {
+		border-radius: $border-radius-primary;
 		font-family: Monaco, monospace;
 		font-size: $postbody-code-font-size;
 		line-height: $postbody-code-line-height;
@@ -110,6 +125,7 @@
 	}
 	
 	.code {
+		border-radius: $border-radius-primary;
 		font-family: Monaco, monospace;
 		font-size: $postbody-code-font-size;
 		line-height: $postbody-code-line-height;
@@ -144,6 +160,7 @@
 	}
 	
 	code {
+		border-radius: $border-radius-primary;
 		font-family: Monaco, monospace;
 		font-size: $postbody-code-font-size;
 		line-height: $postbody-code-line-height;

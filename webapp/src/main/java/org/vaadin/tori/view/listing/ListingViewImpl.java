@@ -35,6 +35,7 @@ public class ListingViewImpl extends
 
     private String categoryName;
     private CategoryListingViewImpl categoryListingView;
+    private ThreadListingViewImpl threadListingView;
 
     private Long categoryId;
 
@@ -58,7 +59,7 @@ public class ListingViewImpl extends
                 categoryListingView.getPresenter());
         layout.addComponent(categoryListingView);
 
-        ThreadListingViewImpl threadListingView = new ThreadListingViewImpl();
+        threadListingView = new ThreadListingViewImpl();
         threadListingView.init();
         getPresenter().setThreadListingPresenter(
                 threadListingView.getPresenter());
@@ -96,5 +97,10 @@ public class ListingViewImpl extends
     @Override
     public String getTitle() {
         return categoryName;
+    }
+
+    @Override
+    public void setThreadsVisible(final boolean showThreads) {
+        threadListingView.setVisible(showThreads);
     }
 }

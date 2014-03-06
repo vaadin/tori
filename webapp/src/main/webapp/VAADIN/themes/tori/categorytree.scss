@@ -34,28 +34,6 @@
 	    	}
 	    }
 	    
-	    .v-table-header-wrap {
-	        background: $header-background-color;
-	        height: auto;
-	        border-color: $grid-border-color;
-	        
-	        .v-table-caption-container {
-	            font-size: 15px;
-	            font-weight: normal;
-	            padding-top: 9px;
-	            padding-right: 10px;
-	        }
-	        
-	        .v-table-header-cell:first-child .v-table-caption-container {
-	            text-indent: 18px;
-	        }
-	        
-	        .v-table-resizer {
-	            height: 36px;
-	            background: $grid-border-color;
-	        }
-	    }
-	    
 	    .v-table-body {
 	        border: none;
 	        

@@ -36,4 +36,6 @@ public interface ListingView extends View {
 
     void showError(String message);
 
+    void setThreadsVisible(boolean showThreads);
+
 }

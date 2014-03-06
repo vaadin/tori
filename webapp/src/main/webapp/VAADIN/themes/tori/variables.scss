@@ -1,5 +1,3 @@
-$header-background-color: #f0efef;
-
 // Primary variables
 $popup-border-width: 2px;
 $popup-border-style: solid;
@@ -10,36 +8,45 @@ $font-family-primary: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 $font-family-secondary: "HelveticaNeue-Light", "Helvetica Neue Light", $font-family-primary;
 $font-family-tertiary: "HelveticaNeueMedium", "HelveticaNeue-Medium", $font-family-primary;
 $font-size-primary: 14px;
+$font-color-primary: #888;
+$font-color-secondary: #555;
 
 $highlight-color: #2AAAE6;
 
-$link-color: $highlight-color; 
+$border-radius-primary: 0;
+
+$separator-border-color: #e8e8e8;
+
+// Recent bar
+$recent-bar-primary-shadow-color: #F5F5F5;
+$recent-bar-title-color: #8a8a8a;
+
+// Breadcrumbs
+$breadcrumbs-categorylink-separator-color: #ccc;
+$breadcrumbs-viewcaption-font-family: "HelveticaNeue-Light", "Helvetica Neue Light", $font-family-primary;
+$breadcrumbs-viewcaption-letter-spacing: normal;
 
 // Button
 $button-border-radius: 4px;
-$button-color: $highlight-color;
 $button-border: 2px solid rgba(41,170,230,0.65);
 $button-font-size: 13px;
-$secondary-button-color: #555;
 $secondary-button-border: 2px solid #C7C7C7;
 
 // Dropdown
-$dropdown-highlight-color: $highlight-color;
 $dropdown-button-border: 1px solid #C1C1C1;
-$dropdown-popup-border: $popup-border-width $popup-border-style $popup-border-color;
+
 
 // Post
 $post-avatar-border-color: #D7D7D7;
-$post-avatar-border: 1px solid $post-avatar-border-color;
 $post-anonymous-avatar-color: #fff;
-$post-anonymous-avatar-background-color: $post-avatar-border-color;
 $post-permalink-color: #AAA;
-$post-separator-border: 1px solid #E8E8E8;
 $post-body-line-height: 22px;
+$post-editing-background: #F5F5F5;
+$post-vote-icon-color: #ccc;
 
 // Post body
 $postbody-quote-background-color: #F7F7F7;
-$postbody-quote-quotationmark-color: $highlight-color;
+
 $postbody-code-linenumber-background-color: #E8F6FD;
 $postbody-code-linenumber-color: #94BBCD;
 $postbody-code-background-color: #F3FBFF;
@@ -49,16 +56,51 @@ $postbody-code-font-size: 13px;
 $postbody-code-line-height: 18px;
 
 $postbody-quote-code-linenumber-background-color: #E7E7E7;
-$postbody-quote-code-linenumber-color: #888;
 $postbody-quote-code-background-color: #ECECEC;
-$postbody-quote-code-color: $postbody-quote-code-linenumber-color;
+
+//Thread listing
+$threadlisting-latest-color: #2698E0;
+$threadlisting-row-hover-underline-color: #96CDf0;
+$threadlisting-follow-icon-color: #ccc;
+
+$thread-sticky-icon-color: $vaadin-green;
+$thread-locked-icon-color: $vaadin-orange;
 
 
 
-// Popupbutton
-$popupbutton-border: $popup-border-width $popup-border-style $popup-border-color;
-$popupbutton-background-color: $popup-background-color;
+@mixin generated-variables {
+	// Recent bar
+	$recent-bar-border-bottom-color: $separator-border-color;
+	
+	// Link
+	$link-color: $highlight-color; 
 
-// Window
-$window-background-color: $popup-background-color;
-$window-border: $popup-border-width $popup-border-style $popup-border-color;
+	// Button 
+	$button-color: $highlight-color;
+	$secondary-button-color: $font-color-secondary;
+
+	// Dropdown
+	$dropdown-highlight-color: $highlight-color;
+	$dropdown-popup-border: $popup-border-width $popup-border-style $popup-border-color;
+
+	// Post
+	$post-avatar-border: 1px solid $post-avatar-border-color;
+	$post-anonymous-avatar-background-color: $post-avatar-border-color;
+	$post-separator-border: 1px solid $separator-border-color;
+
+	// Post body
+	$postbody-quote-code-color: $postbody-quote-code-linenumber-color;
+	$postbody-quote-quotationmark-color: $highlight-color;
+	$postbody-quote-code-linenumber-color: $font-color-primary;
+	
+	// Popupbutton
+	$popupbutton-border: $popup-border-width $popup-border-style $popup-border-color;
+	$popupbutton-background-color: $popup-background-color;
+	
+	// Window
+	$window-background-color: $popup-background-color;
+	$window-border: $popup-border-width $popup-border-style $popup-border-color;
+	
+	// Thread listing
+	$threadlisting-row-border-bottom-color: $separator-border-color;
+}

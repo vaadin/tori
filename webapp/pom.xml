@@ -56,7 +56,7 @@
 			<properties>
 				<liferay.versions>6.0.6</liferay.versions>
 				<productionMode>true</productionMode>
-				<tori.theme>tori</tori.theme>
+				<tori.theme>tori-vaadin</tori.theme>
 			</properties>
 			<dependencies>
 				<dependency>

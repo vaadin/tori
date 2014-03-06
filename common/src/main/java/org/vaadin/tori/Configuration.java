@@ -23,6 +23,7 @@ public class Configuration {
     private boolean updatePageTitle;
     private String pageTitlePrefix;
     private boolean replaceMessageBoardsLinks;
+    private boolean showThreadsOnDashboard;
     private Map<String, String> replacements;
     private String googleAnalyticsTrackerId;
     private String pathRoot;
@@ -115,6 +116,14 @@ public class Configuration {
 
     public void setPageTitlePrefix(final String pageTitlePrefix) {
         this.pageTitlePrefix = pageTitlePrefix;
+    }
+
+    public boolean isShowThreadsOnDashboard() {
+        return showThreadsOnDashboard;
+    }
+
+    public void setShowThreadsOnDashboard(final boolean showThreadsOnDashboard) {
+        this.showThreadsOnDashboard = showThreadsOnDashboard;
     }
 
 }

@@ -38,4 +38,6 @@ public interface EditView extends View {
 
     void setMayNotReplyNote(String mayNotReplyNote);
 
+    void setShowThreadsOnDashboard(boolean show);
+
 }

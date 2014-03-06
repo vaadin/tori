@@ -109,6 +109,8 @@ public interface ThreadView extends View {
         Long getCategoryId();
 
         String getMayNotReplyNote();
+
+        boolean isThreadLocked();
     }
 
 }

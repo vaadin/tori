@@ -154,10 +154,10 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
 
     public static class PostNotification extends HorizontalLayout {
         private final PrettyTime prettyTime = new PrettyTime();
-        private final Post post;
+        private final long postId;
 
         public PostNotification(final Post post) {
-            this.post = post;
+            this.postId = post.getId();
             setSpacing(true);
             Link link = new Link(post.getThread().getTopic(),
                     new ExternalResource(getPermaLinkUrl(post)));
@@ -185,8 +185,8 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
             return linkUrl;
         }
 
-        public Post getPost() {
-            return post;
+        public long getPostId() {
+            return postId;
         }
     }
 
@@ -239,9 +239,12 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
                         current = new PostNotification(latestPost);
                         current.setState(PostNotificationState.CURRENT);
                         notificationsLayout.addComponent(current);
-                    } else if (latestPost != null
-                            && current.getPost().getId() != latestPost.getId()) {
-                        newPostAdded(latestPost);
+                    } else {
+                        long latestId = latestPost.getId();
+                        long currentId = current.getPostId();
+                        if (latestId != currentId) {
+                            newPostAdded(latestPost);
+                        }
                     }
                 }
             }

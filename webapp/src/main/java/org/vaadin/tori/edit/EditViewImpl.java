@@ -53,11 +53,11 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     private VerticalLayout layout;
     private Table replacementsTable;
     private Button removeButton;
-    private Button saveButston;
     private Button newButton;
 
     private CheckBox convertMessageBoardsUrls;
     private CheckBox updatePageTitle;
+    private CheckBox showThreadsOnDashboard;
     private TextField pageTitlePrefix;
     private TextField analyticsTrackerIdField;
     private TextField pathRoot;
@@ -82,6 +82,7 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
         layout.addComponent(buildReplacements());
         layout.addComponent(buildReplaceLinks());
         layout.addComponent(buildUpdateTitle());
+        layout.addComponent(buildShowThreadsOnDashboard());
         layout.addComponent(buildRootPath());
         layout.addComponent(buildMayNotreplyNote());
 
@@ -90,6 +91,13 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
         layout.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
 
         getPresenter().init();
+    }
+
+    private Component buildShowThreadsOnDashboard() {
+        showThreadsOnDashboard = new CheckBox("Show threads on dashboard");
+        return getFieldWrapper(
+                "Check the box beneath to let Tori show threads/topics added to the root category on the front page.",
+                showThreadsOnDashboard);
     }
 
     private Component buildSaveButton() {
@@ -128,6 +136,8 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
 
                         final Configuration config = new Configuration();
                         config.setReplaceMessageBoardsLinks(convertMessageBoardsUrls
+                                .getValue());
+                        config.setShowThreadsOnDashboard(showThreadsOnDashboard
                                 .getValue());
                         config.setReplacements(replacements);
                         config.setGoogleAnalyticsTrackerId(fixedTrackerId);
@@ -309,6 +319,11 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     }
 
     @Override
+    public void setShowThreadsOnDashboard(final boolean show) {
+        showThreadsOnDashboard.setValue(show);
+    }
+
+    @Override
     public void setUpdatePageTitle(final boolean update) {
         updatePageTitle.setValue(update);
     }
@@ -345,4 +360,5 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     public void setMayNotReplyNote(final String mayNotReplyNote) {
         this.mayNotReplyNote.setValue(mayNotReplyNote);
     }
+
 }

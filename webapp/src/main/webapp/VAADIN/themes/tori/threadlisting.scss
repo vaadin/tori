@@ -34,7 +34,7 @@
 				left: 0;
 				height: 1px;
 				width: 100%;
-				background: #e8e8e8;
+				background: $threadlisting-row-border-bottom-color;
 		    }
 		    
 		    &:hover {
@@ -57,7 +57,7 @@
 				left: 0;
 				bottom: 0;
 				height: 1px;
-				background: #96cdf0;
+				background: $threadlisting-row-hover-underline-color;
 		    }
 		    
 		    .touch &:after {
@@ -105,7 +105,7 @@
 				left: 3px;
 				top: 2px;
 				font-size: 12px;
-				color: #ccc;
+				color: $threadlisting-follow-icon-color;
 				visibility: hidden;
 			}
 			
@@ -118,12 +118,12 @@
 			
 			&.sticky .threadicons:before {
 				content: "\e004";
-				color: #50D497;
+				color: $thread-sticky-icon-color;
 				margin-left: 5px;
 			}
 			&.locked .threadicons:after {
 				content: "\e00c";
-				color: #EDC628;
+				color: $thread-locked-icon-color;
 				margin-left: 5px;
 			}
 		}
@@ -161,7 +161,7 @@
 		 	text-align: right;
 			width: 65px;
 			margin-left: 0;
-			color: #888;
+			color: $font-color-primary;
 			font-size: 12px;
 		 }
 		 
@@ -170,7 +170,7 @@
 			padding-left: 30px;
 			font-size: 12px;
 			text-align: right;
-			color: #2698E0;
+			color: $threadlisting-latest-color;
 			position: relative;
 			height: 11px;
 			
@@ -212,13 +212,13 @@
 		 
 		 .threadlisting-placeholder {
 		 	height: 40px;
-		 	border-bottom: 1px solid #e8e8e8;
+		 	border-bottom: 1px solid $threadlisting-row-border-bottom-color;
 		 	position: relative;
 		 
 		 	&:before {
 		 		padding-left: 26px;
 		 		content: "Loading Post...";
-		 		color: #888;
+		 		color: $font-color-primary;
 		 		line-height: 40px;
 		 	}
 		 	
@@ -227,7 +227,7 @@
 				position: absolute;
 				left: 0;
 				bottom: 0;
-				background: #96cdf0;
+				background: $threadlisting-row-hover-underline-color;
 		        height: 1px;
 		        opacity: 1;
 		        -webkit-animation: loading 1000ms ease-in;

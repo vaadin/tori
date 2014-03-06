@@ -24,6 +24,8 @@
     font-weight: normal;
     font-style: normal;
 }
+
+@include generated-variables;
     
 @mixin tori {
 	@include post;
@@ -55,7 +57,7 @@
 	    .v-window .v-scrollable {
 		    font-family: $font-family-primary;
 		    font-size: $font-size-primary;
-		    color: #555;
+		    color: $font-color-secondary;
 	    }
 	    
 	    .v-ui-embedded {
@@ -135,7 +137,7 @@
 	    }
 	    
 	    .headerlayout {
-			background: #F7F7F7;
+			background: $postbody-quote-background-color;
 			background-image: -o-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
 			background-image: -moz-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
 			background-image: -webkit-linear-gradient(0deg, #FFFFFF 0%, rgba(255,255,255,0.00) 61%);
@@ -146,12 +148,12 @@
 			.v-label {
 				font-family: $font-family-secondary;
 				font-size: 15px;
-				color: #888;
+				color: $font-color-primary;
 				line-height: 18px;
 				
 				&.h2 {
 					font-size: 18px;
-					color: #555;
+					color: $font-color-secondary;
 					line-height: 22px;
 				}
 			}
@@ -183,7 +185,7 @@
 			border: $dropdown-popup-border;
 			padding: 11px 12px;
 			font-size: 12px;
-			color: #888;
+			color: $font-color-primary;
 		}
 		
 		.v-popupbutton-popup {

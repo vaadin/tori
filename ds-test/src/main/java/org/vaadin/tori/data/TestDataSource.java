@@ -1052,4 +1052,9 @@ public class TestDataSource implements DataSource {
     public String getMayNotReplyNote() {
         return "Please log in to reply";
     }
+
+    @Override
+    public boolean getShowThreadsOnDashboard() {
+        return true;
+    }
 }

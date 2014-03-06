@@ -73,6 +73,8 @@ public class ListingPresenter extends Presenter<ListingView> {
             }
         }
         view.setCategory(category);
+        view.setThreadsVisible(category != null
+                || dataSource.getShowThreadsOnDashboard());
 
         categoryListingPresenter.categorySelected(category);
         threadListingPresenter.categorySelected(category);

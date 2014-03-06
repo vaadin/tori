@@ -283,6 +283,11 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             public String getMayNotReplyNote() {
                 return dataSource.getMayNotReplyNote();
             }
+
+            @Override
+            public boolean isThreadLocked() {
+                return currentThread.isLocked();
+            }
         };
     }
 

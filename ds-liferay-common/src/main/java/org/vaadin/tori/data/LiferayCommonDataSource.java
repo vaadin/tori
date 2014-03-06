@@ -117,6 +117,8 @@ public abstract class LiferayCommonDataSource implements DataSource,
     private static final String PREFS_UPDATE_PAGE_TITLE = "toriUpdatePageTitle";
     private static final String PREFS_PAGE_TITLE_PREFIX = "toriPageTitlePrefix";
     private static final String PREFS_MAY_NOT_REPLY_NOTE = "mayNotReplyNote";
+    private static final String PREFS_SHOW_THREADS_ON_DASHBOARD = "showThreadsOnDashboard";
+
     private static final String PREFS_PATHROOT = "pathroot";
 
     private static final String URL_PREFIX = "/#!/";
@@ -1104,6 +1106,10 @@ public abstract class LiferayCommonDataSource implements DataSource,
                         Boolean.valueOf(config.replaceMessageBoardsLinks())
                                 .toString());
 
+                portletPreferences.setValue(PREFS_SHOW_THREADS_ON_DASHBOARD,
+                        Boolean.valueOf(config.isShowThreadsOnDashboard())
+                                .toString());
+
                 /*
                  * this will make .getPostReplacements() fetch the replacements
                  * again
@@ -1271,4 +1277,14 @@ public abstract class LiferayCommonDataSource implements DataSource,
         return portletPreferences.getValue(PREFS_MAY_NOT_REPLY_NOTE, null);
     }
 
+    @Override
+    public boolean getShowThreadsOnDashboard() {
+        boolean show = true;
+        if (portletPreferences != null) {
+            final String showString = portletPreferences.getValue(
+                    PREFS_SHOW_THREADS_ON_DASHBOARD, "");
+            show = !String.valueOf(Boolean.FALSE).equals(showString);
+        }
+        return show;
+    }
 }
