@@ -44,7 +44,8 @@ public class IndexableDashboardView extends IndexableView {
         final StringBuilder sb = new StringBuilder();
         try {
             final List<Category> subCategories = ds
-                    .getSubCategories(currentCategory.getId());
+                    .getSubCategories(currentCategory != null ? currentCategory
+                            .getId() : null);
 
             if (!subCategories.isEmpty()) {
                 sb.append("<h2>Categories</h2>");
