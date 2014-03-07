@@ -285,6 +285,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void exit() {
+        super.exit();
         ToriScheduler.get().executeManualCommands();
     }
 

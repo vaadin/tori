@@ -142,10 +142,15 @@ public class LiferayCommonToriActivityMessaging implements
     }
 
     private void removeListener(final Object key, final String destination) {
-        MessageListener messageListener = getListeners(destination).remove(key);
-        if (messageListener != null) {
-            MessageBusUtil.unregisterMessageListener(destination,
-                    messageListener);
+        try {
+            MessageListener messageListener = getListeners(destination).remove(
+                    key);
+            if (messageListener != null) {
+                MessageBusUtil.unregisterMessageListener(destination,
+                        messageListener);
+            }
+        } catch (RuntimeException e) {
+            e.printStackTrace();
         }
     }
 
