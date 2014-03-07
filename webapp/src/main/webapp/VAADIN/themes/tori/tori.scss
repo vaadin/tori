@@ -67,6 +67,20 @@
 	   	.debugcontrolpanel {
 	   		margin-bottom: 50px;
 	   	}
+	   	
+		.v-ui.loading,
+		.v-ui.loading a,
+		.v-ui.loading a:active,
+		.v-ui.loading a:visited,
+		.v-ui.loading .v-label,
+		.v-ui.loading .v-link,
+		.v-ui.loading .v-table-row-odd, 
+		.v-ui.loading .v-button, 
+		.v-ui.loading .v-popup-indicator,
+		.v-ui.loading .v-icon,
+		.v-ui.loading .v-table-row { 
+			cursor: wait;
+		}
 	    
 	    .v-loading-indicator {
 	    	visibility: hidden !important;
