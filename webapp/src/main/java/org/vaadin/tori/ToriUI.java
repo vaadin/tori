@@ -50,6 +50,8 @@ public class ToriUI extends UI {
     private RecentBar recentBar;
     private Breadcrumbs breadcrumbs;
 
+    private String rootPath = "tori";
+
     @Override
     protected void init(final VaadinRequest request) {
         setPollInterval(DEFAULT_POLL_INTERVAL);
@@ -58,6 +60,7 @@ public class ToriUI extends UI {
 
         final String trackerId = ToriApiLoader.getCurrent().getDataSource()
                 .getGoogleAnalyticsTrackerId();
+        rootPath = ToriApiLoader.getCurrent().getDataSource().getPathRoot();
         if (trackerId != null) {
             analytics = new GoogleAnalyticsTracker(trackerId);
             analytics.setAllowAnchor(true);
@@ -119,8 +122,9 @@ public class ToriUI extends UI {
      */
     public void trackAction(final String action) {
         if (analytics != null) {
+
             String fragment = Page.getCurrent().getUriFragment();
-            StringBuilder sb = new StringBuilder("#");
+            StringBuilder sb = new StringBuilder(rootPath + "#");
             sb.append(fragment != null ? fragment : "");
             if (action != null) {
                 sb.append("/" + action);
