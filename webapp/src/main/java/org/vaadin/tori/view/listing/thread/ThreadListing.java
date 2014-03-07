@@ -39,9 +39,11 @@ public class ThreadListing extends AbstractComponentContainer implements
     private static final String MOVE_CAPTION = "Move Topic...";
     private static final String DELETE_CAPTION = "Delete Topic...";
 
-    private static final int PRELOAD_AMOUNT = 50;
+    private static final int PRELOAD_COUNT = 10;
+    private static final int FETCH_COUNT = 50;
     private int fetchedRows = 0;
     private int totalRows = 0;
+    private final PrettyTime prettyTime = new PrettyTime();
 
     private final Set<Component> components = new HashSet<Component>();
 
@@ -57,8 +59,7 @@ public class ThreadListing extends AbstractComponentContainer implements
     private ThreadPrimaryData getThreadPrimaryData(final ThreadData thread) {
         final ThreadPrimaryData data = new ThreadPrimaryData();
         data.author = thread.getAuthor();
-        data.latestPostPretty = new PrettyTime().format(thread
-                .getLatestPostTime());
+        data.latestPostPretty = prettyTime.format(thread.getLatestPostTime());
         data.postCount = thread.getPostCount();
         data.threadId = thread.getId();
         data.topic = thread.getTopic();
@@ -159,8 +160,7 @@ public class ThreadListing extends AbstractComponentContainer implements
     public void setThreadProvider(final ThreadProvider threadProvider) {
         this.threadProvider = threadProvider;
         totalRows = threadProvider.getThreadCount();
-        getRpcProxy(ThreadListingClientRpc.class).sendRows(null,
-                Math.min(totalRows, PRELOAD_AMOUNT));
+        sendRows(PRELOAD_COUNT);
     }
 
     public void updateThreadRow(final ThreadData thread) {
@@ -190,8 +190,12 @@ public class ThreadListing extends AbstractComponentContainer implements
 
     @Override
     public void fetchRows() {
+        sendRows(FETCH_COUNT);
+    }
+
+    private void sendRows(final int maxCount) {
         final List<ThreadData> threads = threadProvider.getThreadsBetween(
-                fetchedRows, fetchedRows + PRELOAD_AMOUNT);
+                fetchedRows, fetchedRows + maxCount);
 
         final ArrayList<ThreadPrimaryData> rows = new ArrayList<ThreadPrimaryData>();
 
@@ -201,7 +205,10 @@ public class ThreadListing extends AbstractComponentContainer implements
 
         fetchedRows += rows.size();
         int remaining = totalRows - fetchedRows;
-        int placeholders = Math.min(remaining, PRELOAD_AMOUNT);
+        if (fetchedRows == 0) {
+            remaining = 0;
+        }
+        int placeholders = Math.min(remaining, FETCH_COUNT);
         getRpcProxy(ThreadListingClientRpc.class).sendRows(rows, placeholders);
 
         ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
