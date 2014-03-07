@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletSession;
 
 import org.apache.log4j.Logger;
 import org.vaadin.tori.PortletRequestAware;
@@ -36,8 +35,6 @@ import com.liferay.portal.kernel.messaging.ParallelDestination;
 public class LiferayCommonToriActivityMessaging implements
         ToriActivityMessaging, PortletRequestAware {
 
-    private static final String TORIACTIVITYLISTENERS = "TORIACTIVITYLISTENERS";
-
     private static final String USER_TYPING_DESTINATION = "tori/activity/usertyping";
     private static final String USER_AUTHORED_DESTINATION = "tori/activity/userauthored";
 
@@ -50,6 +47,8 @@ public class LiferayCommonToriActivityMessaging implements
 
     private PortletRequest request;
     private long currentUserId;
+
+    private final Map<Object, MessageListener> listeners = new HashMap<Object, MessageListener>();
 
     private final Logger log = Logger
             .getLogger(LiferayCommonToriActivityMessaging.class);
@@ -138,13 +137,22 @@ public class LiferayCommonToriActivityMessaging implements
             final FilteringMessageListener messageListener) {
         MessageBusUtil.registerMessageListener(messageListener.destinationName,
                 messageListener);
-        getListeners(messageListener.destinationName).put(key, messageListener);
+        listeners.put(key, messageListener);
+    }
+
+    private boolean isSessionAlive() {
+        boolean result = true;
+        try {
+            request.getPortletSession().getAttribute("test");
+        } catch (IllegalStateException e) {
+            result = false;
+        }
+        return result;
     }
 
     private void removeListener(final Object key, final String destination) {
         try {
-            MessageListener messageListener = getListeners(destination).remove(
-                    key);
+            MessageListener messageListener = listeners.remove(key);
             if (messageListener != null) {
                 MessageBusUtil.unregisterMessageListener(destination,
                         messageListener);
@@ -152,16 +160,6 @@ public class LiferayCommonToriActivityMessaging implements
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private Map<Object, MessageListener> getListeners(final String destination) {
-        PortletSession session = request.getPortletSession();
-        String attrId = TORIACTIVITYLISTENERS + destination;
-        if (session.getAttribute(attrId) == null) {
-            session.setAttribute(attrId, new HashMap<Object, MessageListener>());
-        }
-        return (Map<Object, MessageListener>) session.getAttribute(attrId);
     }
 
     @Override
@@ -181,9 +179,8 @@ public class LiferayCommonToriActivityMessaging implements
         }
 
         @Override
-        public void receive(final Message message) throws RuntimeException {
-            try {
-                getListeners(USER_TYPING_DESTINATION);
+        public void receive(final Message message) {
+            if (isSessionAlive()) {
                 if (!isThisSender(message)) {
                     try {
                         process(message);
@@ -191,11 +188,9 @@ public class LiferayCommonToriActivityMessaging implements
                         e.printStackTrace();
                     }
                 }
-            } catch (IllegalStateException e) {
-                // Invalid session, unregister the listener
+            } else {
                 MessageBusUtil.unregisterMessageListener(destinationName, this);
             }
-
         }
 
         protected abstract void process(Message message);

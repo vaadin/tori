@@ -55,6 +55,14 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
     public RecentBar() {
         ToriApiLoader.getCurrent().getToriActivityMessaging()
                 .addUserAuthoredListener(this);
+        ToriUI.getCurrent().addDetachListener(new DetachListener() {
+            @Override
+            public void detach(final DetachEvent event) {
+                ToriApiLoader.getCurrent().getToriActivityMessaging()
+                        .removeUserAuthoredListener(RecentBar.this);
+            }
+        });
+
         addStyleName("recentbar");
         setWidth(100.0f, Unit.PERCENTAGE);
         setHeight(35.0f, Unit.PIXELS);
