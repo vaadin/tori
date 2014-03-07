@@ -32,6 +32,7 @@ import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
+import com.vaadin.client.JavaScriptExtension;
 import com.vaadin.client.extensions.javascriptmanager.JavaScriptManagerConnector;
 import com.vaadin.client.ui.button.ButtonConnector;
 import com.vaadin.client.ui.checkbox.CheckBoxConnector;
@@ -70,6 +71,7 @@ public class ToriConnectorBundleLoaderFactory extends
         addConnector(CssLayoutConnector.class, false);
         addConnector(PostComponentConnector.class, false);
         addConnector(JavaScriptManagerConnector.class, false);
+        addConnector(JavaScriptExtension.class, false);
 
         addConnector(WindowConnector.class, true);
         addConnector(FloatingComponentConnector.class, true);
@@ -91,14 +93,14 @@ public class ToriConnectorBundleLoaderFactory extends
         addConnector(ImageConnector.class, true);
     }
 
-    private static void addConnector(Class<? extends Connector> clazz,
-            boolean lazy) {
+    private static void addConnector(final Class<? extends Connector> clazz,
+            final boolean lazy) {
         usedConnectors.put(clazz.getName(), lazy);
     }
 
     @Override
     protected Collection<JClassType> getConnectorsForWidgetset(
-            TreeLogger logger, TypeOracle typeOracle)
+            final TreeLogger logger, final TypeOracle typeOracle)
             throws UnableToCompleteException {
         Collection<JClassType> connectorsForWidgetset = super
                 .getConnectorsForWidgetset(logger, typeOracle);
@@ -114,7 +116,7 @@ public class ToriConnectorBundleLoaderFactory extends
     }
 
     @Override
-    protected LoadStyle getLoadStyle(JClassType connectorType) {
+    protected LoadStyle getLoadStyle(final JClassType connectorType) {
         LoadStyle loadStyle = super.getLoadStyle(connectorType);
 
         if (usedConnectors.containsKey(connectorType.getQualifiedSourceName())
