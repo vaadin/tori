@@ -95,7 +95,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
             .getLogger(LiferayCommonDataSource.class);
 
     private static final long ROOT_CATEGORY_ID = 0;
-    private static final int QUERY_ALL = com.liferay.portal.kernel.dao.orm.QueryUtil.ALL_POS;
+    protected static final int QUERY_ALL = com.liferay.portal.kernel.dao.orm.QueryUtil.ALL_POS;
     // TODO this should be dynamic as it can be customized in liferay
     private static final double STICKY_PRIORITY = 2.0d;
 
@@ -239,46 +239,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
         }
     };
 
-    @Override
-    public List<DiscussionThread> getMyPostThreads(final int from, final int to)
-            throws DataSourceException {
-        try {
-            final List<MBThread> liferayThreads = getLiferayMyPosts(from, to);
-
-            // collection for the final result
-            final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
-                    liferayThreads.size());
-            for (final MBThread liferayThread : liferayThreads) {
-                final DiscussionThread thread = wrapLiferayThread(
-                        liferayThread, null);
-                result.add(thread);
-            }
-            return result;
-        } catch (final SystemException e) {
-            LOG.error("Couldn't get my posts.", e);
-            throw new DataSourceException(e);
-        } catch (final PortalException e) {
-            LOG.error("Couldn't get my posts.", e);
-            throw new DataSourceException(e);
-        }
-    }
-
-    @Override
-    public int getMyPostThreadsCount() throws DataSourceException {
-        try {
-            final int groupThreadsCount = MBThreadServiceUtil
-                    .getGroupThreadsCount(scopeGroupId, currentUserId,
-                            WorkflowConstants.STATUS_ANY);
-            LOG.debug("LiferayDataSource.getMyPostThreadsCount(): "
-                    + groupThreadsCount);
-            return groupThreadsCount;
-        } catch (final SystemException e) {
-            LOG.error("Couldn't get my posts' count.", e);
-            throw new DataSourceException(e);
-        }
-    }
-
-    private DiscussionThread wrapLiferayThread(final MBThread liferayThread,
+    protected DiscussionThread wrapLiferayThread(final MBThread liferayThread,
             Category category) throws PortalException, SystemException,
             DataSourceException {
         // get the root message of the thread
@@ -350,12 +311,6 @@ public abstract class LiferayCommonDataSource implements DataSource,
         return MBThreadServiceUtil.getGroupThreads(scopeGroupId, 0,
                 WorkflowConstants.STATUS_APPROVED, INCLUDE_ANONYMOUS,
                 INCLUDE_SUBSCRIBED, start, end + 1);
-    }
-
-    private List<MBThread> getLiferayMyPosts(final int start, final int end)
-            throws SystemException, PortalException {
-        return MBThreadServiceUtil.getGroupThreads(scopeGroupId, currentUserId,
-                WorkflowConstants.STATUS_ANY, start, end + 1);
     }
 
     @Override

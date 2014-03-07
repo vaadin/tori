@@ -18,9 +18,15 @@ package org.vaadin.tori.data;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.vaadin.tori.PortletRequestAware;
@@ -44,6 +50,7 @@ import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portal.service.SubscriptionLocalServiceUtil;
+import com.liferay.portlet.messageboards.NoSuchThreadException;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBMessageConstants;
 import com.liferay.portlet.messageboards.model.MBMessageFlag;
@@ -51,8 +58,10 @@ import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.model.MBThreadConstants;
 import com.liferay.portlet.messageboards.service.MBCategoryServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageFlagLocalServiceUtil;
+import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
+import com.liferay.portlet.messageboards.service.MBThreadServiceUtil;
 
 public class LiferayDataSource extends LiferayCommonDataSource implements
         DataSource, PortletRequestAware {
@@ -66,6 +75,91 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
                     MBThread.class.getName(), threadId);
         } catch (final NestableException e) {
             log.error(String.format("Cannot follow thread %d", threadId), e);
+            throw new DataSourceException(e);
+        }
+    }
+
+    @Override
+    public int getMyPostThreadsCount() throws DataSourceException {
+        // Not an optimal solution (performance-wise), but currently
+        // MBThreadServiceUtil.getGroupThreadsCount doesn't _always_ give the
+        // same count for my threads as getMyPostThreads does.
+        final int groupThreadsCount = getMyPostThreads(QUERY_ALL, QUERY_ALL)
+                .size();
+        log.debug("LiferayDataSource.getMyPostThreadsCount(): "
+                + groupThreadsCount);
+        return groupThreadsCount;
+
+        // MBThreadServiceUtil.getGroupThreadsCount(scopeGroupId, currentUserId,
+        // WorkflowConstants.STATUS_ANY);
+    }
+
+    @Override
+    public List<DiscussionThread> getMyPostThreads(final int from, final int to)
+            throws DataSourceException {
+        if (currentUserId > 0) {
+            try {
+                final List<MBThread> liferayThreads = MBThreadServiceUtil
+                        .getGroupThreads(scopeGroupId, currentUserId,
+                                WorkflowConstants.STATUS_ANY, from, to);
+                final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
+                        liferayThreads.size());
+                for (final MBThread liferayThread : liferayThreads) {
+                    final DiscussionThread thread = wrapLiferayThread(
+                            liferayThread, null);
+                    result.add(thread);
+                }
+
+                return result;
+            } catch (Exception e) {
+                // getGroupThreads() failed, handle with getGroupMessages
+                return getMyPostThreadsFromMessages(from, to);
+            }
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    private List<DiscussionThread> getMyPostThreadsFromMessages(final int from,
+            final int to) throws DataSourceException {
+        try {
+            // collection for the final result
+            final List<DiscussionThread> threads = new ArrayList<DiscussionThread>();
+            final Map<Long, Date> myLastPostDates = new HashMap<Long, Date>();
+            final Set<Long> processedThreads = new HashSet<Long>();
+            for (final MBMessage liferayMessage : MBMessageLocalServiceUtil
+                    .getGroupMessages(scopeGroupId, currentUserId,
+                            WorkflowConstants.STATUS_ANY, QUERY_ALL, QUERY_ALL)) {
+                if (processedThreads.add(liferayMessage.getThreadId())) {
+                    try {
+                        MBThread liferayThread = liferayMessage.getThread();
+                        myLastPostDates.put(liferayMessage.getThreadId(),
+                                liferayThread.getLastPostDate());
+                        final DiscussionThread thread = wrapLiferayThread(
+                                liferayThread, null);
+                        threads.add(thread);
+                    } catch (NoSuchThreadException e) {
+                        // Ignore and continue
+                    }
+                }
+
+            }
+
+            Collections.sort(threads, new Comparator<DiscussionThread>() {
+                @Override
+                public int compare(final DiscussionThread t1,
+                        final DiscussionThread t2) {
+                    return myLastPostDates.get(t2.getId()).compareTo(
+                            myLastPostDates.get(t1.getId()));
+
+                }
+            });
+
+            int toIndex = to == -1 ? threads.size() - 1 : to;
+
+            return threads.subList(Math.max(0, from), toIndex);
+        } catch (final NestableException e) {
+            log.error("Couldn't get my posts.", e);
             throw new DataSourceException(e);
         }
     }
