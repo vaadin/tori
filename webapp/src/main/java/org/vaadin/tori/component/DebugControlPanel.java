@@ -17,40 +17,39 @@
 package org.vaadin.tori.component;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.vaadin.hene.popupbutton.PopupButton;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
 import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
+import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.category.CategoryView;
-import org.vaadin.tori.dashboard.DashboardView;
 import org.vaadin.tori.data.entity.AbstractEntity;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
-import org.vaadin.tori.mvp.View;
+import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.service.DebugAuthorizationService;
-import org.vaadin.tori.thread.ThreadView;
+import org.vaadin.tori.view.listing.ListingView;
+import org.vaadin.tori.view.thread.ThreadView;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.server.ThemeResource;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.PopupView;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
 @SuppressWarnings("serial")
@@ -105,7 +104,8 @@ public class DebugControlPanel extends CustomComponent implements
             final boolean newValue = ((CheckBox) event.getProperty())
                     .getValue();
             callSetter(newValue);
-            navigator.recreateCurrentView();
+            ToriNavigator navigator = ToriNavigator.getCurrent();
+            navigator.navigateTo(navigator.getState());
         }
 
         private void callSetter(final boolean newValue) {
@@ -116,17 +116,21 @@ public class DebugControlPanel extends CustomComponent implements
                 }
 
                 else {
-                    final Class<?> paramClass = setter.getParameterTypes()[0];
+                    Class<?> paramClass = parseAbstractEntityclass(setter);
                     if (paramClass == Post.class) {
                         throw new IllegalStateException("Setters for "
                                 + Post.class.getName()
                                 + " should be handled by "
                                 + "another piece of code. MAJOR BUG!");
                     } else {
+
                         final Object setterParam = getCorrectTypeOfDataFrom(
                                 paramClass, data);
-                        setter.invoke(authorizationService, setterParam,
-                                newValue);
+                        if (setterParam instanceof AbstractEntity) {
+                            setter.invoke(authorizationService,
+                                    ((AbstractEntity) setterParam).getId(),
+                                    newValue);
+                        }
                     }
                 }
 
@@ -153,12 +157,13 @@ public class DebugControlPanel extends CustomComponent implements
             final boolean newValue = ((CheckBox) event.getProperty())
                     .getValue();
             callSetter(newValue);
-            navigator.recreateCurrentView();
+            ToriNavigator navigator = ToriNavigator.getCurrent();
+            navigator.navigateTo(navigator.getState());
         }
 
         private void callSetter(final boolean newValue) {
             try {
-                setter.invoke(authorizationService, post, newValue);
+                setter.invoke(authorizationService, post.getId(), newValue);
             } catch (final Exception e) {
                 Notification.show(e.getClass().getSimpleName());
                 e.printStackTrace();
@@ -167,73 +172,75 @@ public class DebugControlPanel extends CustomComponent implements
     }
 
     private final DebugAuthorizationService authorizationService;
-    private final ToriNavigator navigator;
 
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "we don't care about serialization")
     private ContextData data;
 
-    @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "SE_BAD_FIELD", justification = "we don't care about serialization")
-    private final Logger log = Logger.getLogger(getClass());
+    protected com.vaadin.navigator.View currentView;
 
     public DebugControlPanel(
-            final DebugAuthorizationService authorizationService,
-            final ToriNavigator navigator) {
+            final DebugAuthorizationService authorizationService) {
+        addStyleName("debugcontrolpanel");
         this.authorizationService = authorizationService;
-        this.navigator = navigator;
+        ToriNavigator.getCurrent().addViewChangeListener(
+                new ViewChangeListener() {
+                    @Override
+                    public void afterViewChange(ViewChangeEvent event) {
+                        currentView = event.getNewView();
+                    }
+
+                    @Override
+                    public boolean beforeViewChange(ViewChangeEvent event) {
+                        return true;
+                    }
+                });
 
         final PopupButton popupButton = new PopupButton("Debug Control Panel");
-        popupButton.setIcon(new ThemeResource("images/icon-settings.png"));
-        popupButton.addComponent(new Label());
         popupButton.addPopupVisibilityListener(this);
         setCompositionRoot(popupButton);
-    }
-
-    @Override
-    public void popupVisibilityChange(final PopupVisibilityEvent event) {
-        final ContextData data = getContextData();
-        if (event.isPopupVisible()) {
-            final PopupButton popupButton = event.getPopupButton();
-            popupButton.removeAllComponents();
-            popupButton.setComponent(createControlPanel(data));
-        }
+        setSizeUndefined();
     }
 
     private ContextData getContextData() {
         final ContextData data = new ContextData();
-        final View currentView = navigator.getCurrentView();
-        if (currentView instanceof DashboardView) {
-            // NOP - no context data, can't populate
-        } else if (currentView instanceof CategoryView) {
-            final CategoryView categoryView = (CategoryView) currentView;
-            data.setCategory(categoryView.getCurrentCategory());
-        } else if (currentView instanceof ThreadView) {
-            final ThreadView threadView = (ThreadView) currentView;
-            final DiscussionThread currentThread = threadView
-                    .getCurrentThread();
-
-            if (currentThread != null) {
-                data.setCategory(currentThread.getCategory());
-                data.setThread(currentThread);
-                data.setPosts(currentThread.getPosts());
-            } else {
-                log.warn("currentThread was null");
+        if (currentView instanceof AbstractView) {
+            String viewTitle = ((AbstractView) currentView).getTitle();
+            final Long urlParameterId = ((AbstractView) currentView)
+                    .getUrlParameterId();
+            if (urlParameterId != null) {
+                if (currentView instanceof ListingView) {
+                    try {
+                        data.setCategory(ToriApiLoader.getCurrent()
+                                .getDataSource().getCategory(urlParameterId));
+                    } catch (DataSourceException e) {
+                        e.printStackTrace();
+                    }
+                } else if (currentView instanceof ThreadView) {
+                    try {
+                        DiscussionThread thread = ToriApiLoader.getCurrent()
+                                .getDataSource().getThread(urlParameterId);
+                        data.setThread(thread);
+                        data.setCategory(thread.getCategory());
+                        data.setPosts(thread.getPosts());
+                    } catch (DataSourceException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
-
         return data;
     }
 
     private Component createControlPanel(final ContextData data) {
         this.data = data;
 
-        final Panel panel = new Panel();
-        panel.setStyleName(Reindeer.PANEL_LIGHT);
-        panel.setWidth("300px");
-        panel.setHeight("300px");
+        final VerticalLayout layout = new VerticalLayout();
+        layout.setStyleName(Reindeer.PANEL_LIGHT);
+        layout.setWidth("300px");
+        layout.setSpacing(true);
 
         final Set<Method> setters = getSettersByReflection(authorizationService);
 
-        final List<Method> orderedSetters = Lists.newArrayList(setters);
+        final List<Method> orderedSetters = new ArrayList<Method>(setters);
         Collections.sort(orderedSetters, new Comparator<Method>() {
             @Override
             public int compare(final Method o1, final Method o2) {
@@ -244,17 +251,18 @@ public class DebugControlPanel extends CustomComponent implements
         try {
             for (final Method setter : orderedSetters) {
                 if (isForPosts(setter)) {
-                    panel.setContent(createPostControl(setter, data.getPosts()));
+                    layout.addComponent(createPostControl(setter,
+                            data.getPosts()));
                 } else {
-                    panel.setContent(createRegularControl(setter));
+                    layout.addComponent(createRegularControl(setter));
                 }
             }
         } catch (final Exception e) {
             e.printStackTrace();
-            panel.setContent(new Label(e.toString()));
+            layout.addComponent(new Label(e.toString()));
         }
 
-        return panel;
+        return layout;
     }
 
     private Component createPostControl(final Method setter,
@@ -265,38 +273,42 @@ public class DebugControlPanel extends CustomComponent implements
             return label;
         }
 
-        final PopupView popup = new PopupView(getNameForCheckBox(setter),
-                new CustomComponent() {
-                    {
-                        final CssLayout root = new CssLayout();
-                        setCompositionRoot(root);
-                        root.setWidth("100%");
-                        setWidth("400px");
+        final PopupButton popup = new PopupButton(getNameForCheckBox(setter));
+        popup.setHeight(30.0f, Unit.PIXELS);
+        Component content = new CustomComponent() {
+            {
+                final CssLayout root = new CssLayout();
+                setCompositionRoot(root);
+                root.setWidth("100%");
+                setWidth("400px");
 
-                        root.addComponent(new Label(setter.getName()));
+                root.addComponent(new Label(setter.getName()));
 
-                        for (final Post post : posts) {
-                            final Method getter = getGetterFrom(setter);
-                            final boolean getterValue = (Boolean) getter
-                                    .invoke(authorizationService, post);
+                for (final Post post : posts) {
+                    final Method getter = getGetterFrom(setter);
+                    final boolean getterValue = (Boolean) getter.invoke(
+                            authorizationService, post.getId());
 
-                            final String authorName = post.getAuthor()
-                                    .getDisplayedName();
-                            final String postBody = post.getBodyRaw()
-                                    .substring(0, 20);
+                    final String authorName = post.getAuthor()
+                            .getDisplayedName();
 
-                            final CheckBox checkbox = new CheckBox(authorName
-                                    + " :: " + postBody);
-                            checkbox.setValue(getterValue);
-                            checkbox.addValueChangeListener(new PostCheckboxListener(
-                                    post, setter));
-                            checkbox.setImmediate(true);
-                            checkbox.setWidth("100%");
-                            root.addComponent(checkbox);
-                        }
+                    String postBody = post.getBodyRaw();
+                    if (postBody.length() > 20) {
+                        postBody = postBody.substring(0, 20);
                     }
-                });
-        popup.setHideOnMouseOut(false);
+
+                    final CheckBox checkbox = new CheckBox(authorName + " :: "
+                            + postBody);
+                    checkbox.setValue(getterValue);
+                    checkbox.addValueChangeListener(new PostCheckboxListener(
+                            post, setter));
+                    checkbox.setImmediate(true);
+                    checkbox.setWidth("100%");
+                    root.addComponent(checkbox);
+                }
+            }
+        };
+        popup.setContent(content);
         return popup;
     }
 
@@ -324,18 +336,18 @@ public class DebugControlPanel extends CustomComponent implements
         if (setter.getParameterTypes().length == 1) {
             return setter.getName();
         } else {
-            final List<String> typeNames = Lists.newArrayList();
+            final List<String> typeNames = new ArrayList<String>();
             for (final Class<?> type : setter.getParameterTypes()) {
                 typeNames.add(type.getSimpleName());
             }
             typeNames.remove(typeNames.size() - 1); // the last boolean
-            final String params = Joiner.on(", ").join(typeNames);
+            final String params = Arrays.toString(typeNames.toArray());
             return setter.getName() + "(" + params + ")";
         }
     }
 
     private static boolean isForPosts(final Method setter) {
-        return setter.getParameterTypes()[0] == Post.class;
+        return setter.getName().endsWith("Post");
     }
 
     private boolean callGetter(final Method getter)
@@ -343,19 +355,33 @@ public class DebugControlPanel extends CustomComponent implements
         if (methodHasArguments(getter, 0)) {
             return (Boolean) getter.invoke(authorizationService);
         } else if (methodHasArguments(getter, 1)) {
-            final Class<?> paramClass = getter.getParameterTypes()[0];
-            final Object entityParameter = getCorrectTypeOfDataFrom(paramClass,
-                    data);
 
-            if (entityParameter != null) {
+            Class<?> paramClass = parseAbstractEntityclass(getter);
+
+            Object entityParameter = getCorrectTypeOfDataFrom(paramClass, data);
+
+            if (entityParameter instanceof AbstractEntity) {
                 return (Boolean) getter.invoke(authorizationService,
-                        entityParameter);
+                        ((AbstractEntity) entityParameter).getId());
             } else {
                 throw new CheckBoxShouldBeDisabledException();
             }
         } else {
             throw new IllegalArgumentException("Getter has too many parameters");
         }
+    }
+
+    private Class<?> parseAbstractEntityclass(Method getter) {
+        String name = getter.getName();
+        Class<?> result = null;
+        if (name.endsWith("Category")) {
+            result = Category.class;
+        } else if (name.endsWith("Thread")) {
+            result = DiscussionThread.class;
+        } else if (name.endsWith("Post")) {
+            result = List.class;
+        }
+        return result;
     }
 
     private Method getGetterFrom(final Method setter) throws SecurityException,
@@ -438,7 +464,8 @@ public class DebugControlPanel extends CustomComponent implements
         if (methodHasArguments(method, 1)) {
             return parameterTypes[0] == boolean.class;
         } else if (methodHasArguments(method, 2)) {
-            return AbstractEntity.class.isAssignableFrom(parameterTypes[0])
+            return (AbstractEntity.class.isAssignableFrom(parameterTypes[0])
+                    || parameterTypes[0].toString().equals("long") || parameterTypes[0] == Long.class)
                     && parameterTypes[1] == boolean.class;
         } else {
             throw new IllegalArgumentException(
@@ -465,5 +492,14 @@ public class DebugControlPanel extends CustomComponent implements
         throw new RuntimeException(ContextData.class.getName()
                 + " does not have a no-arg method that "
                 + "would return the data type " + paramClass);
+    }
+
+    @Override
+    public void popupVisibilityChange(PopupVisibilityEvent event) {
+        final ContextData data = getContextData();
+        if (event.isPopupVisible()) {
+            final PopupButton popup = event.getPopupButton();
+            popup.setContent(createControlPanel(data));
+        }
     }
 }

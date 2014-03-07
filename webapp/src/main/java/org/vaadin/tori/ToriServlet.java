@@ -17,58 +17,66 @@
 package org.vaadin.tori;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
+import com.vaadin.server.DeploymentConfiguration;
+import com.vaadin.server.RequestHandler;
 import com.vaadin.server.ServiceException;
-import com.vaadin.server.SessionInitEvent;
-import com.vaadin.server.SessionInitListener;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.util.CurrentInstance;
+import com.vaadin.server.VaadinServletService;
 
 @SuppressWarnings("serial")
 public class ToriServlet extends VaadinServlet {
 
-    private static final String DEFAULT_THEME = "tori";
+    public class ToriServletService extends VaadinServletService {
+
+        public ToriServletService(final ToriServlet servlet,
+                final DeploymentConfiguration deploymentConfiguration)
+                throws ServiceException {
+            super(servlet, deploymentConfiguration);
+        }
+
+        @Override
+        protected List<RequestHandler> createRequestHandlers()
+                throws ServiceException {
+            final List<RequestHandler> requestHandlers = super
+                    .createRequestHandlers();
+            requestHandlers.add(new UnsupportedDeviceHandler());
+            return requestHandlers;
+        }
+
+        @Override
+        public String getConfiguredTheme(VaadinRequest request) {
+            return getInitParameter("theme");
+        }
+    }
 
     @Override
     protected void service(final HttpServletRequest request,
             final HttpServletResponse response) throws ServletException,
             IOException {
         super.service(request, response);
-        final ToriUI ui = CurrentInstance.get(ToriUI.class);
+    }
 
-        /*
-         * Is this still needed? We have similar logic already in
-         * ToriUI.initApiLoader()
-         */
-        if (ui != null) {
-            ui.setRequest(request);
-        }
+    @Override
+    protected VaadinServletService createServletService(
+            final DeploymentConfiguration deploymentConfiguration)
+            throws ServiceException {
+        final ToriServletService servletService = new ToriServletService(this,
+                deploymentConfiguration);
+        servletService.init();
+        return servletService;
     }
 
     @Override
     protected void servletInitialized() {
-        getService().addSessionInitListener(new SessionInitListener() {
-            @Override
-            public void sessionInit(final SessionInitEvent event)
-                    throws ServiceException {
-                String theme = getInitParameter("theme");
-                theme = (theme != null) ? theme : DEFAULT_THEME;
-
-                event.getSession().addUIProvider(new ToriUiProvider(theme));
-            }
-        });
-
         getService()
                 .setSystemMessagesProvider(ToriSystemMessagesProvider.get());
     }
 
-    private static Logger getLogger() {
-        return Logger.getLogger(ToriServlet.class);
-    }
 }

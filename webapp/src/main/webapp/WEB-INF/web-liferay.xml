@@ -6,14 +6,14 @@
 	<context-param>
 		<description>Vaadin production mode</description>
 		<param-name>productionMode</param-name>
-		<param-value>false</param-value>
+		<param-value>${productionMode}</param-value>
 	</context-param>
 	<servlet>
 		<servlet-name>Tori</servlet-name>
 		<servlet-class>org.vaadin.tori.ToriServlet</servlet-class>
 		<init-param>
 			<param-name>theme</param-name>
-			<param-value>tori-liferay</param-value>
+			<param-value>${tori.theme}</param-value>
 		</init-param>
 		<init-param>
 			<param-name>widgetset</param-name>

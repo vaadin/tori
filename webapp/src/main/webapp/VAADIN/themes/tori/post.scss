@@ -1,0 +1,364 @@
+@mixin post {
+	.post {
+	    width: 100%;
+	    /*display: table;
+	    table-layout: fixed;*/
+	    position: relative;
+	    -webkit-font-smoothing: antialiased;
+	    transition: background 500ms;
+		-webkit-transition: background 500ms;
+		border-bottom: $post-separator-border;
+	    
+	    table {
+	    	border-collapse: collapse;
+	    }
+	    
+	   	.body .settings {
+	    	font-size: 20px;
+	    }
+	    
+	    &.banned-author {
+	        zoom: 1;
+	        filter: alpha(opacity=50);
+	        opacity: 0.5;
+	    }
+	    
+	    .author {
+	        width: 153px;
+	        min-width: 153px;
+	        float: left;
+	        text-align: center;
+	        margin-top: 45px;
+	    }
+        .avatar.avatar {
+        	color: $post-anonymous-avatar-color;
+            margin-bottom: 9px;
+            display: block;
+            width: 62px;
+            height: 62px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            border-radius: 50%;
+            border: $post-avatar-border;
+            overflow: hidden;
+            display: inline-block;
+            background-color: $post-anonymous-avatar-background-color;
+            -moz-box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.07);
+			-webkit-box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.07);
+			box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.07);
+			background-position: center;
+			position: relative;
+            
+            &.anonymous:before {
+            	font-family: "Tori-Icons";
+				content: "\e606";
+				font-size: 52px;
+				position: absolute;
+				top: 11px;
+				left: 2px;
+            }
+        }
+        
+        .authornamewrapper {
+        	margin-bottom: 10px;
+        }
+    
+        .authorname {
+	        font-size: 15px;
+	        font-family: $font-family-secondary;
+			line-height: 22px;
+			overflow: hidden;
+        	text-overflow: ellipsis;
+			
+			&.nolink {
+				color: $font-color-secondary;
+				
+				&:HOVER{
+					text-decoration: none;
+				}
+			}
+        }
+        
+        .badge a {
+        	color: transparent;
+        	position: relative;
+        	
+        	&:before {
+        		content: "\e015";
+				color: #EDC628;
+				font-family: "Tori-Icons";
+				position: absolute;
+				top: 0;
+				left: 0;
+				padding-left: 5px;
+        	}
+        }
+        
+        .prettytime {
+        	font-family: $font-family-secondary;
+			font-size: 13px;
+			color: $font-color-primary;
+			line-height: 22px;
+			height: 22px;
+        }
+        
+        .permalink {
+			font-size: 11px;
+			color: $post-permalink-color;
+			line-height: 12px;
+			
+			&:hover {
+    			color: $link-color;
+    		}
+	    }
+	    
+	    &.editing {
+	    	background: $post-editing-background;
+			
+	        .posteditorplaceholder {
+	        	display: block !important;
+	        	visibility: visible;
+	        	opacity: 1;
+	        }
+	        
+	        .bodytext {
+	        	visibility: hidden !important;
+	        }
+	        
+	        
+	        .settings,
+	        .footer > div {
+	        	display: none;
+	        }
+	        
+	        .attachments {
+	        	visibility: hidden;
+	        }
+	        
+	        &.authoringcomponent .attachments {
+	        	visibility: visible;
+	        }
+	        
+        }
+        
+        &#threadreply .attachments {
+        	visibility: visible;
+        	margin-bottom: 20px;
+        }
+        
+	    .posteditorplaceholder {
+	    	outline: none;
+        	position: absolute;
+        	top: 0;
+        	width: 100%;
+        	height: 100%;
+        	visibility: hidden;
+        	opacity: 0;
+        	transition: all 500ms;
+			-webkit-transition: all 500ms;
+        }
+        
+        .v-ie8 & .posteditorplaceholder {
+        	display: none;
+        }
+        
+	    .body {
+	        padding-top: 1px;
+	        margin-right: 12px;
+	        margin-left: 153px;
+	        position: relative;
+	    }
+	    
+        .settings {
+	    	position: absolute;
+			right: 17px;
+			top: 11px;
+	    }
+	    
+        .bodytext {
+        	margin-top: 48px;
+			line-height: $post-body-line-height;
+			padding: 0 8px;
+			min-height: 98px;
+			position: relative;
+			background: #fff;
+			transition: visibility 500ms;
+			-webkit-transition: visibility 500ms;
+        }
+        
+        .attachments {
+            border-top: $post-separator-border;
+            padding-left: 105px;
+            position: relative;
+            padding-top: 5px;
+            width: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
+        
+            &:before {
+                content: "ATTACHMENTS";
+                font-size: 11px;
+                color: $font-color-primary;
+                position: absolute;
+                left: 5px;
+				top: 8px;
+            }
+            
+            .filerow,
+            a {
+                font-size: 12px;
+                float: left;
+                clear: both;
+                line-height: 18px;
+                
+                .namelabel {
+            		vertical-align: text-bottom;
+            	}
+            	
+            	.deleteattachment{
+            		cursor: pointer;
+            		color: #E6452A;
+					font-size: 15px;
+					line-height: 13px;
+					vertical-align: top;
+						
+	            	&:before {
+	            		content: "x";
+	            	}
+	            }
+            }
+        }
+        
+        
+        .body .footer {
+	        width: 100%;
+	        height: 40px;
+	        margin-top: 15px;
+	        padding: 17px 10px 6px;
+	        -moz-box-sizing: border-box;
+			box-sizing: border-box;
+			font-size: 13px;
+    		font-family: $font-family-secondary;
+    		color: $font-color-primary;
+    		line-height: 1;
+    		
+    		.vote {
+	            margin-right: 10px;
+	            cursor: pointer !important;
+	            outline: none;
+	            float: left;
+	            color: $post-vote-icon-color;
+	            
+	            &:after {
+	            	font-family: "Tori-Icons";
+	            }
+	            
+	            &.upvote {
+	            	margin-top: -2px;
+	            	
+	            	&:after {
+		            	content: "\e602";
+		            	font-size: 16px;
+		            }
+		            &.done,
+	            	&:hover {
+	            		color: #43B536;
+	            	}
+	            }
+	            
+	            &.downvote {
+	            	&:after {
+		            	content: "\e603";
+		            	font-size: 15px;
+		            }
+		            &.done,
+	            	&:hover {
+	            		color: #E6452A;
+	            	}
+	            }
+	        }
+        
+    		.score {
+	        	padding-left: 5px;
+	        	float: left;
+	        	line-height: 1;
+	        	
+	        	&.negative {
+	        		color: #E6452A;
+	        	}
+	        	&.positive {
+	        		color: #43B536;
+	        	}
+	        	&.zero {
+		        	display: none;
+		        }
+	        }
+	        
+	        .quoteforreply, .flagpost {
+		    	float: right;
+		    	cursor: pointer;
+		    	margin-left: 30px;
+		    	color: $font-color-primary;
+		    	line-height: 15px;
+		    	
+		    	&:hover {
+	    			color: $link-color;
+	    		}
+		    }
+		    
+		    .quoteforreply:before {
+		    	font-family: "Tori-Icons";
+				content: "\e007";
+				padding-right: 3px;
+				vertical-align: middle;
+				font-size: 16px;
+		    }
+		    
+		    .flagpost .v-button {
+	    		padding: 0;
+	    		border: none;
+	    		color: $font-color-primary;
+	    		height: 16px;
+	    		background: transparent;
+	    		
+	    		&:hover {
+	    			color: $link-color;
+	    		}
+	    		
+	    		.v-button-caption,
+	    		.v-button-wrap {
+	    			vertical-align: baseline;
+	    			font-weight: normal;
+	    		}
+	    		
+	    		&:before {
+			    	font-family: "Tori-Icons";
+			    	content: "\e014";
+			    	padding-right: 5px;
+			    	vertical-align: middle;
+			    }
+		    }
+	    }
+	   
+		    
+	    .footer, .settings .v-menubar-menuitem, .badge, .postedtime {
+	    	visibility: hidden;
+	    	opacity: 0;
+	    	transition: opacity 500ms, visibility 500ms;
+			-webkit-transition: opacity 500ms, visibility 500ms;
+	    }
+	    
+	}
+	
+	.ready .post {
+		.footer, .badge, .postedtime {
+	    	visibility: visible;
+	    	opacity: 1;
+	    }
+	    
+	    &:hover .settings .v-menubar-menuitem {
+	    	visibility: visible;
+	    	opacity: 1;
+	    }
+	}
+}

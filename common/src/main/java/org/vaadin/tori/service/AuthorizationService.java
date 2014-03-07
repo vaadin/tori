@@ -16,12 +16,6 @@
 
 package org.vaadin.tori.service;
 
-import org.vaadin.tori.data.entity.Category;
-import org.vaadin.tori.data.entity.DiscussionThread;
-import org.vaadin.tori.data.entity.Post;
-
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 /**
  * Provides methods for specifying access rights to resources or certain
  * operations.
@@ -34,36 +28,36 @@ public interface AuthorizationService {
 
     boolean mayReportPosts();
 
-    boolean mayFollow(@NonNull Category category);
+    boolean mayFollowCategory(Long categoryId);
 
-    boolean mayDelete(@NonNull Category category);
+    boolean mayDeleteCategory(Long categoryId);
 
-    boolean mayEdit(@NonNull Category category);
+    boolean mayEditCategory(Long categoryId);
 
-    boolean mayEdit(@NonNull Post post);
+    boolean mayEditPost(long postId);;
 
-    boolean mayReplyIn(@NonNull DiscussionThread thread);
+    boolean mayReplyInThread(long threadId);
 
     boolean mayBan();
 
-    boolean mayFollow(@NonNull DiscussionThread currentThread);
+    boolean mayFollowThread(long threadId);
 
-    boolean mayDelete(@NonNull Post post);
+    boolean mayDeletePost(long postId);
 
     boolean mayVote();
 
-    boolean mayMove(@NonNull DiscussionThread thread);
+    boolean mayMoveThreadInCategory(Long categoryId);
 
-    boolean maySticky(@NonNull DiscussionThread thread);
+    boolean mayStickyThreadInCategory(Long categoryId);
 
-    boolean mayLock(@NonNull DiscussionThread thread);
+    boolean mayLockThreadInCategory(Long categoryId);
 
-    boolean mayDelete(@NonNull DiscussionThread thread);
+    boolean mayDeleteThread(long threadId);
 
-    boolean mayCreateThreadIn(@NonNull Category category);
+    boolean mayCreateThreadInCategory(Long categoryId);
 
-    boolean mayAddFiles(@NonNull Category category);
+    boolean mayAddFilesInCategory(Long categoryId);
 
-    boolean mayView(@NonNull Category category);
+    boolean mayViewCategory(Long categoryId);
 
 }

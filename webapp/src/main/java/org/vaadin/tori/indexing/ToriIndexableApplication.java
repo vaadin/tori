@@ -26,13 +26,14 @@ import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator.ApplicationView;
 import org.vaadin.tori.data.DataSource;
+import org.vaadin.tori.data.DataSource.UrlInfo;
+import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.util.PostFormatter;
-
-import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class ToriIndexableApplication {
 
-    private static final String ESCAPED_FRAGMENT = "_escaped_fragment_";
+    public static final String ESCAPED_FRAGMENT = "_escaped_fragment_";
     private static final String USER_AGENT = "User-Agent";
     private static final String[] BOT_USER_AGENTS = { // "firefox", // for
                                                       // testing
@@ -52,8 +53,20 @@ public class ToriIndexableApplication {
     }
 
     /** Get the resulting XHTML page (<code>&lt;html&gt;</code> tags and all) */
-    public String getResultInHtml(
-            @NonNull final HttpServletRequest servletRequest) {
+    public String getResultInHtml(final HttpServletRequest servletRequest) {
+
+        try {
+            final UrlInfo urlInfo = getDataSource()
+                    .getUrlInfoFromBackendNativeRequest(servletRequest);
+            if (urlInfo != null) {
+                return getRedirectionTag(urlInfo);
+            }
+        } catch (final NoSuchThreadException e) {
+            return "Can't find that thread.";
+        } catch (final DataSourceException e) {
+            return "Something went wrong... I got an "
+                    + e.getClass().getSimpleName();
+        }
 
         final ArrayList<String> fragmentArguments = getFragmentArguments(servletRequest);
 
@@ -63,9 +76,36 @@ public class ToriIndexableApplication {
         return view.getHtml();
     }
 
-    @NonNull
+    private String getRedirectionTag(final UrlInfo urlInfo) {
+        @SuppressWarnings("deprecation")
+        String pathRoot = getDataSource().getPathRoot();
+        if (pathRoot == null) {
+            pathRoot = "";
+        }
+
+        final String destination;
+
+        switch (urlInfo.getDestination()) {
+        case THREAD:
+            destination = ApplicationView.THREADS.getUrl() + "/"
+                    + urlInfo.getId();
+            break;
+        case CATEGORY:
+            destination = ApplicationView.CATEGORIES.getUrl() + "/"
+                    + urlInfo.getId();
+            break;
+        default:
+            destination = ApplicationView.DASHBOARD.getUrl();
+        }
+
+        final String redirectUrl = pathRoot + "/#" + destination;
+
+        return "<meta http-equiv=\"refresh\" content=\"0;URL='" + redirectUrl
+                + "'\">";
+    }
+
     private static List<String> getArguments(
-            @NonNull final ArrayList<String> fragmentArguments) {
+            final ArrayList<String> fragmentArguments) {
         if (fragmentArguments.isEmpty()) {
             return fragmentArguments;
         }
@@ -78,15 +118,14 @@ public class ToriIndexableApplication {
 
     private static String getViewString(final List<String> fragmentArguments) {
         if (fragmentArguments.isEmpty()) {
-            return ApplicationView.DASHBOARD.getUrl().replace("/", "");
+            return ApplicationView.DASHBOARD.getViewName();
         } else {
             return fragmentArguments.get(0);
         }
     }
 
-    @NonNull
     private static ArrayList<String> getFragmentArguments(
-            @NonNull final HttpServletRequest servletRequest) {
+            final HttpServletRequest servletRequest) {
         final String fragment = servletRequest.getParameter(ESCAPED_FRAGMENT);
 
         if (fragment == null) {
@@ -97,7 +136,7 @@ public class ToriIndexableApplication {
         for (final String bit : fragment.split("/")) {
             args.add(bit);
         }
-        if (!args.isEmpty()) {
+        if (!args.isEmpty() && args.get(0).isEmpty()) {
             // because we start with a slash, the first index is always empty.
             // Or should be.
             args.remove(0);
@@ -105,8 +144,7 @@ public class ToriIndexableApplication {
         return args;
     }
 
-    @NonNull
-    private static IndexableView getIndexableView(@NonNull final String view,
+    private static IndexableView getIndexableView(final String view,
             final List<String> arguments,
             final ToriIndexableApplication application) {
 
@@ -114,11 +152,7 @@ public class ToriIndexableApplication {
 
         ApplicationView tempView = null;
         for (final ApplicationView appView : ApplicationView.values()) {
-            final String untrimmedAppUrl = appView.getUrl();
-            final String appUrl = untrimmedAppUrl.substring(ApplicationView
-                    .getUrlPrefix().length());
-
-            if (appUrl.equals(view)) {
+            if (appView.getViewName().equals(view)) {
                 tempView = appView;
                 break;
             }
@@ -186,7 +220,7 @@ public class ToriIndexableApplication {
     }
 
     public DataSource getDataSource() {
-        return apiLoader.getDs();
+        return apiLoader.getDataSource();
     }
 
     public PostFormatter getPostFormatter() {

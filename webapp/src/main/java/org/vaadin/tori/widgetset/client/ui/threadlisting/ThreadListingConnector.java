@@ -1,88 +1,50 @@
 package org.vaadin.tori.widgetset.client.ui.threadlisting;
 
 import java.util.List;
-import java.util.Map;
 
-import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.ControlInfo;
-import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.ControlInfo.Action;
-import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingState.RowInfo;
-import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingWidget.Fetcher;
-import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingWidget.RowActionHandler;
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadData.ThreadAdditionalData;
+import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadData.ThreadPrimaryData;
 
-import com.google.gwt.core.client.Duration;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.client.VConsole;
+import com.vaadin.client.ComponentConnector;
+import com.vaadin.client.ConnectorHierarchyChangeEvent;
 import com.vaadin.client.communication.RpcProxy;
-import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.client.ui.AbstractComponentConnector;
+import com.vaadin.client.ui.AbstractComponentContainerConnector;
 import com.vaadin.shared.ui.Connect;
 
-@Connect(org.vaadin.tori.component.thread.ThreadListing2.class)
-public class ThreadListingConnector extends AbstractComponentConnector {
-    private static final long serialVersionUID = 6535780735129905996L;
+@SuppressWarnings("serial")
+@Connect(org.vaadin.tori.view.listing.thread.ThreadListing.class)
+public class ThreadListingConnector extends AbstractComponentContainerConnector {
 
     private final ThreadListingServerRpc rpc = RpcProxy.create(
             ThreadListingServerRpc.class, this);
 
-    private final Fetcher fetcher = new Fetcher() {
-        @Override
-        public void fetchIndices(final List<Integer> indicesToFetch) {
-            rpc.fetchComponentsForIndices(indicesToFetch);
-        }
-
-        @Override
-        public void fetchControlsFor(final int rowIndex) {
-            rpc.fetchControlsForIndex(rowIndex);
-        }
-    };
-
-    private final RowActionHandler handler = new RowActionHandler() {
-        @Override
-        public void handle(final Action action, final long threadId) {
-            rpc.handle(action, threadId);
-        }
-    };
-
     @Override
     protected void init() {
         super.init();
-
-        registerRpc(ThreadListingClientRpc.class, new ThreadListingClientRpc() {
-            @Override
-            public void sendComponents(final Map<Integer, RowInfo> rows) {
-                swapLazyComponents(rows);
-            }
-
-            @Override
-            public void sendControls(final ControlInfo controlInfo) {
-                getWidget().setPopupControls(controlInfo);
-            }
-
-            @Override
-            public void refreshSelectedRowAs(final RowInfo rowInfo) {
-                getWidget().replaceOpenedThreadListingRowWith(rowInfo);
-            }
-
-            @Override
-            public void removeSelectedRow() {
-                getWidget().removeSelectedRow();
-            }
-        });
-    }
-
-    @Override
-    public void onStateChanged(final StateChangeEvent stateChangeEvent) {
-        super.onStateChanged(stateChangeEvent);
-
+        getWidget().init(rpc, rpc);
         getWidget().attachScrollHandlersIfNeeded(
                 getConnection().getUIConnector().getWidget());
 
-        final int rows = getState().rows;
-        if (rows == ThreadListingState.UNINITIALIZED_ROWS) {
-            throw new IllegalStateException("Row amount not set on init");
-        }
-        getWidget().init(rows, getState().preloadedRows, fetcher, handler);
+        registerRpc(ThreadListingClientRpc.class, new ThreadListingClientRpc() {
+
+            @Override
+            public void removeThreadRow(final long threadId) {
+                getWidget().removeThreadRow(threadId);
+            }
+
+            @Override
+            public void sendRows(final List<ThreadPrimaryData> rows,
+                    final int placeholders) {
+                getWidget().addRows(rows, placeholders);
+            }
+
+            @Override
+            public void refreshThreadRows(final List<ThreadAdditionalData> rows) {
+                getWidget().refreshRows(rows);
+            }
+        });
     }
 
     @Override
@@ -96,20 +58,14 @@ public class ThreadListingConnector extends AbstractComponentConnector {
     }
 
     @Override
-    public ThreadListingState getState() {
-        return (ThreadListingState) super.getState();
+    public void updateCaption(final ComponentConnector connector) {
+        // Not supported
     }
 
-    private void swapLazyComponents(final Map<Integer, RowInfo> rows) {
-        if (rows == null || rows.isEmpty()) {
-            VConsole.error("No thread rows to swap in (unnecessary method call)");
-        } else {
-            final Duration duration = new Duration();
-
-            getWidget().replaceRows(rows);
-
-            ThreadListingWidget.debug("Replace components took "
-                    + duration.elapsedMillis() + "ms (n=" + rows.size() + ")");
-        }
+    @Override
+    public void onConnectorHierarchyChange(
+            final ConnectorHierarchyChangeEvent connectorHierarchyChangeEvent) {
+        // Ignore
     }
+
 }

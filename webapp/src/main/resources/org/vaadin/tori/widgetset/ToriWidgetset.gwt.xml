@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 1.7.0//EN" "http://google-web-toolkit.googlecode.com/svn/tags/1.7.0/distro-source/core/src/gwt-module.dtd">
+<module>
+	<inherits name="com.vaadin.DefaultWidgetSet" />
+	<inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset" />
+    <inherits name="org.vaadin.openesignforms.ckeditor.widgetset.VaadinCKEditorWidgetset" />
+    
+    
+	<replace-with class="org.vaadin.tori.widgetset.client.ui.ToriUIConnector">
+		<when-type-is class="com.vaadin.client.ui.ui.UIConnector" />
+	</replace-with>
+	
+	<generate-with
+        class="org.vaadin.tori.ToriConnectorBundleLoaderFactory">
+        <when-type-assignable
+            class="com.vaadin.client.metadata.ConnectorBundleLoader" />
+    </generate-with> 
+	
+<!-- 	<collapse-all-properties /> -->
+</module>

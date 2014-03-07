@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Vaadin Ltd.
+ * Copyright 2014 Vaadin Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,6 +16,7 @@
 
 package org.vaadin.tori;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.ServiceLoader;
 
@@ -27,28 +28,56 @@ import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.data.spi.ServiceProvider;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
-import org.vaadin.tori.util.SignatureFormatter;
+import org.vaadin.tori.util.ToriActivityMessaging;
+import org.vaadin.tori.util.UrlConverter;
+import org.vaadin.tori.util.UserBadgeProvider;
 
-public class ToriApiLoader {
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
+
+@SuppressWarnings("serial")
+public class ToriApiLoader implements Serializable {
 
     private final ServiceProvider spi;
     private final DataSource ds;
     private final PostFormatter postFormatter;
-    private final SignatureFormatter signatureFormatter;
     private final AuthorizationService authorizationService;
+
+    private final UserBadgeProvider userBadgeProvider;
+    private final UrlConverter urlConverter;
+    private final ToriActivityMessaging toriActivityMessaging;
 
     public ToriApiLoader() {
         checkThatCommonIsLoaded();
         spi = newServiceProvider();
         ds = createDataSource();
         postFormatter = createPostFormatter();
-        signatureFormatter = createSignatureFormatter();
         authorizationService = createAuthorizationService();
+        toriActivityMessaging = createToriActivityMessaging();
+        userBadgeProvider = createService(UserBadgeProvider.class);
+        urlConverter = createService(UrlConverter.class);
+    }
+
+    private <T> T createService(final Class<T> clazz) {
+        T service = null;
+        final ServiceLoader<T> loader = ServiceLoader.load(clazz);
+        if (loader.iterator().hasNext()) {
+            service = loader.iterator().next();
+            getLogger()
+                    .debug(String.format("Using %s implementation: %s",
+                            clazz.getSimpleName(), service.getClass().getName()));
+        } else {
+            getLogger().debug(
+                    String.format("No implementation for %s found",
+                            clazz.getSimpleName()));
+        }
+        return service;
     }
 
     public final void setRequest(final Object request) {
         if (request != null) {
-            for (final Object aware : Arrays.asList(ds, authorizationService)) {
+            for (final Object aware : Arrays.asList(ds, authorizationService,
+                    toriActivityMessaging, postFormatter)) {
                 if (aware instanceof PortletRequestAware
                         && request instanceof PortletRequest) {
                     ((PortletRequestAware) aware)
@@ -59,7 +88,6 @@ public class ToriApiLoader {
                             .setRequest((HttpServletRequest) request);
                 }
             }
-            postFormatter.setPostReplacements(ds.getPostReplacements());
         }
     }
 
@@ -92,7 +120,7 @@ public class ToriApiLoader {
         }
     }
 
-    public DataSource createDataSource() {
+    private DataSource createDataSource() {
         final DataSource ds = spi.createDataSource();
         getLogger().debug(
                 String.format("Using %s implementation: %s", DataSource.class
@@ -100,7 +128,7 @@ public class ToriApiLoader {
         return ds;
     }
 
-    public PostFormatter createPostFormatter() {
+    private PostFormatter createPostFormatter() {
         final PostFormatter postFormatter = spi.createPostFormatter();
         getLogger().debug(
                 String.format("Using %s implementation: %s",
@@ -109,17 +137,7 @@ public class ToriApiLoader {
         return postFormatter;
     }
 
-    public SignatureFormatter createSignatureFormatter() {
-        final SignatureFormatter signatureFormatter = spi
-                .createSignatureFormatter();
-        getLogger().debug(
-                String.format("Using %s implementation: %s",
-                        SignatureFormatter.class.getSimpleName(),
-                        signatureFormatter.getClass().getName()));
-        return signatureFormatter;
-    }
-
-    public AuthorizationService createAuthorizationService() {
+    private AuthorizationService createAuthorizationService() {
         final AuthorizationService authorizationService = spi
                 .createAuthorizationService();
         getLogger().debug(
@@ -129,11 +147,21 @@ public class ToriApiLoader {
         return authorizationService;
     }
 
+    private ToriActivityMessaging createToriActivityMessaging() {
+        final ToriActivityMessaging toriActivityMessaging = spi
+                .createToriActivityMessaging();
+        getLogger().debug(
+                String.format("Using %s implementation: %s",
+                        ToriActivityMessaging.class.getSimpleName(),
+                        toriActivityMessaging.getClass().getName()));
+        return toriActivityMessaging;
+    }
+
     private static Logger getLogger() {
         return Logger.getLogger(ToriApiLoader.class);
     }
 
-    public DataSource getDs() {
+    public DataSource getDataSource() {
         return ds;
     }
 
@@ -141,12 +169,41 @@ public class ToriApiLoader {
         return postFormatter;
     }
 
-    public SignatureFormatter getSignatureFormatter() {
-        return signatureFormatter;
-    }
-
     public AuthorizationService getAuthorizationService() {
         return authorizationService;
     }
 
+    public UserBadgeProvider getUserBadgeProvider() {
+        return userBadgeProvider;
+    }
+
+    public UrlConverter getUrlConverter() {
+        return urlConverter;
+    }
+
+    public ToriActivityMessaging getToriActivityMessaging() {
+        return toriActivityMessaging;
+    }
+
+    public static ToriApiLoader getCurrent() {
+        final ToriApiLoader apiLoader = VaadinSession.getCurrent()
+                .getAttribute(ToriApiLoader.class);
+        if (apiLoader != null) {
+            return apiLoader;
+        } else {
+            throw new IllegalStateException(ToriApiLoader.class.getName()
+                    + " was not found in the state. This is bad...");
+        }
+    }
+
+    public static void init(final VaadinRequest request) {
+        ToriApiLoader toriApiLoader = VaadinSession.getCurrent().getAttribute(
+                ToriApiLoader.class);
+        if (toriApiLoader == null) {
+            toriApiLoader = new ToriApiLoader();
+            VaadinSession.getCurrent().setAttribute(ToriApiLoader.class,
+                    toriApiLoader);
+        }
+        toriApiLoader.setRequest(request);
+    }
 }

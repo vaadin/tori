@@ -1,0 +1,33 @@
+@mixin newthread {
+
+	.newthreadview {
+	
+		.newthreadtopic {
+			padding-left: 153px;
+	        
+	        .topicfield {
+		        font-family: $font-family-secondary;
+		        font-size: 24px;
+		        font-style: normal;
+		        outline: none;
+				border: 1px solid rgba(151,151,151,0.22);
+				padding-left: 14px;
+	        }
+		}
+		
+		.author {
+			margin-top: 8px;
+		
+			&:before {
+		    	content: "New Topic";
+		    	font-family: $font-family-secondary;
+		    	font-size: 20px;
+		    	color: $font-color-secondary;
+		    	height: 0;
+		    	display: block;
+		    	position: relative;
+		    	top: -50px;
+		    }
+		}
+	}
+}

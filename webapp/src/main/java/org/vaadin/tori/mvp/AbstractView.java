@@ -16,27 +16,23 @@
 
 package org.vaadin.tori.mvp;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.ToriUI;
 
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.UI;
 
 @SuppressWarnings("serial")
 public abstract class AbstractView<V extends View, P extends Presenter<V>>
-        extends CustomComponent implements View {
+        extends CustomComponent implements View, com.vaadin.navigator.View {
 
     protected final Logger log = Logger.getLogger(getClass());
 
     private P presenter;
-    private Class<V> viewClass;
-
-    private ToriNavigator navigator;
 
     /**
      * Creates the composition root for this View, do the actual initialization
@@ -46,81 +42,52 @@ public abstract class AbstractView<V extends View, P extends Presenter<V>>
      */
     protected abstract Component createCompositionRoot();
 
-    /**
-     * Instantiates the Presenter for this View.
-     * 
-     * @return Presenter for this View.
-     */
     protected abstract P createPresenter();
 
     @Override
-    public void init(final ToriNavigator navigator) {
-        this.navigator = navigator;
+    public void init() {
         if (log.isDebugEnabled()) {
             log.debug("Initializing view " + getClass().getName());
         }
 
-        resolveViewClass();
-
-        // initialize the view first
+        presenter = createPresenter();
         setCompositionRoot(createCompositionRoot());
         initView();
-
-        // then initialize the presenter
-        presenter = createPresenter();
-        presenter.setView(viewClass.cast(this));
-        if (log.isDebugEnabled()) {
-            log.debug("Initializing presenter "
-                    + presenter.getClass().getName());
-        }
-        presenter.init();
     }
 
-    @SuppressWarnings("unchecked")
-    private void resolveViewClass() {
-        final Type[] actualTypeArguments = ((ParameterizedType) getClass()
-                .getGenericSuperclass()).getActualTypeArguments();
-        this.viewClass = (Class<V>) actualTypeArguments[0];
-    }
-
-    protected P getPresenter() {
+    public P getPresenter() {
         return presenter;
     }
 
     @Override
-    public final void navigateTo(final String[] arguments) {
+    public void enter(ViewChangeEvent event) {
+        final String[] arguments = event.getParameters().split("/");
         if (log.isDebugEnabled()) {
             log.debug("Activating view "
                     + getClass().getName()
                     + (arguments != null ? " with params: "
                             + Arrays.toString(arguments) : ""));
         }
-        navigationTo(arguments);
+        presenter.navigationTo(arguments);
     }
 
-    /**
-     * This method is called on each visit of this view.
-     * <p/>
-     * <strong>Tip:</string> use this method to pass the viewed object id to the
-     * presenter for parsing.
-     * 
-     * @param arguments
-     *            the {@link String} parameter passed to this view.
-     */
-    protected abstract void navigationTo(String[] arguments);
+    public void exit() {
+        presenter.navigationFrom();
+    }
 
     protected ToriNavigator getNavigator() {
-        return navigator;
-    }
-
-    @Override
-    public ToriUI getUI() {
-        return (ToriUI) super.getUI();
+        return (ToriNavigator) UI.getCurrent().getNavigator();
     }
 
     /**
      * Get the title for the current view. <code>null</code> and empty Strings
      * are valid return values.
      */
-    public abstract String getTitle();
+    public String getTitle() {
+        return null;
+    }
+
+    public Long getUrlParameterId() {
+        return null;
+    }
 }

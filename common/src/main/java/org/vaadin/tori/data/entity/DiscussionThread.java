@@ -37,11 +37,13 @@ public class DiscussionThread extends AbstractEntity {
     @JoinColumn(nullable = false)
     private List<Post> posts;
 
+    @OneToMany(mappedBy = "thread", cascade = { CascadeType.REMOVE }, orphanRemoval = true)
+    private List<Following> followings;
+
     @Transient
     private int postCount = -1;
 
     @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
     private Category category;
 
     @Column(nullable = false)

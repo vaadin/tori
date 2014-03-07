@@ -44,14 +44,15 @@ public class IndexableDashboardView extends IndexableView {
         final StringBuilder sb = new StringBuilder();
         try {
             final List<Category> subCategories = ds
-                    .getSubCategories(currentCategory);
+                    .getSubCategories(currentCategory != null ? currentCategory
+                            .getId() : null);
 
             if (!subCategories.isEmpty()) {
                 sb.append("<h2>Categories</h2>");
                 sb.append("<ul>");
                 for (final Category category : subCategories) {
-                    sb.append(String.format("<li><a href=\"#%s\">%s</a>",
-                            getLink(category), getDescription(category)));
+                    sb.append(String.format("<li><a href=\"%s\">%s</a>",
+                            getLink(category, ds), getDescription(category)));
                 }
                 sb.append("</ul>");
             }
@@ -67,8 +68,9 @@ public class IndexableDashboardView extends IndexableView {
                 + ToriUtil.escapeXhtml(category.getDescription());
     }
 
-    private static String getLink(final Category category) {
-        return ToriNavigator.ApplicationView.CATEGORIES.getUrl() + "/"
+    private static String getLink(final Category category, final DataSource ds) {
+        return ds.getPathRoot() + "#"
+                + ToriNavigator.ApplicationView.CATEGORIES.getUrl() + "/"
                 + category.getId();
     }
 

@@ -1,0 +1,22 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<g:HTMLPanel>
+		<div class="author">
+			<a class="avatar" ui:field='avatar' />
+			<div class="authornamewrapper">
+				<a class="authorname" ui:field='authorName' />
+				<span class="badge" ui:field='badge' />
+			</div>
+			<div class='prettytime' ui:field='prettyTime' />
+			<a class="permalink" ui:field='permaLink'>Permalink</a>
+		</div>
+		<div class="body">
+			<div class="posteditorplaceholder" ui:field="postEditorPlaceholder" />
+			<div class="settings" ui:field="settings" />
+			<div class="bodytext" ui:field='bodyText' />
+			<div ui:field='attachments' />
+			<div class="footer" ui:field="footer" />
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder> 

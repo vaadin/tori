@@ -16,127 +16,49 @@
 
 package org.vaadin.tori.util;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
 
+import com.liferay.portal.kernel.parsers.bbcode.BBCodeTranslatorUtil;
+import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.parsers.bbcode.HtmlBBCodeTranslatorImpl;
+import com.liferay.portal.util.HtmlImpl;
+
 public class TestPostFormatter implements PostFormatter {
-
-    private static class TestFormatInfo implements FormatInfo {
-
-        private final String formatIconThemeId;
-        private final String formatName;
-        private final String formatSyntax;
-
-        public TestFormatInfo(final String formatName,
-                final String formatSyntax, final String formatIconThemeId) {
-            this.formatName = formatName;
-            this.formatSyntax = formatSyntax;
-            this.formatIconThemeId = formatIconThemeId;
-        }
-
-        @Override
-        public String getFormatName() {
-            return formatName;
-        }
-
-        @Override
-        public String getFormatSyntax() {
-            return formatSyntax;
-        }
-
-        @Override
-        public String getFormatIcon() {
-            return formatIconThemeId;
-        }
-
-    }
-
-    private static class TestFontFace implements FontFace {
-        private final String name;
-        private final String syntax;
-
-        public TestFontFace(final String name, final String syntax) {
-            this.name = name;
-            this.syntax = syntax;
-        }
-
-        @Override
-        public String getFontName() {
-            return name;
-        }
-
-        @Override
-        public String getFontSyntax() {
-            return syntax;
-        }
-    }
-
-    private static class TestFontSize implements FontSize {
-        private final String name;
-        private final String syntax;
-
-        public TestFontSize(final String name, final String syntax) {
-            this.name = name;
-            this.syntax = syntax;
-        }
-
-        @Override
-        public String getFontSizeName() {
-            return name;
-        }
-
-        @Override
-        public String getFontSizeSyntax() {
-            return syntax;
-        }
-    }
 
     private static final FontsInfo FONTS_INFO = new FontsInfo() {
 
         @Override
         public Collection<FontFace> getFontFaces() {
-            final List<FontFace> list = new ArrayList<FontFace>();
-            list.add(new TestFontFace("SANSSERIF!", "[font=sans-serif][/font]"));
-            list.add(new TestFontFace("serif :(", "[font=serif][/font]"));
-            list.add(new TestFontFace("monospace", "[font=monospace][/font]"));
-            return list;
+            return Arrays.asList((FontFace[]) TestFontFace.values());
         }
 
         @Override
         public Collection<FontSize> getFontSizes() {
-            final List<FontSize> list = new ArrayList<FontSize>();
-            list.add(new TestFontSize("Small", "[size=small][/size]"));
-            list.add(new TestFontSize("Normal", "[size=normal][/size]"));
-            list.add(new TestFontSize("Large", "[size=large][/size]"));
-            return list;
+            return Arrays.asList((FontSize[]) TestFontSize.values());
         }
 
     };
 
-    private static final FormatInfo BOLD_INFO = new TestFormatInfo("Bold",
-            "[b][/b]", "bold.png");
-    private static final FormatInfo ITALIC_INFO = new TestFormatInfo("Italic",
-            "[i][/i]", "italic.png");
-    private static final Collection<? extends FormatInfo> OTHER_FORMAT_INFO = Collections
-            .singleton(new TestFormatInfo("Vaadin", "}>", "vaadin.png"));
+    private final BBCodeTranslatorUtil bbCodeTranslatorUtil = new BBCodeTranslatorUtil();
 
-    @Override
-    public String format(final String rawPostBody) {
-        return rawPostBody.replace("<", "&lt;").replace(">", "&gt;")
-                .replace("[b]", "<b>").replace("[/b]", "</b>")
-                .replace("\n", "<br/>");
+    public TestPostFormatter() {
+        bbCodeTranslatorUtil
+                .setBBCodeTranslator(new HtmlBBCodeTranslatorImpl());
+        new HtmlUtil().setHtml(new HtmlImpl());
     }
 
     @Override
-    public String getFormattingSyntaxXhtml() {
-        return "[b]bold[/b] &raquo; <b>bold</b>";
+    public String format(final Post post) {
+        String msgBody = post.getBodyRaw();
+        if (post.isFormatBBCode()) {
+            msgBody = BBCodeTranslatorUtil.getHTML(msgBody);
+        }
+        return msgBody;
     }
 
     @Override
@@ -145,31 +67,64 @@ public class TestPostFormatter implements PostFormatter {
     }
 
     @Override
-    public FormatInfo getBoldInfo() {
-        return BOLD_INFO;
-    }
-
-    @Override
-    public FormatInfo getItalicInfo() {
-        return ITALIC_INFO;
-    }
-
-    @Override
-    public Collection<? extends FormatInfo> getOtherFormattingInfo() {
-        return OTHER_FORMAT_INFO;
-    }
-
-    @Override
     public String getQuote(final Post postToQuote) {
         if (postToQuote == null) {
             return "";
         }
-        return String.format("%s wrote:\n\n%s\n---\n", postToQuote.getAuthor()
+        return String.format("[quote=%s]%s[/quote]\n", postToQuote.getAuthor()
                 .getDisplayedName(), postToQuote.getBodyRaw());
     }
 
-    @Override
-    public void setPostReplacements(final Map<String, String> postReplacements) {
+    public enum TestFontFace implements FontFace {
+        // @formatter:off
+        ARIAL("Arial"),
+        COMIC_SANS("Comic Sans MS"),
+        COURIER_NEW("Courier New"),
+        TAHOMA("Tahoma"),
+        TIMES_NEW_ROMAN("Times New Roman"),
+        VERDANA("Verdana");
+        // @formatter:on
+
+        private final String name;
+
+        private TestFontFace(final String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getFontName() {
+            return name;
+        }
+    }
+
+    public enum TestFontSize implements FontSize {
+        // @formatter:off
+        SIZE1("1", "10px"),
+        SIZE2("2", "12px"),
+        SIZE3("3", "16px"),
+        SIZE4("4", "18px"),
+        SIZE5("5", "24px"),
+        SIZE6("6", "32px"),
+        SIZE7("7", "48px");
+        // @formatter:on
+
+        private final String name;
+        private final String value;
+
+        private TestFontSize(final String name, final String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        @Override
+        public String getFontSizeName() {
+            return name;
+        }
+
+        @Override
+        public String getFontSizeValue() {
+            return value;
+        }
 
     }
 }

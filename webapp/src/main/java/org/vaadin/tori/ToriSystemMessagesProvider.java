@@ -5,14 +5,8 @@ import com.vaadin.server.SystemMessages;
 import com.vaadin.server.SystemMessagesInfo;
 import com.vaadin.server.SystemMessagesProvider;
 
+@SuppressWarnings("serial")
 public class ToriSystemMessagesProvider implements SystemMessagesProvider {
-    private static final long serialVersionUID = -7073677084227514918L;
-
-    /**
-     * Lazy loaded singleton, courtesy of the JVM. See: <a href=
-     * "http://stackoverflow.com/questions/3635396/pattern-for-lazy-thread-safe-singleton-instantiation-in-java"
-     * >StackOverflow</a>
-     */
     private static final ToriSystemMessagesProvider INSTANCE = new ToriSystemMessagesProvider();
 
     private ToriSystemMessagesProvider() {

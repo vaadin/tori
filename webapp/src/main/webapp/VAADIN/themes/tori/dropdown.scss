@@ -1,0 +1,75 @@
+@mixin dropdown {
+	.dropdown.v-menubar {
+    	border-bottom: 6px solid transparent;
+    	margin-bottom: -6px;
+    	line-height: 0;
+    	overflow: visible;
+    	
+    	.v-menubar-menuitem {
+	    	border: $dropdown-button-border;
+	    	border-radius: 50%;
+    		width: 1em;
+    		height: 1em;
+    		cursor: pointer;
+    		text-align: center;
+    		background: #fff;
+    		moz-box-sizing: border-box;
+    		box-sizing: border-box;
+    		
+    		.v-menubar-submenu-indicator{
+    			display: none;
+    		}
+    		
+    		.v-menubar-menuitem-caption {
+    			border: 0.25em solid transparent;
+    			border-top-color: $dropdown-highlight-color;
+    			height: 0;
+    			width: 0;
+    			display: inline-block;
+    			position: relative;
+    			top: 0.4em;
+    		}
+    	}
+    	
+    	.v-menubar-menuitem-selected {
+    		visibility: visible !important;
+    		opacity: 1 !important;
+    	}
+    }
+    
+    .v-menubar-submenu-dropdown {
+    	min-width: 154px;
+    	max-width: 300px;
+    	border: $dropdown-popup-border;
+    	padding: 7px 0;
+    	border-radius: $border-radius-primary;
+    	
+		-moz-box-shadow:    0px 2px 4px 0px rgba(0,0,0,0.13);
+		-webkit-box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.13);
+		box-shadow:         0px 2px 4px 0px rgba(0,0,0,0.13);
+    	
+    	 @include animation(vertical-fade-in 200ms);
+    	
+    	.v-menubar-menuitem {
+    		line-height: 22px;
+    		padding-left: 17px;
+    		cursor: pointer;
+    		color: $dropdown-highlight-color;
+    		font-size: 13px;
+    	}
+    	
+    	.v-menubar-menuitem-caption {
+	    	overflow: hidden;
+			text-overflow: ellipsis;
+    	}
+    	
+    	.v-menubar-menuitem-selected {
+    		background: $dropdown-highlight-color;
+    		color: #fff;
+    	}
+	}
+}
+
+@include keyframes(vertical-fade-in) {
+  0%   { opacity: 0; @include transform(translatey(-10px)); }
+}

@@ -48,7 +48,20 @@ public class Post extends AbstractEntity {
     private String bodyRaw;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<PostVote> postVotes;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Attachment> attachments;
+
+    private boolean formatBBCode;
+
+    public boolean isFormatBBCode() {
+        return formatBBCode;
+    }
+
+    public void setFormatBBCode(boolean formatBBCode) {
+        this.formatBBCode = formatBBCode;
+    }
 
     public void setAuthor(final User author) {
         this.author = author;
@@ -78,6 +91,14 @@ public class Post extends AbstractEntity {
         this.bodyRaw = bodyRaw;
     }
 
+    public List<PostVote> getPostVotes() {
+        return postVotes;
+    }
+
+    public void setPostVotes(List<PostVote> postVotes) {
+        this.postVotes = postVotes;
+    }
+
     /** Gets the unformatted forum post. */
     public String getBodyRaw() {
         return bodyRaw;
@@ -94,9 +115,4 @@ public class Post extends AbstractEntity {
         }
         this.attachments = attachments;
     }
-
-    public boolean hasAttachments() {
-        return !attachments.isEmpty();
-    }
-
 }

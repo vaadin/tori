@@ -1,0 +1,45 @@
+@mixin threadview {
+	.threadview {
+	
+	    .threadupdates {
+			padding: 32px 0 32px 153px;
+			
+			 transition: opacity 500ms, visibility 500ms;
+			-webkit-transition: opacity 500ms, visibility 500ms;
+			visibility: hidden;
+		    opacity: 0;
+		    
+		    &.visible {
+				visibility: visible;
+		    	opacity: 1;
+			}
+			
+			.threadupdateslayout {
+				border: 1px solid #B0DDF3;
+				background-color: #ECF8FD;
+				font-size: 13px;
+				line-height: 1;
+				color: $font-color-primary;
+				
+				.newposts {
+					 color: $font-color-secondary;
+				}
+				
+				.showall {
+					color: $link-color;
+					cursor: pointer;
+				}
+			}
+		}
+		
+		.maynotreplynote {
+			padding: 32px 0 32px 153px;
+			font-size: 24px;
+			font-family: $font-family-secondary;
+			color: #999;
+			
+			@include animation(vertical-fade-in 600ms);
+		}
+		
+	}
+}

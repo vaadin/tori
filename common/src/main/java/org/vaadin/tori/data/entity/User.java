@@ -16,29 +16,26 @@
 
 package org.vaadin.tori.data.entity;
 
-import javax.annotation.CheckForNull;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
-import org.vaadin.tori.data.DataSource;
-import org.vaadin.tori.util.SignatureFormatter;
+import javax.persistence.Transient;
 
 @Entity
 public class User extends AbstractEntity {
+
+    @Transient
+    private Object originalUserObject;
 
     @Column(nullable = false)
     private String displayedName;
 
     @Column(nullable = true)
-    @CheckForNull
     private String avatarUrl;
-
-    @Column(nullable = true)
-    @CheckForNull
-    private String rawSignature;
 
     @Column(nullable = false)
     private boolean banned;
+
+    private String userLink;
 
     public void setDisplayedName(final String displayedName) {
         this.displayedName = displayedName;
@@ -59,7 +56,7 @@ public class User extends AbstractEntity {
     /**
      * The URL to the avatar image for this user. May return <code>null</code>.
      */
-    @CheckForNull
+
     public String getAvatarUrl() {
         return avatarUrl;
     }
@@ -71,36 +68,33 @@ public class User extends AbstractEntity {
         return false;
     }
 
-    /**
-     * Get the unformatted signature for this user. <code>null</code> means that
-     * the user has no signature.
-     * 
-     * @see SignatureFormatter#format(String)
-     */
-    @CheckForNull
-    public String getSignatureRaw() {
-        return rawSignature;
-    }
-
-    /**
-     * Set the unformatted signature for this user. <code>null</code> clears the
-     * user's signature.
-     */
-    public void setRawSignature(final String rawSignature) {
-        this.rawSignature = rawSignature;
-    }
-
     public boolean isBanned() {
         return banned;
     }
 
-    /**
-     * @deprecated Don't call this method directly, use
-     *             {@link DataSource#ban(User)} or
-     *             {@link DataSource#unban(User)} instead.
-     */
-    @Deprecated
     public void setBanned(final boolean banned) {
         this.banned = banned;
     }
+
+    /**
+     * The original user object provided by your
+     * {@link org.vaadin.tori.data.DataSource DataSource}. May return
+     * <code>null</code>.
+     */
+    public Object getOriginalUserObject() {
+        return originalUserObject;
+    }
+
+    public void setOriginalUserObject(final Object originalUserObject) {
+        this.originalUserObject = originalUserObject;
+    }
+
+    public String getUserLink() {
+        return userLink;
+    }
+
+    public void setUserLink(String userLink) {
+        this.userLink = userLink;
+    }
+
 }

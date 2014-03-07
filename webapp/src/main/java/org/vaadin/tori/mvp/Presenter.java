@@ -17,39 +17,41 @@
 package org.vaadin.tori.mvp;
 
 import org.apache.log4j.Logger;
+import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.service.AuthorizationService;
+import org.vaadin.tori.util.PostFormatter;
+import org.vaadin.tori.util.ToriActivityMessaging;
 
 public abstract class Presenter<V extends View> {
 
     protected final Logger log = Logger.getLogger(getClass());
-    private V view;
+    protected final V view;
 
-    protected final DataSource dataSource;
-    protected final AuthorizationService authorizationService;
+    protected DataSource dataSource;
+    protected AuthorizationService authorizationService;
+    protected PostFormatter postFormatter;
+    protected ToriActivityMessaging messaging;
 
-    public Presenter(final DataSource dataSource,
-            final AuthorizationService authorizationService) {
-        this.dataSource = dataSource;
-        this.authorizationService = authorizationService;
-    }
-
-    public void setView(final V view) {
+    public Presenter(final V view) {
         this.view = view;
+
+        ToriApiLoader toriApiLoader = getApiLoader();
+        dataSource = toriApiLoader.getDataSource();
+        authorizationService = toriApiLoader.getAuthorizationService();
+        postFormatter = toriApiLoader.getPostFormatter();
+        messaging = toriApiLoader.getToriActivityMessaging();
     }
 
-    public V getView() {
-        if (view == null) {
-            throw new IllegalStateException("View has not been set yet.");
-        }
-        return view;
+    protected ToriApiLoader getApiLoader() {
+        return ToriApiLoader.getCurrent();
     }
 
-    /**
-     * When this method is called, the view has already been initialized and can
-     * be obtained by calling {@link #getView()} method.
-     */
-    public void init() {
+    public void navigationFrom() {
+        // NOP, subclasses may override
+    }
+
+    public void navigationTo(final String[] arguments) {
         // NOP, subclasses may override
     }
 

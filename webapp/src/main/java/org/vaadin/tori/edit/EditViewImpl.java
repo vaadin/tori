@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.vaadin.tori.Configuration;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.service.AuthorizationService;
@@ -28,6 +29,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
 import com.vaadin.ui.Alignment;
@@ -51,19 +53,18 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     private VerticalLayout layout;
     private Table replacementsTable;
     private Button removeButton;
-    private Button saveButton;
     private Button newButton;
 
     private CheckBox convertMessageBoardsUrls;
+    private CheckBox updatePageTitle;
+    private CheckBox showThreadsOnDashboard;
+    private TextField pageTitlePrefix;
     private TextField analyticsTrackerIdField;
-    private final DataSource dataSource;
-    private final AuthorizationService authorizationService;
     private TextField pathRoot;
+    private TextField mayNotReplyNote;
 
     public EditViewImpl(final DataSource dataSource,
             final AuthorizationService authorizationService) {
-        this.dataSource = dataSource;
-        this.authorizationService = authorizationService;
     }
 
     @Override
@@ -75,13 +76,131 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     @Override
     public void initView() {
         layout.setSpacing(true);
+        setStyleName("editview");
 
-        analyticsTrackerIdField = new TextField("Google Analytics Tracker id");
-        layout.addComponent(analyticsTrackerIdField);
+        layout.addComponent(buildGAField());
+        layout.addComponent(buildReplacements());
+        layout.addComponent(buildReplaceLinks());
+        layout.addComponent(buildUpdateTitle());
+        layout.addComponent(buildShowThreadsOnDashboard());
+        layout.addComponent(buildRootPath());
+        layout.addComponent(buildMayNotreplyNote());
 
-        layout.addComponent(new Label(
-                "Define post body regex-patterns/replacements to be "
-                        + "applied whenever posts are being displayed/previewed."));
+        Component saveButton = buildSaveButton();
+        layout.addComponent(saveButton);
+        layout.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
+
+        getPresenter().init();
+    }
+
+    private Component buildShowThreadsOnDashboard() {
+        showThreadsOnDashboard = new CheckBox("Show threads on dashboard");
+        return getFieldWrapper(
+                "Check the box beneath to let Tori show threads/topics added to the root category on the front page.",
+                showThreadsOnDashboard);
+    }
+
+    private Component buildSaveButton() {
+        Button saveButton = new Button("Save preferences",
+                new Button.ClickListener() {
+
+                    @Override
+                    public void buttonClick(final ClickEvent event) {
+                        final Map<String, String> replacements = new HashMap<String, String>();
+
+                        for (final Object itemId : replacementsTable
+                                .getItemIds()) {
+                            final Item item = replacementsTable.getItem(itemId);
+                            replacements.put(
+                                    (String) item.getItemProperty("regex")
+                                            .getValue(), (String) item
+                                            .getItemProperty("replacement")
+                                            .getValue());
+
+                        }
+
+                        final String trackerId = analyticsTrackerIdField
+                                .getValue();
+                        final String titlePrefix = pageTitlePrefix.getValue();
+                        final String fixedTrackerId = "".equals(trackerId) ? null
+                                : trackerId;
+
+                        String fixedPathRoot = pathRoot.getValue();
+                        if (!fixedPathRoot.startsWith("/")) {
+                            fixedPathRoot = "/" + fixedPathRoot;
+                        }
+                        while (fixedPathRoot.endsWith("/")) {
+                            fixedPathRoot = fixedPathRoot
+                                    .substring(fixedPathRoot.length() - 1);
+                        }
+
+                        final Configuration config = new Configuration();
+                        config.setReplaceMessageBoardsLinks(convertMessageBoardsUrls
+                                .getValue());
+                        config.setShowThreadsOnDashboard(showThreadsOnDashboard
+                                .getValue());
+                        config.setReplacements(replacements);
+                        config.setGoogleAnalyticsTrackerId(fixedTrackerId);
+                        config.setPathRoot(fixedPathRoot);
+                        config.setUpdatePageTitle(updatePageTitle.getValue());
+                        config.setMayNotReplyNote(mayNotReplyNote.getValue());
+                        config.setPageTitlePrefix(titlePrefix);
+
+                        getPresenter().savePreferences(config);
+                    }
+                });
+        return saveButton;
+    }
+
+    private Component buildMayNotreplyNote() {
+        mayNotReplyNote = getTextField("Default");
+        return getFieldWrapper(
+                "Message displayed in the end of the thread when user is not allowed to reply",
+                mayNotReplyNote);
+    }
+
+    private Component buildRootPath() {
+        pathRoot = getTextField("Not defined");
+        return getFieldWrapper(
+                "What is the root path for Tori? (e.g. http://example.com/community/tori/ would mean \"/community/tori\"",
+                pathRoot);
+    }
+
+    private Component buildUpdateTitle() {
+        VerticalLayout layout = new VerticalLayout();
+
+        updatePageTitle = new CheckBox("Update the page title");
+        updatePageTitle.addValueChangeListener(new ValueChangeListener() {
+            @Override
+            public void valueChange(final ValueChangeEvent event) {
+                pageTitlePrefix.setEnabled(updatePageTitle.getValue());
+            }
+        });
+        layout.addComponent(updatePageTitle);
+
+        pageTitlePrefix = getTextField("Default");
+        pageTitlePrefix.setEnabled(false);
+        layout.addComponent(pageTitlePrefix);
+
+        return getFieldWrapper(
+                "Check the box beneath to let Tori update the title of the page.",
+                layout);
+    }
+
+    private Component buildReplaceLinks() {
+        convertMessageBoardsUrls = new CheckBox(
+                "Replace message boards link data with tori format");
+        return getFieldWrapper(
+                "Check the box beneath to let Tori scan post content render-time for links "
+                        + "intended for Liferay message boards portlet and convert them to tori-format for display.",
+                convertMessageBoardsUrls);
+    }
+
+    private Component buildReplacements() {
+        VerticalLayout result = new VerticalLayout();
+        layout.setSpacing(true);
+        result.addComponent(getSubTitle("Define post body regex-patterns/replacements to be "
+                + "applied whenever posts are being displayed/previewed."));
 
         replacementsTable = new Table();
         replacementsTable.setWidth("100%");
@@ -121,7 +240,7 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
         replacementsTable.setSortContainerPropertyId("regex");
         replacementsTable.addContainerProperty("replacement", String.class, "",
                 "Replacement", null, null);
-        layout.addComponent(replacementsTable);
+        result.addComponent(replacementsTable);
 
         removeButton = new Button("Remove", new Button.ClickListener() {
 
@@ -144,59 +263,42 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
         buttonsLayout.setSpacing(true);
         buttonsLayout.addComponent(removeButton);
         buttonsLayout.addComponent(newButton);
-        layout.addComponent(buttonsLayout);
+        result.addComponent(buttonsLayout);
 
-        layout.addComponent(new Label(
-                "Check the box beneath to let Tori scan post content render-time for links "
-                        + "intended for Liferay message boards portlet and convert them to tori-format for display."));
-        convertMessageBoardsUrls = new CheckBox(
-                "Replace message boards link data with tori format");
-        layout.addComponent(convertMessageBoardsUrls);
+        return result;
+    }
 
-        pathRoot = new TextField(
-                "What is the root path for Tori? (e.g. http://example.com/community/tori/ would mean \"/community/tori\"");
-        layout.addComponent(pathRoot);
+    private Component buildGAField() {
+        analyticsTrackerIdField = getTextField("Not enabled");
+        return getFieldWrapper("Google Analytics Tracker id",
+                analyticsTrackerIdField);
+    }
 
-        saveButton = new Button("Save preferences", new Button.ClickListener() {
+    private Component getFieldWrapper(final String subTitle,
+            final Component field) {
+        VerticalLayout result = new VerticalLayout();
+        result.setSpacing(true);
+        result.addComponents(getSubTitle(subTitle), field);
+        return result;
+    }
 
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                final Map<String, String> replacements = new HashMap<String, String>();
+    private TextField getTextField(final String inputPrompt) {
+        TextField result = new TextField();
+        result.setNullRepresentation("");
+        result.setNullSettingAllowed(true);
+        result.setInputPrompt(inputPrompt);
+        return result;
+    }
 
-                for (final Object itemId : replacementsTable.getItemIds()) {
-                    final Item item = replacementsTable.getItem(itemId);
-                    replacements.put((String) item.getItemProperty("regex")
-                            .getValue(),
-                            (String) item.getItemProperty("replacement")
-                                    .getValue());
-
-                }
-
-                final String trackerId = analyticsTrackerIdField.getValue();
-                final String fixedTrackerId = "".equals(trackerId) ? null
-                        : trackerId;
-
-                String fixedPathRoot = pathRoot.getValue();
-                if (!fixedPathRoot.startsWith("/")) {
-                    fixedPathRoot = "/" + fixedPathRoot;
-                }
-                while (fixedPathRoot.endsWith("/")) {
-                    fixedPathRoot = fixedPathRoot.substring(fixedPathRoot
-                            .length() - 1);
-                }
-
-                getPresenter().savePreferences(replacements,
-                        convertMessageBoardsUrls.getValue(), fixedTrackerId,
-                        fixedPathRoot);
-            }
-        });
-        layout.addComponent(saveButton);
-        layout.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
+    private Component getSubTitle(final String string) {
+        Label titleLabel = new Label(string);
+        titleLabel.addStyleName("subtitle");
+        return titleLabel;
     }
 
     @Override
     protected EditPresenter createPresenter() {
-        return new EditPresenter(dataSource, authorizationService);
+        return new EditPresenter(this);
     }
 
     @Override
@@ -217,8 +319,13 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     }
 
     @Override
-    protected void navigationTo(final String[] arguments) {
+    public void setShowThreadsOnDashboard(final boolean show) {
+        showThreadsOnDashboard.setValue(show);
+    }
 
+    @Override
+    public void setUpdatePageTitle(final boolean update) {
+        updatePageTitle.setValue(update);
     }
 
     @Override
@@ -241,6 +348,17 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
 
     @Override
     public String getTitle() {
-        return "Configuration View";
+        return "Preferences View";
     }
+
+    @Override
+    public void setPageTitlePrefix(final String pageTitlePrefix) {
+        this.pageTitlePrefix.setValue(pageTitlePrefix);
+    }
+
+    @Override
+    public void setMayNotReplyNote(final String mayNotReplyNote) {
+        this.mayNotReplyNote.setValue(mayNotReplyNote);
+    }
+
 }

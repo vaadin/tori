@@ -1,0 +1,18 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<g:HTMLPanel>
+		<span class="topic" ui:field='topic'>
+			<g:Label styleName="followtopic" ui:field='follow' />
+			<a class="topicname" ui:field='topicName' />
+			<span class="threadicons"/>
+		</span>
+		<div class="startedby" ui:field='startedBy' />
+		<div class="postcount" ui:field='postCount' />
+		<a class="latesttime" ui:field='latest' href="">
+			<span class="pretty" ui:field='latestPretty' />
+			<span class="authorname" ui:field='latestAuthor' />
+		</a>
+		<g:SimplePanel styleName="settings" ui:field="settings" />
+	</g:HTMLPanel>
+</ui:UiBinder> 

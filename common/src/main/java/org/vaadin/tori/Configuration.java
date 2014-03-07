@@ -18,14 +18,24 @@ package org.vaadin.tori;
 
 import java.util.Map;
 
-import javax.annotation.CheckForNull;
-
 public class Configuration {
 
+    private boolean updatePageTitle;
+    private String pageTitlePrefix;
     private boolean replaceMessageBoardsLinks;
+    private boolean showThreadsOnDashboard;
     private Map<String, String> replacements;
     private String googleAnalyticsTrackerId;
     private String pathRoot;
+    private String mayNotReplyNote;
+
+    public String getMayNotReplyNote() {
+        return mayNotReplyNote;
+    }
+
+    public void setMayNotReplyNote(final String mayNotReplyNote) {
+        this.mayNotReplyNote = mayNotReplyNote;
+    }
 
     /**
      * Whether or not messages' links are replaced with what is in
@@ -48,7 +58,6 @@ public class Configuration {
      * The Google Analytics tracker to be used to log activity.
      * <code>null</code> for not to log.
      */
-    @CheckForNull
     public String getGoogleAnalyticsTrackerId() {
         return googleAnalyticsTrackerId;
     }
@@ -92,4 +101,29 @@ public class Configuration {
     public String getPathRoot() {
         return pathRoot;
     }
+
+    public boolean isUpdatePageTitle() {
+        return updatePageTitle;
+    }
+
+    public void setUpdatePageTitle(final boolean updatePageTitle) {
+        this.updatePageTitle = updatePageTitle;
+    }
+
+    public String getPageTitlePrefix() {
+        return pageTitlePrefix;
+    }
+
+    public void setPageTitlePrefix(final String pageTitlePrefix) {
+        this.pageTitlePrefix = pageTitlePrefix;
+    }
+
+    public boolean isShowThreadsOnDashboard() {
+        return showThreadsOnDashboard;
+    }
+
+    public void setShowThreadsOnDashboard(final boolean showThreadsOnDashboard) {
+        this.showThreadsOnDashboard = showThreadsOnDashboard;
+    }
+
 }

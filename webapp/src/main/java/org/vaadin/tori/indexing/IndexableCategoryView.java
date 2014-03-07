@@ -23,6 +23,7 @@ import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.exception.NoSuchCategoryException;
 
 public class IndexableCategoryView extends IndexableView {
 
@@ -58,6 +59,8 @@ public class IndexableCategoryView extends IndexableView {
         } catch (final NumberFormatException e) {
             getLogger().error(e);
             return "The category id is not properly formatted";
+        } catch (final NoSuchCategoryException e) {
+            return "No such category";
         } catch (final DataSourceException e) {
             getLogger().error(e);
             return "There was a database error when trying to fetch the category";
@@ -107,12 +110,13 @@ public class IndexableCategoryView extends IndexableView {
                 .getOriginalPoster().getDisplayedName());
         final int postCount = thread.getPostCount();
         return String
-                .format("<tr><td><a href=\"#%s\">%s</a></td><td>%s</td><td>%s</td></tr>",
+                .format("<tr><td><a href=\"%s\">%s</a></td><td>%s</td><td>%s</td></tr>",
                         threadUrl, topic, authorName, postCount);
     }
 
     private String getThreadUrl(final DiscussionThread thread) {
-        return ApplicationView.THREADS.getUrl() + "/" + thread.getId();
+        return application.getDataSource().getPathRoot() + "#"
+                + ApplicationView.THREADS.getUrl() + "/" + thread.getId();
     }
 
 }

@@ -23,6 +23,7 @@ import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.exception.DataSourceException;
+import org.vaadin.tori.exception.NoSuchThreadException;
 
 public class IndexableThreadView extends IndexableView {
 
@@ -48,7 +49,7 @@ public class IndexableThreadView extends IndexableView {
             }
 
             final List<Post> posts = application.getDataSource().getPosts(
-                    thread);
+                    thread.getId());
 
             final StringBuilder sb = new StringBuilder();
             sb.append(String.format("<a href='#%s'>Back to Category</a>",
@@ -69,8 +70,7 @@ public class IndexableThreadView extends IndexableView {
                     sb.append("</header>");
 
                     sb.append("<section>");
-                    sb.append(application.getPostFormatter().format(
-                            post.getBodyRaw()));
+                    sb.append(application.getPostFormatter().format(post));
                     sb.append("</section>");
 
                     sb.append("</article>");
@@ -84,6 +84,9 @@ public class IndexableThreadView extends IndexableView {
         } catch (final NumberFormatException e) {
             e.printStackTrace();
             return "Invalid thread argument format";
+        } catch (final NoSuchThreadException e) {
+            e.printStackTrace();
+            return "No such thread";
         } catch (final DataSourceException e) {
             e.printStackTrace();
             return "There's a problem with the database";
@@ -91,7 +94,8 @@ public class IndexableThreadView extends IndexableView {
     }
 
     private String getCategoryLink(final DiscussionThread thread) {
-        return ApplicationView.CATEGORIES.getUrl() + "/"
+        return application.getDataSource().getPathRoot() + "#"
+                + ApplicationView.CATEGORIES.getUrl() + "/"
                 + thread.getCategory().getId();
     }
 }

@@ -18,8 +18,6 @@ package org.vaadin.tori.service.post;
 
 import org.vaadin.tori.data.entity.Post;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-
 public class PostReport {
     public static enum Reason {
         /** The post was deemed as spam */
@@ -67,7 +65,7 @@ public class PostReport {
      * @return The written message the user gave. Never returns
      *         <code>null</code>.
      */
-    @NonNull
+
     public String getAdditionalInfo() {
         if (additionalInfo != null) {
             return additionalInfo;

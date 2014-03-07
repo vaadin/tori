@@ -14,7 +14,7 @@
 		</init-param>
 		<init-param>
 			<name>theme</name>
-			<value>tori-liferay</value>
+			<value>${tori.theme}</value>
 		</init-param>
 
 		<!-- To enable displaying multiple Vaadin portlets on a page, they should 

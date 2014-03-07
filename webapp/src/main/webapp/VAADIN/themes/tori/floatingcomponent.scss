@@ -1,0 +1,14 @@
+@mixin floatingcomponent {
+
+	.floatingcomponent {
+		position: fixed;
+		bottom: 100%;
+		height: 30px;
+		left: 80px;
+		z-index: 1000;
+		
+		&.floatingcomponent-visible {
+			margin-bottom: -30px;
+		}
+	}
+}
