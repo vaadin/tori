@@ -16,6 +16,8 @@ public interface ToriActivityMessaging {
 
     void sendUserAuthored(long postId, long threadId);
 
+    void deregister();
+
     public interface UserTypingListener {
         void userTyping(long userId, long threadId, Date startedTyping);
     }

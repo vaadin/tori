@@ -28,6 +28,7 @@ import org.vaadin.tori.edit.EditViewImpl;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
 import org.vaadin.tori.util.ComponentUtil;
+import org.vaadin.tori.util.ToriActivityMessaging;
 
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.Page;
@@ -57,6 +58,17 @@ public class ToriUI extends UI {
         setPollInterval(DEFAULT_POLL_INTERVAL);
         ToriApiLoader.init(request);
         UrlFixer.fixUrl();
+
+        final ToriActivityMessaging messaging = ToriApiLoader.getCurrent()
+                .getToriActivityMessaging();
+        if (messaging != null) {
+            addDetachListener(new DetachListener() {
+                @Override
+                public void detach(final DetachEvent event) {
+                    messaging.deregister();
+                }
+            });
+        }
 
         final String trackerId = ToriApiLoader.getCurrent().getDataSource()
                 .getGoogleAnalyticsTrackerId();

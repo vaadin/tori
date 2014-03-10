@@ -476,8 +476,10 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
                     && dataSource.isFollowingThread(currentThread.getId())) {
                 dataSource.unfollowThread(currentThread.getId());
             }
-            messaging.sendUserAuthored(updatedPost.getId(),
-                    currentThread.getId());
+            if (messaging != null) {
+                messaging.sendUserAuthored(updatedPost.getId(),
+                        currentThread.getId());
+            }
             view.replySent();
             view.appendPosts(Arrays.asList(getPostData(updatedPost)));
         } catch (final FileNameException e) {
@@ -577,27 +579,35 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     private final List<Long> newPosts = new ArrayList<Long>();
 
     @Override
-    public void userTyping(final long userId, final long threadId,
+    public synchronized void userTyping(final long userId, final long threadId,
             final Date startedTyping) {
-        if (currentThread.getId() == threadId) {
-            pendingReplies
-                    .put(userId, new Date[] { startedTyping, new Date() });
+        try {
+            if (currentThread.getId() == threadId) {
+                pendingReplies.put(userId, new Date[] { startedTyping,
+                        new Date() });
+            }
+            refreshThreadUpdates();
+        } catch (NullPointerException e) {
+            log.warn("NPE while delivering user typing event", e);
         }
-        refreshThreadUpdates();
     }
 
     @Override
-    public void userAuthored(final long postId, final long threadId) {
-        if (currentThread.getId() == threadId) {
-            newPosts.add(postId);
-            try {
-                Post post = dataSource.getPost(postId);
-                pendingReplies.remove(post.getAuthor().getId());
-            } catch (DataSourceException e) {
-                e.printStackTrace();
+    public synchronized void userAuthored(final long postId, final long threadId) {
+        try {
+            if (currentThread.getId() == threadId) {
+                newPosts.add(postId);
+                try {
+                    Post post = dataSource.getPost(postId);
+                    pendingReplies.remove(post.getAuthor().getId());
+                } catch (DataSourceException e) {
+                    e.printStackTrace();
+                }
             }
+            refreshThreadUpdates();
+        } catch (NullPointerException e) {
+            log.warn("NPE while delivering user authored event", e);
         }
-        refreshThreadUpdates();
     }
 
     private void refreshThreadUpdates() {

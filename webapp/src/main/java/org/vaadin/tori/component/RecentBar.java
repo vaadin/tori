@@ -26,6 +26,7 @@ import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.util.ComponentUtil;
 import org.vaadin.tori.util.ComponentUtil.HeadingLevel;
+import org.vaadin.tori.util.ToriActivityMessaging;
 import org.vaadin.tori.util.ToriActivityMessaging.UserAuthoredListener;
 import org.vaadin.tori.util.ToriScheduler;
 import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
@@ -51,17 +52,19 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
     private final DataSource dataSource = ToriApiLoader.getCurrent()
             .getDataSource();
     private CssLayout notificationsLayout;
+    private final ToriActivityMessaging messaging = ToriApiLoader.getCurrent()
+            .getToriActivityMessaging();
 
     public RecentBar() {
-        ToriApiLoader.getCurrent().getToriActivityMessaging()
-                .addUserAuthoredListener(this);
-        ToriUI.getCurrent().addDetachListener(new DetachListener() {
-            @Override
-            public void detach(final DetachEvent event) {
-                ToriApiLoader.getCurrent().getToriActivityMessaging()
-                        .removeUserAuthoredListener(RecentBar.this);
-            }
-        });
+        if (messaging != null) {
+            messaging.addUserAuthoredListener(this);
+            ToriUI.getCurrent().addDetachListener(new DetachListener() {
+                @Override
+                public void detach(final DetachEvent event) {
+                    messaging.removeUserAuthoredListener(RecentBar.this);
+                }
+            });
+        }
 
         addStyleName("recentbar");
         setWidth(100.0f, Unit.PERCENTAGE);

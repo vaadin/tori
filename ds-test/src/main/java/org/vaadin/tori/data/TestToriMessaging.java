@@ -34,31 +34,31 @@ public class TestToriMessaging implements ToriActivityMessaging {
     private final Set<Object> thisListeners = new HashSet<Object>();;
 
     @Override
-    public void addUserTypingListener(UserTypingListener listener) {
+    public void addUserTypingListener(final UserTypingListener listener) {
         userTypingListeners.add(listener);
         thisListeners.add(listener);
     }
 
     @Override
-    public void addUserAuthoredListener(UserAuthoredListener listener) {
+    public void addUserAuthoredListener(final UserAuthoredListener listener) {
         userAuthoredListeners.add(listener);
         thisListeners.add(listener);
     }
 
     @Override
-    public void removeUserTypingListener(UserTypingListener listener) {
+    public void removeUserTypingListener(final UserTypingListener listener) {
         userTypingListeners.remove(listener);
         thisListeners.remove(listener);
     }
 
     @Override
-    public void removeUserAuthoredListener(UserAuthoredListener listener) {
+    public void removeUserAuthoredListener(final UserAuthoredListener listener) {
         userAuthoredListeners.remove(listener);
         thisListeners.remove(listener);
     }
 
     @Override
-    public void sendUserTyping(long threadId, Date startedTyping) {
+    public void sendUserTyping(final long threadId, final Date startedTyping) {
         for (UserTypingListener listener : userTypingListeners) {
             if (!thisListeners.contains(listener)) {
                 listener.userTyping(TestDataSource.CURRENT_USER_ID, threadId,
@@ -68,12 +68,17 @@ public class TestToriMessaging implements ToriActivityMessaging {
     }
 
     @Override
-    public void sendUserAuthored(long postId, long threadId) {
+    public void sendUserAuthored(final long postId, final long threadId) {
         for (UserAuthoredListener listener : userAuthoredListeners) {
             if (!thisListeners.contains(listener)) {
                 listener.userAuthored(postId, threadId);
             }
         }
+    }
+
+    @Override
+    public void deregister() {
+        // TODO Auto-generated method stub
     }
 
 }

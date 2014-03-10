@@ -1,5 +1,5 @@
 /*
- * Copyright 2013 Vaadin Ltd.
+ * Copyright 2014 Vaadin Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -17,9 +17,9 @@
 package org.vaadin.tori.util;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 
 import javax.portlet.PortletRequest;
 
@@ -33,7 +33,7 @@ import com.liferay.portal.kernel.messaging.MessageListener;
 import com.liferay.portal.kernel.messaging.ParallelDestination;
 
 public class LiferayCommonToriActivityMessaging implements
-        ToriActivityMessaging, PortletRequestAware {
+        ToriActivityMessaging, PortletRequestAware, MessageListener {
 
     private static final String USER_TYPING_DESTINATION = "tori/activity/usertyping";
     private static final String USER_AUTHORED_DESTINATION = "tori/activity/userauthored";
@@ -48,7 +48,8 @@ public class LiferayCommonToriActivityMessaging implements
     private PortletRequest request;
     private long currentUserId;
 
-    private final Map<Object, MessageListener> listeners = new HashMap<Object, MessageListener>();
+    private final Collection<UserTypingListener> userTypingListeners = new HashSet<UserTypingListener>();
+    private final Collection<UserAuthoredListener> userAuthoredListeners = new HashSet<UserAuthoredListener>();
 
     private final Logger log = Logger
             .getLogger(LiferayCommonToriActivityMessaging.class);
@@ -65,6 +66,9 @@ public class LiferayCommonToriActivityMessaging implements
                 MessageBusUtil.addDestination(destination);
             }
         }
+
+        MessageBusUtil.registerMessageListener(USER_AUTHORED_DESTINATION, this);
+        MessageBusUtil.registerMessageListener(USER_TYPING_DESTINATION, this);
     }
 
     @Override
@@ -100,44 +104,22 @@ public class LiferayCommonToriActivityMessaging implements
 
     @Override
     public void addUserTypingListener(final UserTypingListener listener) {
-        addListener(listener, new FilteringMessageListener(
-                USER_TYPING_DESTINATION) {
-            @Override
-            protected void process(final Message message) {
-                listener.userTyping(message.getLong(USER_ID),
-                        message.getLong(THREAD_ID),
-                        new Date(message.getLong(STARTED_TYPING)));
-            }
-        });
+        userTypingListeners.add(listener);
     }
 
     @Override
     public void addUserAuthoredListener(final UserAuthoredListener listener) {
-        addListener(listener, new FilteringMessageListener(
-                USER_AUTHORED_DESTINATION) {
-            @Override
-            protected void process(final Message message) {
-                listener.userAuthored(message.getLong(POST_ID),
-                        message.getLong(THREAD_ID));
-            }
-        });
+        userAuthoredListeners.add(listener);
     }
 
     @Override
     public void removeUserTypingListener(final UserTypingListener listener) {
-        removeListener(listener, USER_TYPING_DESTINATION);
+        userTypingListeners.remove(listener);
     }
 
     @Override
     public void removeUserAuthoredListener(final UserAuthoredListener listener) {
-        removeListener(listener, USER_AUTHORED_DESTINATION);
-    }
-
-    private void addListener(final Object key,
-            final FilteringMessageListener messageListener) {
-        MessageBusUtil.registerMessageListener(messageListener.destinationName,
-                messageListener);
-        listeners.put(key, messageListener);
+        userAuthoredListeners.remove(listener);
     }
 
     private boolean isSessionAlive() {
@@ -150,18 +132,6 @@ public class LiferayCommonToriActivityMessaging implements
         return result;
     }
 
-    private void removeListener(final Object key, final String destination) {
-        try {
-            MessageListener messageListener = listeners.remove(key);
-            if (messageListener != null) {
-                MessageBusUtil.unregisterMessageListener(destination,
-                        messageListener);
-            }
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     public void setRequest(final PortletRequest request) {
         this.request = request;
@@ -170,31 +140,37 @@ public class LiferayCommonToriActivityMessaging implements
         }
     }
 
-    private abstract class FilteringMessageListener implements MessageListener {
-
-        private final String destinationName;
-
-        public FilteringMessageListener(final String destinationName) {
-            this.destinationName = destinationName;
-        }
-
-        @Override
-        public void receive(final Message message) {
-            if (isSessionAlive()) {
-                if (!isThisSender(message)) {
-                    try {
-                        process(message);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+    @Override
+    public void receive(final Message message) {
+        if (isSessionAlive()) {
+            if (!isThisSender(message)) {
+                if (USER_AUTHORED_DESTINATION.equals(message
+                        .getDestinationName())) {
+                    // Fire user authored events
+                    for (UserAuthoredListener listener : userAuthoredListeners) {
+                        listener.userAuthored(message.getLong(POST_ID),
+                                message.getLong(THREAD_ID));
+                    }
+                } else if (USER_TYPING_DESTINATION.equals(message
+                        .getDestinationName())) {
+                    // Fire user typing events
+                    for (UserTypingListener listener : userTypingListeners) {
+                        listener.userTyping(message.getLong(USER_ID),
+                                message.getLong(THREAD_ID),
+                                new Date(message.getLong(STARTED_TYPING)));
                     }
                 }
-            } else {
-                MessageBusUtil.unregisterMessageListener(destinationName, this);
             }
+        } else {
+            deregister();
         }
+    }
 
-        protected abstract void process(Message message);
-
+    @Override
+    public void deregister() {
+        MessageBusUtil.unregisterMessageListener(USER_AUTHORED_DESTINATION,
+                this);
+        MessageBusUtil.unregisterMessageListener(USER_TYPING_DESTINATION, this);
     }
 
 }

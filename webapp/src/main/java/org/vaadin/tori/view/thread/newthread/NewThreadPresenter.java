@@ -47,8 +47,10 @@ public class NewThreadPresenter extends Presenter<NewThreadView> {
                 if (follow) {
                     dataSource.followThread(post.getThread().getId());
                 }
-                messaging.sendUserAuthored(post.getId(), post.getThread()
-                        .getId());
+                if (messaging != null) {
+                    messaging.sendUserAuthored(post.getId(), post.getThread()
+                            .getId());
+                }
                 view.newThreadCreated(post.getThread().getId());
             } catch (final FileNameException e) {
                 log.error(e);
