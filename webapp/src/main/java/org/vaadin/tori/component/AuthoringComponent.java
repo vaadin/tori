@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.ocpsoft.prettytime.PrettyTime;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.util.ToriScheduler;
 import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
@@ -77,7 +78,7 @@ public class AuthoringComponent extends PostComponent {
     private Button postButton;
 
     public AuthoringComponent(final AuthoringListener listener) {
-        super(null, null);
+        super(null, null, new PrettyTime());
         this.listener = listener;
         addStyleName("authoringcomponent");
         addStyleName("authoring");

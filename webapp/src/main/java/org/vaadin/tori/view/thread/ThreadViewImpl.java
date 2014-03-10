@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.ocpsoft.prettytime.PrettyTime;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.component.AuthoringComponent;
@@ -133,9 +134,10 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void appendPosts(final List<PostData> posts) {
+        PrettyTime prettyTime = new PrettyTime();
         for (PostData postData : posts) {
-            postsLayout
-                    .addComponent(new PostComponent(postData, getPresenter()));
+            postsLayout.addComponent(new PostComponent(postData,
+                    getPresenter(), prettyTime));
         }
         ToriScheduler.get().executeManualCommands();
         appendNewReply();

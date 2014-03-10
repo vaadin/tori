@@ -58,7 +58,7 @@ public class PostComponent extends AbstractComponentContainer implements
     private static final String UNBAN_CAPTION = "Unban Author";
     private static final String STYLE_BANNED = "banned-author";
 
-    private final PrettyTime prettyTime = new PrettyTime();
+    private final PrettyTime prettyTime;
     private PostData post;
 
     private MenuBar settings;
@@ -67,7 +67,9 @@ public class PostComponent extends AbstractComponentContainer implements
 
     private final ThreadPresenter presenter;
 
-    public PostComponent(final PostData post, final ThreadPresenter presenter) {
+    public PostComponent(final PostData post, final ThreadPresenter presenter,
+            final PrettyTime prettyTime) {
+        this.prettyTime = prettyTime;
         this.presenter = presenter;
         this.post = post;
 

@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.ocpsoft.prettytime.PrettyTime;
 import org.vaadin.tori.util.ToriScheduler;
 import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.view.thread.ThreadView.PostData;
@@ -46,6 +47,7 @@ public class PostsLayout extends CssLayout {
     private List<PostData> posts;
     private int renderedIndex = -1;
     private Integer scrollToIndex;
+    private final PrettyTime prettyTime = new PrettyTime();
 
     public void setPosts(final List<PostData> posts, final Integer selectedIndex) {
         removeAllComponents();
@@ -69,7 +71,7 @@ public class PostsLayout extends CssLayout {
             if (renderedIndex < posts.size()) {
                 postsAdded = true;
                 final Component component = new PostComponent(
-                        posts.get(renderedIndex), presenter);
+                        posts.get(renderedIndex), presenter, prettyTime);
                 addComponent(component);
                 if (scrollToIndex != null && renderedIndex == scrollToIndex) {
                     // The component should be scrolled to
