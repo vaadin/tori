@@ -454,13 +454,19 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     }
 
     private Date startedTyping;
+    private Date lastSent;
 
     public void inputValueChanged() {
         if (messaging != null) {
             if (startedTyping == null) {
                 startedTyping = new Date();
             }
-            messaging.sendUserTyping(currentThread.getId(), startedTyping);
+
+            if (lastSent == null
+                    || System.currentTimeMillis() - lastSent.getTime() > 30000) {
+                messaging.sendUserTyping(currentThread.getId(), startedTyping);
+                lastSent = new Date();
+            }
         }
     }
 
