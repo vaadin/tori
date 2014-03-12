@@ -19,6 +19,9 @@ package org.vaadin.tori.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.PatternSyntaxException;
 
 import javax.portlet.PortletRequest;
 
@@ -50,7 +53,7 @@ public class LiferayPostFormatter implements PostFormatter, PortletRequestAware 
     }
 
     @Override
-    public String format(final Post post) {
+    public String format(final Post post, final Map<String, String> replacements) {
         String msgBody = post.getBodyRaw().trim();
         if (post.isFormatBBCode()) {
             try {
@@ -61,6 +64,19 @@ public class LiferayPostFormatter implements PostFormatter, PortletRequestAware 
             msgBody = StringUtil.replace(msgBody,
                     "@theme_images_path@/emoticons",
                     themeDisplay.getPathThemeImages() + "/emoticons");
+        }
+
+        if (replacements != null) {
+            for (final Entry<String, String> entry : replacements.entrySet()) {
+                try {
+                    msgBody = msgBody.replaceAll(entry.getKey(),
+                            entry.getValue());
+                } catch (final PatternSyntaxException e) {
+                    LOG.warn(
+                            "Invalid replacement regex pattern: "
+                                    + entry.getKey(), e);
+                }
+            }
         }
 
         return msgBody;

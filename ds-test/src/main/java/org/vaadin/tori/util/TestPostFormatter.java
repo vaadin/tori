@@ -18,6 +18,9 @@ package org.vaadin.tori.util;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.PatternSyntaxException;
 
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
@@ -53,10 +56,21 @@ public class TestPostFormatter implements PostFormatter {
     }
 
     @Override
-    public String format(final Post post) {
+    public String format(final Post post, final Map<String, String> replacements) {
         String msgBody = post.getBodyRaw();
         if (post.isFormatBBCode()) {
             msgBody = BBCodeTranslatorUtil.getHTML(msgBody);
+        }
+
+        if (replacements != null) {
+            for (final Entry<String, String> entry : replacements.entrySet()) {
+                try {
+                    msgBody = msgBody.replaceAll(entry.getKey(),
+                            entry.getValue());
+                } catch (final PatternSyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return msgBody;
     }

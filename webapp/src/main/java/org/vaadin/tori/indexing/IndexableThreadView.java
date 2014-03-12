@@ -70,7 +70,8 @@ public class IndexableThreadView extends IndexableView {
                     sb.append("</header>");
 
                     sb.append("<section>");
-                    sb.append(application.getPostFormatter().format(post));
+                    sb.append(application.getPostFormatter().format(post,
+                            application.getDataSource().getPostReplacements()));
                     sb.append("</section>");
 
                     sb.append("</article>");

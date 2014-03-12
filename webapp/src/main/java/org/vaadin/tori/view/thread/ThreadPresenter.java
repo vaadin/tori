@@ -107,7 +107,8 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
             @Override
             public String getFormattedBody(final boolean allowHtml) {
-                String formattedPost = postFormatter.format(post);
+                String formattedPost = postFormatter.format(post,
+                        dataSource.getPostReplacements());
                 if (!allowHtml) {
                     formattedPost = stripTags(formattedPost);
                 }

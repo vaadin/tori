@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
@@ -1196,21 +1195,6 @@ public abstract class LiferayCommonDataSource implements DataSource,
             bodyRaw = replaceMessageBoardsLinksCategories(bodyRaw);
             bodyRaw = replaceMessageBoardsLinksMessages(bodyRaw);
         }
-
-        if (getPostReplacements() != null) {
-            for (final Entry<String, String> entry : getPostReplacements()
-                    .entrySet()) {
-                try {
-                    bodyRaw = bodyRaw.replaceAll(entry.getKey(),
-                            entry.getValue());
-                } catch (final PatternSyntaxException e) {
-                    LOG.warn(
-                            "Invalid replacement regex pattern: "
-                                    + entry.getKey(), e);
-                }
-            }
-        }
-
         return LiferayCommonEntityFactoryUtil.createPost(message, bodyRaw,
                 formatBBCode, author, thread, attachments);
     }

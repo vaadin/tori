@@ -215,4 +215,9 @@
 	ol {
 		list-style: decimal !important;
 	}
+	
+	.post.editing .bodytext iframe {
+		height: 0;
+		width: 0;
+	}
 }

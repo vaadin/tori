@@ -17,6 +17,7 @@
 package org.vaadin.tori.util;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.vaadin.tori.data.entity.Post;
 
@@ -63,7 +64,7 @@ public interface PostFormatter {
      * @return The XHTML to be rendered as-is.
      * @see Post#getBodyRaw()
      */
-    String format(Post rawPostBody);
+    String format(Post rawPostBody, Map<String, String> replacements);
 
     FontsInfo getFontsInfo();
 
