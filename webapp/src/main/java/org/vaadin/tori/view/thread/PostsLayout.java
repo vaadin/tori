@@ -68,21 +68,23 @@ public class PostsLayout extends CssLayout {
     private void renderUntil(final int untilIndex) {
         boolean postsAdded = false;
         while (renderedIndex++ <= untilIndex) {
-            if (renderedIndex < posts.size()) {
-                postsAdded = true;
-                final Component component = new PostComponent(
-                        posts.get(renderedIndex), presenter, prettyTime);
-                addComponent(component);
-                if (scrollToIndex != null && renderedIndex == scrollToIndex) {
-                    // The component should be scrolled to
-                    UI.getCurrent().scrollIntoView(component);
-                    component.setId("scrollpostid");
-                    JavaScript
-                            .eval("window.setTimeout(\"document.getElementById('scrollpostid').scrollIntoView(true)\",10)");
-                    scrollToIndex = null;
+            if (posts != null) {
+                if (renderedIndex < posts.size()) {
+                    postsAdded = true;
+                    final Component component = new PostComponent(
+                            posts.get(renderedIndex), presenter, prettyTime);
+                    addComponent(component);
+                    if (scrollToIndex != null && renderedIndex == scrollToIndex) {
+                        // The component should be scrolled to
+                        UI.getCurrent().scrollIntoView(component);
+                        component.setId("scrollpostid");
+                        JavaScript
+                                .eval("window.setTimeout(\"document.getElementById('scrollpostid').scrollIntoView(true)\",10)");
+                        scrollToIndex = null;
+                    }
+                } else {
+                    break;
                 }
-            } else {
-                break;
             }
         }
 
@@ -109,11 +111,7 @@ public class PostsLayout extends CssLayout {
         ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
             public void execute() {
-                int renderUntil = renderedIndex + RENDER_BATCH_SIZE;
-                if (scrollToIndex != null) {
-                    renderUntil = scrollToIndex;
-                }
-                renderUntil(renderUntil);
+                renderUntil(renderedIndex + RENDER_BATCH_SIZE);
             }
         });
         if (initial && scrollToIndex == null) {
