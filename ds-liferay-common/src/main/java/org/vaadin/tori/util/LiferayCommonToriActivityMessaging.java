@@ -71,13 +71,18 @@ public class LiferayCommonToriActivityMessaging implements
         MessageBusUtil.registerMessageListener(USER_TYPING_DESTINATION, this);
     }
 
+    private Date lastSent;
     @Override
     public void sendUserTyping(final long threadId, final Date startedTyping) {
-        Message message = new Message();
-        message.put(USER_ID, new Long(currentUserId));
-        message.put(THREAD_ID, new Long(threadId));
-        message.put(STARTED_TYPING, startedTyping.getTime());
-        sendMessage(message, USER_TYPING_DESTINATION);
+        if (lastSent == null
+                || System.currentTimeMillis() - lastSent.getTime() > 10000) {
+            Message message = new Message();
+            message.put(USER_ID, new Long(currentUserId));
+            message.put(THREAD_ID, new Long(threadId));
+            message.put(STARTED_TYPING, startedTyping.getTime());
+            sendMessage(message, USER_TYPING_DESTINATION);
+            lastSent = new Date();
+        }
     }
 
     @Override

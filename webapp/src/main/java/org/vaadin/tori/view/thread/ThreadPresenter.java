@@ -454,19 +454,13 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     }
 
     private Date startedTyping;
-    private Date lastSent;
 
     public void inputValueChanged() {
         if (messaging != null) {
             if (startedTyping == null) {
                 startedTyping = new Date();
             }
-
-            if (lastSent == null
-                    || System.currentTimeMillis() - lastSent.getTime() > 30000) {
-                messaging.sendUserTyping(currentThread.getId(), startedTyping);
-                lastSent = new Date();
-            }
+            messaging.sendUserTyping(currentThread.getId(), startedTyping);
         }
     }
 
@@ -589,7 +583,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     public synchronized void userTyping(final long userId, final long threadId,
             final Date startedTyping) {
         try {
-            if (currentThread.getId() == threadId) {
+            if (currentThread != null && currentThread.getId() == threadId) {
                 pendingReplies.put(userId, new Date[] { startedTyping,
                         new Date() });
             }
@@ -602,13 +596,15 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     @Override
     public synchronized void userAuthored(final long postId, final long threadId) {
         try {
-            if (currentThread.getId() == threadId) {
+            if (currentThread != null && currentThread.getId() == threadId) {
                 newPosts.add(postId);
                 try {
                     Post post = dataSource.getPost(postId);
                     pendingReplies.remove(post.getAuthor().getId());
                 } catch (DataSourceException e) {
-                    e.printStackTrace();
+                    log.warn(
+                            "DataSourceException while delivering user authored event",
+                            e);
                 }
             }
             refreshThreadUpdates();

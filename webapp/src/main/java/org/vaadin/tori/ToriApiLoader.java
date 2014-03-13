@@ -32,11 +32,13 @@ import org.vaadin.tori.util.ToriActivityMessaging;
 import org.vaadin.tori.util.UrlConverter;
 import org.vaadin.tori.util.UserBadgeProvider;
 
+import com.vaadin.server.SessionDestroyEvent;
+import com.vaadin.server.SessionDestroyListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 
 @SuppressWarnings("serial")
-public class ToriApiLoader implements Serializable {
+public class ToriApiLoader implements Serializable, SessionDestroyListener {
 
     private final ServiceProvider spi;
     private final DataSource ds;
@@ -201,9 +203,20 @@ public class ToriApiLoader implements Serializable {
                 ToriApiLoader.class);
         if (toriApiLoader == null) {
             toriApiLoader = new ToriApiLoader();
+            request.getService().addSessionDestroyListener(toriApiLoader);
             VaadinSession.getCurrent().setAttribute(ToriApiLoader.class,
                     toriApiLoader);
         }
         toriApiLoader.setRequest(request);
+    }
+
+    @Override
+    public void sessionDestroy(final SessionDestroyEvent event) {
+        if (event.getSession() == VaadinSession.getCurrent()) {
+            if (toriActivityMessaging != null) {
+                toriActivityMessaging.deregister();
+            }
+            event.getService().removeSessionDestroyListener(this);
+        }
     }
 }
