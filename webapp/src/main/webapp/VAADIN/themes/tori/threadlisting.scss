@@ -17,8 +17,14 @@
 			
 			@include animation(fade-in 450ms);
 			
-		    &.unread .topic {
-		    	font-weight: 500;
+		    &.unread {
+			    .topic {
+			    	font-weight: 500;
+			    }
+			    
+			    .topicname:before {
+					content: "\2022\00a0";
+				}
 		    }
 		    
 		    & > * {
