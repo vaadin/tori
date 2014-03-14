@@ -19,7 +19,6 @@ package org.vaadin.tori.view.listing.thread;
 import java.util.List;
 
 import org.vaadin.tori.ToriNavigator;
-import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.util.ComponentUtil;
@@ -88,12 +87,6 @@ public class ThreadListingViewImpl extends
     @Override
     protected ThreadListingPresenter createPresenter() {
         return new ThreadListingPresenter(this);
-    }
-
-    @Override
-    public void panic() {
-        layout.removeAllComponents();
-        layout.addComponent(new PanicComponent());
     }
 
     @Override

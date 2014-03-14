@@ -60,7 +60,7 @@ import com.vaadin.shared.ui.Connect.LoadStyle;
 public class ToriConnectorBundleLoaderFactory extends
         ConnectorBundleLoaderFactory {
 
-    private static final Map<String, Boolean> usedConnectors = new HashMap<String, Boolean>();
+    private static final Map<String, Boolean> CONNECTORS = new HashMap<String, Boolean>();
 
     static {
         addConnector(ToriUIConnector.class, false);
@@ -72,13 +72,13 @@ public class ToriConnectorBundleLoaderFactory extends
         addConnector(PostComponentConnector.class, false);
         addConnector(JavaScriptManagerConnector.class, false);
         addConnector(JavaScriptExtension.class, false);
+        addConnector(FloatingComponentConnector.class, false);
+        addConnector(LabelConnector.class, true);
 
         addConnector(WindowConnector.class, true);
-        addConnector(FloatingComponentConnector.class, true);
         addConnector(TreeConnector.class, true);
         addConnector(MenuBarConnector.class, true);
         addConnector(PanelConnector.class, true);
-        addConnector(LabelConnector.class, true);
         addConnector(PopupButtonConnector.class, true);
         addConnector(CKEditorConnector.class, true);
         addConnector(TreeTableConnector.class, true);
@@ -95,7 +95,7 @@ public class ToriConnectorBundleLoaderFactory extends
 
     private static void addConnector(final Class<? extends Connector> clazz,
             final boolean lazy) {
-        usedConnectors.put(clazz.getName(), lazy);
+        CONNECTORS.put(clazz.getName(), lazy);
     }
 
     @Override
@@ -107,7 +107,7 @@ public class ToriConnectorBundleLoaderFactory extends
         ArrayList<JClassType> arrayList = new ArrayList<JClassType>();
         for (JClassType jClassType : connectorsForWidgetset) {
             String qualifiedSourceName = jClassType.getQualifiedSourceName();
-            if (usedConnectors.containsKey(qualifiedSourceName)) {
+            if (CONNECTORS.containsKey(qualifiedSourceName)) {
                 arrayList.add(jClassType);
             }
         }
@@ -119,8 +119,8 @@ public class ToriConnectorBundleLoaderFactory extends
     protected LoadStyle getLoadStyle(final JClassType connectorType) {
         LoadStyle loadStyle = super.getLoadStyle(connectorType);
 
-        if (usedConnectors.containsKey(connectorType.getQualifiedSourceName())
-                && usedConnectors.get(connectorType.getQualifiedSourceName())) {
+        if (CONNECTORS.containsKey(connectorType.getQualifiedSourceName())
+                && CONNECTORS.get(connectorType.getQualifiedSourceName())) {
             loadStyle = LoadStyle.LAZY;
         }
         return loadStyle;

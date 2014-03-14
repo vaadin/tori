@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Vaadin Ltd.
+ * Copyright 2014 Vaadin Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -28,6 +28,7 @@ import org.vaadin.tori.edit.EditViewImpl;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
 import org.vaadin.tori.util.ComponentUtil;
+import org.vaadin.tori.widgetset.client.ui.ToriUIServerRpc;
 
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.Page;
@@ -39,7 +40,7 @@ import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings("serial")
 @Widgetset("org.vaadin.tori.widgetset.ToriWidgetset")
-public class ToriUI extends UI {
+public class ToriUI extends UI implements ToriUIServerRpc {
 
     public static final int DEFAULT_POLL_INTERVAL = 1000 * 10;
 
@@ -55,6 +56,7 @@ public class ToriUI extends UI {
     @Override
     protected void init(final VaadinRequest request) {
         setPollInterval(DEFAULT_POLL_INTERVAL);
+        registerRpc(this);
         ToriApiLoader.init(request);
         UrlFixer.fixUrl();
 
@@ -152,4 +154,13 @@ public class ToriUI extends UI {
         return (ToriUI) UI.getCurrent();
     }
 
+    @Override
+    public void userInactive() {
+        setPollInterval(0);
+    }
+
+    @Override
+    public void userActive() {
+        setPollInterval(DEFAULT_POLL_INTERVAL);
+    }
 }

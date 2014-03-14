@@ -19,21 +19,12 @@ package org.vaadin.tori.view.listing.thread;
 import java.util.Date;
 import java.util.List;
 
-import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.mvp.View;
 
 public interface ThreadListingView extends View {
 
     void setThreadProvider(ThreadProvider threadProvider);
-
-    /**
-     * Show an error message to the user that says that something irrecoverable
-     * went wrong, and there's nothing really we can do.
-     * 
-     * @see PanicComponent
-     */
-    void panic();
 
     void showError(String message);
 
