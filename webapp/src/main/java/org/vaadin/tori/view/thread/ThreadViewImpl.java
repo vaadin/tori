@@ -34,6 +34,7 @@ import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.util.ToriScheduler;
 import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
 
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
@@ -45,6 +46,7 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 
 @SuppressWarnings("serial")
+@com.vaadin.annotations.JavaScript("EPPZScrollTo.js")
 public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         implements ThreadView {
 
@@ -163,8 +165,14 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         reply.insertIntoMessage(textToAppend + "\n\n ");
         // Scroll to reply component
         UI.getCurrent().scrollIntoView(reply);
-        JavaScript.eval("window.setTimeout(\"document.getElementById('"
-                + REPLY_ID + "').scrollIntoView(true)\",100)");
+
+        if (Page.getCurrent().getWebBrowser().isIE()) {
+            JavaScript.eval("window.setTimeout(\"document.getElementById('"
+                    + REPLY_ID + "').scrollIntoView(true)\",100)");
+        } else {
+            JavaScript.eval("EPPZScrollTo.scrollVerticalToElementById('"
+                    + REPLY_ID + "', 0);");
+        }
     }
 
     @Override
