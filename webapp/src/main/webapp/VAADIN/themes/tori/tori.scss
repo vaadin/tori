@@ -222,6 +222,11 @@
 			.v-window-outerheader {
 				display: none;
 			}
+			
+			/* Overriding LR62 .aui .light */
+			.light {
+				background: transparent;
+			}
 		}
 		
 		#confirmdialog-window {
