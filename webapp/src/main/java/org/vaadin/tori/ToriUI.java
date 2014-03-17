@@ -28,6 +28,7 @@ import org.vaadin.tori.edit.EditViewImpl;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
 import org.vaadin.tori.util.ComponentUtil;
+import org.vaadin.tori.util.UrlConverter;
 import org.vaadin.tori.widgetset.client.ui.ToriUIServerRpc;
 
 import com.vaadin.annotations.Widgetset;
@@ -51,18 +52,18 @@ public class ToriUI extends UI implements ToriUIServerRpc {
     private RecentBar recentBar;
     private Breadcrumbs breadcrumbs;
 
-    private String rootPath = "tori";
+    private ToriApiLoader apiLoader;
 
     @Override
     protected void init(final VaadinRequest request) {
         setPollInterval(DEFAULT_POLL_INTERVAL);
         registerRpc(this);
         ToriApiLoader.init(request);
-        UrlFixer.fixUrl();
+        apiLoader = ToriApiLoader.getCurrent();
+        checkUrl();
 
-        final String trackerId = ToriApiLoader.getCurrent().getDataSource()
+        final String trackerId = apiLoader.getDataSource()
                 .getGoogleAnalyticsTrackerId();
-        rootPath = ToriApiLoader.getCurrent().getDataSource().getPathRoot();
         if (trackerId != null) {
             analytics = new GoogleAnalyticsTracker(trackerId);
             analytics.setAllowAnchor(true);
@@ -91,11 +92,22 @@ public class ToriUI extends UI implements ToriUIServerRpc {
         ConfirmDialog.setFactory(ComponentUtil.getConfirmDialogFactory());
     }
 
+    private void checkUrl() {
+        UrlConverter uc = apiLoader.getUrlConverter();
+        if (uc != null) {
+            String currentUrl = Page.getCurrent().getLocation().toString();
+            String convertedUrl = uc.convertUrlToToriForm(currentUrl);
+            if (!currentUrl.equals(convertedUrl)) {
+                Page.getCurrent().setLocation(convertedUrl);
+            }
+        }
+    }
+
     public final void setPortletMode(final PortletMode portletMode) {
         if (portletMode == PortletMode.EDIT) {
-            final EditViewImpl editView = new EditViewImpl(ToriApiLoader
-                    .getCurrent().getDataSource(), ToriApiLoader.getCurrent()
-                    .getAuthorizationService());
+            final EditViewImpl editView = new EditViewImpl(
+                    apiLoader.getDataSource(),
+                    apiLoader.getAuthorizationService());
             editView.init();
             setContent(editView);
         } else {
@@ -104,8 +116,8 @@ public class ToriUI extends UI implements ToriUIServerRpc {
     }
 
     private void addControlPanelIfInDevelopment() {
-        final AuthorizationService authorizationService = ToriApiLoader
-                .getCurrent().getAuthorizationService();
+        final AuthorizationService authorizationService = apiLoader
+                .getAuthorizationService();
         if (authorizationService instanceof DebugAuthorizationService) {
             DebugControlPanel debugControlPanel = new DebugControlPanel(
                     (DebugAuthorizationService) authorizationService);
@@ -126,7 +138,8 @@ public class ToriUI extends UI implements ToriUIServerRpc {
         if (analytics != null) {
 
             String fragment = Page.getCurrent().getUriFragment();
-            StringBuilder sb = new StringBuilder(rootPath + "#");
+            StringBuilder sb = new StringBuilder(apiLoader.getDataSource()
+                    .getPathRoot() + "#");
             sb.append(fragment != null ? fragment : "");
             if (action != null) {
                 sb.append("/" + action);

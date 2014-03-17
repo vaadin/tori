@@ -40,7 +40,6 @@ public class EditPresenter extends Presenter<EditView> {
         view.setGoogleAnalyticsTrackerId(dataSource
                 .getGoogleAnalyticsTrackerId());
         view.setMayNotReplyNote(dataSource.getMayNotReplyNote());
-        view.setPathRoot(dataSource.getPathRoot());
         view.setShowThreadsOnDashboard(dataSource.getShowThreadsOnDashboard());
     }
 

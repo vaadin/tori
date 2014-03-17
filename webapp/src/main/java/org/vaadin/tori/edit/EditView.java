@@ -34,8 +34,6 @@ public interface EditView extends View {
 
     void setGoogleAnalyticsTrackerId(String googleAnalyticsTrackerId);
 
-    void setPathRoot(String pathRoot);
-
     void setMayNotReplyNote(String mayNotReplyNote);
 
     void setShowThreadsOnDashboard(boolean show);

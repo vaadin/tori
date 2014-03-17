@@ -16,6 +16,8 @@
 
 package org.vaadin.tori.data;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -117,12 +119,6 @@ public abstract class LiferayCommonDataSource implements DataSource,
     private static final String PREFS_PAGE_TITLE_PREFIX = "toriPageTitlePrefix";
     private static final String PREFS_MAY_NOT_REPLY_NOTE = "mayNotReplyNote";
     private static final String PREFS_SHOW_THREADS_ON_DASHBOARD = "showThreadsOnDashboard";
-
-    private static final String PREFS_PATHROOT = "pathroot";
-
-    private static final String URL_PREFIX = "/#!/";
-    private static final String CATEGORIES = URL_PREFIX + "category/";
-    private static final String THREADS = URL_PREFIX + "thread/";
 
     private static final String PREFS_REPLACEMENTS_KEY = "toriPostReplacements";
     private static final String REPLACEMENT_SEPARATOR = "<TORI-REPLACEMENT>";
@@ -412,7 +408,6 @@ public abstract class LiferayCommonDataSource implements DataSource,
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void incrementViewCount(final DiscussionThread thread)
             throws DataSourceException {
         try {
@@ -451,77 +446,6 @@ public abstract class LiferayCommonDataSource implements DataSource,
                     threadId), e);
             throw new DataSourceException(e);
         }
-    }
-
-    private String replaceMessageBoardsLinksCategories(final String bodyRaw) {
-        String body = bodyRaw;
-        // Liferay 6.0 pattern
-        final Pattern pattern = Pattern.compile(
-                "/-/message_boards\\?[_,\\d]+mbCategoryId=\\d+",
-                Pattern.CASE_INSENSITIVE);
-        final Matcher matcher = pattern.matcher(body);
-        while (matcher.find()) {
-            final String group = matcher.group();
-            final String category = "mbCategoryId=";
-            final String categoryIdString = group.substring(group
-                    .indexOf(category) + category.length());
-            final String fragment = CATEGORIES + categoryIdString;
-            body = body
-                    .replaceFirst(group.replaceAll("\\?", "\\\\?"), fragment);
-        }
-
-        // Liferay 6.1 pattern
-        final Pattern pattern61 = Pattern.compile(
-                "/-/message_boards/category/\\d+", Pattern.CASE_INSENSITIVE);
-        final Matcher matcher61 = pattern61.matcher(body);
-        while (matcher61.find()) {
-            final String group = matcher61.group();
-            final String categoryIdString = group.substring(group
-                    .lastIndexOf('/') + 1);
-            final String fragment = CATEGORIES + categoryIdString;
-            body = body.replaceFirst(group, fragment);
-        }
-
-        return body;
-    }
-
-    private String replaceMessageBoardsLinksMessages(final String bodyRaw) {
-        String body = bodyRaw;
-        final Pattern pattern = Pattern
-                .compile(
-                        "/-/message_boards/(view_)?message/\\d+(#[_,\\d]+message_\\d+)?",
-                        Pattern.CASE_INSENSITIVE);
-        final Matcher matcher = pattern.matcher(body);
-        while (matcher.find()) {
-            final String group = matcher.group();
-            String messageIdString = group
-                    .substring(group.lastIndexOf('/') + 1);
-            if (messageIdString.contains("#")) {
-                messageIdString = messageIdString.substring(0,
-                        messageIdString.indexOf('#'));
-            }
-            long messageId = Long.parseLong(messageIdString);
-            try {
-                final MBMessage message = MBMessageLocalServiceUtil
-                        .getMBMessage(messageId);
-
-                final long threadId = message.getThreadId();
-                final String messagePrefix = "_message_";
-                final int messageIdIndex = group.indexOf(messagePrefix);
-                if (messageIdIndex > -1) {
-                    messageId = Long.parseLong(group.substring(messageIdIndex
-                            + messagePrefix.length()));
-                }
-
-                final String fragment = THREADS + threadId + "/" + messageId;
-
-                body = body.replaceFirst(group, fragment);
-            } catch (final NestableException e) {
-                LOG.warn("Unable to get MBmessage for id: " + messageId);
-            }
-        }
-
-        return body;
     }
 
     protected abstract List<Attachment> getAttachments(final MBMessage message)
@@ -1072,9 +996,6 @@ public abstract class LiferayCommonDataSource implements DataSource,
 
                 portletPreferences.setValue(PREFS_ANALYTICS_ID,
                         config.getGoogleAnalyticsTrackerId());
-                portletPreferences.setValue(PREFS_PATHROOT,
-                        config.getPathRoot());
-
                 portletPreferences.setValue(PREFS_UPDATE_PAGE_TITLE, Boolean
                         .valueOf(config.isUpdatePageTitle()).toString());
                 portletPreferences.setValue(PREFS_PAGE_TITLE_PREFIX,
@@ -1098,7 +1019,56 @@ public abstract class LiferayCommonDataSource implements DataSource,
     @Override
     @Deprecated
     public String getPathRoot() {
-        return portletPreferences.getValue(PREFS_PATHROOT, null);
+        String pathRoot = "";
+        try {
+            String layoutFriendlyURL = PortalUtil.getLayoutFriendlyURL(
+                    themeDisplay.getLayout(), themeDisplay);
+            URI uri = new URI(layoutFriendlyURL);
+            pathRoot = getLocaleAdjustedURI(uri.getPath());
+        } catch (NestableException e) {
+            LOG.warn("Unable to determine root path!", e);
+        } catch (URISyntaxException e) {
+            LOG.warn("Unable to determine root path!", e);
+        }
+        return pathRoot;
+    }
+
+    /**
+     * <p>
+     * Remove the Locale setting parameter in the Liferay URI.
+     * <p>
+     * Take an URL <code>vaadin.com/foo</code>. Liferay accepts an url
+     * <code>vaadin.com/en_GB/foo</code>, and produces the same page. Some
+     * Liferay features are able to take use of the locale definition in the
+     * URL, and translate things. Since Tori doesn't support that currently, we
+     * need to ignore that bit in the URI.
+     */
+    private static String getLocaleAdjustedURI(final String path) {
+
+        // remove the prefixes locale string from the input -->
+        // /fi/foo/bar -> /foo/bar
+        // /en_GB/foo/bar -> /foo/bar
+
+        final Pattern pathShortener = Pattern
+                .compile("^/(?:[a-z]{2}(?:_[A-Z]{2})?/)?(.+)$");
+        /*-
+         * ^/              # the string needs to start with a forward slash
+         * (
+         *   ?:[a-z]{2}    # non-capturing group that matches two lower case letters
+         *   (
+         *     ?:_[A-Z]{2} # non-capturing group that, if the previous was matched, this matches the following underscore, and two upper case letters
+         *   )?            # the previous group is optional (so, it's fine to match the lower case letters only
+         *   /             # if the two lower case letters were found, no matter if the second group is found, a forward slash is required
+         * )?              # the entire group is optional
+         * (.+)$           # capture the string that comes after these groups.
+         */
+
+        final Matcher matcher = pathShortener.matcher(path);
+        if (matcher.matches()) {
+            return "/" + matcher.group(1);
+        } else {
+            return path;
+        }
     }
 
     @Override
@@ -1191,10 +1161,6 @@ public abstract class LiferayCommonDataSource implements DataSource,
         final List<Attachment> attachments = getAttachments(message);
         final boolean formatBBCode = isFormatBBCode(message);
         String bodyRaw = message.getBody(false);
-        if (getReplaceMessageBoardsLinks()) {
-            bodyRaw = replaceMessageBoardsLinksCategories(bodyRaw);
-            bodyRaw = replaceMessageBoardsLinksMessages(bodyRaw);
-        }
         return LiferayCommonEntityFactoryUtil.createPost(message, bodyRaw,
                 formatBBCode, author, thread, attachments);
     }

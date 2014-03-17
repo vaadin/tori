@@ -60,7 +60,6 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     private CheckBox showThreadsOnDashboard;
     private TextField pageTitlePrefix;
     private TextField analyticsTrackerIdField;
-    private TextField pathRoot;
     private TextField mayNotReplyNote;
 
     public EditViewImpl(final DataSource dataSource,
@@ -83,7 +82,6 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
         layout.addComponent(buildReplaceLinks());
         layout.addComponent(buildUpdateTitle());
         layout.addComponent(buildShowThreadsOnDashboard());
-        layout.addComponent(buildRootPath());
         layout.addComponent(buildMayNotreplyNote());
 
         Component saveButton = buildSaveButton();
@@ -125,15 +123,6 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
                         final String fixedTrackerId = "".equals(trackerId) ? null
                                 : trackerId;
 
-                        String fixedPathRoot = pathRoot.getValue();
-                        if (!fixedPathRoot.startsWith("/")) {
-                            fixedPathRoot = "/" + fixedPathRoot;
-                        }
-                        while (fixedPathRoot.endsWith("/")) {
-                            fixedPathRoot = fixedPathRoot
-                                    .substring(fixedPathRoot.length() - 1);
-                        }
-
                         final Configuration config = new Configuration();
                         config.setReplaceMessageBoardsLinks(convertMessageBoardsUrls
                                 .getValue());
@@ -141,7 +130,6 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
                                 .getValue());
                         config.setReplacements(replacements);
                         config.setGoogleAnalyticsTrackerId(fixedTrackerId);
-                        config.setPathRoot(fixedPathRoot);
                         config.setUpdatePageTitle(updatePageTitle.getValue());
                         config.setMayNotReplyNote(mayNotReplyNote.getValue());
                         config.setPageTitlePrefix(titlePrefix);
@@ -157,13 +145,6 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
         return getFieldWrapper(
                 "Message displayed in the end of the thread when user is not allowed to reply",
                 mayNotReplyNote);
-    }
-
-    private Component buildRootPath() {
-        pathRoot = getTextField("Not defined");
-        return getFieldWrapper(
-                "What is the root path for Tori? (e.g. http://example.com/community/tori/ would mean \"/community/tori\"",
-                pathRoot);
     }
 
     private Component buildUpdateTitle() {
@@ -339,11 +320,6 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
         final String value = (googleAnalyticsTrackerId == null) ? ""
                 : googleAnalyticsTrackerId;
         analyticsTrackerIdField.setValue(value);
-    }
-
-    @Override
-    public void setPathRoot(final String pathRoot) {
-        this.pathRoot.setValue(pathRoot);
     }
 
     @Override

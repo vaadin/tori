@@ -61,10 +61,13 @@ public interface PostFormatter {
      * XHTML, if you don't want users to be able to format posts with XHTML,
      * risking XSS and other security attacks.
      * 
+     * @param replaceMessageBoardsLinks
+     * 
      * @return The XHTML to be rendered as-is.
      * @see Post#getBodyRaw()
      */
-    String format(Post rawPostBody, Map<String, String> replacements);
+    String format(Post rawPostBody, Map<String, String> replacements,
+            boolean replaceMessageBoardsLinks);
 
     FontsInfo getFontsInfo();
 

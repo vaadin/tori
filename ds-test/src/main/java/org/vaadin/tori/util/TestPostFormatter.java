@@ -56,7 +56,9 @@ public class TestPostFormatter implements PostFormatter {
     }
 
     @Override
-    public String format(final Post post, final Map<String, String> replacements) {
+    public String format(final Post post,
+            final Map<String, String> replacements,
+            final boolean replaceMessageBoardsLinks) {
         String msgBody = post.getBodyRaw();
         if (post.isFormatBBCode()) {
             msgBody = BBCodeTranslatorUtil.getHTML(msgBody);

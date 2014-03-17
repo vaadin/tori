@@ -26,7 +26,6 @@ public class Configuration {
     private boolean showThreadsOnDashboard;
     private Map<String, String> replacements;
     private String googleAnalyticsTrackerId;
-    private String pathRoot;
     private String mayNotReplyNote;
 
     public String getMayNotReplyNote() {
@@ -87,19 +86,6 @@ public class Configuration {
     public void setGoogleAnalyticsTrackerId(
             final String googleAnalyticsTrackerId) {
         this.googleAnalyticsTrackerId = googleAnalyticsTrackerId;
-    }
-
-    /**
-     * This is the root path for Tori. E.g.
-     * <code>http://localhost:8080/something/tori/</code> is represented by
-     * <code>/something/tori</code>
-     */
-    public void setPathRoot(final String pathRoot) {
-        this.pathRoot = pathRoot;
-    }
-
-    public String getPathRoot() {
-        return pathRoot;
     }
 
     public boolean isUpdatePageTitle() {

@@ -53,8 +53,14 @@ public class LiferayPostFormatter implements PostFormatter, PortletRequestAware 
     }
 
     @Override
-    public String format(final Post post, final Map<String, String> replacements) {
+    public String format(final Post post,
+            final Map<String, String> replacements,
+            final boolean replaceMessageBoardsLinks) {
         String msgBody = post.getBodyRaw().trim();
+        if (replaceMessageBoardsLinks) {
+            msgBody = LiferayUrlConverter.convertAllUrlsToToriForm(msgBody);
+        }
+
         if (post.isFormatBBCode()) {
             try {
                 msgBody = BBCodeTranslatorUtil.getHTML(msgBody);

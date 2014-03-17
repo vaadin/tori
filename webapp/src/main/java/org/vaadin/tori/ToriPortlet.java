@@ -61,13 +61,13 @@ public class ToriPortlet extends VaadinPortlet {
         }
 
         @Override
-        public String getConfiguredTheme(VaadinRequest request) {
+        public String getConfiguredTheme(final VaadinRequest request) {
             String theme = getInitParameter("theme");
             return theme != null ? theme : DEFAULT_THEME_NAME;
         }
 
         @Override
-        public String getStaticFileLocation(VaadinRequest request) {
+        public String getStaticFileLocation(final VaadinRequest request) {
             return request.getContextPath();
         }
 
@@ -90,7 +90,6 @@ public class ToriPortlet extends VaadinPortlet {
         if (servletRequest != null && request instanceof RenderRequest
                 && ToriIndexableApplication.isIndexerBot(servletRequest)
                 && ToriIndexableApplication.isIndexableRequest(servletRequest)) {
-
             final ToriIndexableApplication app = new ToriIndexableApplication(
                     request);
             final String htmlPage = app.getResultInHtml(servletRequest);
