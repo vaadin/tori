@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.vaadin.tori.edit;
+package org.vaadin.tori.view.edit;
 
 import org.vaadin.tori.Configuration;
 import org.vaadin.tori.exception.DataSourceException;

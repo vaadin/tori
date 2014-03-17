@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.vaadin.tori.edit;
+package org.vaadin.tori.view.edit;
 
 import java.util.Map;
 

@@ -24,11 +24,11 @@ import org.vaadin.googleanalytics.tracking.GoogleAnalyticsTracker;
 import org.vaadin.tori.component.Breadcrumbs;
 import org.vaadin.tori.component.DebugControlPanel;
 import org.vaadin.tori.component.RecentBar;
-import org.vaadin.tori.edit.EditViewImpl;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
 import org.vaadin.tori.util.ComponentUtil;
 import org.vaadin.tori.util.UrlConverter;
+import org.vaadin.tori.view.edit.EditViewImpl;
 import org.vaadin.tori.widgetset.client.ui.ToriUIServerRpc;
 
 import com.vaadin.annotations.Widgetset;
