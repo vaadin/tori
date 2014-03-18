@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Vaadin Ltd.
+ * Copyright 2014 Vaadin Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,9 +16,6 @@
 
 package org.vaadin.tori.data;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,12 +51,30 @@ public class TestDataSource implements DataSource {
 
     private static final String CONTEXT = "/webapp";
     private static final String ATTACHMENT_PREFIX = CONTEXT + "/attachments/";
-    public static final long CURRENT_USER_ID = 3;
+    public static Long currentUserId;
 
     public TestDataSource() throws DataSourceException {
         if (isEmptyDatabase()) {
-            initDatabaseWithTestData();
+            TestDataGenerator.generateTestData();
         }
+    }
+
+    private boolean isEmptyDatabase() throws DataSourceException {
+        return executeWithEntityManager(new Command<Boolean>() {
+            @Override
+            public final Boolean execute(final EntityManager em) {
+                boolean isEmpty = false;
+                try {
+                    final TypedQuery<Long> q = em.createQuery(
+                            "select count(c) from Category c", Long.class);
+                    final Long categoryCount = q.getSingleResult();
+                    isEmpty = categoryCount == 0;
+                } catch (Exception e) {
+                    isEmpty = true;
+                }
+                return isEmpty;
+            }
+        });
     }
 
     private User getUser(final long userId) throws DataSourceException {
@@ -67,55 +82,6 @@ public class TestDataSource implements DataSource {
             @Override
             public final User execute(final EntityManager em) {
                 return em.find(User.class, userId);
-            }
-        });
-    }
-
-    private void initDatabaseWithTestData() throws DataSourceException {
-        executeWithEntityManager(new Command<Void>() {
-            @Override
-            public final Void execute(final EntityManager em) {
-                // read the "test-data.sql" file
-                final BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(getClass().getClassLoader()
-                                .getResourceAsStream("test-data.sql")));
-
-                // Insert all test data in a single transaction
-                // i.e. all data will be in the database or nothing will.
-                em.getTransaction().begin();
-                try {
-                    String sqlLine;
-                    while ((sqlLine = reader.readLine()) != null) {
-                        sqlLine = sqlLine.trim();
-                        if (sqlLine.length() > 0 && !sqlLine.startsWith("#")) {
-                            // not a comment line -> run as native query
-                            em.createNativeQuery(sqlLine).executeUpdate();
-                        }
-                    }
-                    em.getTransaction().commit();
-                } catch (final Exception e) {
-                    em.getTransaction().rollback();
-                    e.printStackTrace();
-                } finally {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                return null;
-            }
-        });
-    }
-
-    private boolean isEmptyDatabase() throws DataSourceException {
-        return executeWithEntityManager(new Command<Boolean>() {
-            @Override
-            public final Boolean execute(final EntityManager em) {
-                final TypedQuery<Long> q = em.createQuery(
-                        "select count(c) from Category c", Long.class);
-                final Long categoryCount = q.getSingleResult();
-                return categoryCount == 0;
             }
         });
     }
@@ -309,7 +275,7 @@ public class TestDataSource implements DataSource {
         }
     }
 
-    private static interface Command<T> {
+    private interface Command<T> {
         T execute(EntityManager em) throws DataSourceException;
     }
 
@@ -1041,11 +1007,13 @@ public class TestDataSource implements DataSource {
 
     @Override
     public User getCurrentUser() {
+        User result = null;
         try {
-            return getUser(CURRENT_USER_ID);
+            result = getUser(currentUserId);
         } catch (DataSourceException e) {
-            return new User();
+            // Ignore
         }
+        return result;
     }
 
     @Override

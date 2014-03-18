@@ -23,6 +23,6 @@ public interface View {
      */
     void initView();
 
-    public void init();
+    void init();
 
 }

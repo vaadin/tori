@@ -20,7 +20,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-@Entity
+@Entity(name = "toriuser")
 public class User extends AbstractEntity {
 
     @Transient
@@ -93,7 +93,7 @@ public class User extends AbstractEntity {
         return userLink;
     }
 
-    public void setUserLink(String userLink) {
+    public void setUserLink(final String userLink) {
         this.userLink = userLink;
     }
 

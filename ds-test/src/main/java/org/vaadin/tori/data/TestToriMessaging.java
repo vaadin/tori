@@ -61,7 +61,7 @@ public class TestToriMessaging implements ToriActivityMessaging {
     public void sendUserTyping(final long threadId, final Date startedTyping) {
         for (UserTypingListener listener : userTypingListeners) {
             if (!thisListeners.contains(listener)) {
-                listener.userTyping(TestDataSource.CURRENT_USER_ID, threadId,
+                listener.userTyping(TestDataSource.currentUserId, threadId,
                         startedTyping);
             }
         }
