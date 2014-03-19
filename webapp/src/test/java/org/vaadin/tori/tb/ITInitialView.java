@@ -5,11 +5,13 @@ import static org.junit.Assert.assertEquals;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-public class ITInitialView {
+import com.vaadin.testbench.By;
+import com.vaadin.testbench.TestBenchTestCase;
+
+public class ITInitialView extends TestBenchTestCase {
 
     protected static WebDriver driver;
 
