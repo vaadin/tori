@@ -1,13 +1,11 @@
 package org.vaadin.tori.tb;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -71,44 +69,24 @@ public class ITListingViewPermissions extends TestBenchTestCase {
     private void testThreadRowDropdownPermission(final String permission,
             final String itemCaption) {
         openFirstThreadListingRowDropdown();
-        Assert.assertFalse(getDropdownItem(itemCaption).isEmpty());
+        Assert.assertFalse(TBUtils.getDropdownItem(driver, itemCaption)
+                .isEmpty());
 
         togglePermission(permission);
 
         openFirstThreadListingRowDropdown();
-        Assert.assertTrue(getDropdownItem(itemCaption).isEmpty());
+        Assert.assertTrue(TBUtils.getDropdownItem(driver, itemCaption)
+                .isEmpty());
 
         togglePermission(permission);
     }
 
-    private List<WebElement> getDropdownItem(final String itemCaption) {
-        return driver.findElements(By.xpath("//span[text()[contains(.,'"
-                + itemCaption + "')]]"));
-    }
-
     private void openFirstThreadListingRowDropdown() {
-        openFirstDropdown(".threadlistingrow");
+        TBUtils.openFirstDropdown(driver, ".threadlistingrow");
     }
 
     private void openFirstCategoryListingRowDropdown() {
-        openFirstDropdown(".categoryTree");
-    }
-
-    private void openFirstDropdown(final String contextCssSelector) {
-        showDropdowns();
-        List<WebElement> dropdowns = driver.findElements(By
-                .cssSelector(contextCssSelector
-                        + " .dropdown .v-menubar-menuitem"));
-        dropdowns.get(0).click();
-    }
-
-    private void showDropdowns() {
-        for (String className : Arrays.asList("dropdown", "v-menubar-menuitem")) {
-            ((JavascriptExecutor) driver)
-                    .executeScript("[].slice.call(document.getElementsByClassName('"
-                            + className
-                            + "')).map(function(item){ item.style.visibility = 'visible'})");
-        }
+        TBUtils.openFirstDropdown(driver, ".categoryTree");
     }
 
     @Test
@@ -163,7 +141,8 @@ public class ITListingViewPermissions extends TestBenchTestCase {
         driver.get(checkUrl);
         new WebDriverWait(driver, 10).until(ExpectedConditions.titleIs("Tori"));
         openFirstCategoryListingRowDropdown();
-        Assert.assertFalse(getDropdownItem(itemCaption).isEmpty());
+        Assert.assertFalse(TBUtils.getDropdownItem(driver, itemCaption)
+                .isEmpty());
 
         navigateToTestCategory();
         togglePermission(permission);
@@ -171,7 +150,8 @@ public class ITListingViewPermissions extends TestBenchTestCase {
         driver.get(checkUrl);
         new WebDriverWait(driver, 10).until(ExpectedConditions.titleIs("Tori"));
         openFirstCategoryListingRowDropdown();
-        Assert.assertTrue(getDropdownItem(itemCaption).isEmpty());
+        Assert.assertTrue(TBUtils.getDropdownItem(driver, itemCaption)
+                .isEmpty());
 
         navigateToTestCategory();
         togglePermission(permission);

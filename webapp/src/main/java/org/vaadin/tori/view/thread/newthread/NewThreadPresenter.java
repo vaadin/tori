@@ -104,6 +104,11 @@ public class NewThreadPresenter extends Presenter<NewThreadView> {
             public String getCurrentUserLink() {
                 return currentUser.getUserLink();
             }
+
+            @Override
+            public boolean mayFollow() {
+                return true;
+            }
         };
     }
 

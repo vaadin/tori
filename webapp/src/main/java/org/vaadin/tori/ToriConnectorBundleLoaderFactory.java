@@ -73,7 +73,7 @@ public class ToriConnectorBundleLoaderFactory extends
         addConnector(JavaScriptManagerConnector.class, false);
         addConnector(JavaScriptExtension.class, false);
         addConnector(FloatingComponentConnector.class, false);
-        addConnector(LabelConnector.class, true);
+        addConnector(LabelConnector.class, false);
 
         addConnector(WindowConnector.class, true);
         addConnector(TreeConnector.class, true);

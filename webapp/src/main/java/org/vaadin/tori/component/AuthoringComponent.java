@@ -291,6 +291,7 @@ public class AuthoringComponent extends PostComponent {
     public void setAuthoringData(final AuthoringData authoringData) {
         if (authoringData != null) {
             attach.setVisible(authoringData.mayAddFiles());
+            followCheckbox.setVisible(authoringData.mayFollow());
             maxFileSize = authoringData.getMaxFileSize();
 
             PostPrimaryData data = new PostPrimaryData();

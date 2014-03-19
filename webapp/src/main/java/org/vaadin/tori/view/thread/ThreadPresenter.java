@@ -337,6 +337,12 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             public String getCurrentUserLink() {
                 return currentUser.getUserLink();
             }
+
+            @Override
+            public boolean mayFollow() {
+                return authorizationService.mayFollowThread(currentThread
+                        .getId());
+            }
         };
     }
 

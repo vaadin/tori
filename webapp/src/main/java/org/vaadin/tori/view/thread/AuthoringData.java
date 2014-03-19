@@ -29,4 +29,6 @@ public interface AuthoringData {
     String getCurrentUserBadgeHTML();
 
     String getCurrentUserLink();
+
+    boolean mayFollow();
 }

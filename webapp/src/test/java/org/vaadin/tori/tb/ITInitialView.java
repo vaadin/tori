@@ -22,11 +22,7 @@ public class ITInitialView extends TestBenchTestCase {
     }
 
     @Test
-    public void runParts() {
-        checkMostRecent();
-    }
-
-    private void checkMostRecent() {
+    public void checkMostRecent() {
         WebElement mostRecentLink = driver.findElement(By
                 .cssSelector(".recentbar .current .v-link span"));
         assertEquals("Discussion thread 298", mostRecentLink.getText());

@@ -184,12 +184,12 @@ public class DebugControlPanel extends CustomComponent implements
         ToriNavigator.getCurrent().addViewChangeListener(
                 new ViewChangeListener() {
                     @Override
-                    public void afterViewChange(ViewChangeEvent event) {
+                    public void afterViewChange(final ViewChangeEvent event) {
                         currentView = event.getNewView();
                     }
 
                     @Override
-                    public boolean beforeViewChange(ViewChangeEvent event) {
+                    public boolean beforeViewChange(final ViewChangeEvent event) {
                         return true;
                     }
                 });
@@ -278,6 +278,8 @@ public class DebugControlPanel extends CustomComponent implements
         Component content = new CustomComponent() {
             {
                 final CssLayout root = new CssLayout();
+                root.addStyleName("postselect-content");
+                root.addStyleName(setter.getName());
                 setCompositionRoot(root);
                 root.setWidth("100%");
                 setWidth("400px");
@@ -371,7 +373,7 @@ public class DebugControlPanel extends CustomComponent implements
         }
     }
 
-    private Class<?> parseAbstractEntityclass(Method getter) {
+    private Class<?> parseAbstractEntityclass(final Method getter) {
         String name = getter.getName();
         Class<?> result = null;
         if (name.endsWith("Category")) {
@@ -495,7 +497,7 @@ public class DebugControlPanel extends CustomComponent implements
     }
 
     @Override
-    public void popupVisibilityChange(PopupVisibilityEvent event) {
+    public void popupVisibilityChange(final PopupVisibilityEvent event) {
         final ContextData data = getContextData();
         if (event.isPopupVisible()) {
             final PopupButton popup = event.getPopupButton();
