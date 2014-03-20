@@ -39,7 +39,7 @@ public class ThreadListing extends AbstractComponentContainer implements
     private static final String MOVE_CAPTION = "Move Topic...";
     private static final String DELETE_CAPTION = "Delete Topic...";
 
-    private static final int PRELOAD_COUNT = 10;
+    private static final int PRELOAD_COUNT = 30;
     private static final int FETCH_COUNT = 50;
     private int fetchedRows = 0;
     private int totalRows = 0;
