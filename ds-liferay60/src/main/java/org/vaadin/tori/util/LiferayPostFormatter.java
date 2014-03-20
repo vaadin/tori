@@ -58,6 +58,7 @@ public class LiferayPostFormatter implements PostFormatter {
             try {
                 msgBody = BBCodeUtil.getHTML(msgBody);
             } catch (Exception e) {
+                msgBody = msgBody.replaceAll("\\<.*?>", "");
                 LOG.debug("Couldn't parse the given post body: " + msgBody);
             }
         }

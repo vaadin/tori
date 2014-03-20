@@ -65,6 +65,7 @@ public class LiferayPostFormatter implements PostFormatter, PortletRequestAware 
             try {
                 msgBody = BBCodeTranslatorUtil.getHTML(msgBody);
             } catch (Exception e) {
+                msgBody = msgBody.replaceAll("\\<.*?>", "");
                 LOG.debug("Couldn't parse the given post body: " + msgBody);
             }
             msgBody = StringUtil.replace(msgBody,
