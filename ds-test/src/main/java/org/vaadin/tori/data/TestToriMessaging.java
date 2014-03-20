@@ -81,4 +81,10 @@ public class TestToriMessaging implements ToriActivityMessaging {
         // TODO Auto-generated method stub
     }
 
+    @Override
+    public void register() {
+        // TODO Auto-generated method stub
+
+    }
+
 }

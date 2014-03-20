@@ -48,6 +48,7 @@ public class ToriApiLoader implements Serializable, SessionDestroyListener {
     private final UserBadgeProvider userBadgeProvider;
     private final UrlConverter urlConverter;
     private final ToriActivityMessaging toriActivityMessaging;
+    private String sessionId;
 
     public ToriApiLoader() {
         checkThatCommonIsLoaded();
@@ -203,16 +204,22 @@ public class ToriApiLoader implements Serializable, SessionDestroyListener {
                 ToriApiLoader.class);
         if (toriApiLoader == null) {
             toriApiLoader = new ToriApiLoader();
+            if (toriApiLoader.getToriActivityMessaging() != null) {
+                toriApiLoader.getToriActivityMessaging().register();
+            }
             request.getService().addSessionDestroyListener(toriApiLoader);
             VaadinSession.getCurrent().setAttribute(ToriApiLoader.class,
                     toriApiLoader);
         }
+        toriApiLoader.sessionId = VaadinSession.getCurrent().getSession()
+                .getId();
         toriApiLoader.setRequest(request);
     }
 
     @Override
     public void sessionDestroy(final SessionDestroyEvent event) {
-        if (event.getSession() == VaadinSession.getCurrent()) {
+        if (sessionId != null
+                && sessionId.equals(event.getSession().getSession().getId())) {
             if (toriActivityMessaging != null) {
                 toriActivityMessaging.deregister();
             }

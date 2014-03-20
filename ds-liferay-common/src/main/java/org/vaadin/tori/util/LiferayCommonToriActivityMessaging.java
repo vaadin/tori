@@ -54,24 +54,8 @@ public class LiferayCommonToriActivityMessaging implements
     private final Logger log = Logger
             .getLogger(LiferayCommonToriActivityMessaging.class);
 
-    public LiferayCommonToriActivityMessaging() {
-        for (String destinationName : Arrays.asList(USER_AUTHORED_DESTINATION,
-                USER_TYPING_DESTINATION)) {
-            if (!MessageBusUtil.getMessageBus().hasDestination(destinationName)) {
-                log.info("Adding a message bus destination: " + destinationName);
-                @SuppressWarnings("deprecation")
-                Destination destination = new ParallelDestination(
-                        destinationName);
-                destination.open();
-                MessageBusUtil.addDestination(destination);
-            }
-        }
-
-        MessageBusUtil.registerMessageListener(USER_AUTHORED_DESTINATION, this);
-        MessageBusUtil.registerMessageListener(USER_TYPING_DESTINATION, this);
-    }
-
     private Date lastSent;
+
     @Override
     public void sendUserTyping(final long threadId, final Date startedTyping) {
         if (lastSent == null
@@ -176,6 +160,24 @@ public class LiferayCommonToriActivityMessaging implements
         MessageBusUtil.unregisterMessageListener(USER_AUTHORED_DESTINATION,
                 this);
         MessageBusUtil.unregisterMessageListener(USER_TYPING_DESTINATION, this);
+    }
+
+    @Override
+    public void register() {
+        for (String destinationName : Arrays.asList(USER_AUTHORED_DESTINATION,
+                USER_TYPING_DESTINATION)) {
+            if (!MessageBusUtil.getMessageBus().hasDestination(destinationName)) {
+                log.info("Adding a message bus destination: " + destinationName);
+                @SuppressWarnings("deprecation")
+                Destination destination = new ParallelDestination(
+                        destinationName);
+                destination.open();
+                MessageBusUtil.addDestination(destination);
+            }
+        }
+
+        MessageBusUtil.registerMessageListener(USER_AUTHORED_DESTINATION, this);
+        MessageBusUtil.registerMessageListener(USER_TYPING_DESTINATION, this);
     }
 
 }
