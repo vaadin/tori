@@ -171,12 +171,10 @@ public class AuthoringComponent extends PostComponent {
         result.addComponent(attach);
         followCheckbox = new CheckBox("Follow topic after posting", true);
         result.addComponent(followCheckbox);
-        result.setExpandRatio(attach, 1.0f);
+        result.setComponentAlignment(followCheckbox, Alignment.MIDDLE_RIGHT);
 
-        for (int i = 0; i < result.getComponentCount(); i++) {
-            result.setComponentAlignment(result.getComponent(i),
-                    Alignment.MIDDLE_LEFT);
-        }
+        result.setExpandRatio(attach, 1.0f);
+        result.setExpandRatio(followCheckbox, 1.0f);
 
         return result;
     }

@@ -560,7 +560,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
     @Override
     public boolean isFollowingThread(final long threadId) {
         boolean result = false;
-        if (currentUserId > 0) {
+        if (isLoggedInUser()) {
             try {
                 final com.liferay.portal.model.User user = getCurrentLiferayUser();
                 result = SubscriptionLocalServiceUtil.isSubscribed(
@@ -855,7 +855,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
 
     private com.liferay.portal.model.User getCurrentLiferayUser()
             throws PortalException, SystemException {
-        if (currentUser == null && currentUserId > 0) {
+        if (currentUser == null && isLoggedInUser()) {
             currentUser = UserLocalServiceUtil.getUser(currentUserId);
         }
         return currentUser;

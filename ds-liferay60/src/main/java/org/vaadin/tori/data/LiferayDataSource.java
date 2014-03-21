@@ -66,16 +66,18 @@ import com.liferay.portlet.messageboards.service.MBThreadServiceUtil;
 public class LiferayDataSource extends LiferayCommonDataSource implements
         DataSource, PortletRequestAware {
 
-    private static final Logger log = Logger.getLogger(LiferayDataSource.class);
+    private static final Logger LOG = Logger.getLogger(LiferayDataSource.class);
 
     @Override
     public void followThread(final long threadId) throws DataSourceException {
-        try {
-            SubscriptionLocalServiceUtil.addSubscription(currentUserId,
-                    MBThread.class.getName(), threadId);
-        } catch (final NestableException e) {
-            log.error(String.format("Cannot follow thread %d", threadId), e);
-            throw new DataSourceException(e);
+        if (isLoggedInUser()) {
+            try {
+                SubscriptionLocalServiceUtil.addSubscription(currentUserId,
+                        MBThread.class.getName(), threadId);
+            } catch (final NestableException e) {
+                LOG.error(String.format("Cannot follow thread %d", threadId), e);
+                throw new DataSourceException(e);
+            }
         }
     }
 
@@ -86,7 +88,7 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
         // same count for my threads as getMyPostThreads does.
         final int groupThreadsCount = getMyPostThreads(QUERY_ALL, QUERY_ALL)
                 .size();
-        log.debug("LiferayDataSource.getMyPostThreadsCount(): "
+        LOG.debug("LiferayDataSource.getMyPostThreadsCount(): "
                 + groupThreadsCount);
         return groupThreadsCount;
 
@@ -97,7 +99,7 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     @Override
     public List<DiscussionThread> getMyPostThreads(final int from, final int to)
             throws DataSourceException {
-        if (currentUserId > 0) {
+        if (isLoggedInUser()) {
             try {
                 final List<MBThread> liferayThreads = MBThreadServiceUtil
                         .getGroupThreads(scopeGroupId, currentUserId,
@@ -159,7 +161,7 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
 
             return threads.subList(Math.max(0, from), toIndex);
         } catch (final NestableException e) {
-            log.error("Couldn't get my posts.", e);
+            LOG.error("Couldn't get my posts.", e);
             throw new DataSourceException(e);
         }
     }
@@ -169,7 +171,7 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
             throws DataSourceException {
 
         int result = 0;
-        if (currentUserId > 0) {
+        if (isLoggedInUser()) {
             // 0. All the category ids (recursively) including the parameter
             @SuppressWarnings("rawtypes")
             Collection categoryIds = getCategoryIdsRecursively(categoryId);
@@ -209,13 +211,13 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     @Override
     public boolean isThreadRead(final long threadId) {
         boolean result = true;
-        if (currentUserId > 0) {
+        if (isLoggedInUser()) {
             try {
                 result = MBMessageFlagLocalServiceUtil.hasReadFlag(
                         currentUserId,
                         MBThreadLocalServiceUtil.getThread(threadId));
             } catch (final NestableException e) {
-                log.error(
+                LOG.error(
                         String.format(
                                 "Couldn't check for read flag on thread %d.",
                                 threadId), e);
@@ -226,12 +228,12 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
 
     @Override
     public void markThreadRead(final long threadId) throws DataSourceException {
-        if (currentUserId > 0) {
+        if (isLoggedInUser()) {
             try {
                 MBMessageFlagLocalServiceUtil.addReadFlags(currentUserId,
                         MBThreadLocalServiceUtil.getThread(threadId));
             } catch (final NestableException e) {
-                log.error(String.format("Couldn't mark thread %d as read.",
+                LOG.error(String.format("Couldn't mark thread %d as read.",
                         threadId), e);
                 throw new DataSourceException(e);
             }
@@ -248,7 +250,7 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
                             null, 0, null, false, null, 0, false, null, null,
                             false, mbCategoryServiceContext);
         } catch (final NestableException e) {
-            log.error(String.format("Cannot save category"), e);
+            LOG.error(String.format("Cannot save category"), e);
             throw new DataSourceException(e);
         }
     }

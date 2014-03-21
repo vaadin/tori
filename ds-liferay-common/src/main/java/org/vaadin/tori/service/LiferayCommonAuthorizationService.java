@@ -41,7 +41,7 @@ import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
 public class LiferayCommonAuthorizationService implements AuthorizationService,
         PortletRequestAware {
 
-    private static final Logger log = Logger
+    private static final Logger LOG = Logger
             .getLogger(LiferayCommonAuthorizationService.class);
     private long scopeGroupId = -1;
     private String currentUser;
@@ -64,32 +64,32 @@ public class LiferayCommonAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayFollowCategory(Long categoryId) {
+    public boolean mayFollowCategory(final Long categoryId) {
         return hasCategoryPermission(CategoryAction.SUBSCRIBE, categoryId);
     }
 
     @Override
-    public boolean mayDeleteCategory(Long categoryId) {
+    public boolean mayDeleteCategory(final Long categoryId) {
         return hasCategoryPermission(CategoryAction.DELETE, categoryId);
     }
 
     @Override
-    public boolean mayEditCategory(Long categoryId) {
+    public boolean mayEditCategory(final Long categoryId) {
         return hasCategoryPermission(CategoryAction.UPDATE, categoryId);
     }
 
     @Override
-    public boolean mayEditPost(long postId) {
+    public boolean mayEditPost(final long postId) {
         return hasMessagePermission(MessageAction.UPDATE, postId);
     }
 
     @Override
-    public boolean mayReplyInThread(long threadid) {
+    public boolean mayReplyInThread(final long threadid) {
         MBThread mbThread = null;
         try {
             mbThread = MBThreadLocalServiceUtil.getThread(threadid);
         } catch (final NestableException e) {
-            log.error(e);
+            LOG.error(e);
         }
         return mbThread != null
                 && !mbThread.isLocked()
@@ -98,7 +98,7 @@ public class LiferayCommonAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayAddFilesInCategory(Long categoryId) {
+    public boolean mayAddFilesInCategory(final Long categoryId) {
         return hasCategoryPermission(CategoryAction.ADD_FILE, categoryId);
     }
 
@@ -108,18 +108,18 @@ public class LiferayCommonAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayFollowThread(long threadId) {
+    public boolean mayFollowThread(final long threadId) {
         try {
             return hasMessagePermission(MessageAction.SUBSCRIBE,
                     LiferayCommonDataSource.getRootMessageId(threadId));
         } catch (final DataSourceException e) {
-            log.error(e);
+            LOG.error(e);
         }
         return false;
     }
 
     @Override
-    public boolean mayDeletePost(long postId) {
+    public boolean mayDeletePost(final long postId) {
         return hasMessagePermission(MessageAction.DELETE, postId);
     }
 
@@ -129,34 +129,34 @@ public class LiferayCommonAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayMoveThreadInCategory(Long categoryId) {
+    public boolean mayMoveThreadInCategory(final Long categoryId) {
         return hasCategoryPermission(CategoryAction.MOVE_THREAD, categoryId);
     }
 
     @Override
-    public boolean mayStickyThreadInCategory(Long categoryId) {
+    public boolean mayStickyThreadInCategory(final Long categoryId) {
         return hasCategoryPermission(CategoryAction.UPDATE_THREAD_PRIORITY,
                 categoryId);
     }
 
     @Override
-    public boolean mayLockThreadInCategory(Long categoryId) {
+    public boolean mayLockThreadInCategory(final Long categoryId) {
         return hasCategoryPermission(CategoryAction.LOCK_THREAD, categoryId);
     }
 
     @Override
-    public boolean mayDeleteThread(long threadId) {
+    public boolean mayDeleteThread(final long threadId) {
         try {
             return hasMessagePermission(MessageAction.DELETE,
                     LiferayCommonDataSource.getRootMessageId(threadId));
         } catch (final DataSourceException e) {
-            log.error(e);
+            LOG.error(e);
         }
         return false;
     }
 
     @Override
-    public boolean mayCreateThreadInCategory(Long categoryId) {
+    public boolean mayCreateThreadInCategory(final Long categoryId) {
         return hasCategoryPermission(CategoryAction.ADD_MESSAGE, categoryId);
     }
 
@@ -204,9 +204,9 @@ public class LiferayCommonAuthorizationService implements AuthorizationService,
                     MBMessage.class.getName(), message.getRootMessageId(),
                     action.toString());
         } catch (final PortalException e) {
-            log.error(e);
+            LOG.error(e);
         } catch (final SystemException e) {
-            log.error(e);
+            LOG.error(e);
         }
         // default to false
         return false;
@@ -233,7 +233,7 @@ public class LiferayCommonAuthorizationService implements AuthorizationService,
                 && !currentUser.equals(user)) {
             // user has changed
             currentUser = user;
-            log.debug(String.format("Current user is now %s.", currentUser));
+            LOG.debug(String.format("Current user is now %s.", currentUser));
         }
     }
 
@@ -244,7 +244,7 @@ public class LiferayCommonAuthorizationService implements AuthorizationService,
                 banned = MBBanLocalServiceUtil.hasBan(scopeGroupId,
                         Long.valueOf(currentUser));
             } catch (final SystemException e) {
-                log.error("Cannot check ban status for user " + currentUser, e);
+                LOG.error("Cannot check ban status for user " + currentUser, e);
                 e.printStackTrace();
             }
         }
@@ -259,7 +259,7 @@ public class LiferayCommonAuthorizationService implements AuthorizationService,
 
             if (themeDisplay != null) {
                 scopeGroupId = themeDisplay.getScopeGroupId();
-                log.debug("Using groupId " + scopeGroupId + " as the scope.");
+                LOG.debug("Using groupId " + scopeGroupId + " as the scope.");
             }
         }
 
@@ -268,7 +268,7 @@ public class LiferayCommonAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayViewCategory(Long categoryId) {
+    public boolean mayViewCategory(final Long categoryId) {
         return hasCategoryPermission(CategoryAction.VIEW, categoryId);
     }
 

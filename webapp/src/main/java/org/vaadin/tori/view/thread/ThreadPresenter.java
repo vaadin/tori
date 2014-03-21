@@ -481,7 +481,10 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             final Post updatedPost = dataSource.saveReply(rawBody, attachments,
                     currentThread.getId());
 
-            if (follow && !dataSource.isFollowingThread(currentThread.getId())) {
+            if (follow
+                    && authorizationService.mayFollowThread(currentThread
+                            .getId())
+                    && !dataSource.isFollowingThread(currentThread.getId())) {
                 dataSource.followThread(currentThread.getId());
             } else if (!follow
                     && dataSource.isFollowingThread(currentThread.getId())) {

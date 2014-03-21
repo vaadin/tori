@@ -286,7 +286,7 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                 note = "Please log in to reply";
             }
             if (viewData.isThreadLocked()) {
-                note = "Thread locked";
+                note = "Topic locked";
             }
 
             mayNotReplyNote.setValue(note);

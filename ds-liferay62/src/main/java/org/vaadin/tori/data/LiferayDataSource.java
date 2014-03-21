@@ -60,53 +60,64 @@ import com.liferay.portlet.messageboards.service.MBThreadServiceUtil;
 public class LiferayDataSource extends LiferayCommonDataSource implements
         DataSource, PortletRequestAware {
 
-    private static final Logger log = Logger.getLogger(LiferayDataSource.class);
+    private static final Logger LOG = Logger.getLogger(LiferayDataSource.class);
 
     @Override
     public void followThread(final long threadId) throws DataSourceException {
-        try {
-            SubscriptionLocalServiceUtil.addSubscription(currentUserId,
-                    currentUser.getGroupId(), MBThread.class.getName(),
-                    threadId);
-        } catch (final NestableException e) {
-            log.error(String.format("Cannot follow thread %d", threadId), e);
-            throw new DataSourceException(e);
+        if (isLoggedInUser()) {
+            try {
+                SubscriptionLocalServiceUtil.addSubscription(currentUserId,
+                        currentUser.getGroupId(), MBThread.class.getName(),
+                        threadId);
+            } catch (final NestableException e) {
+                LOG.error(String.format("Cannot follow thread %d", threadId), e);
+                throw new DataSourceException(e);
+            }
         }
     }
 
     @Override
     public int getMyPostThreadsCount() throws DataSourceException {
-        try {
-            final int groupThreadsCount = MBThreadServiceUtil
-                    .getGroupThreadsCount(scopeGroupId, currentUserId,
-                            WorkflowConstants.STATUS_ANY);
-            log.debug("LiferayDataSource.getMyPostThreadsCount(): "
-                    + groupThreadsCount);
-            return groupThreadsCount;
-        } catch (final SystemException e) {
-            log.error("Couldn't get my posts' count.", e);
-            throw new DataSourceException(e);
+        int result = 0;
+        if (isLoggedInUser()) {
+            try {
+                final int groupThreadsCount = MBThreadServiceUtil
+                        .getGroupThreadsCount(scopeGroupId, currentUserId,
+                                WorkflowConstants.STATUS_ANY);
+                LOG.debug("LiferayDataSource.getMyPostThreadsCount(): "
+                        + groupThreadsCount);
+                result = groupThreadsCount;
+            } catch (final SystemException e) {
+                LOG.error("Couldn't get my posts' count.", e);
+                throw new DataSourceException(e);
+            }
         }
+        return result;
     }
 
     @Override
     public List<DiscussionThread> getMyPostThreads(final int from, final int to)
             throws DataSourceException {
-        try {
-            final List<MBThread> liferayThreads = getLiferayMyPosts(from, to);
+        if (isLoggedInUser()) {
+            try {
+                final List<MBThread> liferayThreads = getLiferayMyPosts(from,
+                        to);
 
-            // collection for the final result
-            final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
-                    liferayThreads.size());
-            for (final MBThread liferayThread : liferayThreads) {
-                final DiscussionThread thread = wrapLiferayThread(
-                        liferayThread, null);
-                result.add(thread);
+                // collection for the final result
+                final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
+                        liferayThreads.size());
+                for (final MBThread liferayThread : liferayThreads) {
+                    final DiscussionThread thread = wrapLiferayThread(
+                            liferayThread, null);
+                    result.add(thread);
+                }
+                return result;
+            } catch (final NestableException e) {
+                LOG.error("Couldn't get my posts.", e);
+                throw new DataSourceException(e);
             }
-            return result;
-        } catch (final NestableException e) {
-            log.error("Couldn't get my posts.", e);
-            throw new DataSourceException(e);
+        } else {
+            return Collections.emptyList();
         }
     }
 
@@ -121,7 +132,7 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
             throws DataSourceException {
 
         int result = 0;
-        if (currentUserId > 0) {
+        if (isLoggedInUser()) {
             // 0. All the category ids (recursively) including the parameter
             @SuppressWarnings("rawtypes")
             Collection categoryIds = getCategoryIdsRecursively(categoryId);
@@ -160,13 +171,13 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     @Override
     public boolean isThreadRead(final long threadId) {
         boolean result = true;
-        if (currentUserId > 0) {
+        if (isLoggedInUser()) {
             try {
                 result = MBThreadFlagLocalServiceUtil.hasThreadFlag(
                         currentUserId,
                         MBThreadLocalServiceUtil.getThread(threadId));
             } catch (final NestableException e) {
-                log.error(
+                LOG.error(
                         String.format(
                                 "Couldn't check for read flag on thread %d.",
                                 threadId), e);
@@ -178,13 +189,13 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
 
     @Override
     public void markThreadRead(final long threadId) throws DataSourceException {
-        if (currentUserId > 0) {
+        if (isLoggedInUser()) {
             try {
                 MBThreadFlagLocalServiceUtil.addThreadFlag(currentUserId,
                         MBThreadLocalServiceUtil.getThread(threadId),
                         flagsServiceContext);
             } catch (final NestableException e) {
-                log.error(String.format("Couldn't mark thread %d as read.",
+                LOG.error(String.format("Couldn't mark thread %d as read.",
                         threadId), e);
                 throw new DataSourceException(e);
             }
@@ -195,7 +206,7 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     public void saveNewCategory(final Long parentCategoryId, final String name,
             final String description) throws DataSourceException {
         try {
-            log.debug("Adding new category: " + name);
+            LOG.debug("Adding new category: " + name);
             final long parentId = normalizeCategoryId(parentCategoryId);
 
             final String displayStyle = "default";
@@ -205,7 +216,7 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
                     null, false, null, 0, false, null, null, false, false,
                     mbCategoryServiceContext);
         } catch (final NestableException e) {
-            log.error("Cannot persist category", e);
+            LOG.error("Cannot persist category", e);
             throw new DataSourceException(e);
         }
     }
