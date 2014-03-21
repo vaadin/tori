@@ -236,5 +236,21 @@
 				height: auto !important;
 			}
 		}
+		
+		
+		.v-checkbox,
+		.v-radiobutton {
+			
+			input {
+				margin: 3px;
+			}
+			
+			label {
+				display: inline;
+				font-size: inherit;
+				vertical-align: middle;
+				color: inherit;
+			}
+		}
 	}
 }
