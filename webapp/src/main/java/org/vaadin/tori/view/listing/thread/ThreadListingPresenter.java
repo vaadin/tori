@@ -268,6 +268,11 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
                 return thread.getLatestPost().getId();
             }
 
+            @Override
+            public boolean mayView() {
+                return authorizationService.mayViewThread(threadId);
+            }
+
         };
     }
 

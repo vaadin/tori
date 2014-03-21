@@ -89,4 +89,8 @@ public interface DebugAuthorizationService extends AuthorizationService {
     /** @see AuthorizationService#mayView(Category) */
     void setMayViewCategory(Long categoryId, boolean b);
 
+    void setMayViewThread(long threadId, boolean b);
+
+    void setMayViewPost(long postId, boolean b);
+
 }

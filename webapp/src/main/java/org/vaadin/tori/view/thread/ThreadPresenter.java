@@ -198,6 +198,11 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
                 return post.isFormatBBCode();
             }
 
+            @Override
+            public boolean userMayView() {
+                return authorizationService.mayViewPost(postId);
+            }
+
         };
     }
 
@@ -212,28 +217,33 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
                 if (requestedThread != null) {
                     currentThread = requestedThread;
 
-                    Long selectedPostId = null;
-                    if (selectedPostIdString != null) {
-                        try {
-                            selectedPostId = Long
-                                    .parseLong(selectedPostIdString);
-                        } catch (final NumberFormatException e) {
-                            log.error("Invalid post id format: "
-                                    + selectedPostIdString);
+                    if (authorizationService.mayViewThread(threadId)) {
+                        Long selectedPostId = null;
+                        if (selectedPostIdString != null) {
+                            try {
+                                selectedPostId = Long
+                                        .parseLong(selectedPostIdString);
+                            } catch (final NumberFormatException e) {
+                                log.error("Invalid post id format: "
+                                        + selectedPostIdString);
+                            }
                         }
-                    }
 
-                    view.setViewData(getViewData(currentThread),
-                            getAuthoringData());
+                        view.setViewData(getViewData(currentThread),
+                                getAuthoringData());
 
-                    displayPosts(threadId, selectedPostId);
+                        displayPosts(threadId, selectedPostId);
 
-                    try {
-                        dataSource.incrementViewCount(requestedThread);
-                        dataSource.markThreadRead(requestedThread.getId());
-                    } catch (final DataSourceException e) {
-                        log.error("Couldn't increment view count and "
-                                + "mark thread as read.", e);
+                        try {
+                            dataSource.incrementViewCount(requestedThread);
+                            dataSource.markThreadRead(requestedThread.getId());
+                        } catch (final DataSourceException e) {
+                            log.error("Couldn't increment view count and "
+                                    + "mark thread as read.", e);
+                        }
+                    } else {
+                        view.setViewData(null, null);
+                        view.showError("Not allowed to view the topic");
                     }
                 } else {
                     view.setViewData(null, null);

@@ -24,8 +24,6 @@ public interface AuthorizationService {
 
     boolean mayEditCategories();
 
-    boolean mayRearrangeCategories();
-
     boolean mayReportPosts();
 
     boolean mayFollowCategory(Long categoryId);
@@ -59,5 +57,9 @@ public interface AuthorizationService {
     boolean mayAddFilesInCategory(Long categoryId);
 
     boolean mayViewCategory(Long categoryId);
+
+    boolean mayViewThread(long threadId);
+
+    boolean mayViewPost(long postId);
 
 }

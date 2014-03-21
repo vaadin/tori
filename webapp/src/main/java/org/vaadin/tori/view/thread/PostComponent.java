@@ -73,6 +73,8 @@ public class PostComponent extends AbstractComponentContainer implements
         this.presenter = presenter;
         this.post = post;
 
+        setVisible(post == null || post.userMayView());
+
         setStyleName("post");
 
         initData();

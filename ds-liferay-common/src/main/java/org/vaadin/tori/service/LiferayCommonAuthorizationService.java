@@ -53,12 +53,6 @@ public class LiferayCommonAuthorizationService implements AuthorizationService,
     }
 
     @Override
-    public boolean mayRearrangeCategories() {
-        // Liferay doesn't support reordering of categories.
-        return false;
-    }
-
-    @Override
     public boolean mayReportPosts() {
         return isLoggedIn() && !isBanned();
     }
@@ -194,14 +188,14 @@ public class LiferayCommonAuthorizationService implements AuthorizationService,
             // check for owner permission
             if (getPermissionChecker().hasOwnerPermission(
                     message.getCompanyId(), MBMessage.class.getName(),
-                    message.getRootMessageId(), message.getUserId(),
+                    message.getMessageId(), message.getUserId(),
                     action.toString())) {
                 return true;
             }
 
             // check for other permissions
             return getPermissionChecker().hasPermission(message.getGroupId(),
-                    MBMessage.class.getName(), message.getRootMessageId(),
+                    MBMessage.class.getName(), message.getMessageId(),
                     action.toString());
         } catch (final PortalException e) {
             LOG.error(e);
@@ -270,6 +264,23 @@ public class LiferayCommonAuthorizationService implements AuthorizationService,
     @Override
     public boolean mayViewCategory(final Long categoryId) {
         return hasCategoryPermission(CategoryAction.VIEW, categoryId);
+    }
+
+    @Override
+    public boolean mayViewThread(final long threadId) {
+        boolean result = false;
+        try {
+            result = hasMessagePermission(MessageAction.VIEW,
+                    LiferayCommonDataSource.getRootMessageId(threadId));
+        } catch (DataSourceException e) {
+            LOG.error(e);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean mayViewPost(final long postId) {
+        return hasMessagePermission(MessageAction.VIEW, postId);
     }
 
 }

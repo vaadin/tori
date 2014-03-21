@@ -200,10 +200,12 @@ public class ThreadListing extends AbstractComponentContainer implements
         final ArrayList<ThreadPrimaryData> rows = new ArrayList<ThreadPrimaryData>();
 
         for (final ThreadData thread : threads) {
-            rows.add(getThreadPrimaryData(thread));
+            if (thread.mayView()) {
+                rows.add(getThreadPrimaryData(thread));
+            }
         }
 
-        fetchedRows += rows.size();
+        fetchedRows += threads.size();
         int remaining = totalRows - fetchedRows;
         if (fetchedRows == 0) {
             remaining = 0;
@@ -216,7 +218,9 @@ public class ThreadListing extends AbstractComponentContainer implements
             public void execute() {
                 final ArrayList<ThreadAdditionalData> rows = new ArrayList<ThreadAdditionalData>();
                 for (final ThreadData thread : threads) {
-                    rows.add(getThreadAdditionalData(thread));
+                    if (thread.mayView()) {
+                        rows.add(getThreadAdditionalData(thread));
+                    }
                 }
                 getRpcProxy(ThreadListingClientRpc.class).refreshThreadRows(
                         rows);

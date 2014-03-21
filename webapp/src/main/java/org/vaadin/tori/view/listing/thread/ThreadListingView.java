@@ -69,6 +69,8 @@ public interface ThreadListingView extends View {
 
         boolean isSticky();
 
+        boolean mayView();
+
         String getAuthor();
 
         String getTopic();

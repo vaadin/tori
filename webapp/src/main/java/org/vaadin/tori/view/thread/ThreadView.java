@@ -95,6 +95,8 @@ public interface ThreadView extends View {
 
         boolean isFormatBBCode();
 
+        boolean userMayView();
+
     }
 
     interface ViewData {

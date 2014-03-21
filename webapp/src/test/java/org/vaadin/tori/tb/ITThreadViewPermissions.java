@@ -23,6 +23,9 @@ public class ITThreadViewPermissions extends TestBenchTestCase {
     private static String testThreadUrl;
     private static String testThreadTitle;
 
+    private static String otherThreadUrl;
+    private static String otherThreadTitle;
+
     @BeforeClass
     public static void setUp() {
         driver = TBUtils.getFirefoxDriver();
@@ -44,6 +47,10 @@ public class ITThreadViewPermissions extends TestBenchTestCase {
 
         testThreadUrl = firstThread.getAttribute("href").replaceAll("/#", "#");
         testThreadTitle = firstThread.getText();
+
+        WebElement otherThread = threadLinks.get(4);
+        otherThreadUrl = otherThread.getAttribute("href").replaceAll("/#", "#");
+        otherThreadTitle = otherThread.getText();
 
         navigateToTestThread();
     }
@@ -130,6 +137,42 @@ public class ITThreadViewPermissions extends TestBenchTestCase {
         togglePermission(false, permission);
     }
 
+    @Test
+    public void testViewPost() {
+        String permission = "setMayViewPost";
+
+        Assert.assertTrue(driver.findElements(By.cssSelector(".post")).size() == 2);
+        togglePermission(true, permission);
+
+        Assert.assertTrue(driver.findElements(By.cssSelector(".post")).size() == 1);
+        togglePermission(true, permission);
+    }
+
+    @Test
+    public void testViewThread() {
+        String permission = "setMayViewThread";
+
+        navigateToOtherThread();
+        navigateToTestCategory();
+        Assert.assertTrue(driver
+                .findElements(
+                        By.xpath("//a[text()[contains(.,'" + otherThreadTitle
+                                + "')]]")).size() == 1);
+
+        navigateToOtherThread();
+        togglePermission(false, permission);
+
+        driver.findElement(By.cssSelector(".v-Notification-error")).click();
+        navigateToTestCategory();
+
+        Assert.assertTrue(driver
+                .findElements(
+                        By.xpath("//a[text()[contains(.,'" + otherThreadTitle
+                                + "')]]")).isEmpty());
+
+        navigateToTestThread();
+    }
+
     private List<WebElement> findVoteComponents() {
         return driver.findElements(By.cssSelector(".footer .vote"));
     }
@@ -206,6 +249,12 @@ public class ITThreadViewPermissions extends TestBenchTestCase {
         List<WebElement> dropdowns = driver.findElements(By
                 .cssSelector(".post .dropdown .v-menubar-menuitem"));
         dropdowns.get(0).click();
+    }
+
+    private static void navigateToOtherThread() {
+        driver.get(otherThreadUrl);
+        new WebDriverWait(driver, 10).until(ExpectedConditions
+                .titleContains(otherThreadTitle));
     }
 
     private static void navigateToTestThread() {
