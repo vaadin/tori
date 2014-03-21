@@ -80,7 +80,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
             @Override
             public boolean userMayBanAuthor() {
-                return authorizationService.mayBan();
+                return !author.isAnonymous() && authorizationService.mayBan();
             }
 
             @Override
@@ -169,7 +169,8 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
             @Override
             public boolean userMayReportPosts() {
-                return authorizationService.mayReportPosts();
+                return !author.isAnonymous()
+                        && authorizationService.mayReportPosts();
             }
 
             @Override

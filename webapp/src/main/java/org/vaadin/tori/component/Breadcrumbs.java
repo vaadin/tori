@@ -182,7 +182,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
             } else if (urlParameterId == null) {
                 crumbsLayout.removeAllComponents();
                 viewCaption.setValue(getDashboardTitle());
-                myPostsLink.setVisible(dataSource.getCurrentUser().getId() > 0);
+                myPostsLink.setVisible(dataSource.isLoggedInUser());
             } else {
                 ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
                     @Override

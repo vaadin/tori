@@ -177,6 +177,7 @@ public class LiferayCommonEntityFactoryUtil {
 
     public static User createAnonymousUser(final String imagePath) {
         final User entity = new User();
+        entity.setAnonymous(true);
         entity.setId(0);
         entity.setDisplayedName("Anonymous");
         return entity;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Vaadin Ltd.
+ * Copyright 2014 Vaadin Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,23 +16,13 @@
 
 package org.vaadin.tori.exception;
 
+@SuppressWarnings("serial")
 public class DataSourceException extends Exception {
-    private static final long serialVersionUID = 1924584777047434430L;
 
-    public static final String GENERIC_ERROR_MESSAGE = "Sorry, something seems to be wrong with our database :(";
+    public static final String GENERIC_ERROR_MESSAGE = "Something unexpected happened. Please try reloading the page.";
 
     public DataSourceException() {
         super();
-    }
-
-    /**
-     * @deprecated If you know enough about the exception to write a string
-     *             description, consider subclassing {@link DataSourceException}
-     *             instead.
-     */
-    @Deprecated
-    public DataSourceException(final String arg0, final Throwable arg1) {
-        super(arg0, arg1);
     }
 
     /**

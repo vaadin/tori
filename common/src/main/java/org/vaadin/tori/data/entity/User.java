@@ -26,6 +26,9 @@ public class User extends AbstractEntity {
     @Transient
     private Object originalUserObject;
 
+    @Transient
+    private boolean anonymous;
+
     @Column(nullable = false)
     private String displayedName;
 
@@ -65,7 +68,11 @@ public class User extends AbstractEntity {
      * Whether this object represents a user that is not logged in.
      */
     public boolean isAnonymous() {
-        return false;
+        return anonymous;
+    }
+
+    public void setAnonymous(final boolean anonymous) {
+        this.anonymous = anonymous;
     }
 
     public boolean isBanned() {
