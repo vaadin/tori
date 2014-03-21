@@ -26,6 +26,11 @@
 					<groupId>${project.groupId}</groupId>
 					<artifactId>ds-test</artifactId>
 				</dependency>
+				<dependency>
+					<groupId>org.eclipse.persistence</groupId>
+					<artifactId>javax.persistence</artifactId>
+					<scope>compile</scope>
+				</dependency>
 			</dependencies>
 			<build>
 				<finalName>webapp</finalName>
