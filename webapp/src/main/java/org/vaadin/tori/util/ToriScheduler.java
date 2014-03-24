@@ -15,6 +15,7 @@
  */
 package org.vaadin.tori.util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -26,7 +27,8 @@ import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.JavaScriptFunction;
 import com.vaadin.ui.UI;
 
-public class ToriScheduler {
+@SuppressWarnings("serial")
+public class ToriScheduler implements Serializable {
 
     public interface ScheduledCommand {
         void execute();
