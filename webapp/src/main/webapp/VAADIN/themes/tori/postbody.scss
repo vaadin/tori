@@ -89,8 +89,6 @@
 		background-color: transparent;
 		max-height: $postbody-code-line-height * 40;
 		overflow: auto;
-		overflow-y: auto;
-		overflow-x: hidden;
 		border: none;
 		
 		
@@ -136,8 +134,6 @@
 		padding: $postbody-code-vertical-padding 0;
 		max-height: $postbody-code-line-height * 40;
 		overflow: auto;
-		overflow-y: auto;
-		overflow-x: hidden;
 		
 		.code-lines {
 			display: inline-block;
@@ -171,8 +167,6 @@
 	    padding: 0;
 	    max-height: $postbody-code-line-height * 40;
 	    overflow: auto;
-		overflow-y: auto;
-		overflow-x: hidden;
 	    
 	    display: inline-block;
 	    height: auto !important;
