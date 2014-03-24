@@ -72,6 +72,8 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
             } catch (final NestableException e) {
                 LOG.error(String.format("Cannot follow thread %d", threadId), e);
                 throw new DataSourceException(e);
+            } catch (final NullPointerException e) {
+                LOG.error(String.format("Cannot follow thread %d", threadId), e);
             }
         }
     }
