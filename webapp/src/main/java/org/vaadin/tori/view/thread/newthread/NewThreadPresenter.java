@@ -39,7 +39,8 @@ public class NewThreadPresenter extends Presenter<NewThreadView> {
     public void saveNewThread(final String topic, final String rawBody,
             final Map<String, byte[]> attachments, final boolean follow) {
         if (topic.isEmpty() || rawBody.isEmpty()) {
-            view.showError("Thread topic and body needed");
+            view.showError("Topic title and body needed");
+            view.authoringFailed();
         } else {
             try {
                 Post post = dataSource.saveNewThread(topic, rawBody,
