@@ -37,10 +37,14 @@ public class CategoryListingPresenter extends Presenter<CategoryListingView> {
     }
 
     public void saveNewCategory(final String name, final String description) {
-        try {
-            dataSource.saveNewCategory(parentCategoryId, name, description);
-        } catch (final DataSourceException e) {
-            displayError(e);
+        if (name != null && !name.trim().isEmpty()) {
+            try {
+                dataSource.saveNewCategory(parentCategoryId, name, description);
+            } catch (final DataSourceException e) {
+                displayError(e);
+            }
+        } else {
+            view.showError("Name required");
         }
         // refresh the categories
         updateView();
