@@ -96,7 +96,7 @@
 		<profile>
 			<id>liferay62</id>
 			<properties>
-				<liferay.versions>6.2.0+,6.2.0+</liferay.versions>
+				<liferay.versions>6.2.0+,6.2.10+</liferay.versions>
 				<productionMode>true</productionMode>
 				<security.manager.enabled>true</security.manager.enabled>
 			</properties>

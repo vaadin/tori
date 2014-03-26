@@ -55,7 +55,6 @@ import com.liferay.portlet.messageboards.service.MBCategoryServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadFlagLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
-import com.liferay.portlet.messageboards.service.MBThreadServiceUtil;
 
 public class LiferayDataSource extends LiferayCommonDataSource implements
         DataSource, PortletRequestAware {
@@ -76,57 +75,6 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
                 LOG.error(String.format("Cannot follow thread %d", threadId), e);
             }
         }
-    }
-
-    @Override
-    public int getMyPostThreadsCount() throws DataSourceException {
-        int result = 0;
-        if (isLoggedInUser()) {
-            try {
-                final int groupThreadsCount = MBThreadServiceUtil
-                        .getGroupThreadsCount(scopeGroupId, currentUserId,
-                                WorkflowConstants.STATUS_ANY);
-                LOG.debug("LiferayDataSource.getMyPostThreadsCount(): "
-                        + groupThreadsCount);
-                result = groupThreadsCount;
-            } catch (final SystemException e) {
-                LOG.error("Couldn't get my posts' count.", e);
-                throw new DataSourceException(e);
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public List<DiscussionThread> getMyPostThreads(final int from, final int to)
-            throws DataSourceException {
-        if (isLoggedInUser()) {
-            try {
-                final List<MBThread> liferayThreads = getLiferayMyPosts(from,
-                        to);
-
-                // collection for the final result
-                final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
-                        liferayThreads.size());
-                for (final MBThread liferayThread : liferayThreads) {
-                    final DiscussionThread thread = wrapLiferayThread(
-                            liferayThread, null);
-                    result.add(thread);
-                }
-                return result;
-            } catch (final NestableException e) {
-                LOG.error("Couldn't get my posts.", e);
-                throw new DataSourceException(e);
-            }
-        } else {
-            return Collections.emptyList();
-        }
-    }
-
-    private List<MBThread> getLiferayMyPosts(final int start, final int end)
-            throws SystemException, PortalException {
-        return MBThreadServiceUtil.getGroupThreads(scopeGroupId, currentUserId,
-                WorkflowConstants.STATUS_ANY, start, end + 1);
     }
 
     @Override

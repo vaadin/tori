@@ -67,7 +67,8 @@ public class PostsLayout extends CssLayout {
 
     private void renderUntil(final int untilIndex) {
         boolean postsAdded = false;
-        while (renderedIndex++ <= untilIndex) {
+        while (renderedIndex <= untilIndex) {
+            renderedIndex++;
             if (posts != null) {
                 if (renderedIndex < posts.size()) {
                     postsAdded = true;

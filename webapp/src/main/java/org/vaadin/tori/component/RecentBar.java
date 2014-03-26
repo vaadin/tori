@@ -232,8 +232,8 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
             try {
                 int count = dataSource.getThreadCountRecursively(null);
                 for (int i = 0; i < count; i++) {
-                    DiscussionThread thread = dataSource.getRecentPosts(i, i)
-                            .get(0);
+                    DiscussionThread thread = dataSource.getRecentPosts(i,
+                            Math.min(i + 1, count - 1)).get(0);
                     boolean newerThread = recentThread == null
                             || thread
                                     .getLatestPost()

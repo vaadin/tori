@@ -22,10 +22,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,9 +50,14 @@ import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.service.post.PostReport.Reason;
 
 import com.liferay.portal.NoSuchUserException;
+import com.liferay.portal.kernel.dao.orm.DynamicQuery;
+import com.liferay.portal.kernel.dao.orm.DynamicQueryFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.OrderFactoryUtil;
+import com.liferay.portal.kernel.dao.orm.PropertyFactoryUtil;
 import com.liferay.portal.kernel.exception.NestableException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
@@ -197,28 +205,40 @@ public abstract class LiferayCommonDataSource implements DataSource,
     }
 
     @Override
-    public List<DiscussionThread> getRecentPosts(final int from, final int to)
-            throws DataSourceException {
-        // TODO
-        try {
-            final List<MBThread> liferayThreads = getLiferayRecentThreads(from,
-                    to);
+    public int getMyPostThreadsCount() throws DataSourceException {
+        // Not an optimal solution (performance-wise), but currently
+        // MBThreadServiceUtil.getGroupThreadsCount doesn't _always_ give the
+        // same count for my threads as getMyPostThreads does.
+        final int groupThreadsCount = getMyPostThreads(QUERY_ALL, QUERY_ALL)
+                .size();
+        LOG.debug("LiferayDataSource.getMyPostThreadsCount(): "
+                + groupThreadsCount);
+        return groupThreadsCount;
+    }
 
-            // collection for the final result
-            final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
-                    liferayThreads.size());
-            for (final MBThread liferayThread : liferayThreads) {
-                final DiscussionThread thread = wrapLiferayThread(
-                        liferayThread, null);
-                result.add(thread);
+    @Override
+    public List<DiscussionThread> getMyPostThreads(final int from, final int to)
+            throws DataSourceException {
+        if (isLoggedInUser()) {
+            try {
+                final List<MBThread> liferayThreads = MBThreadServiceUtil
+                        .getGroupThreads(scopeGroupId, currentUserId,
+                                WorkflowConstants.STATUS_ANY, from, to);
+                final List<DiscussionThread> result = new ArrayList<DiscussionThread>(
+                        liferayThreads.size());
+                for (final MBThread liferayThread : liferayThreads) {
+                    final DiscussionThread thread = wrapLiferayThread(
+                            liferayThread, null);
+                    result.add(thread);
+                }
+
+                return result;
+            } catch (Exception e) {
+                // getGroupThreads() failed, handle with getGroupMessages
+                return getMyPostThreadsFromMessages(from, to);
             }
-            return result;
-        } catch (final SystemException e) {
-            LOG.error("Couldn't get recent threads.", e);
-            throw new DataSourceException(e);
-        } catch (final PortalException e) {
-            LOG.error("Couldn't get recent threads.", e);
-            throw new DataSourceException(e);
+        } else {
+            return Collections.emptyList();
         }
     }
 
@@ -232,7 +252,110 @@ public abstract class LiferayCommonDataSource implements DataSource,
             LOG.error("Couldn't get amount of recent threads.", e);
             throw new DataSourceException(e);
         }
-    };
+    }
+
+    @Override
+    public List<DiscussionThread> getRecentPosts(final int from, final int to)
+            throws DataSourceException {
+        final List<DiscussionThread> result = new ArrayList<DiscussionThread>();
+
+        try {
+            final List<MBThread> liferayThreads = MBThreadServiceUtil
+                    .getGroupThreads(scopeGroupId, 0,
+                            WorkflowConstants.STATUS_APPROVED, from, to);
+            for (final MBThread liferayThread : liferayThreads) {
+                final DiscussionThread thread = wrapLiferayThread(
+                        liferayThread, null);
+                result.add(thread);
+            }
+        } catch (Exception e) {
+            // getGroupThreads() failed, handle with dynamic query
+            result.clear();
+
+            DynamicQuery dynamicQuery = DynamicQueryFactoryUtil
+                    .forClass(MBThread.class,
+                            PortalClassLoaderUtil.getClassLoader())
+                    .add(PropertyFactoryUtil.forName("groupId")
+                            .eq(scopeGroupId))
+                    .add(PropertyFactoryUtil.forName("status").eq(
+                            WorkflowConstants.STATUS_APPROVED))
+                    .addOrder(OrderFactoryUtil.desc("lastPostDate"));
+
+            try {
+                List<?> liferayThreads = MBThreadLocalServiceUtil.dynamicQuery(
+                        dynamicQuery, from, to);
+
+                for (final Object object : liferayThreads) {
+                    try {
+                        if (object instanceof MBThread) {
+                            final DiscussionThread thread = wrapLiferayThread(
+                                    (MBThread) object, null);
+                            result.add(thread);
+                        }
+                    } catch (NestableException e1) {
+                        LOG.info("Mapping of an MBThread failed", e1);
+                    }
+                }
+            } catch (SystemException e1) {
+                LOG.info("Dynamic query for recent threads failed", e1);
+                throw new DataSourceException(e1);
+            }
+
+        }
+        return result;
+    }
+
+    private List<DiscussionThread> getMyPostThreadsFromMessages(final int from,
+            final int to) throws DataSourceException {
+        try {
+            // collection for the final result
+            final List<DiscussionThread> threads = new ArrayList<DiscussionThread>();
+            final Map<Long, Date> myLastPostDates = new HashMap<Long, Date>();
+            final Set<Long> processedThreads = new HashSet<Long>();
+            for (final MBMessage liferayMessage : MBMessageLocalServiceUtil
+                    .getGroupMessages(scopeGroupId, currentUserId,
+                            WorkflowConstants.STATUS_ANY, QUERY_ALL, QUERY_ALL)) {
+                if (processedThreads.add(liferayMessage.getThreadId())) {
+                    try {
+                        MBThread liferayThread = liferayMessage.getThread();
+                        myLastPostDates.put(liferayMessage.getThreadId(),
+                                liferayThread.getLastPostDate());
+                        final DiscussionThread thread = wrapLiferayThread(
+                                liferayThread, null);
+                        threads.add(thread);
+                    } catch (NoSuchThreadException e) {
+                        // Ignore and continue
+                    }
+                }
+
+            }
+
+            Collections.sort(threads, new Comparator<DiscussionThread>() {
+                @Override
+                public int compare(final DiscussionThread t1,
+                        final DiscussionThread t2) {
+                    return myLastPostDates.get(t2.getId()).compareTo(
+                            myLastPostDates.get(t1.getId()));
+
+                }
+            });
+
+            int toIndex = to == -1 ? threads.size() - 1 : to;
+
+            if (toIndex > threads.size() - 1) {
+                toIndex = threads.size() - 1;
+            }
+
+            if (toIndex < 0) {
+                toIndex = 0;
+            }
+
+            return threads.subList(Math.max(0, from), toIndex);
+        } catch (final NestableException e) {
+            LOG.error("Couldn't get my posts.", e);
+            throw new DataSourceException(e);
+        }
+    }
 
     protected DiscussionThread wrapLiferayThread(final MBThread liferayThread,
             Category category) throws PortalException, SystemException,
@@ -299,13 +422,6 @@ public abstract class LiferayCommonDataSource implements DataSource,
                     liferayThreads.size(), categoryId));
         }
         return liferayThreads;
-    }
-
-    private List<MBThread> getLiferayRecentThreads(final int start,
-            final int end) throws SystemException, PortalException {
-        return MBThreadServiceUtil.getGroupThreads(scopeGroupId, 0,
-                WorkflowConstants.STATUS_APPROVED, INCLUDE_ANONYMOUS,
-                INCLUDE_SUBSCRIBED, start, end + 1);
     }
 
     @Override
