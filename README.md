@@ -24,7 +24,16 @@ It supports all modern browsers, including Internet Explorer 8 and newer.
 
 ## Installation
 
-To install Tori from the Liferay Marketplace, follow [these](https://www.liferay.com/documentation/liferay-portal/6.2/user-guide/-/ai/downloading-and-installing-apps-liferay-portal-6-2-user-guide-14-en) instructions. Tori works fine on the default settings but the Portlet Preferences view allows you to define additional attributes such as Google Analytics tracker id for your portlet instance.
+To install Tori from the Liferay Marketplace, follow [these](https://www.liferay.com/documentation/liferay-portal/6.2/user-guide/-/ai/downloading-and-installing-apps-liferay-portal-6-2-user-guide-14-en) instructions.
+
+Tori works fine on the default settings but the Portlet Preferences view allows you to define some additional attributes:
+
+ * **Google Analytics Tracker id:** Identifies the account and property GA sends the tracking data to.
+ * **Post body regex replacments:** List of regex-replacement pairs which will be applied on every post before they're displayed
+ * **Replace message boards link data with Tori format:** Check to let Tori scan post content render-time for links intended for Liferay message boards portlet and convert them to tori-format for display.
+ * **Update the page title:** Check to let Tori update the title of the page according to the current location.
+ * **Show threads on dashboard:** Check to let Tori show threads/topics added to the root category on the front page.
+ * **Message displayed in the end of the thread when user is not allowed to reply:** Self-explanatory, HTML allowed.
 
 ## Compiling Tori
 
