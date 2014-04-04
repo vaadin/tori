@@ -272,6 +272,8 @@ public abstract class LiferayCommonDataSource implements DataSource,
             // getGroupThreads() failed, handle with dynamic query
             result.clear();
 
+            Collection categoryIdsRecursively = getCategoryIdsRecursively(ROOT_CATEGORY_ID);
+
             DynamicQuery dynamicQuery = DynamicQueryFactoryUtil
                     .forClass(MBThread.class,
                             PortalClassLoaderUtil.getClassLoader())
@@ -279,6 +281,8 @@ public abstract class LiferayCommonDataSource implements DataSource,
                             .eq(scopeGroupId))
                     .add(PropertyFactoryUtil.forName("status").eq(
                             WorkflowConstants.STATUS_APPROVED))
+                    .add(PropertyFactoryUtil.forName("categoryId").in(
+                            categoryIdsRecursively))
                     .addOrder(OrderFactoryUtil.desc("lastPostDate"));
 
             try {
