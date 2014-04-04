@@ -16,6 +16,7 @@
 
 package org.vaadin.tori.data;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -35,6 +36,8 @@ import java.util.regex.Pattern;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
+import javax.portlet.ReadOnlyException;
+import javax.portlet.ValidatorException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
@@ -127,6 +130,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
     private static final String PREFS_PAGE_TITLE_PREFIX = "toriPageTitlePrefix";
     private static final String PREFS_MAY_NOT_REPLY_NOTE = "mayNotReplyNote";
     private static final String PREFS_SHOW_THREADS_ON_DASHBOARD = "showThreadsOnDashboard";
+    private static final String PREFS_USE_TORI_MAIL_SERVICE = "useToriMailService";
 
     private static final String PREFS_REPLACEMENTS_KEY = "toriPostReplacements";
     private static final String REPLACEMENT_SEPARATOR = "<TORI-REPLACEMENT>";
@@ -903,11 +907,32 @@ public abstract class LiferayCommonDataSource implements DataSource,
             LOG.error("Couldn't create ServiceContext.", e);
         }
 
-        try {
-            portletPreferences = PortletPreferencesFactoryUtil
-                    .getPortletSetup(request);
-        } catch (final NestableException e) {
-            LOG.error("Couldn't load PortletPreferences.", e);
+        if (portletPreferences == null) {
+            try {
+                portletPreferences = PortletPreferencesFactoryUtil
+                        .getPortletSetup(request);
+
+                boolean useToriMailService = getUseToriMailService();
+                String defaultEmailsEnabled = Boolean
+                        .toString(!useToriMailService);
+                portletPreferences.setValue("email-message-added-enabled",
+                        defaultEmailsEnabled);
+                portletPreferences.setValue("email-message-updated-enabled",
+                        defaultEmailsEnabled);
+                portletPreferences.setValue("emailMessageAddedEnabled",
+                        defaultEmailsEnabled);
+                portletPreferences.setValue("emailMessageUpdatedEnabled",
+                        defaultEmailsEnabled);
+                portletPreferences.store();
+            } catch (final NestableException e) {
+                LOG.error("Couldn't load PortletPreferences.", e);
+            } catch (final ReadOnlyException e) {
+                LOG.error("Couldn't update PortletPreferences.", e);
+            } catch (final ValidatorException e) {
+                LOG.error("Couldn't update PortletPreferences.", e);
+            } catch (final IOException e) {
+                LOG.error("Couldn't update PortletPreferences.", e);
+            }
         }
     }
 
@@ -1067,6 +1092,17 @@ public abstract class LiferayCommonDataSource implements DataSource,
         if (portletPreferences != null) {
             final String booleanValue = portletPreferences.getValue(
                     PREFS_UPDATE_PAGE_TITLE, Boolean.TRUE.toString());
+            result = Boolean.parseBoolean(booleanValue);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean getUseToriMailService() {
+        boolean result = true;
+        if (portletPreferences != null) {
+            final String booleanValue = portletPreferences.getValue(
+                    PREFS_USE_TORI_MAIL_SERVICE, Boolean.TRUE.toString());
             result = Boolean.parseBoolean(booleanValue);
         }
         return result;

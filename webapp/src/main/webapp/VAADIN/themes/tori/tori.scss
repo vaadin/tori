@@ -51,6 +51,10 @@
 	        color: inherit;
 	    }
 	    
+	    .highlight-color-top-border {
+	    	border-top-color: $highlight-color;
+	    }
+	    
 	    &.v-app,
 	    .v-ui.v-ui,
 	    .v-window,

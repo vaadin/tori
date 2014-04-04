@@ -107,16 +107,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
             @Override
             public String getFormattedBody(final boolean allowHtml) {
-                Map<String, String> postReplacements = dataSource
-                        .getPostReplacements();
-                boolean replaceMessageBoardsLinks = dataSource
-                        .getReplaceMessageBoardsLinks();
-                String formattedPost = postFormatter.format(post,
-                        postReplacements, replaceMessageBoardsLinks);
-                if (!allowHtml) {
-                    formattedPost = stripTags(formattedPost);
-                }
-                return formattedPost;
+                return ThreadPresenter.this.getFormattedBody(post, allowHtml);
             }
 
             @Override
@@ -205,6 +196,18 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             }
 
         };
+    }
+
+    private String getFormattedBody(final Post post, final boolean allowHtml) {
+        Map<String, String> postReplacements = dataSource.getPostReplacements();
+        boolean replaceMessageBoardsLinks = dataSource
+                .getReplaceMessageBoardsLinks();
+        String formattedPost = postFormatter.format(post, postReplacements,
+                replaceMessageBoardsLinks);
+        if (!allowHtml) {
+            formattedPost = stripTags(formattedPost);
+        }
+        return formattedPost;
     }
 
     public void setCurrentThreadById(final String threadIdString,
@@ -504,6 +507,10 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
             if (messaging != null) {
                 messaging.sendUserAuthored(updatedPost.getId(),
                         currentThread.getId());
+            }
+            if (dataSource.getUseToriMailService() && mailService != null) {
+                mailService.sendUserAuthored(updatedPost.getId(),
+                        getFormattedBody(updatedPost, true));
             }
             view.replySent();
             view.appendPosts(Arrays.asList(getPostData(updatedPost)));

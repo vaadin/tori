@@ -23,6 +23,7 @@ import org.vaadin.tori.service.TestAuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.TestPostFormatter;
 import org.vaadin.tori.util.ToriActivityMessaging;
+import org.vaadin.tori.util.ToriMailService;
 
 public class TestServiceProvider implements ServiceProvider {
 
@@ -48,6 +49,11 @@ public class TestServiceProvider implements ServiceProvider {
     @Override
     public ToriActivityMessaging createToriActivityMessaging() {
         return new TestToriMessaging();
+    }
+
+    @Override
+    public ToriMailService createToriMailService() {
+        return new TestToriMailService();
     }
 
 }

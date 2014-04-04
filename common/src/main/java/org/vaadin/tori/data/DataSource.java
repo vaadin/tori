@@ -342,4 +342,6 @@ public interface DataSource {
 
     boolean getShowThreadsOnDashboard();
 
+    boolean getUseToriMailService();
+
 }

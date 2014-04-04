@@ -16,8 +16,11 @@
 
 package org.vaadin.tori;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Scanner;
 import java.util.ServiceLoader;
 
 import javax.portlet.PortletRequest;
@@ -29,13 +32,16 @@ import org.vaadin.tori.data.spi.ServiceProvider;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.ToriActivityMessaging;
+import org.vaadin.tori.util.ToriMailService;
 import org.vaadin.tori.util.UrlConverter;
 import org.vaadin.tori.util.UserBadgeProvider;
 
 import com.vaadin.server.SessionDestroyEvent;
 import com.vaadin.server.SessionDestroyListener;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.UI;
 
 @SuppressWarnings("serial")
 public class ToriApiLoader implements Serializable, SessionDestroyListener {
@@ -48,6 +54,7 @@ public class ToriApiLoader implements Serializable, SessionDestroyListener {
     private final UserBadgeProvider userBadgeProvider;
     private final UrlConverter urlConverter;
     private final ToriActivityMessaging toriActivityMessaging;
+    private final ToriMailService toriMailService;
     private String sessionId;
 
     public ToriApiLoader() {
@@ -57,6 +64,7 @@ public class ToriApiLoader implements Serializable, SessionDestroyListener {
         postFormatter = createPostFormatter();
         authorizationService = createAuthorizationService();
         toriActivityMessaging = createToriActivityMessaging();
+        toriMailService = createToriMailService();
         userBadgeProvider = createService(UserBadgeProvider.class);
         urlConverter = createService(UrlConverter.class);
     }
@@ -80,7 +88,7 @@ public class ToriApiLoader implements Serializable, SessionDestroyListener {
     public final void setRequest(final Object request) {
         if (request != null) {
             for (final Object aware : Arrays.asList(ds, authorizationService,
-                    toriActivityMessaging, postFormatter)) {
+                    toriActivityMessaging, postFormatter, toriMailService)) {
                 if (aware instanceof PortletRequestAware
                         && request instanceof PortletRequest) {
                     ((PortletRequestAware) aware)
@@ -160,6 +168,48 @@ public class ToriApiLoader implements Serializable, SessionDestroyListener {
         return toriActivityMessaging;
     }
 
+    private ToriMailService createToriMailService() {
+        ToriMailService toriMailService = spi.createToriMailService();
+        getLogger().debug(
+                String.format("Using %s implementation: %s",
+                        ToriMailService.class.getSimpleName(), toriMailService
+                                .getClass().getName()));
+
+        try {
+            String themeName = UI.getCurrent().getTheme();
+
+            InputStream postTemplateStream = VaadinService.getCurrent()
+                    .getThemeResourceAsStream(UI.getCurrent(), "tori",
+                            "toripostmailtemplate.xhtml");
+            InputStream themeStream = VaadinService.getCurrent()
+                    .getThemeResourceAsStream(UI.getCurrent(), themeName,
+                            "styles.css");
+
+            if (postTemplateStream != null && themeStream != null) {
+                toriMailService
+                        .setPostMailTemplate(readStream(postTemplateStream));
+                toriMailService.setMailTheme(readStream(themeStream));
+            } else {
+                getLogger().error("Unable to set mail service resources");
+                toriMailService = null;
+            }
+
+        } catch (IOException e) {
+            getLogger().warn("Exception while closing input stream", e);
+        } catch (Exception e) {
+            getLogger().debug("Exception while initiating ToriMailService", e);
+            toriMailService = null;
+        }
+        return toriMailService;
+    }
+
+    private static String readStream(final InputStream is) throws IOException {
+        Scanner s = new Scanner(is).useDelimiter("\\A");
+        String result = s.hasNext() ? s.next() : "";
+        is.close();
+        return result;
+    }
+
     private static Logger getLogger() {
         return Logger.getLogger(ToriApiLoader.class);
     }
@@ -186,6 +236,10 @@ public class ToriApiLoader implements Serializable, SessionDestroyListener {
 
     public ToriActivityMessaging getToriActivityMessaging() {
         return toriActivityMessaging;
+    }
+
+    public ToriMailService getToriMailService() {
+        return toriMailService;
     }
 
     public static ToriApiLoader getCurrent() {
@@ -226,4 +280,5 @@ public class ToriApiLoader implements Serializable, SessionDestroyListener {
             event.getService().removeSessionDestroyListener(this);
         }
     }
+
 }

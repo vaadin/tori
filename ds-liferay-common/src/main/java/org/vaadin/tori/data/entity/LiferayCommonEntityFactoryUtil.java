@@ -156,7 +156,7 @@ public class LiferayCommonEntityFactoryUtil {
 
     private static final String SCREENNAME_EXPANDO_COLUMN_NAME = "use-screenname-on-tori";
 
-    private static boolean usesScreennameOnTori(
+    public static boolean usesScreennameOnTori(
             final com.liferay.portal.model.User liferayUser) {
         boolean result = false;
         try {
@@ -183,7 +183,7 @@ public class LiferayCommonEntityFactoryUtil {
         return entity;
     }
 
-    private static String getAvatarUrl(final long liferayPortraidId,
+    public static String getAvatarUrl(final long liferayPortraidId,
             final String imagePath, final boolean isFemale) {
         String result = null;
         if (imagePath != null && liferayPortraidId > 0) {

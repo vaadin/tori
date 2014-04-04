@@ -1025,4 +1025,9 @@ public class TestDataSource implements DataSource {
     public boolean getShowThreadsOnDashboard() {
         return true;
     }
+
+    @Override
+    public boolean getUseToriMailService() {
+        return true;
+    }
 }

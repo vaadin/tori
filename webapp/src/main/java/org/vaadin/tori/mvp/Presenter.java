@@ -22,6 +22,7 @@ import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.ToriActivityMessaging;
+import org.vaadin.tori.util.ToriMailService;
 
 public abstract class Presenter<V extends View> {
 
@@ -32,6 +33,7 @@ public abstract class Presenter<V extends View> {
     protected AuthorizationService authorizationService;
     protected PostFormatter postFormatter;
     protected ToriActivityMessaging messaging;
+    protected ToriMailService mailService;
 
     public Presenter(final V view) {
         this.view = view;
@@ -41,6 +43,7 @@ public abstract class Presenter<V extends View> {
         authorizationService = toriApiLoader.getAuthorizationService();
         postFormatter = toriApiLoader.getPostFormatter();
         messaging = toriApiLoader.getToriActivityMessaging();
+        mailService = toriApiLoader.getToriMailService();
     }
 
     protected ToriApiLoader getApiLoader() {

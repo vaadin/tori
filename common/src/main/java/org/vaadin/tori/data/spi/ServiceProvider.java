@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Vaadin Ltd.
+ * Copyright 2014 Vaadin Ltd.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -22,6 +22,7 @@ import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.ToriActivityMessaging;
+import org.vaadin.tori.util.ToriMailService;
 
 /**
  * This interface needs to be implemented for the datasource project included in
@@ -39,7 +40,7 @@ import org.vaadin.tori.util.ToriActivityMessaging;
  */
 public interface ServiceProvider {
 
-    public static final String IMPLEMENTING_CLASSNAME = "org.vaadin.tori.data.ServiceProviderImpl";
+    String IMPLEMENTING_CLASSNAME = "org.vaadin.tori.data.ServiceProviderImpl";
 
     /**
      * Returns a new {@link DataSource} instance.
@@ -60,5 +61,10 @@ public interface ServiceProvider {
      * Returns a new {@link ToriActivityMessaging} instance.
      */
     ToriActivityMessaging createToriActivityMessaging();
+
+    /**
+     * Returns a new {@link ToriMailService} instance.
+     */
+    ToriMailService createToriMailService();
 
 }

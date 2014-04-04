@@ -19,10 +19,12 @@ package org.vaadin.tori.data;
 import org.vaadin.tori.data.spi.ServiceProvider;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.LiferayCommonAuthorizationService;
+import org.vaadin.tori.service.LiferayToriMailService;
 import org.vaadin.tori.util.LiferayCommonToriActivityMessaging;
 import org.vaadin.tori.util.LiferayPostFormatter;
 import org.vaadin.tori.util.PostFormatter;
 import org.vaadin.tori.util.ToriActivityMessaging;
+import org.vaadin.tori.util.ToriMailService;
 
 public class LiferayServiceProvider implements ServiceProvider {
 
@@ -44,6 +46,11 @@ public class LiferayServiceProvider implements ServiceProvider {
     @Override
     public ToriActivityMessaging createToriActivityMessaging() {
         return new LiferayCommonToriActivityMessaging();
+    }
+
+    @Override
+    public ToriMailService createToriMailService() {
+        return new LiferayToriMailService();
     }
 
 }
