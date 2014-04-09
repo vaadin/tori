@@ -5,13 +5,18 @@
 		<span class="topic" ui:field='topic'>
 			<g:Label styleName="followtopic" ui:field='follow' />
 			<a class="topicname" ui:field='topicName' />
-			<span class="threadicons"/>
+			<span class="threadicons" />
 		</span>
-		<div class="startedby" ui:field='startedBy' />
-		<div class="postcount" ui:field='postCount' />
-		<a class="latesttime" ui:field='latest' href="">
-			<span class="pretty" ui:field='latestPretty' />
-			<span class="authorname" ui:field='latestAuthor' />
+		<span class="started" ui:field='started'>
+			<span class="startedby" ui:field='startedBy' />
+			<span class="startedtime" ui:field='startedTime' />
+		</span>
+		<span class="replycountwrapper" ui:field='replyCountWrapper'>
+			<span class="replycount" ui:field='replyCount' />
+		</span>
+		<a class="latest" ui:field='latest' href="">
+			<span class="latestby" ui:field='latestBy' />
+			<span class="latesttime" ui:field='latestTime' />
 		</a>
 		<g:SimplePanel styleName="settings" ui:field="settings" />
 	</g:HTMLPanel>

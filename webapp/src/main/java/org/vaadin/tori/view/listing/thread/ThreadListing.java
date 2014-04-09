@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -43,7 +44,7 @@ public class ThreadListing extends AbstractComponentContainer implements
     private static final int FETCH_COUNT = 50;
     private int fetchedRows = 0;
     private int totalRows = 0;
-    private final PrettyTime prettyTime = new PrettyTime();
+    private final PrettyTime prettyTime = new PrettyTime(Locale.US);
 
     private final Set<Component> components = new HashSet<Component>();
 
@@ -59,10 +60,13 @@ public class ThreadListing extends AbstractComponentContainer implements
     private ThreadPrimaryData getThreadPrimaryData(final ThreadData thread) {
         final ThreadPrimaryData data = new ThreadPrimaryData();
         data.author = thread.getAuthor();
+        data.latestAuthor = thread.getLatestPostAuthor();
         data.latestPostPretty = prettyTime.format(thread.getLatestPostTime());
+        data.firstPostPretty = prettyTime.format(thread.getCreateTime());
         data.postCount = thread.getPostCount();
         data.threadId = thread.getId();
         data.topic = thread.getTopic();
+        data.isRead = thread.userHasRead();
         return data;
     }
 
@@ -75,9 +79,9 @@ public class ThreadListing extends AbstractComponentContainer implements
         data.mayFollow = thread.mayFollow();
         data.url = "#" + ToriNavigator.ApplicationView.THREADS.getUrl() + "/"
                 + thread.getId();
-        data.latestPostUrl = data.url + "/" + thread.getLatestPostId();
-        data.latestAuthor = thread.getLatestPostAuthor();
-        data.isRead = thread.userHasRead();
+        if (thread.getPostCount() > 1) {
+            data.latestPostUrl = data.url + "/" + thread.getLatestPostId();
+        }
         data.settings = buildSettings(thread);
         return data;
     }

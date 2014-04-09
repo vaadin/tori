@@ -273,6 +273,11 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
                 return authorizationService.mayViewThread(threadId);
             }
 
+            @Override
+            public Date getCreateTime() {
+                return thread.getCreateTime();
+            }
+
         };
     }
 

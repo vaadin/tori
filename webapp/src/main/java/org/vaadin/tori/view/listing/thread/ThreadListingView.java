@@ -83,6 +83,8 @@ public interface ThreadListingView extends View {
 
         Long getLatestPostId();
 
+        Date getCreateTime();
+
     }
 
 }

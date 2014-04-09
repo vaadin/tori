@@ -8,8 +8,11 @@ public class ThreadData {
         public long threadId;
         public String topic;
         public String author;
+        public String latestAuthor;
         public int postCount;
         public String latestPostPretty;
+        public String firstPostPretty;
+        public boolean isRead;
     }
 
     public static class ThreadAdditionalData {
@@ -19,9 +22,8 @@ public class ThreadData {
         public boolean mayFollow;
         public boolean isFollowed;
         public String url;
-        public boolean isRead;
         public Connector settings;
         public String latestPostUrl;
-        public String latestAuthor;
+        public int replyCount;
     }
 }

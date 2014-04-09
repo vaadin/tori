@@ -1,7 +1,7 @@
 @mixin threadlisting {
 	
 	.threadlisting {
-	    width: 100%;
+		width: 100%;
 	    display: block !important;
 	
 		.threadlistingrow {
@@ -11,9 +11,11 @@
 			position: relative;
 			-moz-box-sizing: border-box;
 			box-sizing: border-box;
-			padding-right: 320px;
 			padding-left: 5px;
+			padding-right: 50px;
 			overflow: hidden;
+			display: block;
+			cursor: pointer;
 			
 			@include animation(fade-in 450ms);
 			
@@ -47,7 +49,7 @@
 		    	&:after{
 			    	height: 2px;
 					width: 100%;
-					transition: all 300ms 100ms;
+					transition: all 300ms;
 				}
 				
 				.dropdown {
@@ -64,28 +66,16 @@
 				bottom: 0;
 				height: 1px;
 				background: $threadlisting-row-hover-underline-color;
+				
+				.v-sa:not(.v-ch) & {
+					height: 2px;
+				}
 		    }
 		    
 		    .touch &:after {
 		    	display: none;
 		    }
 		    
-		    &:first-child .latesttime:before {
-		 		content: "LATEST";
-		 		float: left;
-	        	font-size: 11px;
-	        	color: #999; 
-	        	letter-spacing: 0.42px;
-		 	}
-		 	
-		 	&:first-child .postcount:before {
-				content: "POSTS";
-	        	margin-right: 10px;
-	        	font-size: 11px;
-	        	color: #999; 
-	        	letter-spacing: 0.42px;
-			}
-			
 			.followtopic:HOVER:before,
 			&.following .followtopic:before {
 			 	color: $highlight-color;
@@ -98,10 +88,6 @@
 			
 			&.maynotfollow .followtopic {
 				display: none;
-			}
-			
-			.followtopic {
-				cursor: pointer;
 			}
 			
 			.followtopic:before {
@@ -132,104 +118,151 @@
 				color: $thread-locked-icon-color;
 				margin-left: 5px;
 			}
-		}
 		
-		.topic {
-			transition: all 320ms;
-			-webkit-transform: translatez(0);
-	    	font-size: 15px;
-			font-weight: 300;
-			padding-left: 20px;
-			line-height: 40px;
-			color: #2698E0;
-			width: 78%;
-			margin: 0;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			text-align: left;
-			vertical-align: middle;
-			
-			&:after {
-				font-family: "Tori-Icons";
+			.topic {
+				transition: all 320ms;
+				-webkit-transform: translatez(0);
+		    	font-size: 15px;
+				font-weight: 400;
+				padding-left: 20px;
+				line-height: 40px;
+				color: #2698E0;
+				width: 55%;
+				margin: 0;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				text-align: left;
 				vertical-align: middle;
-				padding-left: 5px;
-			}
-	    }
-	    
-	    .startedby {
-	    	width: 22%;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			font-size: 13px;
-	    }
-		
-		 .postcount {
-		 	text-align: right;
-			width: 65px;
-			margin-left: 0;
-			color: $font-color-primary;
-			font-size: 12px;
-		 }
-		 
-		 .latesttime {
-		 	width: 130px;
-			padding-left: 30px;
-			font-size: 12px;
-			text-align: right;
-			color: $threadlisting-latest-color;
-			position: relative;
-			height: 11px;
-			
-			.pretty,
-			.authorname {
-				transition: all 200ms;
-				-webkit-transition: all 200ms;
-				position: absolute;
-				margin-left: 85px;
-				left: 0;
-				top: 0%;
-			}
-			
-			.authorname {
-				top: 300%;
-				visibility: hidden;
-				opacity: 0;
-			}
-			
-			&:hover {
-				.pretty,
-				.authorname {
-					top: 60%;
-					visibility: visible;
-					opacity: 1;
-				}
+				-moz-box-sizing: border-box;
+				box-sizing: border-box;
 				
-				.pretty{
-					top: -60%;
+				&:after {
+					font-family: "Tori-Icons";
+					vertical-align: middle;
+					padding-left: 5px;
 				}
+		    }
+		    
+		    .started {
+		    	width: 21%;
+		    	font-size: 12px;
+		    	overflow: hidden;
+		    	white-space: normal;
+		    }
+		    
+		    .replycountwrapper {
+				text-align: center;
+				width: 36px;
+				color: $font-color-primary;
+				display: inline-block;
+				font-size: 11px;
+				position: relative;
+				
+				&:BEFORE,
+	    		.replycount:BEFORE,
+	    		.replycount:AFTER {
+		    		content: "\e607";
+					font-family: "Tori-Icons";
+					position: absolute;
+					font-size: 22px;
+					left: 7px;
+					top: -4px;
+					color: #D7D7D7;
+					background-color: #fff;
+					z-index: -1;
+		    	}
+		    	
+		    	.replycount:BEFORE {
+		    		left: 5px;
+					top: -6px;
+		    	}
+		    	
+		    	&:BEFORE {
+		    		display: none;
+	    			left: 3px;
+					top: -8px;
+		    	}
+		    	
 			}
+	    	
+	    	&.shortthread .replycountwrapper .replycount:BEFORE {
+	    		display: none;
+	    	}
+	    	&.longthread .replycountwrapper:BEFORE {
+	    		display: block;
+	    	}
+	    	
+	    	&.noreplies {
+	    		.replycountwrapper {
+	    			visibility: hidden;
+	    		}
+	    		.latestby{
+	    			color: $font-color-primary;
+	    		}
+	    		.latesttime {
+	    			display: none;
+	    		}
+	    	}
+		    	
+		    .latest {
+		    	width: 24%;
+		    	font-size: 12px;
+		    	white-space: normal;
+		    	-moz-box-sizing: border-box;
+				box-sizing: border-box;
+				padding-left: 36px;
+				margin-left: -36px;
+		    }
+		    
+		    .startedby,
+		    .latestby {
+				overflow: hidden;
+				text-overflow: ellipsis;
+				color: $font-color-secondary;
+				font-weight: normal;
+				padding: 0 5px 0 3px;
+				white-space: nowrap;
+		    }
+		    
+			 
+			.startedtime, .latesttime {
+				border-radius: 3px;
+				padding: 2px 3px;
+				display: inline-block;
+				white-space: nowrap;
+			}
+			 
+			 .startedtime {
+			 	background: #F7F7F7;
+				color: #888;
+			 }
+			 
+			 .latesttime {
+			 	background: #F0F8FC;
+				color: #3E8DB5;
+			 }
+			 
+			 .dropdown {
+			 	vertical-align: middle !important;
+			 	visibility: hidden;
+			 	font-size: 16px;
+			 }
 		 }
 		 
-		 .dropdown {
-		 	vertical-align: middle !important;
-		 	visibility: hidden;
-		 	padding-left: 30px;
-		 }
+		.threadlisting-placeholder {
+			height: 40px;
+			border-bottom: 1px solid $threadlisting-row-border-bottom-color;
+			position: relative;
 		 
-		 .threadlisting-placeholder {
-		 	height: 40px;
-		 	border-bottom: 1px solid $threadlisting-row-border-bottom-color;
-		 	position: relative;
-		 
-		 	&:before {
-		 		padding-left: 26px;
-		 		content: "Loading Post...";
-		 		color: $font-color-primary;
-		 		line-height: 40px;
-		 	}
+	    	&:before {
+				padding-left: 26px;
+				content: "Loading Post...";
+				color: $font-color-primary;
+				line-height: 40px;
+			}
 		 	
-		 	&:after {
-		 		content: "";
+			&:after {
+				content: "";
 				position: absolute;
 				left: 0;
 				bottom: 0;
@@ -241,8 +274,7 @@
 		        animation: loading 1000ms ease-in;
 		        animation-iteration-count: infinite;
 		 	}
-			
-		 }
+		}
 	}
 }
 

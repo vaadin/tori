@@ -17,6 +17,7 @@
 package org.vaadin.tori.data.entity;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -108,6 +109,18 @@ public class DiscussionThread extends AbstractEntity {
             return posts;
         } else {
             return Collections.emptyList();
+        }
+    }
+
+    /**
+     * Get the create time of the thread
+     */
+    @Transient
+    public Date getCreateTime() {
+        if (posts != null) {
+            return posts.get(0).getTime();
+        } else {
+            return null;
         }
     }
 

@@ -17,6 +17,7 @@
 package org.vaadin.tori.data.entity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.vaadin.tori.data.DataSource;
@@ -101,6 +102,11 @@ public class LiferayCommonEntityFactoryUtil {
                 fakedLastPost.setTime(liferayThread.getLastPostDate());
                 fakedLastPost.setAuthor(lastPostAuthor);
                 return fakedLastPost;
+            }
+
+            @Override
+            public Date getCreateTime() {
+                return threadRootMessage.getCreateDate();
             }
 
             @Override
