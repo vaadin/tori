@@ -16,7 +16,6 @@
 
 package org.vaadin.tori.util;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -35,8 +34,11 @@ import com.liferay.portal.kernel.messaging.ParallelDestination;
 public class LiferayCommonToriActivityMessaging implements
         ToriActivityMessaging, PortletRequestAware, MessageListener {
 
-    private static final String USER_TYPING_DESTINATION = "tori/activity/usertyping";
-    private static final String USER_AUTHORED_DESTINATION = "tori/activity/userauthored";
+    private static final String TORI_DESTINATION = "tori/activity";
+
+    private static final String TORI_ACTIVITY_ID = "toriactivity";
+    private static final String TORI_ACTIVITY_USERTYPING = "usertyping";
+    private static final String TORI_ACTIVITY_USERAUTHORED = "userauthored";
 
     private static final String SENDER_ID = "SENDER_ID";
 
@@ -64,7 +66,8 @@ public class LiferayCommonToriActivityMessaging implements
             message.put(USER_ID, new Long(currentUserId));
             message.put(THREAD_ID, new Long(threadId));
             message.put(STARTED_TYPING, startedTyping.getTime());
-            sendMessage(message, USER_TYPING_DESTINATION);
+            message.put(TORI_ACTIVITY_ID, TORI_ACTIVITY_USERTYPING);
+            sendMessage(message);
             lastSent = new Date();
         }
     }
@@ -74,12 +77,13 @@ public class LiferayCommonToriActivityMessaging implements
         Message message = new Message();
         message.put(POST_ID, new Long(postId));
         message.put(THREAD_ID, new Long(threadId));
-        sendMessage(message, USER_AUTHORED_DESTINATION);
+        message.put(TORI_ACTIVITY_ID, TORI_ACTIVITY_USERAUTHORED);
+        sendMessage(message);
     }
 
-    private void sendMessage(final Message message, final String destinationName) {
+    private void sendMessage(final Message message) {
         message.put(SENDER_ID, getSenderId());
-        MessageBusUtil.sendMessage(destinationName, message);
+        MessageBusUtil.sendMessage(TORI_DESTINATION, message);
     }
 
     private String getSenderId() {
@@ -133,15 +137,15 @@ public class LiferayCommonToriActivityMessaging implements
     public void receive(final Message message) {
         if (isSessionAlive()) {
             if (!isThisSender(message)) {
-                if (USER_AUTHORED_DESTINATION.equals(message
-                        .getDestinationName())) {
+                if (TORI_ACTIVITY_USERAUTHORED.equals(message
+                        .get(TORI_ACTIVITY_ID))) {
                     // Fire user authored events
                     for (UserAuthoredListener listener : userAuthoredListeners) {
                         listener.userAuthored(message.getLong(POST_ID),
                                 message.getLong(THREAD_ID));
                     }
-                } else if (USER_TYPING_DESTINATION.equals(message
-                        .getDestinationName())) {
+                } else if (TORI_ACTIVITY_USERTYPING.equals(message
+                        .get(TORI_ACTIVITY_ID))) {
                     // Fire user typing events
                     for (UserTypingListener listener : userTypingListeners) {
                         listener.userTyping(message.getLong(USER_ID),
@@ -157,27 +161,20 @@ public class LiferayCommonToriActivityMessaging implements
 
     @Override
     public void deregister() {
-        MessageBusUtil.unregisterMessageListener(USER_AUTHORED_DESTINATION,
-                this);
-        MessageBusUtil.unregisterMessageListener(USER_TYPING_DESTINATION, this);
+        MessageBusUtil.unregisterMessageListener(TORI_DESTINATION, this);
     }
 
     @Override
     public void register() {
-        for (String destinationName : Arrays.asList(USER_AUTHORED_DESTINATION,
-                USER_TYPING_DESTINATION)) {
-            if (!MessageBusUtil.getMessageBus().hasDestination(destinationName)) {
-                log.info("Adding a message bus destination: " + destinationName);
-                @SuppressWarnings("deprecation")
-                Destination destination = new ParallelDestination(
-                        destinationName);
-                destination.open();
-                MessageBusUtil.addDestination(destination);
-            }
+        if (!MessageBusUtil.getMessageBus().hasDestination(TORI_DESTINATION)) {
+            log.info("Adding a message bus destination: " + TORI_DESTINATION);
+            @SuppressWarnings("deprecation")
+            Destination destination = new ParallelDestination(TORI_DESTINATION);
+            destination.open();
+            MessageBusUtil.addDestination(destination);
         }
 
-        MessageBusUtil.registerMessageListener(USER_AUTHORED_DESTINATION, this);
-        MessageBusUtil.registerMessageListener(USER_TYPING_DESTINATION, this);
+        MessageBusUtil.registerMessageListener(TORI_DESTINATION, this);
     }
 
 }
