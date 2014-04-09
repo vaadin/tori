@@ -17,7 +17,7 @@
 			display: block;
 			cursor: pointer;
 			
-			@include animation(fade-in 450ms);
+			@include animation(horizontal-fade-in 450ms);
 			
 		    &.unread {
 			    .topic {
@@ -278,7 +278,7 @@
 	}
 }
 
-@include keyframes(fade-in) {
+@include keyframes(horizontal-fade-in) {
 	0% { 
 		opacity: 0;
 		@include transform(translatex(-10px));

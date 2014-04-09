@@ -243,6 +243,8 @@
     		color: $font-color-primary;
     		line-height: 1;
     		
+    		@include animation(fade-in 500ms);
+    		
     		.vote {
 	            margin-right: 10px;
 	            cursor: pointer !important;
@@ -342,7 +344,7 @@
 	    }
 	   
 		    
-	    .footer, .settings .v-menubar-menuitem, .badge, .postedtime {
+	    .settings .v-menubar-menuitem, .badge, .prettytime {
 	    	visibility: hidden;
 	    	opacity: 0;
 	    	transition: opacity 500ms, visibility 500ms;
@@ -352,7 +354,7 @@
 	}
 	
 	.ready .post {
-		.footer, .badge, .postedtime {
+		.badge, .prettytime {
 	    	visibility: visible;
 	    	opacity: 1;
 	    }
@@ -361,5 +363,11 @@
 	    	visibility: visible;
 	    	opacity: 1;
 	    }
+	}
+	
+	@include keyframes(fade-in) {
+		0% { 
+			opacity: 0;
+		}
 	}
 }
