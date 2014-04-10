@@ -82,6 +82,10 @@
 			 	visibility: visible;
 			}
 			
+			&.following .followtopic:before {
+				@include animation(fade-in 500ms);
+			}
+			
 			&:hover .followtopic:before {
 				visibility: visible;	
 			}
@@ -112,11 +116,13 @@
 				content: "\e004";
 				color: $thread-sticky-icon-color;
 				margin-left: 5px;
+				@include animation(fade-in 500ms);
 			}
 			&.locked .threadicons:after {
 				content: "\e00c";
 				color: $thread-locked-icon-color;
 				margin-left: 5px;
+				@include animation(fade-in 500ms);
 			}
 		
 			.topic {
