@@ -783,6 +783,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
             final MBMessage newPost = internalSaveAsCurrentUser(rawBody,
                     attachments, getThread(threadId),
                     getRootMessageId(threadId));
+            markThreadRead(threadId);
             return getPost(newPost.getMessageId());
         } catch (final NestableException e) {
             LOG.error("Couldn't save post.", e);
