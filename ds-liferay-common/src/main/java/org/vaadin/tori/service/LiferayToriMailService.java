@@ -266,7 +266,11 @@ public class LiferayToriMailService implements ToriMailService,
         for (Subscription subscription : subscriptions) {
             long subscribedUserId = subscription.getUserId();
 
-            if (!sent.contains(subscribedUserId)) {
+            // Don't send email to the message author
+            if (subscribedUserId == mbMessage.getUserId()
+                    || sent.contains(subscribedUserId)) {
+                continue;
+            } else {
                 sent.add(subscribedUserId);
             }
 
@@ -314,58 +318,59 @@ public class LiferayToriMailService implements ToriMailService,
             MBMessage mbMessage = MBMessageLocalServiceUtil
                     .getMBMessage(postId);
 
-            String mailId = getMailId(mbMessage.getCompanyId(),
-                    mbMessage.getCategoryId(), mbMessage.getMessageId());
             InternetAddress[] bulkAddresses = parseAddresses(mbMessage);
-            String body = formMailBody(mbMessage, formattedPostBody);
 
-            // TODO: All these to preferences
-            String subject = "[" + mbMessage.getCategory().getName() + "] "
-                    + mbMessage.getSubject();
-            Company company = CompanyLocalServiceUtil.getCompany(mbMessage
-                    .getCompanyId());
-            String companyEmail = company.getEmailAddress();
-            String fromAddress = "no-reply"
-                    + companyEmail.substring(companyEmail.indexOf("@"));
-            String companyName = company.getName();
-            if (companyName.indexOf(".com") > 0) {
-                companyName = companyName.substring(0,
-                        companyName.indexOf(".com"));
+            if (bulkAddresses.length > 0) {
+                String mailId = getMailId(mbMessage.getCompanyId(),
+                        mbMessage.getCategoryId(), mbMessage.getMessageId());
+                String body = formMailBody(mbMessage, formattedPostBody);
+
+                // TODO: All these to preferences
+                String subject = "[" + mbMessage.getCategory().getName() + "] "
+                        + mbMessage.getSubject();
+                Company company = CompanyLocalServiceUtil.getCompany(mbMessage
+                        .getCompanyId());
+                String companyEmail = company.getEmailAddress();
+                String fromAddress = "no-reply"
+                        + companyEmail.substring(companyEmail.indexOf("@"));
+                String companyName = company.getName();
+                if (companyName.indexOf(".com") > 0) {
+                    companyName = companyName.substring(0,
+                            companyName.indexOf(".com"));
+                }
+                String fromName = companyName + " Forums";
+                fromName = String.valueOf(fromName.charAt(0)).toUpperCase()
+                        + fromName.substring(1);
+                String replyToAddress = fromAddress;
+
+                SMTPAccount account = getSMTPAccout(mbMessage);
+
+                String inReplyTo = null;
+                if (mbMessage.getParentMessageId() != MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID) {
+                    inReplyTo = getMailId(mbMessage.getCompanyId(),
+                            mbMessage.getCategoryId(),
+                            mbMessage.getParentMessageId());
+                }
+
+                InternetAddress from = new InternetAddress(fromAddress,
+                        fromName);
+
+                InternetAddress to = new InternetAddress(replyToAddress,
+                        replyToAddress);
+
+                InternetAddress replyTo = new InternetAddress(replyToAddress,
+                        replyToAddress);
+
+                MailMessage message = new MailMessage(from, to, subject, body,
+                        true);
+                message.setBulkAddresses(bulkAddresses);
+                message.setMessageId(mailId);
+                message.setInReplyTo(inReplyTo);
+                message.setReplyTo(new InternetAddress[] { replyTo });
+                message.setSMTPAccount(account);
+
+                MailServiceUtil.sendEmail(message);
             }
-            String fromName = companyName + " Forums";
-            fromName = String.valueOf(fromName.charAt(0)).toUpperCase()
-                    + fromName.substring(1);
-            String replyToAddress = fromAddress;
-
-            SMTPAccount account = getSMTPAccout(mbMessage);
-
-            String inReplyTo = null;
-            if (mbMessage.getParentMessageId() != MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID) {
-                inReplyTo = getMailId(mbMessage.getCompanyId(),
-                        mbMessage.getCategoryId(),
-                        mbMessage.getParentMessageId());
-            }
-
-            if (bulkAddresses.length == 0) {
-                return;
-            }
-
-            InternetAddress from = new InternetAddress(fromAddress, fromName);
-
-            InternetAddress to = new InternetAddress(replyToAddress,
-                    replyToAddress);
-
-            InternetAddress replyTo = new InternetAddress(replyToAddress,
-                    replyToAddress);
-
-            MailMessage message = new MailMessage(from, to, subject, body, true);
-            message.setBulkAddresses(bulkAddresses);
-            message.setMessageId(mailId);
-            message.setInReplyTo(inReplyTo);
-            message.setReplyTo(new InternetAddress[] { replyTo });
-            message.setSMTPAccount(account);
-
-            MailServiceUtil.sendEmail(message);
         } catch (Exception e) {
             getLogger().warn("Unable to form email notification", e);
         }
@@ -406,7 +411,7 @@ public class LiferayToriMailService implements ToriMailService,
 
     @Override
     public void setRequest(final PortletRequest request) {
-        imagePath = ((ThemeDisplay) request.getAttribute(getThemeDisplayKey()))
+        imagePath = ((ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY))
                 .getPathImage();
         try {
             mbMessageServiceContext = ServiceContextFactory.getInstance(
@@ -414,11 +419,6 @@ public class LiferayToriMailService implements ToriMailService,
         } catch (NestableException e) {
             e.printStackTrace();
         }
-    }
-
-    // TODO: Move
-    protected String getThemeDisplayKey() {
-        return WebKeys.THEME_DISPLAY;
     }
 
 }
