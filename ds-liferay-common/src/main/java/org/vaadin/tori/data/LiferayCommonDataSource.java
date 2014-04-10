@@ -63,6 +63,7 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.PrefsPropsUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.service.ServiceContext;
 import com.liferay.portal.service.ServiceContextFactory;
@@ -873,7 +874,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
         determineMessageBoardsParameters(request);
 
         themeDisplay = (ThemeDisplay) request
-                .getAttribute(getThemeDisplayKey());
+                .getAttribute(WebKeys.THEME_DISPLAY);
 
         if (themeDisplay != null) {
             if (scopeGroupId < 0) {
@@ -936,8 +937,6 @@ public abstract class LiferayCommonDataSource implements DataSource,
             }
         }
     }
-
-    protected abstract String getThemeDisplayKey();
 
     private static final String MESSAGEB_BOARDS_CATEGORY_ID = "mbCategoryId";
     private static final String MESSAGEB_BOARDS_MESSAGE_ID = "messageId";

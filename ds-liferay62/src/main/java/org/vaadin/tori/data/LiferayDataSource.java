@@ -42,7 +42,6 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
 import com.liferay.portal.kernel.util.StringPool;
-import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.service.SubscriptionLocalServiceUtil;
@@ -260,11 +259,6 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
                     allowPingbacks, mbMessageServiceContext);
         }
         return message;
-    }
-
-    @Override
-    protected String getThemeDisplayKey() {
-        return WebKeys.THEME_DISPLAY;
     }
 
     @Override

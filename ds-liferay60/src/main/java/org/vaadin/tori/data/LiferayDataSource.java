@@ -40,7 +40,6 @@ import com.liferay.portal.kernel.util.FileUtil;
 import com.liferay.portal.kernel.util.HttpUtil;
 import com.liferay.portal.kernel.util.ObjectValuePair;
 import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
-import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.model.CompanyConstants;
 import com.liferay.portal.service.SubscriptionLocalServiceUtil;
@@ -245,11 +244,6 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
         return MBMessageServiceUtil.addMessage(groupId, categoryId, threadId,
                 parentMessageId, subject, body, attachments, anonymous,
                 priority, allowPingbacks, mbMessageServiceContext);
-    }
-
-    @Override
-    protected String getThemeDisplayKey() {
-        return WebKeys.THEME_DISPLAY;
     }
 
     @Override
