@@ -75,6 +75,24 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
         }
     }
 
+    public void markAsRead(final long threadId) {
+        try {
+            dataSource.markThreadRead(threadId);
+            updateThread(threadId);
+        } catch (DataSourceException e) {
+            displayError(e);
+        }
+    }
+
+    public void markAsUnRead(final long threadId) {
+        try {
+            dataSource.markThreadUnRead(threadId);
+            updateThread(threadId);
+        } catch (DataSourceException e) {
+            displayError(e);
+        }
+    }
+
     public void sticky(final long threadId) {
         try {
             dataSource.stickyThread(threadId);
@@ -276,6 +294,11 @@ public class ThreadListingPresenter extends Presenter<ThreadListingView> {
             @Override
             public Date getCreateTime() {
                 return thread.getCreateTime();
+            }
+
+            @Override
+            public boolean mayMarkAsRead() {
+                return dataSource.isLoggedInUser();
             }
 
         };

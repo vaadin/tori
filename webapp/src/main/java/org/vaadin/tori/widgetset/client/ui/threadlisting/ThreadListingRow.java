@@ -119,7 +119,7 @@ public class ThreadListingRow extends Composite implements ClickHandler {
         }
 
         if (!data.isRead) {
-            staticStyleNames.add("unread");
+            addStyleName("unread");
         }
         addStaticStyleNames();
     }
@@ -155,6 +155,9 @@ public class ThreadListingRow extends Composite implements ClickHandler {
         threadFollowed(data.isFollowed);
         if (!data.mayFollow) {
             addStyleName("maynotfollow");
+        }
+        if (!data.isRead) {
+            addStyleName("unread");
         }
         if (data.isLocked) {
             addStyleName("locked");

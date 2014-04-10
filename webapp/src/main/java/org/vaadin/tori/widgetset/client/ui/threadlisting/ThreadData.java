@@ -21,6 +21,7 @@ public class ThreadData {
         public boolean isLocked;
         public boolean mayFollow;
         public boolean isFollowed;
+        public boolean isRead;
         public String url;
         public Connector settings;
         public String latestPostUrl;

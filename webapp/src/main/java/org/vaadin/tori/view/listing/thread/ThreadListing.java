@@ -31,6 +31,8 @@ import com.vaadin.ui.MenuBar.MenuItem;
 public class ThreadListing extends AbstractComponentContainer implements
         ThreadListingServerRpc {
 
+    private static final String MARKASREAD_CAPTION = "Mark as read";
+    private static final String MARKASUNREAD_CAPTION = "Mark as unread";
     private static final String FOLLOW_CAPTION = "Follow Topic";
     private static final String UNFOLLOW_CAPTION = "Unfollow Topic";
     private static final String STICKY_CAPTION = "Pin Topic";
@@ -77,6 +79,7 @@ public class ThreadListing extends AbstractComponentContainer implements
         data.isSticky = thread.isSticky();
         data.isFollowed = thread.isFollowing();
         data.mayFollow = thread.mayFollow();
+        data.isRead = thread.userHasRead();
         data.url = "#" + ToriNavigator.ApplicationView.THREADS.getUrl() + "/"
                 + thread.getId();
         if (thread.getPostCount() > 1) {
@@ -90,7 +93,11 @@ public class ThreadListing extends AbstractComponentContainer implements
         return new Command() {
             @Override
             public void menuSelected(final MenuItem selectedItem) {
-                if (FOLLOW_CAPTION.equals(selectedItem.getText())) {
+                if (MARKASREAD_CAPTION.equals(selectedItem.getText())) {
+                    presenter.markAsRead(threadId);
+                } else if (MARKASUNREAD_CAPTION.equals(selectedItem.getText())) {
+                    presenter.markAsUnRead(threadId);
+                } else if (FOLLOW_CAPTION.equals(selectedItem.getText())) {
                     presenter.follow(threadId);
                 } else if (UNFOLLOW_CAPTION.equals(selectedItem.getText())) {
                     presenter.unfollow(threadId);
@@ -130,6 +137,11 @@ public class ThreadListing extends AbstractComponentContainer implements
             rootItem.addItem(thread.isFollowing() ? UNFOLLOW_CAPTION
                     : FOLLOW_CAPTION, settingsCommand);
         }
+        if (thread.mayMarkAsRead()) {
+            rootItem.addItem(thread.userHasRead() ? MARKASUNREAD_CAPTION
+                    : MARKASREAD_CAPTION, settingsCommand);
+        }
+
         MenuItem separator = null;
         if (rootItem.hasChildren()) {
             separator = rootItem.addSeparator();

@@ -85,6 +85,8 @@ public interface ThreadListingView extends View {
 
         Date getCreateTime();
 
+        boolean mayMarkAsRead();
+
     }
 
 }

@@ -153,6 +153,23 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     }
 
     @Override
+    public void markThreadUnRead(final long threadId)
+            throws DataSourceException {
+        if (isLoggedInUser()) {
+            try {
+                MBThreadFlag threadFlag = MBThreadFlagLocalServiceUtil
+                        .getThreadFlag(currentUserId,
+                                MBThreadLocalServiceUtil.getThread(threadId));
+                MBThreadFlagLocalServiceUtil.deleteMBThreadFlag(threadFlag);
+            } catch (final NestableException e) {
+                LOG.error(String.format("Couldn't mark thread %d as read.",
+                        threadId), e);
+                throw new DataSourceException(e);
+            }
+        }
+    }
+
+    @Override
     public void saveNewCategory(final Long parentCategoryId, final String name,
             final String description) throws DataSourceException {
         try {

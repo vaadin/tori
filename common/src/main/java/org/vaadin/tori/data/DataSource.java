@@ -256,6 +256,8 @@ public interface DataSource {
      */
     void markThreadRead(long threadId) throws DataSourceException;
 
+    void markThreadUnRead(long threadId) throws DataSourceException;
+
     List<DiscussionThread> getRecentPosts(int from, int to)
             throws DataSourceException;
 

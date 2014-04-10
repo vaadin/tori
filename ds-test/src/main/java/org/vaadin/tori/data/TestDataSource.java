@@ -1030,4 +1030,11 @@ public class TestDataSource implements DataSource {
     public boolean getUseToriMailService() {
         return true;
     }
+
+    @Override
+    public void markThreadUnRead(final long threadId)
+            throws DataSourceException {
+        // TODO Auto-generated method stub
+
+    }
 }
