@@ -19,29 +19,16 @@ package org.vaadin.tori.data;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.vaadin.tori.Configuration;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.data.entity.DiscussionThread;
 import org.vaadin.tori.data.entity.Post;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.exception.DataSourceException;
-import org.vaadin.tori.exception.NoSuchCategoryException;
 import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.service.post.PostReport.Reason;
 
 public interface DataSource {
-
-    public interface UrlInfo {
-        public enum Destination {
-            CATEGORY, THREAD, DASHBOARD;
-        }
-
-        Destination getDestination();
-
-        long getId();
-    }
 
     /**
      * Get all {@link Category Categories} that have <code>category</code> as
@@ -272,51 +259,11 @@ public interface DataSource {
 
     boolean isLoggedInUser();
 
-    Map<String, String> getPostReplacements();
-
-    boolean getReplaceMessageBoardsLinks();
-
-    boolean getUpdatePageTitle();
-
-    String getPageTitlePrefix();
+    Configuration getConfiguration();
 
     void save(Configuration configuration) throws DataSourceException;
 
-    /**
-     * @return The tracker id to be used, or <code>null</code> if there is no
-     *         tracker id. Then the tracker won't be used at all.
-     */
-
-    String getGoogleAnalyticsTrackerId();
-
-    /**
-     * Gets the path root configured for this application. Usable for
-     * redirection to the "root" of Tori.
-     * 
-     * @deprecated This method needs to be moved somewhere else
-     */
-    @Deprecated
     String getPathRoot();
-
-    /**
-     * Accepts a request from the native platform, checks whether that request
-     * contains any information that would link to forum content, and returns
-     * the pieces back in a Tori-understandable way.
-     * 
-     * @return {@link UrlInfo} parsed from the request, or <code>null</code> if
-     *         request didn't contain any native-specific things.
-     * @throws NoSuchThreadException
-     *             If the request seemed to contain thread information, but the
-     *             indicated category doesn't exist.
-     * @throws NoSuchCategoryException
-     *             If the request seemed to contain category information, but
-     *             the indicated category doesn't exist.
-     * @throws DataSourceException
-     *             pokemon
-     */
-
-    UrlInfo getUrlInfoFromBackendNativeRequest(HttpServletRequest servletRequest)
-            throws DataSourceException;
 
     User getToriUser(long userId) throws DataSourceException;
 
@@ -339,11 +286,5 @@ public interface DataSource {
             long threadId) throws DataSourceException;
 
     User getCurrentUser();
-
-    String getMayNotReplyNote();
-
-    boolean getShowThreadsOnDashboard();
-
-    boolean getUseToriMailService();
 
 }

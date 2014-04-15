@@ -30,17 +30,8 @@ public class EditPresenter extends Presenter<EditView> {
         refreshView();
     }
 
-    @SuppressWarnings("deprecation")
     private void refreshView() {
-        view.setReplacements(dataSource.getPostReplacements());
-        view.setConvertMessageBoardsUrls(dataSource
-                .getReplaceMessageBoardsLinks());
-        view.setUpdatePageTitle(dataSource.getUpdatePageTitle());
-        view.setPageTitlePrefix(dataSource.getPageTitlePrefix());
-        view.setGoogleAnalyticsTrackerId(dataSource
-                .getGoogleAnalyticsTrackerId());
-        view.setMayNotReplyNote(dataSource.getMayNotReplyNote());
-        view.setShowThreadsOnDashboard(dataSource.getShowThreadsOnDashboard());
+        view.setConfiguration(dataSource.getConfiguration());
     }
 
     public final void savePreferences(final Configuration config) {

@@ -16,26 +16,13 @@
 
 package org.vaadin.tori.view.edit;
 
-import java.util.Map;
-
+import org.vaadin.tori.Configuration;
 import org.vaadin.tori.mvp.View;
 
 public interface EditView extends View {
 
-    void setReplacements(Map<String, String> postReplacements);
+    void setConfiguration(Configuration configuration);
 
-    void setConvertMessageBoardsUrls(boolean convert);
-
-    void setUpdatePageTitle(boolean update);
-
-    void setPageTitlePrefix(String pageTitlePrefix);
-
-    void showNotification(String notification);
-
-    void setGoogleAnalyticsTrackerId(String googleAnalyticsTrackerId);
-
-    void setMayNotReplyNote(String mayNotReplyNote);
-
-    void setShowThreadsOnDashboard(boolean show);
+    void showNotification(String string);
 
 }

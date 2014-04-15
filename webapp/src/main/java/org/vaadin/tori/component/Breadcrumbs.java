@@ -69,7 +69,8 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
     private Component myPosts;
     private final DataSource dataSource = ToriApiLoader.getCurrent()
             .getDataSource();
-    private final String pageTitlePrefix = dataSource.getPageTitlePrefix();
+    private final String pageTitlePrefix = dataSource.getConfiguration()
+            .getPageTitlePrefix();
     private final AuthorizationService authorizationService = ToriApiLoader
             .getCurrent().getAuthorizationService();
 

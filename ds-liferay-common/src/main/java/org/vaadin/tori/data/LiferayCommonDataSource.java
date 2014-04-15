@@ -35,10 +35,8 @@ import java.util.regex.Pattern;
 
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletSession;
 import javax.portlet.ReadOnlyException;
 import javax.portlet.ValidatorException;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.vaadin.tori.Configuration;
@@ -74,7 +72,6 @@ import com.liferay.portal.util.PortalUtil;
 import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portlet.flags.service.FlagsEntryServiceUtil;
 import com.liferay.portlet.messageboards.NoSuchCategoryException;
-import com.liferay.portlet.messageboards.NoSuchMessageException;
 import com.liferay.portlet.messageboards.NoSuchThreadException;
 import com.liferay.portlet.messageboards.model.MBBan;
 import com.liferay.portlet.messageboards.model.MBCategory;
@@ -122,8 +119,8 @@ public abstract class LiferayCommonDataSource implements DataSource,
     protected ServiceContext mbCategoryServiceContext;
     protected ServiceContext mbMessageServiceContext;
 
-    private PortletPreferences portletPreferences;
     protected ThemeDisplay themeDisplay;
+    private PortletRequest request;
 
     private static final String PREFS_ANALYTICS_ID = "analytics";
     private static final String PREFS_REPLACE_MESSAGE_BOARDS_LINKS = "toriReplaceMessageBoardsLinks";
@@ -132,6 +129,10 @@ public abstract class LiferayCommonDataSource implements DataSource,
     private static final String PREFS_MAY_NOT_REPLY_NOTE = "mayNotReplyNote";
     private static final String PREFS_SHOW_THREADS_ON_DASHBOARD = "showThreadsOnDashboard";
     private static final String PREFS_USE_TORI_MAIL_SERVICE = "useToriMailService";
+    public static final String PREFS_EMAIL_HEADER_IMAGE_URL = "emailHeaderImageUrl";
+    public static final String PREFS_EMAIL_FROM_ADDRESS = "emailFromAddress";
+    public static final String PREFS_EMAIL_FROM_NAME = "emailFromName";
+    public static final String PREFS_EMAIL_REPLY_TO_ADDRESS = "emailReplyToAddress";
 
     private static final String PREFS_REPLACEMENTS_KEY = "toriPostReplacements";
     private static final String REPLACEMENT_SEPARATOR = "<TORI-REPLACEMENT>";
@@ -870,9 +871,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
 
     @Override
     public void setRequest(final PortletRequest request) {
-
-        determineMessageBoardsParameters(request);
-
+        this.request = request;
         themeDisplay = (ThemeDisplay) request
                 .getAttribute(WebKeys.THEME_DISPLAY);
 
@@ -909,94 +908,14 @@ public abstract class LiferayCommonDataSource implements DataSource,
             LOG.error("Couldn't create ServiceContext.", e);
         }
 
-        if (portletPreferences == null) {
-            try {
-                portletPreferences = PortletPreferencesFactoryUtil
-                        .getPortletSetup(request);
-
-                boolean useToriMailService = getUseToriMailService();
-                String defaultEmailsEnabled = Boolean
-                        .toString(!useToriMailService);
-                portletPreferences.setValue("email-message-added-enabled",
-                        defaultEmailsEnabled);
-                portletPreferences.setValue("email-message-updated-enabled",
-                        defaultEmailsEnabled);
-                portletPreferences.setValue("emailMessageAddedEnabled",
-                        defaultEmailsEnabled);
-                portletPreferences.setValue("emailMessageUpdatedEnabled",
-                        defaultEmailsEnabled);
-                portletPreferences.store();
-            } catch (final NestableException e) {
-                LOG.error("Couldn't load PortletPreferences.", e);
-            } catch (final ReadOnlyException e) {
-                LOG.error("Couldn't update PortletPreferences.", e);
-            } catch (final ValidatorException e) {
-                LOG.error("Couldn't update PortletPreferences.", e);
-            } catch (final IOException e) {
-                LOG.error("Couldn't update PortletPreferences.", e);
-            }
+        if (toriConfiguration == null) {
+            toriConfiguration = mapConfiguration(request);
         }
     }
 
-    private static final String MESSAGEB_BOARDS_CATEGORY_ID = "mbCategoryId";
-    private static final String MESSAGEB_BOARDS_MESSAGE_ID = "messageId";
-
-    /** @see org.vaadin.tori.ToriApplication.TORI_CATEGORY_ID */
-    private static final String TORI_CATEGORY_ID = "toriCategoryId";
-    /** @see org.vaadin.tori.ToriApplication.TORI_THREAD_ID */
-    private static final String TORI_THREAD_ID = "toriThreadId";
-    /** @see org.vaadin.tori.ToriApplication.TORI_MESSAGE_ID */
-    private static final String TORI_MESSAGE_ID = "toriMessageId";
     private static final int DEFAULT_MAX_FILE_SIZE = 307200;
 
-    private Map<String, String> postReplacements;
-
-    private void determineMessageBoardsParameters(final PortletRequest request) {
-        final PortletSession session = request.getPortletSession();
-        final Long categoryId = getOriginalRequestEntityIdParameter(request,
-                MESSAGEB_BOARDS_CATEGORY_ID);
-        if (categoryId == null) {
-            final Long messageId = getOriginalRequestEntityIdParameter(request,
-                    MESSAGEB_BOARDS_MESSAGE_ID);
-            if (messageId != null) {
-                try {
-                    final MBMessage message = MBMessageLocalServiceUtil
-                            .getMBMessage(messageId);
-                    session.setAttribute(TORI_THREAD_ID, message.getThreadId());
-                    session.setAttribute(TORI_MESSAGE_ID, messageId);
-                } catch (final NestableException e) {
-                    LOG.warn("Unable to load MBMessage for id: " + messageId, e);
-                }
-            }
-        } else {
-            session.setAttribute(TORI_CATEGORY_ID, categoryId);
-        }
-    }
-
-    private Long getOriginalRequestEntityIdParameter(
-            final PortletRequest request, final String key) {
-        Long entityId = null;
-        final HttpServletRequest originalRequest = PortalUtil
-                .getOriginalServletRequest(PortalUtil
-                        .getHttpServletRequest(request));
-
-        @SuppressWarnings("rawtypes")
-        final Map parameters = originalRequest.getParameterMap();
-        for (final Object param : parameters.keySet()) {
-            if (String.valueOf(param).contains(key)) {
-                try {
-                    final Object[] value = (Object[]) parameters.get(param);
-                    if (value != null && value.length > 0) {
-                        entityId = Long.parseLong(String.valueOf(value[0]));
-                        break;
-                    }
-                } catch (final Exception e) {
-                    LOG.warn("Unable to parse parameter value.", e);
-                }
-            }
-        }
-        return entityId;
-    }
+    private Configuration toriConfiguration;
 
     private com.liferay.portal.model.User getCurrentLiferayUser()
             throws PortalException, SystemException {
@@ -1052,124 +971,52 @@ public abstract class LiferayCommonDataSource implements DataSource,
     }
 
     @Override
-    public final Map<String, String> getPostReplacements() {
-        if (postReplacements == null) {
-            if (portletPreferences != null) {
-                postReplacements = new HashMap<String, String>();
-                final String[] values = portletPreferences.getValues(
-                        PREFS_REPLACEMENTS_KEY, new String[0]);
-                if (values != null) {
-                    for (final String value : values) {
-                        final String[] split = value
-                                .split(REPLACEMENT_SEPARATOR);
-                        if (split.length == 2) {
-                            postReplacements.put(split[0], split[1]);
-                        }
-                    }
-                }
-            } else {
-                return Collections.emptyMap();
-            }
-        }
-        return postReplacements;
-
-    }
-
-    @Override
-    public final boolean getReplaceMessageBoardsLinks() {
-        boolean replace = true;
-        if (portletPreferences != null) {
-            final String replaceString = portletPreferences.getValue(
-                    PREFS_REPLACE_MESSAGE_BOARDS_LINKS, "");
-            replace = !String.valueOf(Boolean.FALSE).equals(replaceString);
-        }
-        return replace;
-    }
-
-    @Override
-    public boolean getUpdatePageTitle() {
-        boolean result = true;
-        if (portletPreferences != null) {
-            final String booleanValue = portletPreferences.getValue(
-                    PREFS_UPDATE_PAGE_TITLE, Boolean.TRUE.toString());
-            result = Boolean.parseBoolean(booleanValue);
-        }
-        return result;
-    }
-
-    @Override
-    public boolean getUseToriMailService() {
-        boolean result = true;
-        if (portletPreferences != null) {
-            final String booleanValue = portletPreferences.getValue(
-                    PREFS_USE_TORI_MAIL_SERVICE, Boolean.TRUE.toString());
-            result = Boolean.parseBoolean(booleanValue);
-        }
-        return result;
-    }
-
-    @Override
-    public String getPageTitlePrefix() {
-        return portletPreferences.getValue(PREFS_PAGE_TITLE_PREFIX, null);
-    }
-
-    @Override
     public final void save(final Configuration config)
             throws DataSourceException {
 
-        if (portletPreferences == null) {
-            @SuppressWarnings("deprecation")
-            final DataSourceException e = new DataSourceException(
-                    "Portlet preferences not available.");
-            throw e;
-        } else {
-
-            final Map<String, String> postReplacements = config
-                    .getReplacements();
-            final String[] values = new String[postReplacements.size()];
-            int index = 0;
-            for (final Entry<String, String> entry : postReplacements
-                    .entrySet()) {
-                values[index++] = entry.getKey() + REPLACEMENT_SEPARATOR
-                        + entry.getValue();
-            }
-            try {
-                portletPreferences.setValues(PREFS_REPLACEMENTS_KEY, values);
-
-                portletPreferences.setValue(PREFS_REPLACE_MESSAGE_BOARDS_LINKS,
-                        Boolean.valueOf(config.replaceMessageBoardsLinks())
-                                .toString());
-
-                portletPreferences.setValue(PREFS_SHOW_THREADS_ON_DASHBOARD,
-                        Boolean.valueOf(config.isShowThreadsOnDashboard())
-                                .toString());
-
-                /*
-                 * this will make .getPostReplacements() fetch the replacements
-                 * again
-                 */
-                this.postReplacements = null;
-
-                portletPreferences.setValue(PREFS_ANALYTICS_ID,
-                        config.getGoogleAnalyticsTrackerId());
-                portletPreferences.setValue(PREFS_UPDATE_PAGE_TITLE, Boolean
-                        .valueOf(config.isUpdatePageTitle()).toString());
-                portletPreferences.setValue(PREFS_PAGE_TITLE_PREFIX,
-                        config.getPageTitlePrefix());
-                portletPreferences.setValue(PREFS_MAY_NOT_REPLY_NOTE,
-                        config.getMayNotReplyNote());
-
-                portletPreferences.store();
-            } catch (final Exception e) {
-                LOG.error("Unable to store portlet preferences", e);
-                throw new DataSourceException(e);
-            }
+        final Map<String, String> postReplacements = config.getReplacements();
+        final String[] values = new String[postReplacements.size()];
+        int index = 0;
+        for (final Entry<String, String> entry : postReplacements.entrySet()) {
+            values[index++] = entry.getKey() + REPLACEMENT_SEPARATOR
+                    + entry.getValue();
         }
-    }
+        try {
+            PortletPreferences portletPreferences = PortletPreferencesFactoryUtil
+                    .getPortletSetup(request);
+            portletPreferences.setValues(PREFS_REPLACEMENTS_KEY, values);
 
-    @Override
-    public String getGoogleAnalyticsTrackerId() {
-        return portletPreferences.getValue(PREFS_ANALYTICS_ID, null);
+            portletPreferences.setValue(PREFS_REPLACE_MESSAGE_BOARDS_LINKS,
+                    Boolean.toString(config.isReplaceMessageBoardsLinks()));
+
+            portletPreferences.setValue(PREFS_SHOW_THREADS_ON_DASHBOARD,
+                    Boolean.toString(config.isShowThreadsOnDashboard()));
+
+            portletPreferences.setValue(PREFS_ANALYTICS_ID,
+                    config.getGoogleAnalyticsTrackerId());
+            portletPreferences.setValue(PREFS_UPDATE_PAGE_TITLE,
+                    Boolean.toString(config.isUpdatePageTitle()));
+            portletPreferences.setValue(PREFS_PAGE_TITLE_PREFIX,
+                    config.getPageTitlePrefix());
+            portletPreferences.setValue(PREFS_MAY_NOT_REPLY_NOTE,
+                    config.getMayNotReplyNote());
+
+            portletPreferences.setValue(PREFS_USE_TORI_MAIL_SERVICE,
+                    Boolean.toString(config.isUseToriMailService()));
+            portletPreferences.setValue(PREFS_EMAIL_FROM_ADDRESS,
+                    config.getEmailFromAddress());
+            portletPreferences.setValue(PREFS_EMAIL_FROM_NAME,
+                    config.getEmailFromName());
+            portletPreferences.setValue(PREFS_EMAIL_REPLY_TO_ADDRESS,
+                    config.getEmailReplyToAddress());
+            portletPreferences.setValue(PREFS_EMAIL_HEADER_IMAGE_URL,
+                    config.getEmailHeaderImageUrl());
+
+            portletPreferences.store();
+        } catch (final Exception e) {
+            LOG.error("Unable to store portlet preferences", e);
+            throw new DataSourceException(e);
+        }
     }
 
     @Override
@@ -1228,64 +1075,6 @@ public abstract class LiferayCommonDataSource implements DataSource,
     }
 
     @Override
-    public UrlInfo getUrlInfoFromBackendNativeRequest(
-            final HttpServletRequest servletRequest) throws DataSourceException {
-        final String portletId = servletRequest.getParameter("p_p_id");
-        final String messageId = servletRequest.getParameter("_" + portletId
-                + "_messageId");
-        final String categoryId = servletRequest.getParameter("_" + portletId
-                + "_mbCategoryId");
-
-        if (messageId != null) {
-            final long parsedMessageId = Long.parseLong(messageId);
-            try {
-                final MBMessage message = MBMessageServiceUtil
-                        .getMessage(parsedMessageId);
-                final long threadId = message.getThreadId();
-                return new UrlInfo() {
-                    @Override
-                    public long getId() {
-                        return threadId;
-                    }
-
-                    @Override
-                    public Destination getDestination() {
-                        return Destination.THREAD;
-                    }
-                };
-            } catch (final NoSuchThreadException e) {
-                throw new org.vaadin.tori.exception.NoSuchThreadException(
-                        parsedMessageId, e);
-            } catch (final NoSuchMessageException e) {
-                throw new org.vaadin.tori.exception.NoSuchThreadException(
-                        parsedMessageId, e);
-            } catch (final PortalException e) {
-                e.printStackTrace();
-                throw new DataSourceException(e);
-            } catch (final SystemException e) {
-                e.printStackTrace();
-                throw new DataSourceException(e);
-            }
-        }
-
-        else if (categoryId != null) {
-            return new UrlInfo() {
-                @Override
-                public long getId() {
-                    return Long.parseLong(categoryId);
-                }
-
-                @Override
-                public Destination getDestination() {
-                    return Destination.CATEGORY;
-                }
-            };
-        }
-
-        return null;
-    }
-
-    @Override
     public User getToriUser(final long userId) throws DataSourceException {
         User user = null;
         if (userId > 0) {
@@ -1334,18 +1123,102 @@ public abstract class LiferayCommonDataSource implements DataSource,
     }
 
     @Override
-    public String getMayNotReplyNote() {
-        return portletPreferences.getValue(PREFS_MAY_NOT_REPLY_NOTE, null);
+    public Configuration getConfiguration() {
+        return toriConfiguration;
     }
 
-    @Override
-    public boolean getShowThreadsOnDashboard() {
-        boolean show = true;
-        if (portletPreferences != null) {
-            final String showString = portletPreferences.getValue(
-                    PREFS_SHOW_THREADS_ON_DASHBOARD, "");
-            show = !String.valueOf(Boolean.FALSE).equals(showString);
+    private Configuration mapConfiguration(final PortletRequest request) {
+
+        Configuration configuration = new Configuration();
+
+        try {
+            PortletPreferences portletPreferences = PortletPreferencesFactoryUtil
+                    .getPortletSetup(request);
+
+            // Post body replacements
+            configuration.setReplacements(new HashMap<String, String>());
+            final String[] values = portletPreferences.getValues(
+                    PREFS_REPLACEMENTS_KEY, new String[0]);
+            if (values != null) {
+                for (final String value : values) {
+                    final String[] split = value.split(REPLACEMENT_SEPARATOR);
+                    if (split.length == 2) {
+                        configuration.getReplacements().put(split[0], split[1]);
+                    }
+                }
+            }
+            // Replace message boards links
+            Boolean replace = Boolean
+                    .valueOf(portletPreferences.getValue(
+                            PREFS_REPLACE_MESSAGE_BOARDS_LINKS,
+                            Boolean.toString(true)));
+            configuration.setReplaceMessageBoardsLinks(replace);
+
+            // Update page title
+            Boolean updatePageTitle = Boolean.valueOf(portletPreferences
+                    .getValue(PREFS_UPDATE_PAGE_TITLE, Boolean.toString(true)));
+            configuration.setUpdatePageTitle(updatePageTitle);
+
+            // Page title
+            configuration.setPageTitlePrefix(portletPreferences.getValue(
+                    PREFS_PAGE_TITLE_PREFIX, null));
+
+            // Use Tori mail service
+            Boolean useToriMailService = Boolean.valueOf(portletPreferences
+                    .getValue(PREFS_USE_TORI_MAIL_SERVICE,
+                            Boolean.toString(true)));
+            configuration.setUseToriMailService(useToriMailService);
+
+            // Email from address
+            configuration.setEmailFromAddress(portletPreferences.getValue(
+                    PREFS_EMAIL_FROM_ADDRESS, null));
+
+            // Email from name
+            configuration.setEmailFromName(portletPreferences.getValue(
+                    PREFS_EMAIL_FROM_NAME, null));
+
+            // Email reply-to address
+            configuration.setEmailReplyToAddress(portletPreferences.getValue(
+                    PREFS_EMAIL_REPLY_TO_ADDRESS, null));
+
+            // Email content header image url
+            configuration.setEmailHeaderImageUrl(portletPreferences.getValue(
+                    PREFS_EMAIL_HEADER_IMAGE_URL, null));
+
+            // May not reply note
+            configuration.setMayNotReplyNote(portletPreferences.getValue(
+                    PREFS_MAY_NOT_REPLY_NOTE, null));
+
+            // GA tracker id
+            configuration.setGoogleAnalyticsTrackerId(portletPreferences
+                    .getValue(PREFS_ANALYTICS_ID, null));
+
+            // Show threads on dashboard
+            Boolean showThreadsOnDashboard = Boolean.valueOf(portletPreferences
+                    .getValue(PREFS_SHOW_THREADS_ON_DASHBOARD,
+                            Boolean.toString(true)));
+            configuration.setShowThreadsOnDashboard(showThreadsOnDashboard);
+
+            String defaultEmailsEnabled = Boolean.toString(!useToriMailService);
+            portletPreferences.setValue("email-message-added-enabled",
+                    defaultEmailsEnabled);
+            portletPreferences.setValue("email-message-updated-enabled",
+                    defaultEmailsEnabled);
+            portletPreferences.setValue("emailMessageAddedEnabled",
+                    defaultEmailsEnabled);
+            portletPreferences.setValue("emailMessageUpdatedEnabled",
+                    defaultEmailsEnabled);
+            portletPreferences.store();
+        } catch (final NestableException e) {
+            LOG.error("Couldn't load PortletPreferences.", e);
+        } catch (final ReadOnlyException e) {
+            LOG.error("Couldn't update PortletPreferences.", e);
+        } catch (final ValidatorException e) {
+            LOG.error("Couldn't update PortletPreferences.", e);
+        } catch (final IOException e) {
+            LOG.error("Couldn't update PortletPreferences.", e);
         }
-        return show;
+
+        return configuration;
     }
 }

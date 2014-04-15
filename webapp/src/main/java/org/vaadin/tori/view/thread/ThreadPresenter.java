@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.vaadin.tori.Configuration;
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.data.entity.Attachment;
 import org.vaadin.tori.data.entity.Category;
@@ -47,9 +48,11 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
         UserTypingListener, UserAuthoredListener {
 
     private DiscussionThread currentThread;
+    private final Configuration configuration;
 
     public ThreadPresenter(final ThreadView view) {
         super(view);
+        configuration = dataSource.getConfiguration();
     }
 
     public PostData getPostData(final Post _post) {
@@ -199,9 +202,9 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
     }
 
     private String getFormattedBody(final Post post, final boolean allowHtml) {
-        Map<String, String> postReplacements = dataSource.getPostReplacements();
-        boolean replaceMessageBoardsLinks = dataSource
-                .getReplaceMessageBoardsLinks();
+        Map<String, String> postReplacements = configuration.getReplacements();
+        boolean replaceMessageBoardsLinks = configuration
+                .isReplaceMessageBoardsLinks();
         String formattedPost = postFormatter.format(post, postReplacements,
                 replaceMessageBoardsLinks);
         if (!allowHtml) {
@@ -300,7 +303,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
 
             @Override
             public String getMayNotReplyNote() {
-                return dataSource.getMayNotReplyNote();
+                return configuration.getMayNotReplyNote();
             }
 
             @Override
@@ -508,7 +511,7 @@ public class ThreadPresenter extends Presenter<ThreadView> implements
                 messaging.sendUserAuthored(updatedPost.getId(),
                         currentThread.getId());
             }
-            if (dataSource.getUseToriMailService() && mailService != null) {
+            if (configuration.isUseToriMailService() && mailService != null) {
                 mailService.sendUserAuthored(updatedPost.getId(),
                         getFormattedBody(updatedPost, true));
             }

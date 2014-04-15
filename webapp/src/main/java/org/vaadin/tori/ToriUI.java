@@ -62,12 +62,12 @@ public class ToriUI extends UI implements ToriUIServerRpc {
         apiLoader = ToriApiLoader.getCurrent();
         checkUrl();
 
-        final String trackerId = apiLoader.getDataSource()
+        final String trackerId = apiLoader.getDataSource().getConfiguration()
                 .getGoogleAnalyticsTrackerId();
-        if (trackerId != null) {
+        if (trackerId != null && !trackerId.isEmpty()) {
             analytics = new GoogleAnalyticsTracker(trackerId);
             analytics.setAllowAnchor(true);
-            analytics.extend(this);
+            analytics.extend(ToriUI.this);
         }
 
         mainLayout = new VerticalLayout();

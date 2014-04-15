@@ -24,14 +24,19 @@ import org.vaadin.tori.Configuration;
 import org.vaadin.tori.data.DataSource;
 import org.vaadin.tori.mvp.AbstractView;
 import org.vaadin.tori.service.AuthorizationService;
+import org.vaadin.tori.util.ComponentUtil;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.fieldgroup.BeanFieldGroup;
+import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
+import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -41,6 +46,7 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextField;
@@ -50,17 +56,38 @@ import com.vaadin.ui.VerticalLayout;
 public class EditViewImpl extends AbstractView<EditView, EditPresenter>
         implements EditView {
 
-    private VerticalLayout layout;
-    private Table replacementsTable;
-    private Button removeButton;
-    private Button newButton;
+    private final VerticalLayout mainLayout = new VerticalLayout();
+    private final TabSheet tabSheet = new TabSheet();
+    private final BeanFieldGroup<Configuration> fieldGroup = new BeanFieldGroup<Configuration>(
+            Configuration.class);
 
-    private CheckBox convertMessageBoardsUrls;
+    private Component generalPreferencesLayout;
+    private Component emailPreferencesLayout;
+
+    @PropertyId("replaceMessageBoardsLinks")
+    private CheckBox replaceMessageBoardsLinks;
+    @PropertyId("updatePageTitle")
     private CheckBox updatePageTitle;
+    @PropertyId("showThreadsOnDashboard")
     private CheckBox showThreadsOnDashboard;
+    @PropertyId("pageTitlePrefix")
     private TextField pageTitlePrefix;
-    private TextField analyticsTrackerIdField;
+    @PropertyId("googleAnalyticsTrackerId")
+    private TextField googleAnalyticsTrackerId;
+    @PropertyId("mayNotReplyNote")
     private TextField mayNotReplyNote;
+    private Table replacementsTable;
+
+    @PropertyId("useToriMailService")
+    private CheckBox useToriMailService;
+    @PropertyId("emailFromAddress")
+    private TextField emailFromAddress;
+    @PropertyId("emailFromName")
+    private TextField emailFromName;
+    @PropertyId("emailReplyToAddress")
+    private TextField emailReplyToAddress;
+    @PropertyId("emailHeaderImageUrl")
+    private TextField emailHeaderImageUrl;
 
     public EditViewImpl(final DataSource dataSource,
             final AuthorizationService authorizationService) {
@@ -68,73 +95,138 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
 
     @Override
     protected Component createCompositionRoot() {
-        layout = new VerticalLayout();
-        return layout;
+        return mainLayout;
     }
 
     @Override
     public void initView() {
-        layout.setSpacing(true);
         setStyleName("editview");
+        mainLayout.addComponent(tabSheet);
+        mainLayout.setSpacing(true);
 
-        layout.addComponent(buildGAField());
-        layout.addComponent(buildReplacements());
-        layout.addComponent(buildReplaceLinks());
-        layout.addComponent(buildUpdateTitle());
-        layout.addComponent(buildShowThreadsOnDashboard());
-        layout.addComponent(buildMayNotreplyNote());
+        generalPreferencesLayout = buildGeneralPreferences();
+        tabSheet.addTab(generalPreferencesLayout, "General preferences");
+
+        emailPreferencesLayout = buildEmailPreferences();
+        tabSheet.addTab(emailPreferencesLayout, "Email preferences");
 
         Component saveButton = buildSaveButton();
-        layout.addComponent(saveButton);
-        layout.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
+        mainLayout.addComponent(saveButton);
+        mainLayout.setComponentAlignment(saveButton, Alignment.MIDDLE_RIGHT);
 
         getPresenter().init();
+    }
+
+    private Component buildEmailPreferences() {
+        VerticalLayout result = new VerticalLayout();
+        result.addStyleName("preferenceslayout");
+        result.setSpacing(true);
+        result.setMargin(true);
+
+        result.addComponent(buildUseToriMailService());
+        result.addComponent(buildEmailFromAddress());
+        result.addComponent(buildEmailFromName());
+        result.addComponent(buildEmailReplyToAddress());
+        result.addComponent(buildEmailHeaderImageURL());
+
+        return result;
+    }
+
+    private Component buildUseToriMailService() {
+        useToriMailService = new CheckBox("Use Tori mail service");
+        useToriMailService.setImmediate(true);
+        useToriMailService.addValueChangeListener(new ValueChangeListener() {
+            @Override
+            public void valueChange(final ValueChangeEvent event) {
+                updateEmailPreferencesEnabled();
+            }
+        });
+        return getFieldWrapper(
+                "Use Tori notification email functionality instead of "
+                        + "the default one provided by the Message Boards portlet",
+                useToriMailService);
+    }
+
+    private void updateEmailPreferencesEnabled() {
+        emailFromAddress.setEnabled(useToriMailService.getValue());
+        emailFromName.setEnabled(useToriMailService.getValue());
+        emailReplyToAddress.setEnabled(useToriMailService.getValue());
+        emailHeaderImageUrl.setEnabled(useToriMailService.getValue());
+    }
+
+    private Component buildEmailFromAddress() {
+        emailFromAddress = getTextField("Default");
+        return getFieldWrapper("Email from address", emailFromAddress);
+    }
+
+    private Component buildEmailFromName() {
+        emailFromName = getTextField("Default");
+        return getFieldWrapper("Email from name", emailFromName);
+    }
+
+    private Component buildEmailReplyToAddress() {
+        emailReplyToAddress = getTextField("Default");
+        return getFieldWrapper("Reply to address", emailReplyToAddress);
+    }
+
+    private Component buildEmailHeaderImageURL() {
+        emailHeaderImageUrl = getTextField("Default (Tori-icon)");
+        return getFieldWrapper("URL of the image displayed in email header",
+                emailHeaderImageUrl);
+    }
+
+    private Component buildGeneralPreferences() {
+        VerticalLayout result = new VerticalLayout();
+        result.addStyleName("preferenceslayout");
+        result.setSpacing(true);
+        result.setMargin(true);
+
+        result.addComponent(buildForumTitle());
+        result.addComponent(buildUpdateTitle());
+        result.addComponent(buildGAField());
+        result.addComponent(buildShowThreadsOnDashboard());
+        result.addComponent(buildMayNotreplyNote());
+        result.addComponent(buildReplaceLinks());
+        result.addComponent(buildReplacements());
+        return result;
     }
 
     private Component buildShowThreadsOnDashboard() {
         showThreadsOnDashboard = new CheckBox("Show threads on dashboard");
         return getFieldWrapper(
-                "Check the box beneath to let Tori show threads/topics added to the root category on the front page.",
+                "Let Tori show threads/topics added to the root category on the front page.",
                 showThreadsOnDashboard);
     }
 
     private Component buildSaveButton() {
         Button saveButton = new Button("Save preferences",
                 new Button.ClickListener() {
-
                     @Override
                     public void buttonClick(final ClickEvent event) {
-                        final Map<String, String> replacements = new HashMap<String, String>();
+                        try {
+                            fieldGroup.commit();
+                            Configuration config = fieldGroup
+                                    .getItemDataSource().getBean();
 
-                        for (final Object itemId : replacementsTable
-                                .getItemIds()) {
-                            final Item item = replacementsTable.getItem(itemId);
-                            replacements.put(
-                                    (String) item.getItemProperty("regex")
-                                            .getValue(), (String) item
-                                            .getItemProperty("replacement")
-                                            .getValue());
+                            final Map<String, String> replacements = new HashMap<String, String>();
+                            for (final Object itemId : replacementsTable
+                                    .getItemIds()) {
+                                final Item item = replacementsTable
+                                        .getItem(itemId);
+                                replacements.put(
+                                        (String) item.getItemProperty("regex")
+                                                .getValue(), (String) item
+                                                .getItemProperty("replacement")
+                                                .getValue());
 
+                            }
+                            config.setReplacements(replacements);
+
+                            getPresenter().savePreferences(config);
+                        } catch (CommitException e) {
+                            Notification.show("Invalid values",
+                                    Notification.Type.ERROR_MESSAGE);
                         }
-
-                        final String trackerId = analyticsTrackerIdField
-                                .getValue();
-                        final String titlePrefix = pageTitlePrefix.getValue();
-                        final String fixedTrackerId = "".equals(trackerId) ? null
-                                : trackerId;
-
-                        final Configuration config = new Configuration();
-                        config.setReplaceMessageBoardsLinks(convertMessageBoardsUrls
-                                .getValue());
-                        config.setShowThreadsOnDashboard(showThreadsOnDashboard
-                                .getValue());
-                        config.setReplacements(replacements);
-                        config.setGoogleAnalyticsTrackerId(fixedTrackerId);
-                        config.setUpdatePageTitle(updatePageTitle.getValue());
-                        config.setMayNotReplyNote(mayNotReplyNote.getValue());
-                        config.setPageTitlePrefix(titlePrefix);
-
-                        getPresenter().savePreferences(config);
                     }
                 });
         return saveButton;
@@ -148,38 +240,28 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     }
 
     private Component buildUpdateTitle() {
-        VerticalLayout layout = new VerticalLayout();
-
         updatePageTitle = new CheckBox("Update the page title");
-        updatePageTitle.addValueChangeListener(new ValueChangeListener() {
-            @Override
-            public void valueChange(final ValueChangeEvent event) {
-                pageTitlePrefix.setEnabled(updatePageTitle.getValue());
-            }
-        });
-        layout.addComponent(updatePageTitle);
-
-        pageTitlePrefix = getTextField("Default");
-        pageTitlePrefix.setEnabled(false);
-        layout.addComponent(pageTitlePrefix);
-
         return getFieldWrapper(
-                "Check the box beneath to let Tori update the title of the page.",
-                layout);
+                "Allow Tori to update the browser title while navigating between different views.",
+                updatePageTitle);
+    }
+
+    private Component buildForumTitle() {
+        pageTitlePrefix = getTextField("Default");
+        return getFieldWrapper("Forum title.", pageTitlePrefix);
     }
 
     private Component buildReplaceLinks() {
-        convertMessageBoardsUrls = new CheckBox(
+        replaceMessageBoardsLinks = new CheckBox(
                 "Replace message boards link data with tori format");
         return getFieldWrapper(
                 "Check the box beneath to let Tori scan post content render-time for links "
                         + "intended for Liferay message boards portlet and convert them to tori-format for display.",
-                convertMessageBoardsUrls);
+                replaceMessageBoardsLinks);
     }
 
     private Component buildReplacements() {
         VerticalLayout result = new VerticalLayout();
-        layout.setSpacing(true);
         result.addComponent(getSubTitle("Define post body regex-patterns/replacements to be "
                 + "applied whenever posts are being displayed/previewed."));
 
@@ -207,6 +289,16 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
             }
         });
 
+        final Button removeButton = ComponentUtil.getSecondaryButton("Remove",
+                new Button.ClickListener() {
+
+                    @Override
+                    public void buttonClick(final ClickEvent event) {
+                        replacementsTable.removeItem(replacementsTable
+                                .getValue());
+                    }
+                });
+
         replacementsTable
                 .addValueChangeListener(new Property.ValueChangeListener() {
                     @Override
@@ -223,22 +315,16 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
                 "Replacement", null, null);
         result.addComponent(replacementsTable);
 
-        removeButton = new Button("Remove", new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                replacementsTable.removeItem(replacementsTable.getValue());
-            }
-        });
         removeButton.setEnabled(false);
 
-        newButton = new Button("New", new Button.ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                final Object itemId = replacementsTable.addItem();
-                replacementsTable.setValue(itemId);
-            }
-        });
+        Button newButton = ComponentUtil.getSecondaryButton("New",
+                new Button.ClickListener() {
+                    @Override
+                    public void buttonClick(final ClickEvent event) {
+                        final Object itemId = replacementsTable.addItem();
+                        replacementsTable.setValue(itemId);
+                    }
+                });
 
         final HorizontalLayout buttonsLayout = new HorizontalLayout();
         buttonsLayout.setSpacing(true);
@@ -250,9 +336,9 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     }
 
     private Component buildGAField() {
-        analyticsTrackerIdField = getTextField("Not enabled");
+        googleAnalyticsTrackerId = getTextField("Not enabled");
         return getFieldWrapper("Google Analytics Tracker id",
-                analyticsTrackerIdField);
+                googleAnalyticsTrackerId);
     }
 
     private Component getFieldWrapper(final String subTitle,
@@ -260,6 +346,7 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
         VerticalLayout result = new VerticalLayout();
         result.setSpacing(true);
         result.addComponents(getSubTitle(subTitle), field);
+        result.addComponent(new Label("<hr />", ContentMode.HTML));
         return result;
     }
 
@@ -283,10 +370,16 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     }
 
     @Override
+    public void setConfiguration(final Configuration configuration) {
+        fieldGroup.setItemDataSource(configuration);
+        fieldGroup.bindMemberFields(this);
+        setReplacements(configuration.getReplacements());
+        updateEmailPreferencesEnabled();
+    }
+
     public void setReplacements(final Map<String, String> postReplacements) {
         replacementsTable.removeAllItems();
         for (final Entry<String, String> entry : postReplacements.entrySet()) {
-
             final Item item = replacementsTable.addItem(entry);
             item.getItemProperty("regex").setValue(entry.getKey());
             item.getItemProperty("replacement").setValue(entry.getValue());
@@ -295,46 +388,13 @@ public class EditViewImpl extends AbstractView<EditView, EditPresenter>
     }
 
     @Override
-    public void setConvertMessageBoardsUrls(final boolean convert) {
-        convertMessageBoardsUrls.setValue(convert);
-    }
-
-    @Override
-    public void setShowThreadsOnDashboard(final boolean show) {
-        showThreadsOnDashboard.setValue(show);
-    }
-
-    @Override
-    public void setUpdatePageTitle(final boolean update) {
-        updatePageTitle.setValue(update);
-    }
-
-    @Override
     public void showNotification(final String notification) {
         Notification.show(notification);
     }
 
     @Override
-    public void setGoogleAnalyticsTrackerId(
-            final String googleAnalyticsTrackerId) {
-        final String value = (googleAnalyticsTrackerId == null) ? ""
-                : googleAnalyticsTrackerId;
-        analyticsTrackerIdField.setValue(value);
-    }
-
-    @Override
     public String getTitle() {
         return "Preferences View";
-    }
-
-    @Override
-    public void setPageTitlePrefix(final String pageTitlePrefix) {
-        this.pageTitlePrefix.setValue(pageTitlePrefix);
-    }
-
-    @Override
-    public void setMayNotReplyNote(final String mayNotReplyNote) {
-        this.mayNotReplyNote.setValue(mayNotReplyNote);
     }
 
 }

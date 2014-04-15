@@ -19,6 +19,7 @@ package org.vaadin.tori.indexing;
 import java.util.List;
 import java.util.Map;
 
+import org.vaadin.tori.Configuration;
 import org.vaadin.tori.ToriNavigator.ApplicationView;
 import org.vaadin.tori.ToriUtil;
 import org.vaadin.tori.data.entity.DiscussionThread;
@@ -71,10 +72,14 @@ public class IndexableThreadView extends IndexableView {
                     sb.append("</header>");
 
                     sb.append("<section>");
-                    Map<String, String> postReplacements = application
-                            .getDataSource().getPostReplacements();
-                    boolean replaceMessageBoardsLinks = application
-                            .getDataSource().getReplaceMessageBoardsLinks();
+
+                    Configuration configuration = application.getDataSource()
+                            .getConfiguration();
+
+                    Map<String, String> postReplacements = configuration
+                            .getReplacements();
+                    boolean replaceMessageBoardsLinks = configuration
+                            .isReplaceMessageBoardsLinks();
                     sb.append(application.getPostFormatter().format(post,
                             postReplacements, replaceMessageBoardsLinks));
                     sb.append("</section>");

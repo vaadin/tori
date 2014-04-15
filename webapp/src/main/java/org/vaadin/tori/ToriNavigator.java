@@ -35,8 +35,8 @@ import com.vaadin.ui.UI;
 
 @SuppressWarnings("serial")
 public class ToriNavigator extends Navigator {
-    private final boolean updatePateTitle = ToriApiLoader.getCurrent()
-            .getDataSource().getUpdatePageTitle();
+    private final Configuration configuration = ToriApiLoader.getCurrent()
+            .getDataSource().getConfiguration();
 
     public ToriNavigator(final ComponentContainer container) {
         super(UI.getCurrent(), container);
@@ -57,7 +57,7 @@ public class ToriNavigator extends Navigator {
                 final View newView = event.getNewView();
                 if (newView instanceof AbstractView<?, ?>) {
                     String title = ((AbstractView) newView).getTitle();
-                    if (updatePateTitle) {
+                    if (configuration.isUpdatePageTitle()) {
                         updatePageTitle(title);
                     }
                 }
@@ -75,8 +75,7 @@ public class ToriNavigator extends Navigator {
     }
 
     private void updatePageTitle(final String title) {
-        String prefix = ToriApiLoader.getCurrent().getDataSource()
-                .getPageTitlePrefix();
+        String prefix = configuration.getPageTitlePrefix();
 
         StringBuilder sb = new StringBuilder();
         if (prefix != null) {

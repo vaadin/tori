@@ -28,6 +28,13 @@ public class Configuration {
     private String googleAnalyticsTrackerId;
     private String mayNotReplyNote;
 
+    // Email
+    private boolean useToriMailService;
+    private String emailHeaderImageUrl;
+    private String emailFromAddress;
+    private String emailFromName;
+    private String emailReplyToAddress;
+
     public String getMayNotReplyNote() {
         return mayNotReplyNote;
     }
@@ -37,15 +44,7 @@ public class Configuration {
     }
 
     /**
-     * Whether or not messages' links are replaced with what is in
-     * {@link #getReplacements()}
-     */
-    public boolean replaceMessageBoardsLinks() {
-        return replaceMessageBoardsLinks;
-    }
-
-    /**
-     * How links are replaced in posts
+     * Custom regex-replacements applied before displaying posts.
      * 
      * @see #replaceMessageBoardsLinks()
      */
@@ -62,16 +61,7 @@ public class Configuration {
     }
 
     /**
-     * Whether or not messages' links are replaced with what is in
-     * {@link #getReplacements()}
-     */
-    public void setReplaceMessageBoardsLinks(
-            final boolean replaceMessageBoardsLinks) {
-        this.replaceMessageBoardsLinks = replaceMessageBoardsLinks;
-    }
-
-    /**
-     * How links are replaced in posts
+     * Custom regex-replacements applied before displaying posts.
      * 
      * @see #replaceMessageBoardsLinks()
      */
@@ -110,6 +100,55 @@ public class Configuration {
 
     public void setShowThreadsOnDashboard(final boolean showThreadsOnDashboard) {
         this.showThreadsOnDashboard = showThreadsOnDashboard;
+    }
+
+    public boolean isUseToriMailService() {
+        return useToriMailService;
+    }
+
+    public void setUseToriMailService(final boolean useToriMailService) {
+        this.useToriMailService = useToriMailService;
+    }
+
+    public String getEmailHeaderImageUrl() {
+        return emailHeaderImageUrl;
+    }
+
+    public void setEmailHeaderImageUrl(final String emailHeaderImageUrl) {
+        this.emailHeaderImageUrl = emailHeaderImageUrl;
+    }
+
+    public String getEmailFromAddress() {
+        return emailFromAddress;
+    }
+
+    public void setEmailFromAddress(final String emailFromAddress) {
+        this.emailFromAddress = emailFromAddress;
+    }
+
+    public String getEmailFromName() {
+        return emailFromName;
+    }
+
+    public void setEmailFromName(final String emailFromName) {
+        this.emailFromName = emailFromName;
+    }
+
+    public String getEmailReplyToAddress() {
+        return emailReplyToAddress;
+    }
+
+    public void setEmailReplyToAddress(final String emailReplyToAddress) {
+        this.emailReplyToAddress = emailReplyToAddress;
+    }
+
+    public boolean isReplaceMessageBoardsLinks() {
+        return replaceMessageBoardsLinks;
+    }
+
+    public void setReplaceMessageBoardsLinks(
+            final boolean replaceMessageBoardsLinks) {
+        this.replaceMessageBoardsLinks = replaceMessageBoardsLinks;
     }
 
 }

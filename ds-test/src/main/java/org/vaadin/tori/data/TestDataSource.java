@@ -31,7 +31,6 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import javax.servlet.http.HttpServletRequest;
 
 import org.vaadin.tori.Configuration;
 import org.vaadin.tori.data.entity.Attachment;
@@ -44,7 +43,6 @@ import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.data.util.PersistenceUtil;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.exception.NoSuchCategoryException;
-import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.service.post.PostReport.Reason;
 
 public class TestDataSource implements DataSource {
@@ -880,34 +878,12 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public Map<String, String> getPostReplacements() {
-        return new HashMap<String, String>();
-    }
-
-    @Override
     public void save(final Configuration conf) {
-    }
-
-    @Override
-    public boolean getReplaceMessageBoardsLinks() {
-        return false;
-    }
-
-    @Override
-    public String getGoogleAnalyticsTrackerId() {
-        return null;
     }
 
     @Override
     @Deprecated
     public String getPathRoot() {
-        return null;
-    }
-
-    @Override
-    public UrlInfo getUrlInfoFromBackendNativeRequest(
-            final HttpServletRequest servletRequest)
-            throws NoSuchThreadException, DataSourceException {
         return null;
     }
 
@@ -932,16 +908,6 @@ public class TestDataSource implements DataSource {
                 return em.find(Post.class, postId);
             }
         });
-    }
-
-    @Override
-    public boolean getUpdatePageTitle() {
-        return true;
-    }
-
-    @Override
-    public String getPageTitlePrefix() {
-        return "Tori";
     }
 
     @Override
@@ -1017,24 +983,22 @@ public class TestDataSource implements DataSource {
     }
 
     @Override
-    public String getMayNotReplyNote() {
-        return "Please log in to reply";
-    }
-
-    @Override
-    public boolean getShowThreadsOnDashboard() {
-        return true;
-    }
-
-    @Override
-    public boolean getUseToriMailService() {
-        return true;
-    }
-
-    @Override
     public void markThreadUnRead(final long threadId)
             throws DataSourceException {
-        // TODO Auto-generated method stub
+        // Ignore
+    }
 
+    @Override
+    public Configuration getConfiguration() {
+        Configuration configuration = new Configuration();
+        configuration.setUseToriMailService(true);
+        configuration.setShowThreadsOnDashboard(true);
+        configuration.setMayNotReplyNote("Please log in to reply");
+        configuration.setUpdatePageTitle(true);
+        configuration.setPageTitlePrefix("Tori");
+        configuration.setReplacements(new HashMap<String, String>());
+        configuration.setReplaceMessageBoardsLinks(false);
+        configuration.setGoogleAnalyticsTrackerId(null);
+        return configuration;
     }
 }
