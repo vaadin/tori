@@ -19,6 +19,8 @@ package org.vaadin.tori;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Scanner;
 import java.util.ServiceLoader;
@@ -36,6 +38,7 @@ import org.vaadin.tori.util.ToriMailService;
 import org.vaadin.tori.util.UrlConverter;
 import org.vaadin.tori.util.UserBadgeProvider;
 
+import com.vaadin.server.Page;
 import com.vaadin.server.SessionDestroyEvent;
 import com.vaadin.server.SessionDestroyListener;
 import com.vaadin.server.VaadinRequest;
@@ -54,7 +57,7 @@ public class ToriApiLoader implements Serializable, SessionDestroyListener {
     private final UserBadgeProvider userBadgeProvider;
     private final UrlConverter urlConverter;
     private final ToriActivityMessaging toriActivityMessaging;
-    private final ToriMailService toriMailService;
+    private ToriMailService toriMailService;
     private String sessionId;
 
     public ToriApiLoader() {
@@ -64,7 +67,6 @@ public class ToriApiLoader implements Serializable, SessionDestroyListener {
         postFormatter = createPostFormatter();
         authorizationService = createAuthorizationService();
         toriActivityMessaging = createToriActivityMessaging();
-        toriMailService = createToriMailService();
         userBadgeProvider = createService(UserBadgeProvider.class);
         urlConverter = createService(UrlConverter.class);
     }
@@ -89,14 +91,18 @@ public class ToriApiLoader implements Serializable, SessionDestroyListener {
         if (request != null) {
             for (final Object aware : Arrays.asList(ds, authorizationService,
                     toriActivityMessaging, postFormatter, toriMailService)) {
-                if (aware instanceof PortletRequestAware
-                        && request instanceof PortletRequest) {
-                    ((PortletRequestAware) aware)
-                            .setRequest((PortletRequest) request);
-                } else if (aware instanceof HttpServletRequestAware
-                        && request instanceof HttpServletRequest) {
-                    ((HttpServletRequestAware) aware)
-                            .setRequest((HttpServletRequest) request);
+                try {
+                    if (aware instanceof PortletRequestAware
+                            && request instanceof PortletRequest) {
+                        ((PortletRequestAware) aware)
+                                .setRequest((PortletRequest) request);
+                    } else if (aware instanceof HttpServletRequestAware
+                            && request instanceof HttpServletRequest) {
+                        ((HttpServletRequestAware) aware)
+                                .setRequest((HttpServletRequest) request);
+                    }
+                } catch (Exception e) {
+                    getLogger().warn("Unable to set request", e);
                 }
             }
         }
@@ -168,39 +174,97 @@ public class ToriApiLoader implements Serializable, SessionDestroyListener {
         return toriActivityMessaging;
     }
 
-    private ToriMailService createToriMailService() {
-        ToriMailService toriMailService = spi.createToriMailService();
-        getLogger().debug(
-                String.format("Using %s implementation: %s",
-                        ToriMailService.class.getSimpleName(), toriMailService
-                                .getClass().getName()));
+    private static String getToriThemeImagesURL(final VaadinRequest request)
+            throws MalformedURLException {
+        URL url = Page.getCurrent().getLocation().toURL();
+        int port = url.getPort();
 
-        try {
-            String themeName = UI.getCurrent().getTheme();
-
-            InputStream postTemplateStream = VaadinService.getCurrent()
-                    .getThemeResourceAsStream(UI.getCurrent(), "tori",
-                            "toripostmailtemplate.xhtml");
-            InputStream themeStream = VaadinService.getCurrent()
-                    .getThemeResourceAsStream(UI.getCurrent(), themeName,
-                            "styles.css");
-
-            if (postTemplateStream != null && themeStream != null) {
-                toriMailService
-                        .setPostMailTemplate(readStream(postTemplateStream));
-                toriMailService.setMailTheme(readStream(themeStream));
-            } else {
-                getLogger().error("Unable to set mail service resources");
-                toriMailService = null;
-            }
-
-        } catch (IOException e) {
-            getLogger().warn("Exception while closing input stream", e);
-        } catch (Exception e) {
-            getLogger().debug("Exception while initiating ToriMailService", e);
-            toriMailService = null;
+        if (url.getProtocol().equals("http") && port == 80) {
+            port = -1;
+        } else if (url.getProtocol().equals("https") && port == 443) {
+            port = -1;
         }
-        return toriMailService;
+
+        URL serverURL = new URL(url.getProtocol(), url.getHost(), port, "");
+        String contextPath = request.getContextPath();
+        String imagesPath = "/VAADIN/themes/tori/images/";
+
+        return serverURL + contextPath + imagesPath;
+
+    }
+
+    private ToriMailService createToriMailService(final VaadinRequest request) {
+        ToriMailService result = null;
+        if (request != null) {
+            result = spi.createToriMailService();
+            try {
+                String themeName = UI.getCurrent().getTheme();
+
+                InputStream postTemplateStream = VaadinService.getCurrent()
+                        .getThemeResourceAsStream(UI.getCurrent(), "tori",
+                                "toripostmailtemplate.xhtml");
+                InputStream themeStream = VaadinService.getCurrent()
+                        .getThemeResourceAsStream(UI.getCurrent(), themeName,
+                                "styles.css");
+
+                if (postTemplateStream != null && themeStream != null) {
+                    result.setPostMailTemplate(readStream(postTemplateStream));
+
+                    String themeCss = readStream(themeStream);
+                    String imagesUrl = getToriThemeImagesURL(request);
+                    String quoteImageUrl = imagesUrl + "emailquote.png";
+                    String anonymousImageUrl = imagesUrl + "emailanonymous.png";
+                    String defaultHeaderImageUrl = imagesUrl + "tori-icon.png";
+
+                    //@formatter:off
+                    String quoteRule = "\n\n"
+                        + ".v-app blockquote cite, .v-app .quote-title { \n"
+                                + "background-image: url('" + quoteImageUrl + "'); \n"
+                                + "background-repeat: no-repeat; \n"
+                        + "}";
+
+                    String anonymousRule = "\n\n"
+                        + ".avatar.anonymous-true { \n"
+                                + "background-image: url('" + anonymousImageUrl + "'); \n"
+                                + "height: 100%; \n"
+                        + "}"
+                        + "\n\n"
+                        + ".avatar.anonymous-true img { \n"
+                                + "display: none; \n"
+                        + "}";
+
+                    String customHeaderImageRule = "\n\n"
+                            + ".defaultheaderimage-true { \n"
+                                    + "background-image: url('" + defaultHeaderImageUrl + "'); \n"
+                                    + "background-repeat: no-repeat; \n"
+                            + "}"
+                            + "\n\n"
+                            + ".defaultheaderimage-true .headerimageplaceholder { \n"
+                                    + "width: 160px; \n"
+                                    + "height: 40px; \n"
+                            + "}";
+                    //@formatter:on
+                    result.setMailTheme(themeCss + quoteRule + anonymousRule
+                            + customHeaderImageRule);
+                } else {
+                    getLogger().error("Unable to set mail service resources");
+                    result = null;
+                }
+
+            } catch (IOException e) {
+                getLogger().warn("Exception while closing input stream", e);
+            } catch (Exception e) {
+                getLogger().error("Exception while initiating ToriMailService",
+                        e);
+                result = null;
+            }
+            getLogger().debug(
+                    String.format("Using %s implementation: %s",
+                            ToriMailService.class.getSimpleName(), result
+                                    .getClass().getName()));
+        }
+
+        return result;
     }
 
     private static String readStream(final InputStream is) throws IOException {
@@ -258,6 +322,8 @@ public class ToriApiLoader implements Serializable, SessionDestroyListener {
                 ToriApiLoader.class);
         if (toriApiLoader == null) {
             toriApiLoader = new ToriApiLoader();
+            toriApiLoader.toriMailService = toriApiLoader
+                    .createToriMailService(request);
             if (toriApiLoader.getToriActivityMessaging() != null) {
                 toriApiLoader.getToriActivityMessaging().register();
             }

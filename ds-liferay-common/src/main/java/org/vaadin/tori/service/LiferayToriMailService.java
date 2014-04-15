@@ -19,13 +19,13 @@ package org.vaadin.tori.service;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
 import javax.mail.internet.InternetAddress;
+import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -38,6 +38,7 @@ import org.fit.cssbox.css.CSSNorm;
 import org.fit.cssbox.css.DOMAnalyzer;
 import org.jsoup.Jsoup;
 import org.vaadin.tori.PortletRequestAware;
+import org.vaadin.tori.data.LiferayCommonDataSource;
 import org.vaadin.tori.data.entity.LiferayCommonEntityFactoryUtil;
 import org.vaadin.tori.util.DOMBuilder;
 import org.vaadin.tori.util.ToriMailService;
@@ -67,6 +68,7 @@ import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.SubscriptionLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.portlet.PortletPreferencesFactoryUtil;
 import com.liferay.portlet.messageboards.model.MBMailingList;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBMessageConstants;
@@ -81,6 +83,7 @@ public class LiferayToriMailService implements ToriMailService,
     private String mailThemeCss;
     private String imagePath;
     private ServiceContext mbMessageServiceContext;
+    private PortletRequest request;
 
     @Override
     public void setMailTheme(final String mailThemeCss) {
@@ -140,20 +143,18 @@ public class LiferayToriMailService implements ToriMailService,
         MBMessage rootMessage = MBMessageLocalServiceUtil.getMessage(mbMessage
                 .getThread().getRootMessageId());
         String threadTopic = rootMessage.getSubject();
+        threadTopic = stripTags(threadTopic);
 
         String userDisplayName = user != null ? user.getFullName()
                 : "Anonymous";
-
         if (user != null
                 && LiferayCommonEntityFactoryUtil.usesScreennameOnTori(user)) {
             userDisplayName = user.getScreenName();
         }
+        userDisplayName = stripTags(userDisplayName);
 
-        String dateTime = new SimpleDateFormat("HH:mm 'TORIENDASH' dd-MM-yyyy")
-                .format(mbMessage.getCreateDate());
-
-        // TODO: To preferences (the whole header)
-        String senderLogo = "https://vaadin.com/image/image_gallery?uuid=ffe33c78-700d-41ca-8100-c64483e8021b&groupId=10187&t=1396612041402";
+        String headerImage = getPreferenceValue(
+                LiferayCommonDataSource.PREFS_EMAIL_HEADER_IMAGE_URL, null);
 
         String threadUrl = mbMessageServiceContext.getLayoutFullURL()
                 + "#!/thread/" + mbMessage.getThreadId();
@@ -161,46 +162,44 @@ public class LiferayToriMailService implements ToriMailService,
         String permaLink = threadUrl + "/" + mbMessage.getMessageId();
 
         String postHtml = populateTemplate(mailTemplateHtml, avatarUrl,
-                threadTopic, userDisplayName, dateTime, formattedPostBody,
-                senderLogo, threadUrl, permaLink);
+                threadTopic, userDisplayName, formattedPostBody, headerImage,
+                threadUrl, permaLink);
         return formatInlineCSS(postHtml, mailThemeCss);
 
     }
 
-    private static String populateTemplate(final String htmlTemplate,
+    static String populateTemplate(final String htmlTemplate,
             final String avatarUrl, final String threadTopic,
-            final String userDisplayName, final String time,
-            final String bodyFormatted, final String senderLogo,
-            final String threadUrl, final String permaLink) {
+            final String userDisplayName, final String bodyFormatted,
+            final String headerImage, final String threadUrl,
+            final String permaLink) {
         // @formatter:off
         return StringUtil.replace(htmlTemplate, new String[] {
             "[$MESSAGE_USER_AVATAR_URL$]",
             "[$MESSAGE_USER_NAME$]",
-//            "[$MESSAGE_TIME$]",
             "[$MESSAGE_BODY$]",
             "[$MESSAGE_THREAD_TOPIC$]",
-            "[$MESSAGE_SENDER_LOGO$]",
+            "[$MESSAGE_HEADER_IMAGE$]",
             "[$MESSAGE_THREAD_URL$]",
-            "[$MESSAGE_PERMALINK$]"
+            "[$MESSAGE_PERMALINK$]",
+            "[$MESSAGE_USER_ANONYMOUS$]",
+            "[$MESSAGE_HEADER_DEFAULT_IMAGE$]"
         }, new String[] {
             avatarUrl,
             userDisplayName,
-//            time,
             bodyFormatted,
             threadTopic,
-            senderLogo,
+            headerImage != null ? headerImage : "",
             threadUrl,
-            permaLink
+            permaLink,
+            Boolean.toString(avatarUrl == null || avatarUrl.isEmpty()),
+            Boolean.toString(headerImage == null || headerImage.isEmpty())
         });
         // @formatter:on
     }
 
-    private static String formatInlineCSS(final String html, final String css)
+    static String formatInlineCSS(final String html, final String css)
             throws IOException, SAXException {
-
-        final String fixedCss = css
-                + ".v-app blockquote cite, .v-app .quote-title {\nbackground-image: url('https://vaadin.com/image/image_gallery?uuid=60ad4f39-376a-409d-8cd5-fb62ea4edb48&groupId=10187&t=1396612041390'); background-repeat: no-repeat; \n}";
-
         org.jsoup.nodes.Document parsed = Jsoup.parse(html, "UTF-8");
         parsed.outputSettings().charset("UTF-8");
         Document doc = DOMBuilder.jsoup2DOM(parsed);
@@ -209,7 +208,7 @@ public class LiferayToriMailService implements ToriMailService,
         da.attributesToStyles();
         da.addStyleSheet(null, CSSNorm.stdStyleSheet(),
                 DOMAnalyzer.Origin.AGENT);
-        da.addStyleSheet(null, fixedCss, null);
+        da.addStyleSheet(null, css, null);
 
         da.getStyleSheets();
 
@@ -217,9 +216,8 @@ public class LiferayToriMailService implements ToriMailService,
 
         String result = toString(doc);
 
-        // Custom cleanup / fixes
-        // Place the dash character in the time string
-        // result = result.replaceAll("TORIENDASH", "&#8211;");
+        result = result.replaceAll("class=\"topiclinkwrapper\" style=\"",
+                "class=\"topiclinkwrapper\" style=\"text-overflow: ellipsis;");
 
         // Remove all line breaks
         result = result.replaceAll("\\n", "");
@@ -325,23 +323,30 @@ public class LiferayToriMailService implements ToriMailService,
                         mbMessage.getCategoryId(), mbMessage.getMessageId());
                 String body = formMailBody(mbMessage, formattedPostBody);
 
-                // TODO: All these to preferences
                 String subject = "[" + mbMessage.getCategory().getName() + "] "
                         + mbMessage.getSubject();
                 Company company = CompanyLocalServiceUtil.getCompany(mbMessage
                         .getCompanyId());
                 String companyEmail = company.getEmailAddress();
-                String fromAddress = "no-reply"
-                        + companyEmail.substring(companyEmail.indexOf("@"));
-                String companyName = company.getName();
-                if (companyName.indexOf(".com") > 0) {
-                    companyName = companyName.substring(0,
-                            companyName.indexOf(".com"));
+
+                String fromAddress = getPreferenceValue(
+                        LiferayCommonDataSource.PREFS_EMAIL_FROM_ADDRESS, null);
+                if (fromAddress == null) {
+                    fromAddress = companyEmail;
                 }
-                String fromName = companyName + " Forums";
-                fromName = String.valueOf(fromName.charAt(0)).toUpperCase()
-                        + fromName.substring(1);
-                String replyToAddress = fromAddress;
+
+                String fromName = getPreferenceValue(
+                        LiferayCommonDataSource.PREFS_EMAIL_FROM_NAME, null);
+                if (fromName == null) {
+                    fromName = company.getName() + " forums";
+                }
+
+                String replyToAddress = getPreferenceValue(
+                        LiferayCommonDataSource.PREFS_EMAIL_REPLY_TO_ADDRESS,
+                        null);
+                if (replyToAddress == null) {
+                    replyToAddress = fromAddress;
+                }
 
                 SMTPAccount account = getSMTPAccout(mbMessage);
 
@@ -411,6 +416,7 @@ public class LiferayToriMailService implements ToriMailService,
 
     @Override
     public void setRequest(final PortletRequest request) {
+        this.request = request;
         imagePath = ((ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY))
                 .getPathImage();
         try {
@@ -419,6 +425,25 @@ public class LiferayToriMailService implements ToriMailService,
         } catch (NestableException e) {
             e.printStackTrace();
         }
+    }
+
+    private String getPreferenceValue(final String preferenceKey,
+            final String defaultValue) {
+        String result = defaultValue;
+        PortletPreferences portletPreferences;
+        try {
+            portletPreferences = PortletPreferencesFactoryUtil
+                    .getPortletSetup(request);
+            result = portletPreferences.getValue(preferenceKey, defaultValue);
+        } catch (NestableException e) {
+            getLogger().error("Unable to get PortletPreferences", e);
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private String stripTags(final String html) {
+        return html.replaceAll("\\<.*?>", "");
     }
 
 }
