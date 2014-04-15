@@ -26,10 +26,8 @@ import org.apache.log4j.Logger;
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator.ApplicationView;
 import org.vaadin.tori.data.DataSource;
-import org.vaadin.tori.data.DataSource.UrlInfo;
-import org.vaadin.tori.exception.DataSourceException;
-import org.vaadin.tori.exception.NoSuchThreadException;
 import org.vaadin.tori.util.PostFormatter;
+import org.vaadin.tori.util.UrlConverter;
 
 public class ToriIndexableApplication {
 
@@ -55,17 +53,25 @@ public class ToriIndexableApplication {
     /** Get the resulting XHTML page (<code>&lt;html&gt;</code> tags and all) */
     public String getResultInHtml(final HttpServletRequest servletRequest) {
 
-        try {
-            final UrlInfo urlInfo = getDataSource()
-                    .getUrlInfoFromBackendNativeRequest(servletRequest);
-            if (urlInfo != null) {
-                return getRedirectionTag(urlInfo);
+        String requestUrl = null;
+        String lrcid = servletRequest.getParameter("_19_mbCategoryId");
+        if (lrcid != null) {
+            requestUrl = apiLoader.getDataSource().getPathRoot()
+                    + "/-/message_boards?_19_mbCategoryId=" + lrcid;
+        }
+
+        String lrmid = servletRequest.getParameter("_19_messageId");
+        if (lrmid != null) {
+            requestUrl = apiLoader.getDataSource().getPathRoot()
+                    + "/-/message_boards/view_message/" + lrmid;
+        }
+
+        UrlConverter urlConverter = apiLoader.getUrlConverter();
+        if (urlConverter != null && requestUrl != null) {
+            String convertedUrl = urlConverter.convertUrlToToriForm(requestUrl);
+            if (!requestUrl.equals(convertedUrl)) {
+                return getRedirectionTag(convertedUrl);
             }
-        } catch (final NoSuchThreadException e) {
-            return "Can't find that thread.";
-        } catch (final DataSourceException e) {
-            return "Something went wrong... I got an "
-                    + e.getClass().getSimpleName();
         }
 
         final ArrayList<String> fragmentArguments = getFragmentArguments(servletRequest);
@@ -76,30 +82,7 @@ public class ToriIndexableApplication {
         return view.getHtml();
     }
 
-    private String getRedirectionTag(final UrlInfo urlInfo) {
-        @SuppressWarnings("deprecation")
-        String pathRoot = getDataSource().getPathRoot();
-        if (pathRoot == null) {
-            pathRoot = "";
-        }
-
-        final String destination;
-
-        switch (urlInfo.getDestination()) {
-        case THREAD:
-            destination = ApplicationView.THREADS.getUrl() + "/"
-                    + urlInfo.getId();
-            break;
-        case CATEGORY:
-            destination = ApplicationView.CATEGORIES.getUrl() + "/"
-                    + urlInfo.getId();
-            break;
-        default:
-            destination = ApplicationView.DASHBOARD.getUrl();
-        }
-
-        final String redirectUrl = pathRoot + "/#" + destination;
-
+    private String getRedirectionTag(final String redirectUrl) {
         return "<meta http-equiv=\"refresh\" content=\"0;URL='" + redirectUrl
                 + "'\">";
     }
