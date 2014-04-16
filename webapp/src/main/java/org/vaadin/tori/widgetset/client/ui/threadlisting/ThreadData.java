@@ -5,7 +5,7 @@ import com.vaadin.shared.Connector;
 public class ThreadData {
 
     public static class ThreadPrimaryData {
-        public long threadId;
+        public String threadId;
         public String topic;
         public String author;
         public String latestAuthor;
@@ -16,7 +16,7 @@ public class ThreadData {
     }
 
     public static class ThreadAdditionalData {
-        public long threadId;
+        public String threadId;
         public boolean isSticky;
         public boolean isLocked;
         public boolean mayFollow;

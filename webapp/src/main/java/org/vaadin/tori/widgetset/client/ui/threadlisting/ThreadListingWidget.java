@@ -27,7 +27,7 @@ public class ThreadListingWidget extends FlowPanel {
     private HandlerRegistration scrollHandlerRegistrationWin;
 
     private final FlowPanel placeHolders = new FlowPanel();
-    private final Map<Long, ThreadListingRow> threadRows = new HashMap<Long, ThreadListingRow>();
+    private final Map<String, ThreadListingRow> threadRows = new HashMap<String, ThreadListingRow>();
 
     public interface Fetcher {
         void fetchRows();
@@ -136,7 +136,7 @@ public class ThreadListingWidget extends FlowPanel {
         }
     }
 
-    public void removeThreadRow(final long threadId) {
+    public void removeThreadRow(final String threadId) {
         remove(threadRows.get(threadId));
     }
 

@@ -80,7 +80,7 @@ public class ThreadListingRow extends Composite implements ClickHandler {
 
     public ThreadListingRow(final ThreadPrimaryData data,
             final ThreadListingRowListener listener) {
-        this.threadId = data.threadId;
+        this.threadId = Long.parseLong(data.threadId);
         this.listener = listener;
         initWidget(uiBinder.createAndBindUi(this));
         setWidth("100%");

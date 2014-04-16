@@ -30,7 +30,7 @@ public class ThreadListingConnector extends AbstractComponentContainerConnector 
         registerRpc(ThreadListingClientRpc.class, new ThreadListingClientRpc() {
 
             @Override
-            public void removeThreadRow(final long threadId) {
+            public void removeThreadRow(final String threadId) {
                 getWidget().removeThreadRow(threadId);
             }
 

@@ -12,5 +12,5 @@ public interface ThreadListingClientRpc extends ClientRpc {
 
     void refreshThreadRows(List<ThreadAdditionalData> rows);
 
-    void removeThreadRow(long threadId);
+    void removeThreadRow(String threadId);
 }

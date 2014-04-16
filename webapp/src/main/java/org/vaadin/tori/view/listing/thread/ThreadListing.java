@@ -66,7 +66,7 @@ public class ThreadListing extends AbstractComponentContainer implements
         data.latestPostPretty = prettyTime.format(thread.getLatestPostTime());
         data.firstPostPretty = prettyTime.format(thread.getCreateTime());
         data.postCount = thread.getPostCount();
-        data.threadId = thread.getId();
+        data.threadId = String.valueOf(thread.getId());
         data.topic = thread.getTopic();
         data.isRead = thread.userHasRead();
         return data;
@@ -74,7 +74,7 @@ public class ThreadListing extends AbstractComponentContainer implements
 
     private ThreadAdditionalData getThreadAdditionalData(final ThreadData thread) {
         final ThreadAdditionalData data = new ThreadAdditionalData();
-        data.threadId = thread.getId();
+        data.threadId = String.valueOf(thread.getId());
         data.isLocked = thread.isLocked();
         data.isSticky = thread.isSticky();
         data.isFollowed = thread.isFollowing();
@@ -185,7 +185,8 @@ public class ThreadListing extends AbstractComponentContainer implements
     }
 
     public void removeThreadRow(final long threadId) {
-        getRpcProxy(ThreadListingClientRpc.class).removeThreadRow(threadId);
+        getRpcProxy(ThreadListingClientRpc.class).removeThreadRow(
+                String.valueOf(threadId));
     }
 
     @Override
