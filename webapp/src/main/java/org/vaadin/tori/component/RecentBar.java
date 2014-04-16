@@ -80,6 +80,9 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
         addTitleLabel(barLayout);
         addNotificationsLayout(barLayout);
         addRecentLink(barLayout);
+        if (dataSource.isLoggedInUser()) {
+            addMyPostsLink(barLayout);
+        }
         layout.addComponent(barLayout);
 
         floatingComponent.extend(floatingNotification);
@@ -92,6 +95,15 @@ public class RecentBar extends CustomComponent implements UserAuthoredListener {
                 refresh();
             }
         });
+    }
+
+    private void addMyPostsLink(final HorizontalLayout barLayout) {
+        Link link = new Link("My Posts", new ExternalResource("#"
+                + ToriNavigator.ApplicationView.CATEGORIES.getUrl() + "/"
+                + SpecialCategory.MY_POSTS.getId().toLowerCase()));
+        link.addStyleName("mypostslink");
+        barLayout.addComponent(link);
+        barLayout.setComponentAlignment(link, Alignment.MIDDLE_RIGHT);
     }
 
     private void addRecentLink(final HorizontalLayout barLayout) {

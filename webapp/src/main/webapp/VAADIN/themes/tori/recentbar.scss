@@ -57,6 +57,32 @@
 		
 		.recentlink {
 			padding-left: 20px;
+			position: relative;
+			
+			&:before {
+		    	font-family: "Tori-Icons";
+				content: "\e608";
+				color: $link-color;
+				font-size: 11px;
+				position: absolute;
+				top: 3px;
+				left: 2px;
+		    }
+		}
+		
+		 .mypostslink{
+		 	padding-left: 45px;
+		 	position: relative;
+		 	
+			 &:before {
+		    	font-family: "Tori-Icons";
+				content: "\e606";
+				color: $link-color;
+				font-size: 11px;
+				position: absolute;
+				top: 3px;
+				left: 27px;
+		    }
 		}
 		
 		.floatingnotification {

@@ -33,7 +33,6 @@ import org.vaadin.tori.util.ComponentUtil;
 import org.vaadin.tori.util.ToriScheduler;
 import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.view.listing.ListingView;
-import org.vaadin.tori.view.listing.SpecialCategory;
 import org.vaadin.tori.view.thread.ThreadView;
 import org.vaadin.tori.view.thread.newthread.NewThreadView;
 
@@ -66,7 +65,6 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
 
     private HorizontalLayout crumbsLayout;
     private Label viewCaption;
-    private Component myPosts;
     private final DataSource dataSource = ToriApiLoader.getCurrent()
             .getDataSource();
     private final String pageTitlePrefix = dataSource.getConfiguration()
@@ -74,7 +72,6 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
     private final AuthorizationService authorizationService = ToriApiLoader
             .getCurrent().getAuthorizationService();
 
-    private Link myPostsLink;
     private Button followButton;
     private long threadId;
     private Label iconsComponent;
@@ -98,18 +95,10 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
         iconsComponent = new Label("");
         iconsComponent.setSizeUndefined();
 
-        myPosts = new Label("My Posts");
-
         final HorizontalLayout captionLayout = new HorizontalLayout(
-                viewCaption, iconsComponent, myPosts);
+                viewCaption, iconsComponent);
         captionLayout.setWidth(100.0f, Unit.PERCENTAGE);
         captionLayout.setExpandRatio(iconsComponent, 1.0f);
-
-        myPostsLink = new Link("My Posts", new ExternalResource("#"
-                + ToriNavigator.ApplicationView.CATEGORIES.getUrl() + "/"
-                + SpecialCategory.MY_POSTS.getId().toLowerCase()));
-        myPostsLink.addStyleName("mypostslink");
-        captionLayout.addComponent(myPostsLink);
 
         followButton = buildFollowButton();
         captionLayout.addComponent(followButton);
@@ -161,7 +150,6 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
     public void afterViewChange(final ViewChangeEvent event) {
         viewCaption.setValue(null);
         iconsComponent.setStyleName("icons");
-        myPostsLink.setVisible(false);
         followButton.setVisible(false);
 
         final View view = event.getNewView();
@@ -183,7 +171,6 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
             } else if (urlParameterId == null) {
                 crumbsLayout.removeAllComponents();
                 viewCaption.setValue(getDashboardTitle());
-                myPostsLink.setVisible(dataSource.isLoggedInUser());
             } else {
                 ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
                     @Override
