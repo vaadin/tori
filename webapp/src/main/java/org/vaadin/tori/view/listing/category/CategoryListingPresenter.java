@@ -22,8 +22,6 @@ import java.util.List;
 import org.vaadin.tori.data.entity.Category;
 import org.vaadin.tori.exception.DataSourceException;
 import org.vaadin.tori.mvp.Presenter;
-import org.vaadin.tori.util.ToriScheduler;
-import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.view.listing.SpecialCategory;
 import org.vaadin.tori.view.listing.category.CategoryListingView.CategoryData;
 
@@ -57,16 +55,7 @@ public class CategoryListingPresenter extends Presenter<CategoryListingView> {
             displayError(e);
         }
 
-        // FIXME: This is here temporarily and only to avoid a Vaadin bug which
-        // caused the confirm window not to close after deleting a category.
-        ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
-            @Override
-            public void execute() {
-                // refresh the categories
-                updateView();
-            }
-        });
-
+        updateView();
     }
 
     public void updateCategory(final long categoryId, final String name,
