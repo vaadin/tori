@@ -38,7 +38,7 @@
 			font-family: $font-family-secondary;
 			color: #999;
 			
-			@include animation(vertical-fade-in 600ms);
+			@include animation(fade-in 600ms);
 		}
 		
 	}
