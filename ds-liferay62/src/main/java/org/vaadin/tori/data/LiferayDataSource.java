@@ -45,6 +45,7 @@ import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.portletfilerepository.PortletFileRepositoryUtil;
 import com.liferay.portal.service.SubscriptionLocalServiceUtil;
+import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBMessageConstants;
 import com.liferay.portlet.messageboards.model.MBThread;
@@ -65,7 +66,8 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
         if (isLoggedInUser()) {
             try {
                 SubscriptionLocalServiceUtil.addSubscription(currentUserId,
-                        currentUser.getGroupId(), MBThread.class.getName(),
+                        UserLocalServiceUtil.getUser(currentUserId)
+                                .getGroupId(), MBThread.class.getName(),
                         threadId);
             } catch (final NestableException e) {
                 LOG.error(String.format("Cannot follow thread %d", threadId), e);

@@ -246,11 +246,15 @@ public class ToriApiLoader implements Serializable, SessionDestroyListener {
                     //@formatter:on
                     result.setMailTheme(themeCss + quoteRule + anonymousRule
                             + customHeaderImageRule);
+
+                    getLogger().debug(
+                            String.format("Using %s implementation: %s",
+                                    ToriMailService.class.getSimpleName(),
+                                    result.getClass().getName()));
                 } else {
                     getLogger().error("Unable to set mail service resources");
                     result = null;
                 }
-
             } catch (IOException e) {
                 getLogger().warn("Exception while closing input stream", e);
             } catch (Exception e) {
@@ -258,10 +262,6 @@ public class ToriApiLoader implements Serializable, SessionDestroyListener {
                         e);
                 result = null;
             }
-            getLogger().debug(
-                    String.format("Using %s implementation: %s",
-                            ToriMailService.class.getSimpleName(), result
-                                    .getClass().getName()));
         }
 
         return result;

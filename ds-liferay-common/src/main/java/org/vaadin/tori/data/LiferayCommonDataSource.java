@@ -111,7 +111,6 @@ public abstract class LiferayCommonDataSource implements DataSource,
 
     protected long scopeGroupId = -1;
     protected long currentUserId;
-    protected com.liferay.portal.model.User currentUser;
     private String imagePath;
 
     private ServiceContext mbBanServiceContext;
@@ -618,7 +617,8 @@ public abstract class LiferayCommonDataSource implements DataSource,
             final String additionalInfo, final String postUrl) {
         String reporterEmailAddress = "";
         try {
-            reporterEmailAddress = getCurrentLiferayUser().getEmailAddress();
+            reporterEmailAddress = UserLocalServiceUtil.getUser(currentUserId)
+                    .getEmailAddress();
         } catch (final NestableException e) {
             LOG.error("Couldn't get the email address of current user.", e);
         }
@@ -688,7 +688,8 @@ public abstract class LiferayCommonDataSource implements DataSource,
         boolean result = false;
         if (isLoggedInUser()) {
             try {
-                final com.liferay.portal.model.User user = getCurrentLiferayUser();
+                final com.liferay.portal.model.User user = UserLocalServiceUtil
+                        .getUser(currentUserId);
                 result = SubscriptionLocalServiceUtil.isSubscribed(
                         user.getCompanyId(), user.getUserId(),
                         MBThread.class.getName(), threadId);
@@ -888,7 +889,6 @@ public abstract class LiferayCommonDataSource implements DataSource,
             if (currentUserId != remoteUser) {
                 // current user is changed
                 currentUserId = remoteUser;
-                currentUser = null;
             }
             if (imagePath == null) {
                 imagePath = themeDisplay.getPathImage();
@@ -916,14 +916,6 @@ public abstract class LiferayCommonDataSource implements DataSource,
     private static final int DEFAULT_MAX_FILE_SIZE = 307200;
 
     private Configuration toriConfiguration;
-
-    private com.liferay.portal.model.User getCurrentLiferayUser()
-            throws PortalException, SystemException {
-        if (currentUser == null && isLoggedInUser()) {
-            currentUser = UserLocalServiceUtil.getUser(currentUserId);
-        }
-        return currentUser;
-    }
 
     @Override
     public Post saveNewThread(final String topic, final String rawBody,
