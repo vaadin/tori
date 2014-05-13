@@ -417,13 +417,16 @@ public class LiferayToriMailService implements ToriMailService,
     @Override
     public void setRequest(final PortletRequest request) {
         this.request = request;
-        imagePath = ((ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY))
-                .getPathImage();
+
         try {
+            imagePath = ((ThemeDisplay) request
+                    .getAttribute(WebKeys.THEME_DISPLAY)).getPathImage();
             mbMessageServiceContext = ServiceContextFactory.getInstance(
                     MBMessage.class.getName(), request);
         } catch (NestableException e) {
-            e.printStackTrace();
+            getLogger().error("Unable to initialize mail service", e);
+        } catch (NullPointerException e) {
+            getLogger().error("Unable to initialize mail service", e);
         }
     }
 

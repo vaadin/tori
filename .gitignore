@@ -17,3 +17,6 @@ gwt-unitCache
 .checkstyle
 rebel.xml
 target/
+styles.css
+addons.scss
+derby.log
