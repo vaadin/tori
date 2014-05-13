@@ -80,19 +80,28 @@
 			}
         }
         
-        .badge a {
-        	color: transparent;
-        	position: relative;
-        	
-        	&:before {
-        		content: "\e015";
-				color: #ee7c08;
-				font-family: "Tori-Icons";
-				position: absolute;
-				top: 0;
-				left: 0;
-				padding-left: 5px;
-        	}
+        .badge {
+        	background-color: transparent;
+        	padding: 0;
+        	text-shadow: none;
+        	display: inline;
+        	font-size: inherit;
+        	line-height: normal;
+        
+	        a {
+	        	color: transparent;
+	        	position: relative;
+	        	
+	        	&:before {
+	        		content: "\e015";
+					color: #ee7c08;
+					font-family: "Tori-Icons";
+					position: absolute;
+					top: 0;
+					left: 0;
+					padding-left: 5px;
+	        	}
+	        }
         }
         
         .prettytime {

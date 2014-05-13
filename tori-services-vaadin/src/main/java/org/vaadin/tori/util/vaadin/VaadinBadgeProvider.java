@@ -11,7 +11,7 @@ import org.vaadin.tori.util.UserBadgeProvider;
 import com.liferay.portal.kernel.exception.NestableException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.model.Role;
-import com.liferay.portal.service.RoleServiceUtil;
+import com.liferay.portal.service.RoleLocalServiceUtil;
 import com.liferay.portlet.expando.service.ExpandoValueLocalServiceUtil;
 
 public class VaadinBadgeProvider implements UserBadgeProvider {
@@ -51,8 +51,8 @@ public class VaadinBadgeProvider implements UserBadgeProvider {
 
     private boolean hasBadgeRole(final User user) throws SystemException {
         try {
-            List<Role> userRoles = RoleServiceUtil.getUserRoles(liferayUser(
-                    user).getUserId());
+            List<Role> userRoles = RoleLocalServiceUtil
+                    .getUserRoles(liferayUser(user).getUserId());
             for (final Role role : userRoles) {
                 if (BADGE_ROLE_NAME.equals(role.getName())) {
                     getLogger().debug("Has badge role " + BADGE_ROLE_NAME);

@@ -118,14 +118,15 @@
 		<profile>
 			<id>vaadincom</id>
 			<properties>
-				<liferay.versions>6.0.6</liferay.versions>
+				<liferay.versions>6.2.0+</liferay.versions>
 				<productionMode>true</productionMode>
 				<tori.theme>tori-vaadin</tori.theme>
+				<security.manager.enabled>false</security.manager.enabled>
 			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>${project.groupId}</groupId>
-					<artifactId>ds-liferay60</artifactId>
+					<artifactId>ds-liferay62</artifactId>
 				</dependency>
 				<dependency>
 					<groupId>${project.groupId}</groupId>
@@ -138,7 +139,7 @@
 				</dependency>
 			</dependencies>
 			<build>
-				<finalName>tori-portlet-6.0.${version}</finalName>
+				<finalName>tori-portlet-6.2.${version}</finalName>
 			</build>
 		</profile>
 	</profiles>

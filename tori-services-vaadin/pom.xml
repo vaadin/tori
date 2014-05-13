@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>tori-services-vaadin</artifactId>
 	<properties>
-		<liferay.version>6.0.6</liferay.version>
+		<liferay.version>6.2.0-RC5</liferay.version>
 	</properties>
 
 	<dependencies>
