@@ -32,9 +32,11 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.security.permission.PermissionThreadLocal;
 import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.service.MBBanLocalServiceUtil;
+import com.liferay.portlet.messageboards.service.MBCategoryLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
 
@@ -169,10 +171,26 @@ public class LiferayCommonAuthorizationService implements AuthorizationService,
         if (isBanned()) {
             return false;
         }
-        return getPermissionChecker().hasPermission(scopeGroupId,
-                CategoryAction.getScope(),
-                LiferayCommonDataSource.normalizeCategoryId(categoryId),
-                action.toString());
+        try {
+            MBCategory category = MBCategoryLocalServiceUtil
+                    .getCategory(LiferayCommonDataSource
+                            .normalizeCategoryId(categoryId));
+            String actionId = action.toString();
+            PermissionChecker permissionChecker = getPermissionChecker();
+            if (permissionChecker.hasOwnerPermission(category.getCompanyId(),
+                    MBCategory.class.getName(), category.getCategoryId(),
+                    category.getUserId(), actionId)
+                    || permissionChecker.hasPermission(category.getGroupId(),
+                            MBCategory.class.getName(),
+                            category.getCategoryId(), actionId)) {
+
+                return true;
+            }
+        } catch (NestableException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     private boolean hasMessagePermission(final MessageAction action,
