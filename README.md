@@ -39,7 +39,7 @@ Tori works fine on the default settings but the Portlet Preferences view allows 
 
 In case you want to compile a deployable WAR yourself just check out this git repository and run "mvn install" in the root folder. This will compile a development/test deployment of the project and runs Vaadin TestBench tests against it (requires Firefox to be installed) on a Jetty server. The resulting .war file can be deployed to any servlet container.
 
-To produce a deployable package for Liferay portal run "mvn -P liferay62 install" ('liferay62' profile). The resulting .war file (under /webapp/target) can be deployed on a Liferay 6.2 portal. 'vaadincom' -profile is mainly intended for the /forum site on vaadin.com (Liferay 6.0) but should work on any other Liferay 6.0 portal just as well.
+To produce a deployable package for Liferay portal run "mvn -P liferay62 install" ('liferay62' profile). The resulting .war file (under /webapp/target) can be deployed on a Liferay 6.2 portal.
 
 ## Notes on Portlet deployment
 
