@@ -13,6 +13,7 @@
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<productionMode>false</productionMode>
 		<tori.theme>tori</tori.theme>
+		<liferay.version>6.2.0-RC5</liferay.version>
 		<security.manager.enabled>false</security.manager.enabled>
 	</properties>
 
@@ -112,7 +113,7 @@
 				</dependency>
 			</dependencies>
 			<build>
-				<finalName>tori-portlet-6.2.${version}</finalName>
+				<finalName>tori-portlet-6.2.${project.version}</finalName>
 			</build>
 		</profile>
 		<profile>
@@ -287,6 +288,20 @@
 							<filtering>true</filtering>
 						</webResource>
 					</webResources>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>com.liferay.maven.plugins</groupId>
+				<artifactId>liferay-maven-plugin</artifactId>
+				<version>${liferay.maven.plugin.version}</version>
+				<configuration>
+					<autoDeployDir>${liferay.auto.deploy.dir}</autoDeployDir>
+					<appServerDeployDir>${liferay.app.server.deploy.dir}</appServerDeployDir>
+					<appServerLibGlobalDir>${liferay.app.server.lib.global.dir}</appServerLibGlobalDir>
+					<appServerPortalDir>${liferay.app.server.portal.dir}</appServerPortalDir>
+					<liferayVersion>${liferay.version}</liferayVersion>
+					<pluginType>portlet</pluginType>
 				</configuration>
 			</plugin>
 		</plugins>
