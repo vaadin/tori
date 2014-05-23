@@ -74,7 +74,6 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
 
     private Button followButton;
     private long threadId;
-    private Label iconsComponent;
 
     public Breadcrumbs() {
         setStyleName("tori-breadcrumbs");
@@ -89,16 +88,12 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
 
     private Component buildCaptionLayout() {
         viewCaption = new Label("");
-        viewCaption.addStyleName("viewcaption");
-        viewCaption.setSizeUndefined();
+        viewCaption.setStyleName("viewcaption");
 
-        iconsComponent = new Label("");
-        iconsComponent.setSizeUndefined();
-
-        final HorizontalLayout captionLayout = new HorizontalLayout(
-                viewCaption, iconsComponent);
+        final HorizontalLayout captionLayout = new HorizontalLayout(viewCaption);
+        captionLayout.setSpacing(true);
         captionLayout.setWidth(100.0f, Unit.PERCENTAGE);
-        captionLayout.setExpandRatio(iconsComponent, 1.0f);
+        captionLayout.setExpandRatio(viewCaption, 1.0f);
 
         followButton = buildFollowButton();
         captionLayout.addComponent(followButton);
@@ -149,7 +144,7 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
     @Override
     public void afterViewChange(final ViewChangeEvent event) {
         viewCaption.setValue(null);
-        iconsComponent.setStyleName("icons");
+        viewCaption.setStyleName("viewcaption");
         followButton.setVisible(false);
 
         final View view = event.getNewView();
@@ -190,10 +185,10 @@ public class Breadcrumbs extends CustomComponent implements ViewChangeListener {
             try {
                 DiscussionThread thread = dataSource.getThread(urlParameterId);
                 if (thread.isLocked()) {
-                    iconsComponent.addStyleName("lockedthread");
+                    viewCaption.addStyleName("lockedthread");
                 }
                 if (thread.isSticky()) {
-                    iconsComponent.addStyleName("stickythread");
+                    viewCaption.addStyleName("stickythread");
                 }
 
                 followButton.setVisible(true);
