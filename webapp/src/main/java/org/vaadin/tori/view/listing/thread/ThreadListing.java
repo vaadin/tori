@@ -160,7 +160,7 @@ public class ThreadListing extends AbstractComponentContainer implements
         if (thread.mayMove()) {
             rootItem.addItem(MOVE_CAPTION, settingsCommand);
         }
-        if (separator != null && rootItem.getChildren().size() == 2) {
+        if (separator != null && rootItem.getChildren().size() == 3) {
             rootItem.removeChild(separator);
         }
 
