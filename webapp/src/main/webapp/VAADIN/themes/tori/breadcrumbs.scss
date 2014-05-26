@@ -84,14 +84,14 @@
 	    }
 	    
 	    .v-button {
-	    	width: 130px;
+	    	width: 110px;
 	    	padding: 5px 0 !important;
 	    	transition: all 400ms;
 			-webkit-transition: all 400ms;
 	    
 	    	&:before {
 	    		font-family: "Tori-Icons";
-	    		content: "\e605";
+	    		
 	    		vertical-align: middle;
 	    		padding-right: 5px;
 	    	}
@@ -106,13 +106,17 @@
 	    		background: $button-color;
 	    		border-color: $button-color;
 	    	
+	    		&:before {
+	    			content: "\e605";
+	    		}
+	    		
 	    		&:after {
 	    			content: "Following";
 	    		}
 	    		
 	    		&:hover {
-	    			background: #E6452A;
-	    			border-color: #E6452A;
+	    			background: #F06032;
+	    			border-color: #F06032;
 	    		
 		    		&:after{
 		    			content: "Unfollow";
@@ -121,18 +125,15 @@
 	    	}
 	    	
 	    	&.notfollowed {
-	    		&:after {
-	    			content: "Not following";
+	    		&:before {
+	    			font-size: 16px;
+	    			content: "\e609";
+	    			position: relative;
+					top: 1px;
 	    		}
-	    		
-	    		&:hover{
-	    			background: #43B536;
-	    			border-color: #43B536;
-	    			color: #fff;
-	    			
-	    			&:after {
-	    				content: "Follow";
-	    			}
+	    	
+	    		&:after {
+	    			content: "Follow";
 	    		}
 	    	}
 	    }
