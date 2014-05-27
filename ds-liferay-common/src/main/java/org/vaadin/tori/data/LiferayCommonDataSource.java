@@ -783,6 +783,8 @@ public abstract class LiferayCommonDataSource implements DataSource,
             final Map<String, byte[]> attachments, final long threadId)
             throws DataSourceException {
         try {
+            mbMessageServiceContext.setAddCommunityPermissions(true);
+            mbMessageServiceContext.setAddGuestPermissions(true);
             final MBMessage newPost = internalSaveAsCurrentUser(rawBody,
                     attachments, getThread(threadId),
                     getRootMessageId(threadId));
@@ -928,6 +930,8 @@ public abstract class LiferayCommonDataSource implements DataSource,
                 thread.setCategory(getCategory(categoryId));
             }
 
+            mbMessageServiceContext.setAddCommunityPermissions(true);
+            mbMessageServiceContext.setAddGuestPermissions(true);
             final MBMessage savedRootMessage = internalSaveAsCurrentUser(
                     rawBody, attachments, thread,
                     MBMessageConstants.DEFAULT_PARENT_MESSAGE_ID);

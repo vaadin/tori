@@ -179,6 +179,8 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
 
             final String displayStyle = "default";
 
+            mbCategoryServiceContext.setAddGroupPermissions(true);
+            mbCategoryServiceContext.setAddGuestPermissions(true);
             MBCategoryServiceUtil.addCategory(parentId, name, description,
                     displayStyle, null, null, null, 0, false, null, null, 0,
                     null, false, null, 0, false, null, null, false, false,

@@ -166,6 +166,8 @@ public class LiferayDataSource extends LiferayCommonDataSource implements
     public void saveNewCategory(final Long parentCategoryId, final String name,
             final String description) throws DataSourceException {
         try {
+            mbCategoryServiceContext.setAddCommunityPermissions(true);
+            mbCategoryServiceContext.setAddGuestPermissions(true);
             MBCategoryServiceUtil
                     .addCategory(normalizeCategoryId(parentCategoryId), name,
                             description, null, null, null, 0, false, null,
