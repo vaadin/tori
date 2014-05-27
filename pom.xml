@@ -5,7 +5,7 @@
 	<groupId>org.vaadin.tori</groupId>
 	<artifactId>tori</artifactId>
 	<packaging>pom</packaging>
-	<version>1.2-SNAPSHOT</version>
+	<version>1.2</version>
 
 	<modules>
 		<module>webapp</module>

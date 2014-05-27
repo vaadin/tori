@@ -20,3 +20,4 @@ target/
 styles.css
 addons.scss
 derby.log
+*.versionsBackup
