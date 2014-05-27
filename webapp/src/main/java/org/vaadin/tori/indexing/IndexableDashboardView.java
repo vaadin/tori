@@ -34,7 +34,7 @@ public class IndexableDashboardView extends IndexableView {
 
     @Override
     public String getHtml() {
-        return "<h1>Forum</h1>"
+        return "<h1>Forum</h1><div style='visibility:hidden;'>Tori forum portlet instance</div>"
                 + getCategoriesXhtml(application.getDataSource(), getLogger(),
                         null);
     }
