@@ -28,6 +28,7 @@ import org.vaadin.tori.widgetset.client.ui.floatingcomponent.FloatingComponentCo
 import org.vaadin.tori.widgetset.client.ui.post.PostComponentConnector;
 import org.vaadin.tori.widgetset.client.ui.threadlisting.ThreadListingConnector;
 
+import com.github.wolfie.clientstorage.client.ClientStorageConnector;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
@@ -75,6 +76,7 @@ public class ToriConnectorBundleLoaderFactory extends
         addConnector(JavaScriptExtension.class, false);
         addConnector(FloatingComponentConnector.class, false);
         addConnector(LabelConnector.class, false);
+        addConnector(ClientStorageConnector.class, false);
 
         addConnector(WindowConnector.class, true);
         addConnector(TabsheetConnector.class, true);

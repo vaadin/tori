@@ -61,6 +61,7 @@ Tori theme is generated from a customisable SASS template during the project bui
  * [PopupButton](http://vaadin.com/addon/popupbutton) -- Henri Kerola, Apache 2.0
  * [ConfirmDialog](http://vaadin.com/addon/confirmdialog) -- Sami Ekblad, Apache 2.0
  * [GoogleAnalyticsTracker](http://vaadin.com/addon/googleanalyticstracker) -- Sami Ekblad, Apache 2.0
+ * [ClientStorage](http://vaadin.com/addon/clientstorage) -- Henrik Paul, Apache 2.0
  * [PrettyTime](http://ocpsoft.com/prettytime/) -- OCPsoft, LGPL3
  * [Vaadin TestBench](https://vaadin.com/home) -- Vaadin, CVAL 2.0
  * [EclipseLink](https://www.eclipse.org/eclipselink/) -- Eclipse Foundation, Eclipse Public License, Eclipse Distribution License

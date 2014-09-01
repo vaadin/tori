@@ -164,6 +164,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+		   <groupId>org.vaadin.addons</groupId>
+		   <artifactId>clientstorage</artifactId>
+		   <version>1.0.0</version>
+		</dependency>
+		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-server</artifactId>
 			<version>${vaadin.version}</version>

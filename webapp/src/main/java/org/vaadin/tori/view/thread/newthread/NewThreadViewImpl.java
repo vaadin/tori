@@ -24,6 +24,10 @@ import org.vaadin.tori.component.AuthoringComponent;
 import org.vaadin.tori.component.AuthoringComponent.AuthoringListener;
 import org.vaadin.tori.component.RecentBar;
 import org.vaadin.tori.mvp.AbstractView;
+import org.vaadin.tori.util.InputCacheUtil;
+import org.vaadin.tori.util.InputCacheUtil.Callback;
+import org.vaadin.tori.util.ToriScheduler;
+import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
 import org.vaadin.tori.view.thread.AuthoringData;
 
 import com.vaadin.shared.ui.MarginInfo;
@@ -40,6 +44,7 @@ public class NewThreadViewImpl extends
         AbstractView<NewThreadView, NewThreadPresenter> implements
         NewThreadView {
 
+    private static final String CACHE_KEY_PREFIX = "new_";
     private VerticalLayout layout;
 
     private AuthoringComponent authoringComponent;
@@ -79,7 +84,10 @@ public class NewThreadViewImpl extends
 
             @Override
             public void inputValueChanged(final String value) {
-                // Ignore
+                if (viewData != null) {
+                    InputCacheUtil.put(
+                            CACHE_KEY_PREFIX + viewData.getCategoryId(), value);
+                }
             }
         };
 
@@ -141,6 +149,8 @@ public class NewThreadViewImpl extends
 
     @Override
     public void newThreadCreated(final long threadId) {
+        InputCacheUtil.remove(CACHE_KEY_PREFIX + viewData.getCategoryId());
+
         ToriUI.getCurrent().trackAction("new-thread");
         ToriNavigator.getCurrent().navigateToThread(threadId);
     }
@@ -150,6 +160,21 @@ public class NewThreadViewImpl extends
             final AuthoringData authoringData) {
         this.viewData = viewData;
         authoringComponent.setAuthoringData(authoringData);
+
+        InputCacheUtil.get(CACHE_KEY_PREFIX + viewData.getCategoryId(),
+                new Callback() {
+                    @Override
+                    public void execute(final String value) {
+                        ToriScheduler.get().scheduleDeferred(
+                                new ScheduledCommand() {
+                                    @Override
+                                    public void execute() {
+                                        authoringComponent
+                                                .insertIntoMessage(value);
+                                    }
+                                });
+                    }
+                });
     }
 
     @Override

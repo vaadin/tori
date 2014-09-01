@@ -17,7 +17,6 @@
 package org.vaadin.tori.view.thread;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,11 +30,12 @@ import org.vaadin.tori.component.PanicComponent;
 import org.vaadin.tori.component.RecentBar;
 import org.vaadin.tori.data.entity.User;
 import org.vaadin.tori.mvp.AbstractView;
+import org.vaadin.tori.util.InputCacheUtil;
+import org.vaadin.tori.util.InputCacheUtil.Callback;
 import org.vaadin.tori.util.ToriScheduler;
 import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
 
 import com.vaadin.server.Page;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -50,7 +50,6 @@ import com.vaadin.ui.UI;
 public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         implements ThreadView {
 
-    private static final String INPUT_CACHE_NAME = "inputcache";
     private static final String REPLY_ID = "threadreply";
     private static final String STYLE_REPLY_HIDDEN = "replyhidden";
 
@@ -76,7 +75,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
         @Override
         public void inputValueChanged(final String value) {
             if (viewData != null) {
-                getInputCache().put(viewData.getThreadTopic(), value);
+                InputCacheUtil.put(String.valueOf(viewData.getThreadId()),
+                        value);
             }
             getPresenter().inputValueChanged();
         }
@@ -122,16 +122,6 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
     @Override
     public void setPosts(final List<PostData> posts, final Integer selectedIndex) {
         postsLayout.setPosts(posts, selectedIndex);
-    }
-
-    @SuppressWarnings("unchecked")
-    private Map<Object, String> getInputCache() {
-        VaadinSession session = UI.getCurrent().getSession();
-        if (session.getAttribute(INPUT_CACHE_NAME) == null) {
-            session.setAttribute(INPUT_CACHE_NAME,
-                    new HashMap<Object, String>());
-        }
-        return (Map<Object, String>) session.getAttribute(INPUT_CACHE_NAME);
     }
 
     @Override
@@ -234,7 +224,8 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
 
     @Override
     public void replySent() {
-        getInputCache().remove(viewData.getThreadTopic());
+        InputCacheUtil.remove(String.valueOf(viewData.getThreadId()));
+
         ToriUI.getCurrent().trackAction("reply");
         ToriScheduler.get().scheduleDeferred(new ScheduledCommand() {
             @Override
@@ -261,8 +252,15 @@ public class ThreadViewImpl extends AbstractView<ThreadView, ThreadPresenter>
                     reply.setId(REPLY_ID);
 
                     reply.setAuthoringData(authoringData);
-                    reply.insertIntoMessage(getInputCache().get(
-                            viewData.getThreadTopic()));
+
+                    InputCacheUtil.get(String.valueOf(viewData.getThreadId()),
+                            new Callback() {
+                                @Override
+                                public void execute(final String value) {
+                                    reply.insertIntoMessage(value);
+                                }
+                            });
+
                     layout.addComponent(reply);
 
                     // Fade in

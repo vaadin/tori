@@ -27,6 +27,7 @@ import org.vaadin.tori.component.RecentBar;
 import org.vaadin.tori.service.AuthorizationService;
 import org.vaadin.tori.service.DebugAuthorizationService;
 import org.vaadin.tori.util.ComponentUtil;
+import org.vaadin.tori.util.InputCacheUtil;
 import org.vaadin.tori.util.UrlConverter;
 import org.vaadin.tori.view.edit.EditViewImpl;
 import org.vaadin.tori.widgetset.client.ui.ToriUIServerRpc;
@@ -53,6 +54,7 @@ public class ToriUI extends UI implements ToriUIServerRpc {
     private Breadcrumbs breadcrumbs;
 
     private ToriApiLoader apiLoader;
+    private InputCacheUtil inputCacheUtil;
 
     @Override
     protected void init(final VaadinRequest request) {
@@ -60,6 +62,8 @@ public class ToriUI extends UI implements ToriUIServerRpc {
         registerRpc(this);
         ToriApiLoader.init(request);
         apiLoader = ToriApiLoader.getCurrent();
+        inputCacheUtil = new InputCacheUtil();
+        addExtension(inputCacheUtil.getExtension());
         checkUrl();
 
         final String trackerId = apiLoader.getDataSource().getConfiguration()
@@ -157,6 +161,10 @@ public class ToriUI extends UI implements ToriUIServerRpc {
 
     public Breadcrumbs getBreadcrumbs() {
         return breadcrumbs;
+    }
+
+    public InputCacheUtil getInputCacheUtil() {
+        return inputCacheUtil;
     }
 
     private static Logger getLogger() {

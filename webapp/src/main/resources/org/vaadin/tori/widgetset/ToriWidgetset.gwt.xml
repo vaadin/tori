@@ -4,7 +4,7 @@
 	<inherits name="com.vaadin.DefaultWidgetSet" />
 	<inherits name="org.vaadin.hene.popupbutton.widgetset.PopupbuttonWidgetset" />
     <inherits name="org.vaadin.openesignforms.ckeditor.widgetset.VaadinCKEditorWidgetset" />
-    
+    <inherits name="com.github.wolfie.clientstorage.ClientStorageWidgetset" />
     
 	<replace-with class="org.vaadin.tori.widgetset.client.ui.ToriUIConnector">
 		<when-type-is class="com.vaadin.client.ui.ui.UIConnector" />
