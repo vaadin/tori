@@ -24,7 +24,7 @@ public class TBUtils {
             ((JavascriptExecutor) driver)
                     .executeScript("[].slice.call(document.getElementsByClassName('"
                             + className
-                            + "')).map(function(item){ item.style.visibility = 'visible'})");
+                            + "')).map(function(item){ item.style.visibility = 'visible'; item.style.opacity = 1; })");
         }
     }
 

@@ -213,7 +213,7 @@ public class ITThreadViewPermissions extends TestBenchTestCase {
 
         if (popupPermission) {
             driver.findElement(
-                    By.xpath("//span[text()[contains(.,'" + permission + "')]]"))
+                    By.xpath("//div[text()[contains(.,'" + permission + "')]]"))
                     .click();
             driver.findElement(By.xpath("//div[text() = '" + permission + "']"))
                     .click();
@@ -246,9 +246,10 @@ public class ITThreadViewPermissions extends TestBenchTestCase {
 
     private void openFirstPostDropdown() {
         TBUtils.showDropdowns(driver);
-        List<WebElement> dropdowns = driver.findElements(By
-                .cssSelector(".post .dropdown .v-menubar-menuitem"));
-        dropdowns.get(0).click();
+        WebElement until = new WebDriverWait(driver, 10)
+                .until(ExpectedConditions.elementToBeClickable(By
+                        .cssSelector(".post .dropdown .v-menubar-menuitem")));
+        until.click();
     }
 
     private static void navigateToOtherThread() {

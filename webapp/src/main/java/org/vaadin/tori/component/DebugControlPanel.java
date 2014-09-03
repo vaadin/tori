@@ -25,9 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.vaadin.hene.popupbutton.PopupButton;
-import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityEvent;
-import org.vaadin.hene.popupbutton.PopupButton.PopupVisibilityListener;
 import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriNavigator;
 import org.vaadin.tori.data.entity.AbstractEntity;
@@ -43,12 +40,17 @@ import org.vaadin.tori.view.thread.ThreadView;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.Page;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.PopupView;
+import com.vaadin.ui.PopupView.PopupVisibilityEvent;
+import com.vaadin.ui.PopupView.PopupVisibilityListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -179,6 +181,9 @@ public class DebugControlPanel extends CustomComponent implements
 
     public DebugControlPanel(
             final DebugAuthorizationService authorizationService) {
+        Page.getCurrent()
+                .getStyles()
+                .add(".v-popupview-popup { background: #fff; } .v-popupview-popup .v-widget { font-size: 12px; }");
         addStyleName("debugcontrolpanel");
         this.authorizationService = authorizationService;
         ToriNavigator.getCurrent().addViewChangeListener(
@@ -194,7 +199,10 @@ public class DebugControlPanel extends CustomComponent implements
                     }
                 });
 
-        final PopupButton popupButton = new PopupButton("Debug Control Panel");
+        final PopupView popupButton = new PopupView("Debug Control Panel",
+                new Panel());
+        popupButton.setHideOnMouseOut(false);
+        popupButton.addStyleName("v-button");
         popupButton.addPopupVisibilityListener(this);
         setCompositionRoot(popupButton);
         setSizeUndefined();
@@ -273,8 +281,6 @@ public class DebugControlPanel extends CustomComponent implements
             return label;
         }
 
-        final PopupButton popup = new PopupButton(getNameForCheckBox(setter));
-        popup.setHeight(30.0f, Unit.PIXELS);
         Component content = new CustomComponent() {
             {
                 final CssLayout root = new CssLayout();
@@ -310,7 +316,10 @@ public class DebugControlPanel extends CustomComponent implements
                 }
             }
         };
-        popup.setContent(content);
+        final PopupView popup = new PopupView(getNameForCheckBox(setter),
+                content);
+        popup.setHideOnMouseOut(false);
+        popup.setHeight(30.0f, Unit.PIXELS);
         return popup;
     }
 
@@ -500,8 +509,9 @@ public class DebugControlPanel extends CustomComponent implements
     public void popupVisibilityChange(final PopupVisibilityEvent event) {
         final ContextData data = getContextData();
         if (event.isPopupVisible()) {
-            final PopupButton popup = event.getPopupButton();
-            popup.setContent(createControlPanel(data));
+            Panel panel = (Panel) event.getPopupView().getContent()
+                    .getPopupComponent();
+            panel.setContent(createControlPanel(data));
         }
     }
 }
