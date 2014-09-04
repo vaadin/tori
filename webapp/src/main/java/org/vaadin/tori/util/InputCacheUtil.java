@@ -19,13 +19,15 @@ package org.vaadin.tori.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.bind.DatatypeConverter;
+
+import org.vaadin.tori.ToriApiLoader;
 import org.vaadin.tori.ToriUI;
 import org.vaadin.tori.util.ToriScheduler.ScheduledCommand;
 
 import com.github.wolfie.clientstorage.ClientStorage;
 import com.github.wolfie.clientstorage.ClientStorage.ClientStorageSupportListener;
 import com.github.wolfie.clientstorage.ClientStorage.Closure;
-import com.liferay.portal.kernel.util.Base64;
 import com.vaadin.server.Extension;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
@@ -36,7 +38,7 @@ import com.vaadin.ui.UI;
  */
 public class InputCacheUtil implements ClientStorageSupportListener {
 
-    public static final String INPUT_CACHE = "inputcache_";
+    private static final String INPUT_CACHE = "inputcache_";
 
     private final ClientStorage clientStorage = new ClientStorage(this);
     private Boolean clientStorageSupported;
@@ -64,10 +66,11 @@ public class InputCacheUtil implements ClientStorageSupportListener {
     }
 
     private void doPut(final String id, final String value) {
-        String key = INPUT_CACHE + id;
+        String key = getCacheKey(id);
         getSessionCache().put(key, value);
         if (clientStorageSupported) {
-            clientStorage.setLocalItem(key, Base64.encode(value.getBytes()));
+            clientStorage.setLocalItem(key,
+                    DatatypeConverter.printBase64Binary(value.getBytes()));
         }
     }
 
@@ -76,7 +79,7 @@ public class InputCacheUtil implements ClientStorageSupportListener {
     }
 
     private void doRemove(final String id) {
-        String key = INPUT_CACHE + id;
+        String key = getCacheKey(id);
         getSessionCache().remove(key);
         if (clientStorageSupported) {
             clientStorage.removeLocalItem(key);
@@ -88,7 +91,7 @@ public class InputCacheUtil implements ClientStorageSupportListener {
     }
 
     private void doGet(final String id, final Callback callback) {
-        String key = INPUT_CACHE + id;
+        String key = getCacheKey(id);
 
         final String sessionCacheValue = getSessionCache().get(key);
         if (sessionCacheValue != null) {
@@ -108,7 +111,8 @@ public class InputCacheUtil implements ClientStorageSupportListener {
                 public void execute(final String value) {
                     if (value != null) {
                         try {
-                            callback.execute(new String(Base64.decode(value)));
+                            callback.execute(new String(DatatypeConverter
+                                    .parseBase64Binary(value)));
                         } catch (StringIndexOutOfBoundsException e) {
                             // Invalid formatting on the encoded
                             // data. Ignore.
@@ -117,6 +121,12 @@ public class InputCacheUtil implements ClientStorageSupportListener {
                 }
             });
         }
+    }
+
+    private String getCacheKey(final String id) {
+        long userId = ToriApiLoader.getCurrent().getDataSource()
+                .getCurrentUser().getId();
+        return INPUT_CACHE + userId + "_" + id;
     }
 
     public interface Callback {
