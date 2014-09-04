@@ -78,7 +78,6 @@ import com.liferay.portlet.messageboards.model.MBCategory;
 import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBMessageConstants;
 import com.liferay.portlet.messageboards.model.MBThread;
-import com.liferay.portlet.messageboards.model.MBThreadConstants;
 import com.liferay.portlet.messageboards.service.MBBanLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBBanServiceUtil;
 import com.liferay.portlet.messageboards.service.MBCategoryLocalServiceUtil;
@@ -264,53 +263,39 @@ public abstract class LiferayCommonDataSource implements DataSource,
             throws DataSourceException {
         final List<DiscussionThread> result = new ArrayList<DiscussionThread>();
 
+        Collection categoryIdsRecursively = getCategoryIdsRecursively(ROOT_CATEGORY_ID);
+
+        DynamicQuery dynamicQuery = DynamicQueryFactoryUtil
+                .forClass(MBThread.class,
+                        PortalClassLoaderUtil.getClassLoader())
+                .add(PropertyFactoryUtil.forName("groupId").eq(scopeGroupId))
+                .add(PropertyFactoryUtil.forName("status").eq(
+                        WorkflowConstants.STATUS_APPROVED))
+                .add(PropertyFactoryUtil.forName("categoryId").in(
+                        categoryIdsRecursively))
+                .addOrder(OrderFactoryUtil.desc("priority"))
+                .addOrder(OrderFactoryUtil.desc("lastPostDate"));
+
         try {
-            final List<MBThread> liferayThreads = MBThreadServiceUtil
-                    .getGroupThreads(scopeGroupId, 0,
-                            WorkflowConstants.STATUS_APPROVED, from, to);
-            for (final MBThread liferayThread : liferayThreads) {
-                final DiscussionThread thread = wrapLiferayThread(
-                        liferayThread, null);
-                result.add(thread);
-            }
-        } catch (Exception e) {
-            // getGroupThreads() failed, handle with dynamic query
-            result.clear();
+            List<?> liferayThreads = MBThreadLocalServiceUtil.dynamicQuery(
+                    dynamicQuery, from, to);
 
-            Collection categoryIdsRecursively = getCategoryIdsRecursively(ROOT_CATEGORY_ID);
-
-            DynamicQuery dynamicQuery = DynamicQueryFactoryUtil
-                    .forClass(MBThread.class,
-                            PortalClassLoaderUtil.getClassLoader())
-                    .add(PropertyFactoryUtil.forName("groupId")
-                            .eq(scopeGroupId))
-                    .add(PropertyFactoryUtil.forName("status").eq(
-                            WorkflowConstants.STATUS_APPROVED))
-                    .add(PropertyFactoryUtil.forName("categoryId").in(
-                            categoryIdsRecursively))
-                    .addOrder(OrderFactoryUtil.desc("lastPostDate"));
-
-            try {
-                List<?> liferayThreads = MBThreadLocalServiceUtil.dynamicQuery(
-                        dynamicQuery, from, to);
-
-                for (final Object object : liferayThreads) {
-                    try {
-                        if (object instanceof MBThread) {
-                            final DiscussionThread thread = wrapLiferayThread(
-                                    (MBThread) object, null);
-                            result.add(thread);
-                        }
-                    } catch (NestableException e1) {
-                        LOG.info("Mapping of an MBThread failed", e1);
+            for (final Object object : liferayThreads) {
+                try {
+                    if (object instanceof MBThread) {
+                        final DiscussionThread thread = wrapLiferayThread(
+                                (MBThread) object, null);
+                        result.add(thread);
                     }
+                } catch (NestableException e1) {
+                    LOG.info("Mapping of an MBThread failed", e1);
                 }
-            } catch (SystemException e1) {
-                LOG.info("Dynamic query for recent threads failed", e1);
-                throw new DataSourceException(e1);
             }
-
+        } catch (SystemException e1) {
+            LOG.info("Dynamic query for recent threads failed", e1);
+            throw new DataSourceException(e1);
         }
+
         return result;
     }
 
@@ -384,7 +369,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
 
         return LiferayCommonEntityFactoryUtil.createDiscussionThread(category,
                 liferayThread, rootMessage, threadAuthor, lastPostAuthor,
-                liferayThread.getPriority() >= STICKY_PRIORITY, this);
+                liferayThread.getPriority() > 0, this);
     }
 
     private User getUser(final long userId) throws PortalException,
@@ -825,7 +810,7 @@ public abstract class LiferayCommonDataSource implements DataSource,
 
     @Override
     public void unstickyThread(final long threadId) throws DataSourceException {
-        updateThreadPriority(threadId, MBThreadConstants.PRIORITY_NOT_GIVEN);
+        updateThreadPriority(threadId, 0);
     }
 
     private void updateThreadPriority(final long threadId,
