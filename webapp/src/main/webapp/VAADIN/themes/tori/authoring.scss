@@ -86,4 +86,16 @@
 			}
 		}
 	}
+	
+	.cke_dialog_body {
+		select {
+			width: auto;
+		}
+		
+		input[type="text"] {
+			height: auto;
+			padding: 0;
+		}
+	}
+	
 }
