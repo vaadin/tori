@@ -12,7 +12,7 @@
 		<module>common</module>
 		<module>ds-test</module>
 		<module>ds-liferay-common</module>
-		<module>ds-liferay60</module>
+		<!-- <module>ds-liferay60</module> -->
 		<module>ds-liferay62</module>
 		<module>tori-services-vaadin</module>
 	</modules>
