@@ -1,6 +1,6 @@
 # Tori
 
-Tori is a discussion forum portlet with a nice looking user interface. Features like real-time notifications and in-page navigation make it easy and comfortable to use. 
+Tori is a message boards portlet with a nice looking user interface. Features like real-time notifications and in-page navigation make it easy and comfortable to use. 
 
 Tori has a back-end implementation for Liferay and also a development implementation on top of JPA.
 
@@ -17,14 +17,15 @@ It supports all modern browsers, including Internet Explorer 8 and newer.
 * Can be used simultaneously with Liferay's message board in a separate URI
 * Page indexing and SEO support 
 * Integrated Google Analytics tracking
-* Supported Liferay versions: 6.0 upwards (CE / EE)
+* Supported Liferay versions: 6.2 upwards (CE / EE)
 * Permission configuration from Liferay Control Panel
 * Badge provider API for showing custom user badges
-* Stand-alone portlet that includes Vaadin 7.1. built-in
+* Stand-alone portlet that includes Vaadin 7.2. built-in
 
 ## Installation
 
-To install Tori from the Liferay Marketplace, follow [these](https://www.liferay.com/documentation/liferay-portal/6.2/user-guide/-/ai/downloading-and-installing-apps-liferay-portal-6-2-user-guide-14-en) instructions.
+Tori is available in the [Liferay Marketplace](http://www.liferay.com/marketplace/-/mp/application/17756169).
+To install Tori, follow [these](https://www.liferay.com/documentation/liferay-portal/6.2/user-guide/-/ai/downloading-and-installing-apps-liferay-portal-6-2-user-guide-14-en) instructions.
 
 Tori works fine on the default settings but the Portlet Preferences view allows you to define some additional attributes:
 
