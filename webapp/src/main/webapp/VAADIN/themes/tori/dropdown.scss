@@ -70,6 +70,10 @@
 	}
 }
 
+.v-menubar-popup {
+	box-shadow: none !important;
+}
+
 @include keyframes(vertical-fade-in) {
   0%   { opacity: 0; @include transform(translatey(-10px)); }
 }
