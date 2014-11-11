@@ -220,6 +220,7 @@ public class ITThreadViewPermissions extends TestBenchTestCase {
             driver.findElement(
                     By.cssSelector(".postselect-content." + permission
                             + " input")).click();
+            debugPopupButton.click();
         } else {
             driver.findElement(
                     By.xpath("//label[text()[contains(.,'" + permission
