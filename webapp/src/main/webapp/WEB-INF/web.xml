@@ -17,7 +17,7 @@
 		</init-param>
 		<init-param>
 			<param-name>theme</param-name>
-			<param-value>${tori.theme}</param-value>
+			<param-value>tori</param-value>
 		</init-param>
 		<init-param>
 			<param-name>widgetset</param-name>
