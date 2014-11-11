@@ -16,35 +16,29 @@
 
 package org.vaadin.tori.util;
 
-import org.vaadin.tori.util.PostFormatter.FontsInfo.FontSize;
+import org.vaadin.tori.util.PostFormatter.FontsInfo.FontFace;
 
-public enum LiferayFontSize implements FontSize {
+/**
+ * Font faces supported by Liferay forum.
+ */
+public enum LiferayFontFace implements FontFace {
     // @formatter:off
-    SIZE1("1", "0.7em"),
-    SIZE2("2", "0.8em"),
-    SIZE3("3", "0.9em"),
-    SIZE4("4", "1em"),
-    SIZE5("5", "1.1em"),
-    SIZE6("6", "1.3em"),
-    SIZE7("7", "1.5em");
+    ARIAL("Arial"),
+    COMIC_SANS("Comic Sans MS"),
+    COURIER_NEW("Courier New"),
+    TAHOMA("Tahoma"),
+    TIMES_NEW_ROMAN("Times New Roman"),
+    VERDANA("Verdana");
     // @formatter:on
 
     private String name;
-    private String value;
 
-    private LiferayFontSize(final String name, final String value) {
+    private LiferayFontFace(final String name) {
         this.name = name;
-        this.value = value;
     }
 
     @Override
-    public String getFontSizeName() {
+    public String getFontName() {
         return name;
     }
-
-    @Override
-    public String getFontSizeValue() {
-        return value;
-    }
-
 }

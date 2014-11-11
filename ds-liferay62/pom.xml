@@ -18,10 +18,6 @@
 			<artifactId>common</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>ds-liferay-common</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.liferay.portal</groupId>
 			<artifactId>portal-service</artifactId>
 			<version>${liferay.version}</version>
@@ -35,6 +31,22 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.7.3</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.cssbox</groupId>
+			<artifactId>cssbox</artifactId>
+			<version>4.5</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

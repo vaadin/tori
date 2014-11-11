@@ -21,7 +21,7 @@ package org.vaadin.tori.service;
  * portal-impl/resource-actions/messageboards.xml file (see Liferay source
  * code).
  */
-public class LiferayCommonAuthorizationConstants {
+public class LiferayAuthorizationConstants {
 
     public enum MbAction {
         ADD_CATEGORY,

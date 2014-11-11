@@ -38,8 +38,8 @@ import org.fit.cssbox.css.CSSNorm;
 import org.fit.cssbox.css.DOMAnalyzer;
 import org.jsoup.Jsoup;
 import org.vaadin.tori.PortletRequestAware;
-import org.vaadin.tori.data.LiferayCommonDataSource;
-import org.vaadin.tori.data.entity.LiferayCommonEntityFactoryUtil;
+import org.vaadin.tori.data.LiferayDataSource;
+import org.vaadin.tori.data.entity.LiferayEntityFactoryUtil;
 import org.vaadin.tori.util.DOMBuilder;
 import org.vaadin.tori.util.ToriMailService;
 import org.w3c.dom.Document;
@@ -130,7 +130,7 @@ public class LiferayToriMailService implements ToriMailService,
         String avatarUrl = "";
         try {
             user = UserLocalServiceUtil.getUser(mbMessage.getUserId());
-            String userAvatarUrl = LiferayCommonEntityFactoryUtil.getAvatarUrl(
+            String userAvatarUrl = LiferayEntityFactoryUtil.getAvatarUrl(
                     user.getPortraitId(), imagePath, user.isFemale());
             if (userAvatarUrl != null) {
                 avatarUrl = mbMessageServiceContext.getPortalURL()
@@ -148,13 +148,13 @@ public class LiferayToriMailService implements ToriMailService,
         String userDisplayName = user != null ? user.getFullName()
                 : "Anonymous";
         if (user != null
-                && LiferayCommonEntityFactoryUtil.usesScreennameOnTori(user)) {
+                && LiferayEntityFactoryUtil.usesScreennameOnTori(user)) {
             userDisplayName = user.getScreenName();
         }
         userDisplayName = stripTags(userDisplayName);
 
         String headerImage = getPreferenceValue(
-                LiferayCommonDataSource.PREFS_EMAIL_HEADER_IMAGE_URL, null);
+                LiferayDataSource.PREFS_EMAIL_HEADER_IMAGE_URL, null);
 
         String threadUrl = mbMessageServiceContext.getLayoutFullURL()
                 + "#!/thread/" + mbMessage.getThreadId();
@@ -330,19 +330,19 @@ public class LiferayToriMailService implements ToriMailService,
                 String companyEmail = company.getEmailAddress();
 
                 String fromAddress = getPreferenceValue(
-                        LiferayCommonDataSource.PREFS_EMAIL_FROM_ADDRESS, null);
+                        LiferayDataSource.PREFS_EMAIL_FROM_ADDRESS, null);
                 if (fromAddress == null) {
                     fromAddress = companyEmail;
                 }
 
                 String fromName = getPreferenceValue(
-                        LiferayCommonDataSource.PREFS_EMAIL_FROM_NAME, null);
+                        LiferayDataSource.PREFS_EMAIL_FROM_NAME, null);
                 if (fromName == null) {
                     fromName = company.getName() + " forums";
                 }
 
                 String replyToAddress = getPreferenceValue(
-                        LiferayCommonDataSource.PREFS_EMAIL_REPLY_TO_ADDRESS,
+                        LiferayDataSource.PREFS_EMAIL_REPLY_TO_ADDRESS,
                         null);
                 if (replyToAddress == null) {
                     replyToAddress = fromAddress;

@@ -46,7 +46,7 @@ public class LiferayPostFormatter implements PostFormatter, PortletRequestAware 
     private ThemeDisplay themeDisplay;
 
     static {
-        fontFaces = new ArrayList<FontFace>(Arrays.asList(LiferayCommonFontFace
+        fontFaces = new ArrayList<FontFace>(Arrays.asList(LiferayFontFace
                 .values()));
         fontSizes = new ArrayList<FontSize>(Arrays.asList(LiferayFontSize
                 .values()));

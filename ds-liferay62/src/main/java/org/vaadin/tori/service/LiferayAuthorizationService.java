@@ -20,11 +20,11 @@ import javax.portlet.PortletRequest;
 
 import org.apache.log4j.Logger;
 import org.vaadin.tori.PortletRequestAware;
-import org.vaadin.tori.data.LiferayCommonDataSource;
+import org.vaadin.tori.data.LiferayDataSource;
 import org.vaadin.tori.exception.DataSourceException;
-import org.vaadin.tori.service.LiferayCommonAuthorizationConstants.CategoryAction;
-import org.vaadin.tori.service.LiferayCommonAuthorizationConstants.MbAction;
-import org.vaadin.tori.service.LiferayCommonAuthorizationConstants.MessageAction;
+import org.vaadin.tori.service.LiferayAuthorizationConstants.CategoryAction;
+import org.vaadin.tori.service.LiferayAuthorizationConstants.MbAction;
+import org.vaadin.tori.service.LiferayAuthorizationConstants.MessageAction;
 
 import com.liferay.portal.kernel.exception.NestableException;
 import com.liferay.portal.kernel.exception.PortalException;
@@ -40,11 +40,11 @@ import com.liferay.portlet.messageboards.service.MBCategoryLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
 
-public class LiferayCommonAuthorizationService implements AuthorizationService,
+public class LiferayAuthorizationService implements AuthorizationService,
         PortletRequestAware {
 
     private static final Logger LOG = Logger
-            .getLogger(LiferayCommonAuthorizationService.class);
+            .getLogger(LiferayAuthorizationService.class);
     private long scopeGroupId = -1;
     private String currentUser;
     private boolean banned;
@@ -107,7 +107,7 @@ public class LiferayCommonAuthorizationService implements AuthorizationService,
     public boolean mayFollowThread(final long threadId) {
         try {
             return hasMessagePermission(MessageAction.SUBSCRIBE,
-                    LiferayCommonDataSource.getRootMessageId(threadId));
+                    LiferayDataSource.getRootMessageId(threadId));
         } catch (final DataSourceException e) {
             LOG.error(e);
         }
@@ -144,7 +144,7 @@ public class LiferayCommonAuthorizationService implements AuthorizationService,
     public boolean mayDeleteThread(final long threadId) {
         try {
             return hasMessagePermission(MessageAction.DELETE,
-                    LiferayCommonDataSource.getRootMessageId(threadId));
+                    LiferayDataSource.getRootMessageId(threadId));
         } catch (final DataSourceException e) {
             LOG.error(e);
         }
@@ -173,7 +173,7 @@ public class LiferayCommonAuthorizationService implements AuthorizationService,
         }
         try {
             MBCategory category = MBCategoryLocalServiceUtil
-                    .getCategory(LiferayCommonDataSource
+                    .getCategory(LiferayDataSource
                             .normalizeCategoryId(categoryId));
             String actionId = action.toString();
             PermissionChecker permissionChecker = getPermissionChecker();
@@ -289,7 +289,7 @@ public class LiferayCommonAuthorizationService implements AuthorizationService,
         boolean result = false;
         try {
             result = hasMessagePermission(MessageAction.VIEW,
-                    LiferayCommonDataSource.getRootMessageId(threadId));
+                    LiferayDataSource.getRootMessageId(threadId));
         } catch (DataSourceException e) {
             LOG.error(e);
         }

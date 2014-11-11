@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.vaadin.tori.data.DataSource;
-import org.vaadin.tori.data.LiferayCommonDataSource;
+import org.vaadin.tori.data.LiferayDataSource;
 import org.vaadin.tori.exception.DataSourceException;
 
 import com.liferay.portal.kernel.exception.NestableException;
@@ -37,7 +37,7 @@ import com.liferay.portlet.messageboards.model.MBThread;
  * 
  * TODO: Map immutable DTOs/proxies instead of entities
  */
-public class LiferayCommonEntityFactoryUtil {
+public class LiferayEntityFactoryUtil {
 
     public static Category createCategory(final MBCategory liferayCategory,
             final DataSource dataSource) {
@@ -78,7 +78,7 @@ public class LiferayCommonEntityFactoryUtil {
             final Category category, final MBThread liferayThread,
             final MBMessage threadRootMessage, final User threadAuthor,
             final User lastPostAuthor, final boolean sticky,
-            final LiferayCommonDataSource dataSource) {
+            final LiferayDataSource dataSource) {
         final DiscussionThread entity = new DiscussionThread() {
             @Override
             public Post getLatestPost() {

@@ -31,7 +31,7 @@ import com.liferay.portal.kernel.messaging.MessageBusUtil;
 import com.liferay.portal.kernel.messaging.MessageListener;
 import com.liferay.portal.kernel.messaging.ParallelDestination;
 
-public class LiferayCommonToriActivityMessaging implements
+public class LiferayToriActivityMessaging implements
         ToriActivityMessaging, PortletRequestAware, MessageListener {
 
     private static final String TORI_DESTINATION = "tori/activity";
@@ -54,7 +54,7 @@ public class LiferayCommonToriActivityMessaging implements
     private final Collection<UserAuthoredListener> userAuthoredListeners = new HashSet<UserAuthoredListener>();
 
     private final Logger log = Logger
-            .getLogger(LiferayCommonToriActivityMessaging.class);
+            .getLogger(LiferayToriActivityMessaging.class);
 
     private Date lastSent;
 
