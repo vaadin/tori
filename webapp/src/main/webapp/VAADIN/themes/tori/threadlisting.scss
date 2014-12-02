@@ -22,6 +22,11 @@
 		    &.unread {
 			    .topic {
 			    	font-weight: 500;
+			    	
+			    	html.win &,
+			    	body.v-win & {
+			    		font-weight: 700;
+			    	}
 			    }
 			    
 			    .topicname:before {
