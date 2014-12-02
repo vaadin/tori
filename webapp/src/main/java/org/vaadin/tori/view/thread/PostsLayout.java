@@ -119,7 +119,9 @@ public class PostsLayout extends CssLayout {
             // First render & no scroll to component specified -> scroll to
             // beginning
             UI.getCurrent().setScrollTop(0);
-            JavaScript.eval("window.scrollTo(0,0)");
+            JavaScript.eval("var el = document.getElementById('tori-ui');"
+                    + "if (el.getBoundingClientRect().top < 0) {"
+                    + "el.scrollIntoView(true); }");
         }
         super.beforeClientResponse(initial);
     }

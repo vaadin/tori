@@ -58,6 +58,7 @@ public class ToriUI extends UI implements ToriUIServerRpc {
 
     @Override
     protected void init(final VaadinRequest request) {
+        setId("tori-ui");
         setPollInterval(DEFAULT_POLL_INTERVAL);
         registerRpc(this);
         ToriApiLoader.init(request);
