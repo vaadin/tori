@@ -97,8 +97,8 @@
 			border-radius: 0 0 4px 4px;
 			cursor: pointer;
 			box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-			transition: margin-bottom 1s;
-			-webkit-transition: margin-bottom 1s;
+			transition: margin-bottom 1s, visibility 1s;
+			-webkit-transition: margin-bottom 1s, visibility 1s;
 			
 			.v-label, .v-link {
 				vertical-align: middle;

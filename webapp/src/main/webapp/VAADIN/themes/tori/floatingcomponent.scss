@@ -6,9 +6,11 @@
 		height: 30px;
 		left: 80px;
 		z-index: 1000;
+		visibility: hidden;
 		
 		&.floatingcomponent-visible {
 			margin-bottom: -30px;
+			visibility: visible;
 		}
 	}
 }
