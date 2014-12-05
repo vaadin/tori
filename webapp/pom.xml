@@ -274,8 +274,7 @@
 					<draftCompile>false</draftCompile>
 					<style>OBF</style>
 					<compileReport>true</compileReport>
-
-
+					<persistentunitcachedir>${project.build.directory}</persistentunitcachedir>
 					<runTarget>http://localhost:8080/</runTarget>
 				</configuration>
 				<executions>
