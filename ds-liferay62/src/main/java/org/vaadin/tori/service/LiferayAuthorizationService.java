@@ -16,6 +16,8 @@
 
 package org.vaadin.tori.service;
 
+import java.lang.reflect.Method;
+
 import javax.portlet.PortletRequest;
 
 import org.apache.log4j.Logger;
@@ -27,17 +29,15 @@ import org.vaadin.tori.service.LiferayAuthorizationConstants.MbAction;
 import org.vaadin.tori.service.LiferayAuthorizationConstants.MessageAction;
 
 import com.liferay.portal.kernel.exception.NestableException;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.util.PortalClassLoaderUtil;
+import com.liferay.portal.kernel.util.ReflectionUtil;
+import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.security.permission.PermissionChecker;
 import com.liferay.portal.security.permission.PermissionThreadLocal;
 import com.liferay.portal.theme.ThemeDisplay;
-import com.liferay.portlet.messageboards.model.MBCategory;
-import com.liferay.portlet.messageboards.model.MBMessage;
 import com.liferay.portlet.messageboards.model.MBThread;
 import com.liferay.portlet.messageboards.service.MBBanLocalServiceUtil;
-import com.liferay.portlet.messageboards.service.MBCategoryLocalServiceUtil;
-import com.liferay.portlet.messageboards.service.MBMessageLocalServiceUtil;
 import com.liferay.portlet.messageboards.service.MBThreadLocalServiceUtil;
 
 public class LiferayAuthorizationService implements AuthorizationService,
@@ -166,31 +166,58 @@ public class LiferayAuthorizationService implements AuthorizationService,
         return pc;
     }
 
+    private static final Method CATEGORY_PERMISSION_CONTAINS = getCategoryPermissionContainsMethod();
+    private static final Method MESSAGE_PERMISSION_CONTAINS = getMessagePermissionContainsMethod();
+
+    private static Method getMessagePermissionContainsMethod() {
+        Method result = null;
+        try {
+            Class<?> mbMessagePermissionClass = PortalClassLoaderUtil
+                    .getClassLoader()
+                    .loadClass(
+                            "com.liferay.portlet.messageboards.service.permission.MBMessagePermission");
+            result = ReflectionUtil.getDeclaredMethod(mbMessagePermissionClass,
+                    "contains", PermissionChecker.class, long.class,
+                    String.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private static Method getCategoryPermissionContainsMethod() {
+        Method result = null;
+        try {
+            Class<?> mbCategoryPermissionClass = PortalClassLoaderUtil
+                    .getClassLoader()
+                    .loadClass(
+                            "com.liferay.portlet.messageboards.service.permission.MBCategoryPermission");
+            result = ReflectionUtil.getDeclaredMethod(
+                    mbCategoryPermissionClass, "contains",
+                    PermissionChecker.class, long.class, long.class,
+                    String.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
     private boolean hasCategoryPermission(final CategoryAction action,
             final Long categoryId) {
         if (isBanned()) {
             return false;
         }
         try {
-            MBCategory category = MBCategoryLocalServiceUtil
-                    .getCategory(LiferayDataSource
-                            .normalizeCategoryId(categoryId));
-            String actionId = action.toString();
-            PermissionChecker permissionChecker = getPermissionChecker();
-            if (permissionChecker.hasOwnerPermission(category.getCompanyId(),
-                    MBCategory.class.getName(), category.getCategoryId(),
-                    category.getUserId(), actionId)
-                    || permissionChecker.hasPermission(category.getGroupId(),
-                            MBCategory.class.getName(),
-                            category.getCategoryId(), actionId)) {
-
-                return true;
-            }
-        } catch (NestableException e) {
+            long normalizeCategoryId = LiferayDataSource
+                    .normalizeCategoryId(categoryId);
+            Object result = CATEGORY_PERMISSION_CONTAINS.invoke(null,
+                    getPermissionChecker(), scopeGroupId, normalizeCategoryId,
+                    action.toString());
+            return (Boolean) result;
+        } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
-
-        return false;
     }
 
     private boolean hasMessagePermission(final MessageAction action,
@@ -198,30 +225,14 @@ public class LiferayAuthorizationService implements AuthorizationService,
         if (isBanned()) {
             return false;
         }
-
         try {
-            final MBMessage message = MBMessageLocalServiceUtil
-                    .getMBMessage(messageId);
-
-            // check for owner permission
-            if (getPermissionChecker().hasOwnerPermission(
-                    message.getCompanyId(), MBMessage.class.getName(),
-                    message.getMessageId(), message.getUserId(),
-                    action.toString())) {
-                return true;
-            }
-
-            // check for other permissions
-            return getPermissionChecker().hasPermission(message.getGroupId(),
-                    MBMessage.class.getName(), message.getMessageId(),
-                    action.toString());
-        } catch (final PortalException e) {
-            LOG.error(e);
-        } catch (final SystemException e) {
-            LOG.error(e);
+            Object result = MESSAGE_PERMISSION_CONTAINS.invoke(null,
+                    getPermissionChecker(), messageId, action.toString());
+            return (Boolean) result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
-        // default to false
-        return false;
     }
 
     private boolean hasPermission(final MbAction action) {
@@ -267,7 +278,7 @@ public class LiferayAuthorizationService implements AuthorizationService,
         if (scopeGroupId < 0) {
             // scope not defined yet -> get if from the request
             final ThemeDisplay themeDisplay = (ThemeDisplay) request
-                    .getAttribute("THEME_DISPLAY");
+                    .getAttribute(WebKeys.THEME_DISPLAY);
 
             if (themeDisplay != null) {
                 scopeGroupId = themeDisplay.getScopeGroupId();
